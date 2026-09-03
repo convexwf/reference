@@ -1,0 +1,61 @@
+name: weekly-source-update
+
+on:
+  schedule:
+    # Sunday 02:20 UTC, equivalent to Sunday 10:20 in Asia/Shanghai (UTC+8).
+    - cron: "20 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: weekly-source-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      # A GitHub App token is required: PRs created with GITHUB_TOKEN do not
+      # trigger the validation workflow that protects automatic merging.
+      - name: Create source-sync GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.REFERENCE_SYNC_APP_ID }}
+          private-key: ${{ secrets.REFERENCE_SYNC_APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Update pinned source snapshots and Markdown
+        run: python -m tools.update --all
+      - name: Verify generated output
+        run: python -m tools.check --all
+      - name: Create a restricted auto-merge pull request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          if git diff --quiet; then
+            echo "No upstream source changes."
+            exit 0
+          fi
+          allowed='^(sources\.lock\.json|markdown/)'
+          if git diff --name-only | grep -Ev "$allowed"; then
+            echo "Refusing to automate files outside sources.lock.json and markdown/." >&2
+            exit 1
+          fi
+          branch="automation/source-sync-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git config user.name "reference-source-sync[bot]"
+          git config user.email "reference-source-sync[bot]@users.noreply.github.com"
+          git add sources.lock.json markdown/
+          git commit -m "docs: sync pinned upstream sources"
+          git push --set-upstream origin "$branch"
+          url="$(gh pr create --base "${GITHUB_REF_NAME}" --head "$branch" --title "docs: sync pinned upstream sources" --body "Automated weekly source update. This PR only changes sources.lock.json and markdown/.")"
+          gh pr merge --auto --squash "$url"

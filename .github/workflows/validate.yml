@@ -1,0 +1,30 @@
+name: validate
+
+on:
+  pull_request:
+    paths:
+      - "adapters/**"
+      - "manifests/**"
+      - "markdown/**"
+      - "sources.lock.json"
+      - "tests/**"
+      - "tools/**"
+      - ".github/workflows/validate.yml"
+      - ".github/workflows/update.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Rebuild locked source snapshots and compare outputs
+        run: python -m tools.check --all

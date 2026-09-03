@@ -1,0 +1,21 @@
+{
+  "sources": {
+    "ai-agent-book": {
+      "commit": "985a49d35b9f50937f1f757cf25867672991ded7",
+      "commit_date": "2026-09-14T03:02:38Z",
+      "generator_version": "1",
+      "manifest_sha256": "e7465cb2846d34fcd3e6a69f75a4d080ec329f9b8141b736b909b24c317b16fa",
+      "ref": "main",
+      "repository": "https://github.com/bojieli/ai-agent-book.git"
+    },
+    "easy-rl": {
+      "commit": "6b7df8451f74f16d5efb6abc1b94a8746890a0ad",
+      "commit_date": "2025-12-30T23:48:17+08:00",
+      "generator_version": "1",
+      "manifest_sha256": "ae3b4253f6a584b557bdbcc85277f40f3b66389e8569d0351fb74e2c7b3e2149",
+      "ref": "master",
+      "repository": "https://github.com/datawhalechina/easy-rl.git"
+    }
+  },
+  "version": 1
+}

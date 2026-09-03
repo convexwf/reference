@@ -1,0 +1,44 @@
+{
+  "id": "ai-agent-book",
+  "title": "深入理解 AI Agent：完整教程",
+  "source": {
+    "repository": "https://github.com/bojieli/ai-agent-book.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "adapter": "ai_agent_book",
+  "output": "markdown/ai-agent-book/zh-CN-complete.md",
+  "sections": [
+    {
+      "title": "导言",
+      "parts": [
+        {"path": "book/introduction.md", "title": "引言"}
+      ]
+    },
+    {
+      "title": "正文",
+      "parts": [
+        {"path": "book/chapter1.md", "title": "第 1 章 AI Agent 入门"},
+        {"path": "book/chapter2.md", "title": "第 2 章 上下文工程"},
+        {"path": "book/chapter3.md", "title": "第 3 章 用户记忆和知识库"},
+        {"path": "book/chapter4.md", "title": "第 4 章 工具"},
+        {"path": "book/chapter5.md", "title": "第 5 章 Coding Agent 与通用 Agent"},
+        {"path": "book/chapter6.md", "title": "第 6 章 交互：观察与动作空间的扩展"},
+        {"path": "book/chapter7.md", "title": "第 7 章 Agent 的评估"},
+        {"path": "book/chapter8.md", "title": "第 8 章 模型后训练"},
+        {"path": "book/chapter9.md", "title": "第 9 章 Agent 的持续进化"},
+        {"path": "book/chapter10.md", "title": "第 10 章 多 Agent 协作"}
+      ]
+    },
+    {
+      "title": "附录",
+      "parts": [
+        {"path": "book/afterword.md", "title": "后记：回到 Agent = LLM + 上下文 + 工具"},
+        {"path": "book/reference-answers.md", "title": "思考题参考答案"}
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/*.md"]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "easy-rl",
+  "title": "EasyRL：强化学习完整教程",
+  "source": {
+    "repository": "https://github.com/datawhalechina/easy-rl.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "easy_rl",
+  "output": "markdown/easy-rl/zh-CN-complete.md",
+  "sections": [
+    {
+      "title": "第一部分：强化学习基础",
+      "parts": [
+        {"path": "docs/chapter1/chapter1.md", "title": "第 1 章 强化学习基础"},
+        {"path": "docs/chapter1/chapter1_questions&keywords.md", "title": "第 1 章习题与关键词"},
+        {"path": "docs/chapter2/chapter2.md", "title": "第 2 章 马尔可夫决策过程（MDP）"},
+        {"path": "docs/chapter2/chapter2_questions&keywords.md", "title": "第 2 章习题与关键词"},
+        {"path": "docs/chapter3/chapter3.md", "title": "第 3 章 表格型方法"},
+        {"path": "docs/chapter3/chapter3_questions&keywords.md", "title": "第 3 章习题与关键词"},
+        {"path": "docs/chapter3/project1.md", "title": "项目一：使用 Q-learning 解决悬崖寻路问题"}
+      ]
+    },
+    {
+      "title": "第二部分：策略优化与深度价值方法",
+      "parts": [
+        {"path": "docs/chapter4/chapter4.md", "title": "第 4 章 策略梯度"},
+        {"path": "docs/chapter4/chapter4_questions&keywords.md", "title": "第 4 章习题与关键词"},
+        {"path": "docs/chapter5/chapter5.md", "title": "第 5 章 近端策略优化（PPO）算法"},
+        {"path": "docs/chapter5/chapter5_questions&keywords.md", "title": "第 5 章习题与关键词"},
+        {"path": "docs/chapter6/chapter6.md", "title": "第 6 章 深度 Q 网络（DQN）基础"},
+        {"path": "docs/chapter6/chapter6_questions&keywords.md", "title": "第 6 章习题与关键词"},
+        {"path": "docs/chapter7/chapter7.md", "title": "第 7 章 深度 Q 网络（DQN）进阶技巧"},
+        {"path": "docs/chapter7/chapter7_questions&keywords.md", "title": "第 7 章习题与关键词"},
+        {"path": "docs/chapter7/project2.md", "title": "项目二：使用 DQN 实现 CartPole-v0"},
+        {"path": "docs/chapter8/chapter8.md", "title": "第 8 章 针对连续动作的深度 Q 网络"},
+        {"path": "docs/chapter8/chapter8_questions&keywords.md", "title": "第 8 章习题与关键词"}
+      ]
+    },
+    {
+      "title": "第三部分：Actor-Critic 与算法扩展",
+      "parts": [
+        {"path": "docs/chapter9/chapter9.md", "title": "第 9 章 演员-评论员算法"},
+        {"path": "docs/chapter9/chapter9_questions&keywords.md", "title": "第 9 章习题与关键词"},
+        {"path": "docs/chapter10/chapter10.md", "title": "第 10 章 稀疏奖励"},
+        {"path": "docs/chapter10/chapter10_questions&keywords.md", "title": "第 10 章习题与关键词"},
+        {"path": "docs/chapter11/chapter11.md", "title": "第 11 章 模仿学习"},
+        {"path": "docs/chapter11/chapter11_questions&keywords.md", "title": "第 11 章习题与关键词"},
+        {"path": "docs/chapter12/chapter12.md", "title": "第 12 章 深度确定性策略梯度（DDPG）算法"},
+        {"path": "docs/chapter12/chapter12_questions&keywords.md", "title": "第 12 章习题与关键词"},
+        {"path": "docs/chapter12/project3.md", "title": "项目三：使用 Policy-Based 方法实现 Pendulum-v0"}
+      ]
+    },
+    {
+      "title": "第四部分：前沿专题",
+      "parts": [
+        {"path": "docs/chapter13/chapter13.md", "title": "第 13 章 AlphaStar 论文解读"},
+        {"path": "docs/chapter14/ls-imagine.md", "title": "第 14 章 ICLR 2025 Oral：LS-Imagine 在开放世界中进行强化学习"},
+        {"path": "docs/chapter15/chapter15.md", "title": "第 15 章 视觉强化学习论文清单", "empty_note": "本章源文件目前为空。相关论文清单请参考 [Awesome Visual RL](https://github.com/qiwang067/awesome-visual-rl)。"},
+        {"path": "docs/chapter16/chapter16.md", "title": "第 16 章 世界模型的本质"}
+      ]
+    },
+    {
+      "title": "附录",
+      "parts": [
+        {"path": "docs/errata.md", "title": "附录 A：纸质版勘误修订表"}
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": ["docs/chapter*/*.md"]
+  }
+}
