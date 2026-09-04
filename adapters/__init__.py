@@ -21,6 +21,7 @@ class Adapter:
 _ADAPTERS = {
     "ai_agent_book": Adapter("ai_agent_book", "1"),
     "easy_rl": Adapter("easy_rl", "1"),
+    "hello_agents": Adapter("hello_agents", "1"),
 }
 
 

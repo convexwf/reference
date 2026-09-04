@@ -6,6 +6,7 @@
 
 - `ai-agent-book` 的简体中文完整教程
 - `easy-rl` 的中文完整教程
+- `hello-agents` 的中文主教程
 
 生成结果位于 `markdown/<source>/`。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 

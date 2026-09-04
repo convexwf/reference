@@ -5,7 +5,7 @@ source_repository: "https://github.com/datawhalechina/easy-rl.git"
 source_ref: "master"
 source_commit: "6b7df8451f74f16d5efb6abc1b94a8746890a0ad"
 source_commit_date: "2025-12-30T23:48:17+08:00"
-generator_version: "1"
+generator_version: "easy_rl@1;engine@3"
 ---
 
 # EasyRL：强化学习完整教程
@@ -19,7 +19,7 @@ generator_version: "1"
 | 上游仓库 | [datawhalechina/easy-rl](https://github.com/datawhalechina/easy-rl) |
 | 锁定提交 | [6b7df8451f74](https://github.com/datawhalechina/easy-rl/commit/6b7df8451f74f16d5efb6abc1b94a8746890a0ad) |
 | 提交时间 | 2025-12-30T23:48:17+08:00 |
-| 适配器版本 | `easy_rl@1` |
+| 生成器版本 | `easy_rl@1;engine@3` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 
@@ -483,7 +483,7 @@ A：针对是否需要对真实环境建模，强化学习可以分为有模型�
 
 ![1.39](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.39.png)
 
-图 1.23 <i>K</i>-臂赌博机图示
+图 1.23 *K*-臂赌博机图示
 
 #### 1.7 强化学习实验
 强化学习是一个理论与实践相结合的机器学习分支，我们不仅要理解它算法背后的一些数学原理，还要通过上机实践实现算法。在很多实验环境里面去探索算法能不能得到预期效果也是一个非常重要的过程。
@@ -706,7 +706,7 @@ print('平均回合奖励 = {}'.format(np.mean(episode_rewards)))
 平均回合奖励 = -106.63
 ```
 
-SimpleAgent 类对应策略的平均回合奖励在 $-$110 左右，而对于小车上山任务，只要连续 100 个回合的平均回合奖励大于 $-$110，就可以认为该任务被解决了。完整代码实现可参考[小车上山代码](https://github.com/datawhalechina/easy-rl/blob/master/docs/chapter1/RL_example.py)。
+SimpleAgent 类对应策略的平均回合奖励在 $-$110 左右，而对于小车上山任务，只要连续 100 个回合的平均回合奖励大于 $-$110，就可以认为该任务被解决了。完整代码实现可参考[小车上山代码](https://github.com/datawhalechina/easy-rl/blob/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter1/RL_example.py)。
 
 测试智能体在 Gym 库中某个任务的性能时，出于习惯使然，学术界一般最关心 100 个回合的平均回合奖励。对于有些任务，还会指定一个参考的回合奖励值，当连续 100 个回合的奖励大于指定的值时，则认为该任务被解决了。而对于没有指定值的任务，就无所谓任务被解决了或没有被解决。
 
@@ -5812,7 +5812,7 @@ $$
       <td>21.54</td>
       <td>887.03</td>
       <td>15.14</td>
-      <td><b>1586.03</b></td>
+      <td>**1586.03**</td>
     </tr>
     <tr>
       <td>Director</td>
@@ -5834,23 +5834,23 @@ $$
       <td>55.72</td>
       <td>628.79</td>
       <td>59.88</td>
-      <td><b>548.76</b></td>
+      <td>**548.76**</td>
       <td>25.13</td>
       <td>841.14</td>
       <td>16.79</td>
       <td>1789.06</td>
     </tr>
     <tr>
-      <td><b>LS-Imagine</b></td>
-      <td><b>80.63</b></td>
-      <td><b>503.35</b></td>
-      <td><b>77.31</b></td>
-      <td><b>502.61</b></td>
-      <td><b>62.68</b></td>
+      <td>**LS-Imagine**</td>
+      <td>**80.63**</td>
+      <td>**503.35**</td>
+      <td>**77.31**</td>
+      <td>**502.61**</td>
+      <td>**62.68**</td>
       <td>601.18</td>
-      <td><b>54.28</b></td>
-      <td><b>633.78</b></td>
-      <td><b>20.28</b></td>
+      <td>**54.28**</td>
+      <td>**633.78**</td>
+      <td>**20.28**</td>
       <td>1748.55</td>
     </tr>
   </tbody>

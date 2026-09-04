@@ -52,6 +52,9 @@ class ReferenceCoreTest(unittest.TestCase):
             "</div>\n\n"
             "![另一张图](../images/演示%20图.png){width=60%}\n\n"
             "[下一章](next.md#more)\n\n"
+            "![官方图](https://raw.githubusercontent.com/example/fixture-book/main/images/演示%20图.png)\n\n"
+            "[官方下一章](https://github.com/example/fixture-book/blob/main/docs/next.md#more)\n\n"
+            "<p class=\"caption\"><strong>图注</strong>与<em>强调</em></p>\n\n"
             "## 小节\n",
             encoding="utf-8",
         )
@@ -65,13 +68,16 @@ class ReferenceCoreTest(unittest.TestCase):
     def test_build_rewrites_images_links_and_html(self) -> None:
         document = build_document(self.snapshot)
         raw = f"https://raw.githubusercontent.com/example/fixture-book/{COMMIT}/images/%E6%BC%94%E7%A4%BA%20%E5%9B%BE.png"
-        self.assertEqual(document.count(raw), 2)
+        self.assertEqual(document.count(raw), 3)
         self.assertIn(f"https://github.com/example/fixture-book/blob/{COMMIT}/docs/next.md#more", document)
         self.assertIn("### 第一章", document)
         self.assertIn("#### 小节", document)
         self.assertNotIn("<img", document)
         self.assertNotIn("align=", document)
         self.assertNotIn("{width=60%}", document)
+        self.assertIn("**图注**与*强调*", document)
+        self.assertNotIn("<strong", document)
+        self.assertNotIn("<p", document)
 
     def test_completeness_rejects_new_unlisted_source(self) -> None:
         (self.root / "docs" / "omitted.md").write_text("# 未收录", encoding="utf-8")

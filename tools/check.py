@@ -5,11 +5,11 @@ from __future__ import annotations
 import argparse
 import sys
 
-from adapters import get_adapter
 from tools.reference_core import (
     ReferenceError,
     assert_document_contract,
     build_document,
+    generator_version,
     load_lock,
     manifest_digest,
     output_path,
@@ -45,7 +45,7 @@ def validate_lock_entry(manifest, entry: object) -> dict[str, str]:
         raise ReferenceError(f"{manifest.identifier}: lock source does not match manifest")
     if entry["manifest_sha256"] != manifest_digest(manifest):
         raise ReferenceError(f"{manifest.identifier}: manifest changed; run tools.update")
-    if entry["generator_version"] != get_adapter(manifest.adapter).version:
+    if entry["generator_version"] != generator_version(manifest):
         raise ReferenceError(f"{manifest.identifier}: adapter changed; run tools.update")
     return entry
 

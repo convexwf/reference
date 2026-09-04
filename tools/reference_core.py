@@ -24,6 +24,10 @@ REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 MANIFESTS_DIR = REPOSITORY_ROOT / "manifests"
 LOCK_PATH = REPOSITORY_ROOT / "sources.lock.json"
 LOCK_VERSION = 1
+# Bump this whenever a generic rendering rule changes.  Source pins alone are
+# insufficient because a renderer upgrade can legitimately change output even
+# when upstream content remains at the same commit.
+ENGINE_VERSION = "3"
 
 
 class ReferenceError(RuntimeError):
@@ -85,6 +89,9 @@ PANDOC_IMAGE_ATTRIBUTES = re.compile(
     r"(?P<image>!\[[^\]]*\]\((?:<[^>]+>|[^)\s]+)(?:[^)]*)\))\{[^{}\n]*\}"
 )
 HTML_IMAGE_TAG = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+HTML_STRONG_TAG = re.compile(r"</?(?:strong|b)\b[^>]*>", re.IGNORECASE)
+HTML_EMPHASIS_TAG = re.compile(r"</?(?:em|i)\b[^>]*>", re.IGNORECASE)
+HTML_PARAGRAPH_TAG = re.compile(r"</?p\b[^>]*>", re.IGNORECASE)
 HTML_ATTRIBUTE = re.compile(
     r"\b(?P<name>[a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*"
     r"(?:\"(?P<double>[^\"]*)\"|'(?P<single>[^']*)'|(?P<bare>[^\s>]+))",
@@ -221,6 +228,13 @@ def manifest_digest(manifest: Manifest) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def generator_version(manifest: Manifest) -> str:
+    """Return the version of both the source adapter and generic renderer."""
+
+    adapter = get_adapter(manifest.adapter)
+    return f"{adapter.identifier}@{adapter.version};engine@{ENGINE_VERSION}"
+
+
 def load_lock() -> dict[str, Any]:
     """Load the checked-in source pin file, or return an empty lock."""
 
@@ -341,9 +355,53 @@ def _github_url(base: str, relative: Path, suffix: str = "") -> str:
     return f"{base}/{encoded}{suffix}"
 
 
+def _is_snapshot_repository(owner: str, repository: str, snapshot: SourceSnapshot) -> bool:
+    snapshot_owner, snapshot_repository = github_slug(snapshot.manifest.repository)
+    return owner.lower() == snapshot_owner.lower() and repository.lower() == snapshot_repository.lower()
+
+
+def _rewrite_pinned_raw_target(target: str, snapshot: SourceSnapshot) -> str | None:
+    """Pin an absolute Raw URL when it already points at this source repository."""
+
+    path_text, suffix = split_target(target)
+    parsed = urlsplit(path_text)
+    if parsed.scheme not in {"http", "https"} or parsed.hostname != "raw.githubusercontent.com":
+        return None
+    pieces = parsed.path.lstrip("/").split("/", 3)
+    if len(pieces) != 4 or not _is_snapshot_repository(pieces[0], pieces[1], snapshot):
+        return None
+    owner, repository = github_slug(snapshot.manifest.repository)
+    relative = Path(unquote(pieces[3]))
+    return _github_url(
+        f"https://raw.githubusercontent.com/{owner}/{repository}/{snapshot.commit}", relative, suffix
+    )
+
+
+def _rewrite_pinned_source_link(target: str, snapshot: SourceSnapshot) -> str | None:
+    """Pin absolute GitHub blob/tree links that already point at this source."""
+
+    path_text, suffix = split_target(target)
+    parsed = urlsplit(path_text)
+    if parsed.scheme not in {"http", "https"} or parsed.hostname != "github.com":
+        return None
+    pieces = parsed.path.strip("/").split("/", 4)
+    if len(pieces) != 5 or pieces[2] not in {"blob", "tree"}:
+        return None
+    if not _is_snapshot_repository(pieces[0], pieces[1], snapshot):
+        return None
+    owner, repository = github_slug(snapshot.manifest.repository)
+    relative = Path(unquote(pieces[4]))
+    return _github_url(
+        f"https://github.com/{owner}/{repository}/{pieces[2]}/{snapshot.commit}", relative, suffix
+    )
+
+
 def rewrite_image_target(target: str, source: Path, snapshot: SourceSnapshot) -> str:
     """Turn an existing local asset into a SHA-pinned GitHub Raw URL."""
 
+    pinned = _rewrite_pinned_raw_target(target, snapshot)
+    if pinned is not None:
+        return pinned
     resolved = _repository_relative_target(target, source, snapshot)
     if resolved is None:
         return target
@@ -359,6 +417,9 @@ def rewrite_image_target(target: str, source: Path, snapshot: SourceSnapshot) ->
 def rewrite_link_target(target: str, source: Path, snapshot: SourceSnapshot) -> str:
     """Turn an existing local document/directory link into a SHA-pinned source URL."""
 
+    pinned = _rewrite_pinned_source_link(target, snapshot)
+    if pinned is not None:
+        return pinned
     resolved = _repository_relative_target(target, source, snapshot)
     if resolved is None:
         return target
@@ -404,10 +465,30 @@ def _html_image_to_markdown(tag: str, source: Path, snapshot: SourceSnapshot) ->
     return f"![{alt}]({target})"
 
 
+def rewrite_semantic_html(line: str) -> str:
+    """Replace presentational HTML with standard Markdown inline syntax.
+
+    Source chapters use these tags for formatting, not for semantic data or
+    custom rendering.  Standard Markdown is more portable in a standalone
+    file and avoids leaving a mixed HTML/Markdown document for readers.
+    """
+
+    def strong_replacer(match: re.Match[str]) -> str:
+        return "**"
+
+    def emphasis_replacer(match: re.Match[str]) -> str:
+        return "*"
+
+    line = HTML_STRONG_TAG.sub(strong_replacer, line)
+    line = HTML_EMPHASIS_TAG.sub(emphasis_replacer, line)
+    return HTML_PARAGRAPH_TAG.sub("", line)
+
+
 def rewrite_assets(line: str, source: Path, snapshot: SourceSnapshot, align_div_closes: int = 0) -> str:
     """Rewrite Markdown/HTML images and local links while retaining captions."""
 
     converted_html_image = bool(HTML_IMAGE_TAG.search(line))
+    converted_paragraph = bool(HTML_PARAGRAPH_TAG.search(line))
 
     def image_replacer(match: re.Match[str]) -> str:
         target = match.group("target")
@@ -434,7 +515,8 @@ def rewrite_assets(line: str, source: Path, snapshot: SourceSnapshot, align_div_
     if align_div_closes:
         line = BARE_DIV_CLOSE_TAG.sub("", line, count=align_div_closes)
     line = FIGCAPTION_TAG.sub("", line)
-    return line.strip() if converted_html_image else line.rstrip()
+    line = rewrite_semantic_html(line)
+    return line.strip() if converted_html_image or converted_paragraph else line.rstrip()
 
 
 def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
@@ -490,7 +572,6 @@ def _yaml_string(value: str) -> str:
 
 def _front_matter(snapshot: SourceSnapshot) -> list[str]:
     manifest = snapshot.manifest
-    adapter = get_adapter(manifest.adapter)
     owner, repository = github_slug(manifest.repository)
     commit_url = f"https://github.com/{owner}/{repository}/commit/{snapshot.commit}"
     return [
@@ -501,7 +582,7 @@ def _front_matter(snapshot: SourceSnapshot) -> list[str]:
         f"source_ref: {_yaml_string(manifest.ref)}",
         f"source_commit: {_yaml_string(snapshot.commit)}",
         f"source_commit_date: {_yaml_string(snapshot.commit_date)}",
-        f"generator_version: {_yaml_string(adapter.version)}",
+        f"generator_version: {_yaml_string(generator_version(manifest))}",
         "---",
         "",
         f"# {manifest.title}",
@@ -515,7 +596,7 @@ def _front_matter(snapshot: SourceSnapshot) -> list[str]:
         f"| 上游仓库 | [{owner}/{repository}]({manifest.repository.removesuffix('.git')}) |",
         f"| 锁定提交 | [{snapshot.commit[:12]}]({commit_url}) |",
         f"| 提交时间 | {snapshot.commit_date} |",
-        f"| 适配器版本 | `{manifest.adapter}@{adapter.version}` |",
+        f"| 生成器版本 | `{generator_version(manifest)}` |",
         "",
         "> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。",
         "",
@@ -570,6 +651,8 @@ def assert_document_contract(document: str) -> None:
             raise ReferenceError(f"generated document has trailing whitespace at line {number}")
         if HTML_IMAGE_TAG.search(line) or ALIGN_DIV_TAG.search(line) or FIGURE_TAG.search(line):
             raise ReferenceError(f"generated document keeps unsupported HTML image wrapper at line {number}")
+        if HTML_STRONG_TAG.search(line) or HTML_EMPHASIS_TAG.search(line) or HTML_PARAGRAPH_TAG.search(line):
+            raise ReferenceError(f"generated document keeps presentational HTML at line {number}")
         if PANDOC_IMAGE_ATTRIBUTES.search(line):
             raise ReferenceError(f"generated document keeps Pandoc image attributes at line {number}")
         for match in MARKDOWN_IMAGE_TARGET.finditer(line):

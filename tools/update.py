@@ -11,13 +11,13 @@ import argparse
 import sys
 from pathlib import Path
 
-from adapters import get_adapter
 from tools.reference_core import (
     LOCK_VERSION,
     ReferenceError,
     atomic_write_json,
     atomic_write_text,
     build_document,
+    generator_version,
     load_lock,
     manifest_digest,
     output_path,
@@ -48,7 +48,7 @@ def lock_entry(snapshot) -> dict[str, str]:
         "commit": snapshot.commit,
         "commit_date": snapshot.commit_date,
         "manifest_sha256": manifest_digest(snapshot.manifest),
-        "generator_version": get_adapter(snapshot.manifest.adapter).version,
+        "generator_version": generator_version(snapshot.manifest),
     }
 
 
