@@ -8,6 +8,10 @@
   "language": "zh-CN",
   "adapter": "easy_rl",
   "output": "markdown/easy-rl/zh-CN-complete.md",
+  "front_matter": {
+    "authors": ["王琦", "杨毅远", "江季"],
+    "tags": ["reinforcement-learning", "tutorial"]
+  },
   "sections": [
     {
       "title": "第一部分：强化学习基础",

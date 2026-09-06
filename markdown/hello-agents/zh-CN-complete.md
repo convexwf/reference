@@ -1,11 +1,21 @@
 ---
 title: "Hello-Agents：从零开始构建智能体"
+authors:
+  - "陈思州"
+  - "孙韬"
+  - "姜舒凡"
+  - "黄佩林"
+  - "曾鑫民"
+  - "胡昊"
+  - "朱信忠"
+  - "Hello-Agents 全体贡献者"
 language: "zh-CN"
-source_repository: "https://github.com/datawhalechina/hello-agents.git"
-source_ref: "main"
-source_commit: "4f7682ceafe573d07cd8a7d0b89908500e83227d"
-source_commit_date: "2026-09-04T17:03:14+08:00"
-generator_version: "hello_agents@1;engine@3"
+tags:
+  - "ai-agent"
+  - "llm"
+  - "tutorial"
+published_at: "2025-09-07"
+updated_at: "2026-08-14"
 ---
 
 # Hello-Agents：从零开始构建智能体
@@ -19,7 +29,7 @@ generator_version: "hello_agents@1;engine@3"
 | 上游仓库 | [datawhalechina/hello-agents](https://github.com/datawhalechina/hello-agents) |
 | 锁定提交 | [4f7682ceafe5](https://github.com/datawhalechina/hello-agents/commit/4f7682ceafe573d07cd8a7d0b89908500e83227d) |
 | 提交时间 | 2026-09-04T17:03:14+08:00 |
-| 生成器版本 | `hello_agents@1;engine@3` |
+| 生成器版本 | `hello_agents@1;engine@4` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 

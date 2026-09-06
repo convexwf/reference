@@ -1,11 +1,14 @@
 ---
 title: "深入理解 AI Agent：完整教程"
+authors:
+  - "李博杰"
 language: "zh-CN"
-source_repository: "https://github.com/bojieli/ai-agent-book.git"
-source_ref: "main"
-source_commit: "e6612a255cc78e03095d78d1bbf5090392fae895"
-source_commit_date: "2026-09-14T14:37:00+08:00"
-generator_version: "ai_agent_book@1;engine@3"
+tags:
+  - "ai-agent"
+  - "llm"
+  - "tutorial"
+published_at: "2026-07-15"
+updated_at: "2026-09-14"
 ---
 
 # 深入理解 AI Agent：完整教程
@@ -19,7 +22,7 @@ generator_version: "ai_agent_book@1;engine@3"
 | 上游仓库 | [bojieli/ai-agent-book](https://github.com/bojieli/ai-agent-book) |
 | 锁定提交 | [e6612a255cc7](https://github.com/bojieli/ai-agent-book/commit/e6612a255cc78e03095d78d1bbf5090392fae895) |
 | 提交时间 | 2026-09-14T14:37:00+08:00 |
-| 生成器版本 | `ai_agent_book@1;engine@3` |
+| 生成器版本 | `ai_agent_book@1;engine@4` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 

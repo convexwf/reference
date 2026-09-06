@@ -3,24 +3,24 @@
     "ai-agent-book": {
       "commit": "e6612a255cc78e03095d78d1bbf5090392fae895",
       "commit_date": "2026-09-14T14:37:00+08:00",
-      "generator_version": "ai_agent_book@1;engine@3",
-      "manifest_sha256": "e7465cb2846d34fcd3e6a69f75a4d080ec329f9b8141b736b909b24c317b16fa",
+      "generator_version": "ai_agent_book@1;engine@4",
+      "manifest_sha256": "1adecb27a90f4773c76d0754544cc638c9b9eac73b77732e5616a4072e483870",
       "ref": "main",
       "repository": "https://github.com/bojieli/ai-agent-book.git"
     },
     "easy-rl": {
       "commit": "6b7df8451f74f16d5efb6abc1b94a8746890a0ad",
       "commit_date": "2025-12-30T23:48:17+08:00",
-      "generator_version": "easy_rl@1;engine@3",
-      "manifest_sha256": "ae3b4253f6a584b557bdbcc85277f40f3b66389e8569d0351fb74e2c7b3e2149",
+      "generator_version": "easy_rl@1;engine@4",
+      "manifest_sha256": "63010951f6eaa98a49613b99941dd4857f22df0cd50f443c440e5034909c46ff",
       "ref": "master",
       "repository": "https://github.com/datawhalechina/easy-rl.git"
     },
     "hello-agents": {
       "commit": "4f7682ceafe573d07cd8a7d0b89908500e83227d",
       "commit_date": "2026-09-04T17:03:14+08:00",
-      "generator_version": "hello_agents@1;engine@3",
-      "manifest_sha256": "bad9d799f1d43995e96ad3a04b0c37dd4dfd36afac43c6014d4f6f004c4b6a27",
+      "generator_version": "hello_agents@1;engine@4",
+      "manifest_sha256": "00dab919d6c8df5d3d237512c48666d646b13a495ab8098586285091fd4fc4dd",
       "ref": "main",
       "repository": "https://github.com/datawhalechina/hello-agents.git"
     }

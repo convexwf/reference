@@ -27,7 +27,7 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "3"
+ENGINE_VERSION = "4"
 
 
 class ReferenceError(RuntimeError):
@@ -60,6 +60,8 @@ class Manifest:
     language: str
     adapter: str
     output: str
+    authors: tuple[str, ...]
+    tags: tuple[str, ...]
     sections: tuple[SectionSpec, ...]
     required_globs: tuple[str, ...]
     raw: dict[str, Any]
@@ -77,6 +79,8 @@ class SourceSnapshot:
     root: Path
     commit: str
     commit_date: str
+    published_at: str
+    updated_at: str
 
 
 MARKDOWN_IMAGE_TARGET = re.compile(
@@ -142,6 +146,18 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
     if not output.endswith(".md"):
         raise ReferenceError(f"{origin}: output must end in .md")
 
+    front_matter = data.get("front_matter", {})
+    if not isinstance(front_matter, dict):
+        raise ReferenceError(f"{origin}: front_matter must be an object")
+
+    def string_array(value: object, name: str) -> tuple[str, ...]:
+        if not isinstance(value, list) or not all(isinstance(item, str) and item.strip() for item in value):
+            raise ReferenceError(f"{origin}: front_matter.{name} must be a non-empty string array")
+        return tuple(item.strip() for item in value)
+
+    authors = string_array(front_matter.get("authors"), "authors")
+    tags = string_array(front_matter.get("tags"), "tags")
+
     sections_data = data.get("sections")
     if not isinstance(sections_data, list) or not sections_data:
         raise ReferenceError(f"{origin}: sections must be a non-empty array")
@@ -187,6 +203,8 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
         language=language,
         adapter=adapter,
         output=output,
+        authors=authors,
+        tags=tags,
         sections=tuple(sections),
         required_globs=required_globs,
         raw=data,
@@ -577,12 +595,13 @@ def _front_matter(snapshot: SourceSnapshot) -> list[str]:
     return [
         "---",
         f"title: {_yaml_string(manifest.title)}",
+        "authors:",
+        *[f"  - {_yaml_string(author)}" for author in manifest.authors],
         f"language: {_yaml_string(manifest.language)}",
-        f"source_repository: {_yaml_string(manifest.repository)}",
-        f"source_ref: {_yaml_string(manifest.ref)}",
-        f"source_commit: {_yaml_string(snapshot.commit)}",
-        f"source_commit_date: {_yaml_string(snapshot.commit_date)}",
-        f"generator_version: {_yaml_string(generator_version(manifest))}",
+        "tags:",
+        *[f"  - {_yaml_string(tag)}" for tag in manifest.tags],
+        f"published_at: {_yaml_string(snapshot.published_at)}",
+        f"updated_at: {_yaml_string(snapshot.updated_at)}",
         "---",
         "",
         f"# {manifest.title}",

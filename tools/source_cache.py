@@ -30,6 +30,17 @@ def _commit_date(root: Path, commit: str) -> str:
     return _git(["show", "-s", "--format=%cI", commit], root)
 
 
+def _document_dates(manifest: Manifest, root: Path) -> tuple[str, str]:
+    """Return the first and latest commit date for the included source files."""
+
+    paths = [part.path for part in manifest.iter_parts()]
+    latest = _git(["log", "-1", "--format=%cI", "--", *paths], root)
+    history = _git(["log", "--reverse", "--format=%cI", "--", *paths], root)
+    if not latest or not history:
+        raise ReferenceError(f"{manifest.identifier}: included sources have no Git history")
+    return history.splitlines()[0][:10], latest[:10]
+
+
 def resolve_remote_commit(manifest: Manifest) -> str:
     """Resolve a source ref once, before fetching its exact immutable SHA."""
 
@@ -81,12 +92,18 @@ def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
         _git(["remote", "set-url", "origin", manifest.repository], target)
     _git(["sparse-checkout", "init", "--no-cone"], target)
     _git(["sparse-checkout", "set", "--no-cone", *_sparse_patterns(manifest)], target)
-    _git(["fetch", "--depth=1", "origin", commit], target)
+    # Frontmatter follows the original per-repository builders and records
+    # the first/latest included-source commit dates.  Keep history metadata
+    # complete while retaining blob filtering and sparse checkout for assets.
+    if _git(["rev-parse", "--is-shallow-repository"], target) == "true":
+        _git(["fetch", "--unshallow", "--filter=blob:none", "origin"], target)
+    _git(["fetch", "--filter=blob:none", "origin", commit], target)
     _git(["checkout", "--detach", "--force", commit], target)
     actual = _git(["rev-parse", "HEAD"], target)
     if actual != commit:
         raise ReferenceError(f"{manifest.identifier}: cache checkout mismatch: expected {commit}, got {actual}")
-    return SourceSnapshot(manifest, target, actual, _commit_date(target, actual))
+    published_at, updated_at = _document_dates(manifest, target)
+    return SourceSnapshot(manifest, target, actual, _commit_date(target, actual), published_at, updated_at)
 
 
 def snapshot_from_local(manifest: Manifest, source_root: Path) -> SourceSnapshot:
@@ -103,4 +120,5 @@ def snapshot_from_local(manifest: Manifest, source_root: Path) -> SourceSnapshot
     if _git(["status", "--porcelain"], target):
         raise ReferenceError(f"{manifest.identifier}: local source checkout is dirty: {target}")
     commit = _git(["rev-parse", "HEAD"], target)
-    return SourceSnapshot(manifest, target, commit, _commit_date(target, commit))
+    published_at, updated_at = _document_dates(manifest, target)
+    return SourceSnapshot(manifest, target, commit, _commit_date(target, commit), published_at, updated_at)

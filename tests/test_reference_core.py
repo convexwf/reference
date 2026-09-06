@@ -25,6 +25,10 @@ def manifest_data() -> dict:
         "language": "zh-CN",
         "adapter": "ai_agent_book",
         "output": "markdown/fixture-book/complete.md",
+        "front_matter": {
+            "authors": ["测试作者"],
+            "tags": ["fixture", "tutorial"]
+        },
         "sections": [
             {
                 "title": "正文",
@@ -60,7 +64,14 @@ class ReferenceCoreTest(unittest.TestCase):
         )
         (self.root / "docs" / "next.md").write_text("# 第二章\n\n## 更多\n", encoding="utf-8")
         self.manifest = manifest_from_data(manifest_data())
-        self.snapshot = SourceSnapshot(self.manifest, self.root, COMMIT, "2026-09-14T00:00:00+00:00")
+        self.snapshot = SourceSnapshot(
+            self.manifest,
+            self.root,
+            COMMIT,
+            "2026-09-14T00:00:00+00:00",
+            "2024-01-01",
+            "2026-09-14",
+        )
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -72,6 +83,9 @@ class ReferenceCoreTest(unittest.TestCase):
         self.assertIn(f"https://github.com/example/fixture-book/blob/{COMMIT}/docs/next.md#more", document)
         self.assertIn("### 第一章", document)
         self.assertIn("#### 小节", document)
+        self.assertIn('  - "测试作者"', document)
+        self.assertIn('published_at: "2024-01-01"', document)
+        self.assertNotIn("source_repository:", document)
         self.assertNotIn("<img", document)
         self.assertNotIn("align=", document)
         self.assertNotIn("{width=60%}", document)

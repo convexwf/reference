@@ -8,6 +8,10 @@
   "language": "zh-CN",
   "adapter": "hello_agents",
   "output": "markdown/hello-agents/zh-CN-complete.md",
+  "front_matter": {
+    "authors": ["陈思州", "孙韬", "姜舒凡", "黄佩林", "曾鑫民", "胡昊", "朱信忠", "Hello-Agents 全体贡献者"],
+    "tags": ["ai-agent", "llm", "tutorial"]
+  },
   "sections": [
     {
       "title": "导言",

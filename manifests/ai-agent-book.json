@@ -8,6 +8,10 @@
   "language": "zh-CN",
   "adapter": "ai_agent_book",
   "output": "markdown/ai-agent-book/zh-CN-complete.md",
+  "front_matter": {
+    "authors": ["李博杰"],
+    "tags": ["ai-agent", "llm", "tutorial"]
+  },
   "sections": [
     {
       "title": "导言",
