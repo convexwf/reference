@@ -5,6 +5,7 @@
 目前覆盖：
 
 - `ai-agent-book` 的简体中文完整教程
+- `ai-infra-book` 的简体中文 AI Infra 教程
 - `easy-rl` 的中文完整教程
 - `hello-agents` 的中文主教程
 

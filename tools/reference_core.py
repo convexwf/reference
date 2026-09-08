@@ -13,8 +13,9 @@ import os
 import re
 import tempfile
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Iterable
+from fnmatch import fnmatchcase
+from pathlib import Path, PurePosixPath
+from typing import Any, Iterable, Mapping
 from urllib.parse import quote, unquote, urlsplit
 
 from adapters import get_adapter
@@ -27,7 +28,7 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "4"
+ENGINE_VERSION = "5"
 
 
 class ReferenceError(RuntimeError):
@@ -81,6 +82,11 @@ class SourceSnapshot:
     commit_date: str
     published_at: str
     updated_at: str
+    # A Git-tree index for the pinned commit.  Cache checkouts deliberately
+    # materialize source Markdown only, so linked images and evidence files
+    # usually do not exist in the sparse working tree.  Their immutable tree
+    # entries are sufficient to validate and rewrite portable source URLs.
+    repository_entries: Mapping[str, str] | None = None
 
 
 MARKDOWN_IMAGE_TARGET = re.compile(
@@ -289,6 +295,30 @@ def _source_path(snapshot: SourceSnapshot, relative: str) -> Path:
     return path
 
 
+def _matches_repository_glob(path: str, pattern: str) -> bool:
+    """Match a repository path against a slash-aware, anchored glob."""
+
+    path_parts = PurePosixPath(path).parts
+    pattern_parts = PurePosixPath(pattern).parts
+
+    def match_at(path_index: int, pattern_index: int) -> bool:
+        if pattern_index == len(pattern_parts):
+            return path_index == len(path_parts)
+        pattern_part = pattern_parts[pattern_index]
+        if pattern_part == "**":
+            return any(
+                match_at(candidate, pattern_index + 1)
+                for candidate in range(path_index, len(path_parts) + 1)
+            )
+        return (
+            path_index < len(path_parts)
+            and fnmatchcase(path_parts[path_index], pattern_part)
+            and match_at(path_index + 1, pattern_index + 1)
+        )
+
+    return match_at(0, 0)
+
+
 def validate_manifest_sources(snapshot: SourceSnapshot) -> None:
     """Ensure all listed source files exist exactly once and globs are complete."""
 
@@ -301,10 +331,21 @@ def validate_manifest_sources(snapshot: SourceSnapshot) -> None:
             raise ReferenceError(f"{snapshot.manifest.identifier}: missing source: {part.path}")
 
     discovered: set[str] = set()
-    for pattern in snapshot.manifest.required_globs:
-        for path in snapshot.root.glob(pattern):
-            if path.is_file():
-                discovered.add(path.relative_to(snapshot.root).as_posix())
+    if snapshot.repository_entries is None:
+        for pattern in snapshot.manifest.required_globs:
+            for path in snapshot.root.glob(pattern):
+                if path.is_file():
+                    discovered.add(path.relative_to(snapshot.root).as_posix())
+    else:
+        source_files = {
+            path
+            for path, kind in snapshot.repository_entries.items()
+            if kind == "blob"
+        }
+        for pattern in snapshot.manifest.required_globs:
+            discovered.update(
+                path for path in source_files if _matches_repository_glob(path, pattern)
+            )
     omitted = discovered - listed
     if omitted:
         names = ", ".join(sorted(omitted))
@@ -354,6 +395,19 @@ def is_external_target(target: str) -> bool:
     return target.startswith(("#", "/", "data:")) or bool(urlsplit(target).scheme)
 
 
+def _repository_entry_kind(snapshot: SourceSnapshot, relative: Path) -> str | None:
+    """Return the pinned Git-tree kind for a repository-relative target."""
+
+    if relative == Path("."):
+        return "tree"
+    if snapshot.repository_entries is not None:
+        return snapshot.repository_entries.get(relative.as_posix())
+    path = _source_path(snapshot, relative.as_posix())
+    if not path.exists():
+        return None
+    return "tree" if path.is_dir() else "blob"
+
+
 def _repository_relative_target(target: str, source: Path, snapshot: SourceSnapshot) -> tuple[Path, str] | None:
     path_text, suffix = split_target(target)
     if not path_text or is_external_target(path_text):
@@ -363,7 +417,7 @@ def _repository_relative_target(target: str, source: Path, snapshot: SourceSnaps
         relative = resolved.relative_to(snapshot.root.resolve())
     except ValueError:
         return None
-    if not resolved.exists():
+    if _repository_entry_kind(snapshot, relative) is None:
         return None
     return relative, suffix
 
@@ -443,7 +497,9 @@ def rewrite_link_target(target: str, source: Path, snapshot: SourceSnapshot) -> 
         return target
     relative, suffix = resolved
     owner, repository = github_slug(snapshot.manifest.repository)
-    kind = "tree" if _source_path(snapshot, relative.as_posix()).is_dir() else "blob"
+    kind = _repository_entry_kind(snapshot, relative)
+    if kind is None:
+        return target
     return _github_url(
         f"https://github.com/{owner}/{repository}/{kind}/{snapshot.commit}",
         relative,

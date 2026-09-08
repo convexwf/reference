@@ -77,16 +77,21 @@ flowchart LR
 
 ```text
 reference/
-├── adapters/                    # 每本书的少量特有转换逻辑
-│   ├── ai_agent_book.py
-│   └── easy_rl.py
+├── adapters/
+│   └── __init__.py              # 每本书的版本化兼容声明
 ├── manifests/                   # 人工维护的来源和内容清单
 │   ├── ai-agent-book.json
-│   └── easy-rl.json
+│   ├── ai-infra-book.json
+│   ├── easy-rl.json
+│   └── hello-agents.json
 ├── markdown/                    # 对外发布的完整 Markdown，纳入版本控制
 │   ├── ai-agent-book/
 │   │   └── zh-CN-complete.md
-│   └── easy-rl/
+│   ├── ai-infra-book/
+│   │   └── zh-CN-complete.md
+│   ├── easy-rl/
+│   │   └── zh-CN-complete.md
+│   └── hello-agents/
 │       └── zh-CN-complete.md
 ├── reports/                     # 可选的已审阅报告；临时报告不提交
 ├── tests/
@@ -168,6 +173,8 @@ reference/
 
 CI 与标准更新命令使用 `reference/.cache/sources/<book>/` 作为 Git 忽略的缓存目录。缓存中的仓库只以 detached HEAD 检出 lock 或待更新 commit；不使用开发者工作区的绝对路径。缓存目录可随时删除并重建。
 
+缓存只稀疏检出清单显式列出的 Markdown 源文件；同时读取锁定提交的 Git 树元数据来确认本地图片、目录和证据链接的类型。生成 Raw 或 GitHub 链接不需要下载对应图片、PDF、绘图脚本或 vendored 资源，因此资源与正文混放的上游仓库也不会扩大缓存规模。
+
 ## 生成与检查契约
 
 ### 生成规则
@@ -175,19 +182,19 @@ CI 与标准更新命令使用 `reference/.cache/sources/<book>/` 作为 Git 忽
 `python3 tools/update.py --all` 对每个清单执行以下步骤：
 
 1. 读取远端 ref 的最新 commit；若与 lock 相同，跳过该书。
-2. 在缓存中检出新 commit，且只读取清单声明的文件与其关联资源。
+2. 在缓存中检出新 commit 的清单源文件，并建立该 commit 的 Git 树索引。
 3. 运行对应适配器和通用引擎，生成 `markdown/<book>/` 文件。
-4. 在 Markdown frontmatter 写入 `source_repository`、`source_commit`、`source_ref` 和生成器版本。
+4. 在 Markdown frontmatter 写入读者元信息（标题、作者、语言、标签和首末发布日期）；来源、锁定提交和生成器版本写入正文的文档信息表与 `sources.lock.json`。
 5. 写入新的 `sources.lock.json`，然后运行全部检查。
 
-`python3 tools/update.py --book ai-agent-book` 只更新一份书。`--dry-run` 只报告待更新的 commit 和目标文件，不写工作树。
+`python3 -m tools.update --target ai-agent-book` 只更新一份书。`--dry-run` 只报告待更新的 commit 和目标文件，不写工作树。
 
 ### 图片和链接规则
 
 所有生成器必须遵循同一规则：
 
-- 相对图片路径解析为源仓库根目录内的真实文件，并改写为 `https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>`。
-- 相对 Markdown、目录和报告链接改写为 `https://github.com/<owner>/<repo>/blob/<commit>/<path>` 或 `tree/<commit>/<path>`。
+- 相对图片路径必须存在于锁定提交的 Git 树中，并改写为 `https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>`。
+- 相对 Markdown、目录和报告链接按 Git 树中的 blob/tree 类型改写为 `https://github.com/<owner>/<repo>/blob/<commit>/<path>` 或 `tree/<commit>/<path>`。
 - 外部 `https:`、锚点、`mailto:` 和 `data:` 链接保持不变。
 - Markdown 图片、Pandoc 图片属性、HTML `<img>`、居中 `div`、`figure` 和 `figcaption` 都转换为标准 Markdown 图片和正文标题。
 - 目标位于源仓库外、源文件不存在或 URL 方案不在允许列表时，生成失败。

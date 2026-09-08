@@ -57,25 +57,32 @@ def resolve_remote_commit(manifest: Manifest) -> str:
 
 
 def _sparse_patterns(manifest: Manifest) -> list[str]:
-    """Keep only the source trees needed by a manifest in the local cache.
+    """Materialize only Markdown parts explicitly listed by a manifest.
 
-    The cache must see sibling assets in order to turn local image references
-    into raw URLs, but it must not materialize unrelated large PDFs, notebooks
-    or build artefacts from the upstream repository.
+    Linked assets are resolved against the pinned Git tree, not the sparse
+    working tree.  This avoids downloading sibling PDFs, vendored libraries,
+    notebooks, and large image collections just to construct immutable URLs.
     """
 
-    prefixes: set[str] = set()
-    for pattern in manifest.required_globs:
-        wildcard = min(
-            (index for index, character in enumerate(pattern) if character in "*?["),
-            default=len(pattern),
-        )
-        prefix = pattern[:wildcard].rsplit("/", 1)[0].strip("/")
-        if prefix:
-            prefixes.add(prefix)
-    patterns = [f"/{prefix}/**" for prefix in sorted(prefixes)]
-    patterns.extend(f"/{part.path}" for part in manifest.iter_parts())
-    return sorted(set(patterns))
+    return sorted({f"/{part.path}" for part in manifest.iter_parts()})
+
+
+def _repository_entries(root: Path, commit: str) -> dict[str, str]:
+    """Index blob/tree paths of *commit* without materializing their blobs."""
+
+    output = _git(["ls-tree", "-r", "-t", "-z", commit], root)
+    entries: dict[str, str] = {}
+    for record in output.split("\0"):
+        if not record:
+            continue
+        header, separator, path = record.partition("\t")
+        fields = header.split()
+        if not separator or len(fields) != 3 or fields[1] not in {"blob", "tree"}:
+            raise ReferenceError(f"unable to parse Git tree entry: {record!r}")
+        entries[path] = fields[1]
+    if not entries:
+        raise ReferenceError(f"source commit has no tree entries: {commit}")
+    return entries
 
 
 def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
@@ -103,7 +110,15 @@ def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
     if actual != commit:
         raise ReferenceError(f"{manifest.identifier}: cache checkout mismatch: expected {commit}, got {actual}")
     published_at, updated_at = _document_dates(manifest, target)
-    return SourceSnapshot(manifest, target, actual, _commit_date(target, actual), published_at, updated_at)
+    return SourceSnapshot(
+        manifest,
+        target,
+        actual,
+        _commit_date(target, actual),
+        published_at,
+        updated_at,
+        _repository_entries(target, actual),
+    )
 
 
 def snapshot_from_local(manifest: Manifest, source_root: Path) -> SourceSnapshot:
@@ -121,4 +136,12 @@ def snapshot_from_local(manifest: Manifest, source_root: Path) -> SourceSnapshot
         raise ReferenceError(f"{manifest.identifier}: local source checkout is dirty: {target}")
     commit = _git(["rev-parse", "HEAD"], target)
     published_at, updated_at = _document_dates(manifest, target)
-    return SourceSnapshot(manifest, target, commit, _commit_date(target, commit), published_at, updated_at)
+    return SourceSnapshot(
+        manifest,
+        target,
+        commit,
+        _commit_date(target, commit),
+        published_at,
+        updated_at,
+        _repository_entries(target, commit),
+    )

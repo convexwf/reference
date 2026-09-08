@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from tools.reference_core import (
@@ -12,6 +13,7 @@ from tools.reference_core import (
     manifest_from_data,
     validate_manifest_sources,
 )
+from tools.source_cache import _sparse_patterns
 
 
 COMMIT = "0123456789abcdef0123456789abcdef01234567"
@@ -58,6 +60,8 @@ class ReferenceCoreTest(unittest.TestCase):
             "[下一章](next.md#more)\n\n"
             "![官方图](https://raw.githubusercontent.com/example/fixture-book/main/images/演示%20图.png)\n\n"
             "[官方下一章](https://github.com/example/fixture-book/blob/main/docs/next.md#more)\n\n"
+            "[未检出证据](../evidence/data.json#result)\n\n"
+            "[未检出目录](../evidence)\n\n"
             "<p class=\"caption\"><strong>图注</strong>与<em>强调</em></p>\n\n"
             "## 小节\n",
             encoding="utf-8",
@@ -92,6 +96,36 @@ class ReferenceCoreTest(unittest.TestCase):
         self.assertIn("**图注**与*强调*", document)
         self.assertNotIn("<strong", document)
         self.assertNotIn("<p", document)
+
+    def test_build_rewrites_entries_not_materialized_in_sparse_checkout(self) -> None:
+        sparse_snapshot = replace(
+            self.snapshot,
+            repository_entries={
+                "docs/first.md": "blob",
+                "docs/next.md": "blob",
+                "images/演示 图.png": "blob",
+                "evidence": "tree",
+                "evidence/data.json": "blob",
+            },
+        )
+        document = build_document(sparse_snapshot)
+        base = f"https://github.com/example/fixture-book/blob/{COMMIT}"
+        self.assertIn(f"{base}/evidence/data.json#result", document)
+        self.assertIn(f"https://github.com/example/fixture-book/tree/{COMMIT}/evidence", document)
+
+    def test_sparse_checkout_contains_only_listed_parts(self) -> None:
+        self.assertEqual(_sparse_patterns(self.manifest), ["/docs/first.md", "/docs/next.md"])
+
+    def test_completeness_ignores_nested_archive_copy(self) -> None:
+        tree_snapshot = replace(
+            self.snapshot,
+            repository_entries={
+                "docs/first.md": "blob",
+                "docs/next.md": "blob",
+                "archive/review/docs/omitted.md": "blob",
+            },
+        )
+        validate_manifest_sources(tree_snapshot)
 
     def test_completeness_rejects_new_unlisted_source(self) -> None:
         (self.root / "docs" / "omitted.md").write_text("# 未收录", encoding="utf-8")
