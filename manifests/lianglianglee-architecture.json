@@ -1,0 +1,96 @@
+{
+  "id": "lianglianglee-architecture",
+  "title": "从 0 开始学架构",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/从0开始学架构.md",
+  "front_matter": {
+    "authors": ["李运华"],
+    "tags": ["architecture", "software-architecture", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "导读与架构基础",
+      "selection": {
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/0[0-9] *.md",
+          "book/专栏/从 0 开始学架构/1[0-3] *.md"
+        ]
+      }
+    },
+    {
+      "title": "高性能架构",
+      "selection": {
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/1[4-9] *.md",
+          "book/专栏/从 0 开始学架构/2[0-1] *.md"
+        ]
+      }
+    },
+    {
+      "title": "高可用架构",
+      "selection": {
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/2[2-9] *.md",
+          "book/专栏/从 0 开始学架构/3[0-1] *.md"
+        ]
+      }
+    },
+    {
+      "title": "可扩展架构",
+      "selection": {
+        "include_globs": ["book/专栏/从 0 开始学架构/3[2-7] *.md"]
+      }
+    },
+    {
+      "title": "架构演进与技术模板",
+      "selection": {
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/3[8-9] *.md",
+          "book/专栏/从 0 开始学架构/4[0-4] *.md"
+        ]
+      }
+    },
+    {
+      "title": "架构实践",
+      "selection": {
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/4[5-9] *.md",
+          "book/专栏/从 0 开始学架构/5[0-1] *.md"
+        ]
+      }
+    },
+    {
+      "title": "加餐与特别放送",
+      "selection": {
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/加餐*.md",
+          "book/专栏/从 0 开始学架构/如何高效地学习开源项目*.md",
+          "book/专栏/从 0 开始学架构/架构专栏特别放送*.md",
+          "book/专栏/从 0 开始学架构/架构师必读书单*.md",
+          "book/专栏/从 0 开始学架构/架构师成长之路*.md"
+        ],
+        "exclude_paths": [
+          "book/专栏/从 0 开始学架构/加餐｜业务架构实战营开营了.md",
+          "book/专栏/从 0 开始学架构/新书首发 《从零开始学架构》.md"
+        ]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/从 0 开始学架构/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/从 0 开始学架构/*.md"]
+  }
+}

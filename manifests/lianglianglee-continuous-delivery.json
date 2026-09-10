@@ -1,0 +1,86 @@
+{
+  "id": "lianglianglee-continuous-delivery",
+  "title": "持续交付36讲",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/持续交付36讲.md",
+  "front_matter": {
+    "authors": ["王潇俊"],
+    "tags": ["continuous-delivery", "devops", "software-engineering", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "导读与理念",
+      "selection": {
+        "include_globs": ["book/专栏/持续交付36讲/0[0-3] *.md"]
+      }
+    },
+    {
+      "title": "代码与环境管理",
+      "selection": {
+        "include_globs": [
+          "book/专栏/持续交付36讲/0[4-9] *.md",
+          "book/专栏/持续交付36讲/1[0-3] *.md"
+        ]
+      }
+    },
+    {
+      "title": "构建与镜像",
+      "selection": {
+        "include_globs": ["book/专栏/持续交付36讲/1[4-8] *.md"]
+      }
+    },
+    {
+      "title": "发布与质量保障",
+      "selection": {
+        "include_globs": [
+          "book/专栏/持续交付36讲/19 *.md",
+          "book/专栏/持续交付36讲/2[0-7] *.md"
+        ]
+      }
+    },
+    {
+      "title": "平台化与数据",
+      "selection": {
+        "include_globs": [
+          "book/专栏/持续交付36讲/2[8-9] *.md",
+          "book/专栏/持续交付36讲/30 *.md"
+        ]
+      }
+    },
+    {
+      "title": "移动应用持续交付",
+      "selection": {
+        "include_globs": ["book/专栏/持续交付36讲/3[1-3] *.md"]
+      }
+    },
+    {
+      "title": "搭建持续交付系统实战",
+      "selection": {
+        "include_globs": ["book/专栏/持续交付36讲/3[4-7] *.md"]
+      }
+    },
+    {
+      "title": "特别放送",
+      "selection": {
+        "include_globs": ["book/专栏/持续交付36讲/持续交付专栏特别放送*.md"]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/持续交付36讲/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/持续交付36讲/*.md"]
+  }
+}

@@ -8,8 +8,10 @@
 - `ai-infra-book` 的简体中文 AI Infra 教程
 - `easy-rl` 的中文完整教程
 - `hello-agents` 的中文主教程
+- `lianglianglee-architecture` 的《从 0 开始学架构》专栏
+- `lianglianglee-continuous-delivery` 的《持续交付36讲》专栏
 
-生成结果位于 `markdown/<source>/`。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
+生成结果位于 `markdown/`，具体路径由各清单的 `output` 决定；例如两份 GeekTime 专栏位于 `markdown/geektime/`。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 
 本地使用：
 

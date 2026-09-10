@@ -5,9 +5,9 @@
 | 项目 | 内容 |
 | --- | --- |
 | **文档标题** | 多仓库 Markdown 整合与自动更新技术方案 |
-| **文档版本** | v0.1 |
+| **文档版本** | v0.2 |
 | **创建日期** | 2026-09-14 |
-| **更新日期** | 2026-09-14 |
+| **更新日期** | 2026-09-15 |
 | **文档作者** | Codex |
 | **文档类型** | 技术设计 |
 | **参考资料** | `ai-agent-book`、`easy-rl` 的现有单文件 Markdown 生成实践 |
@@ -71,7 +71,7 @@ flowchart LR
   V -->|通过| A[自动合并到 reference 默认分支]
 ```
 
-整合引擎只读取清单声明的文件。清单定义阅读顺序、标题、语言、输出路径和适配器；适配器负责该教材特有的标题、图片、Pandoc 属性或 HTML 容器转换。通用 Markdown 重写、链接校验和锁文件读写由共享引擎负责。
+整合引擎只读取清单声明的文件。清单定义阅读顺序、标题、语言、输出路径和渲染配置；默认的 `generic` 适配器配合共享引擎处理 Markdown、链接、图片和静态 HTML 正文。只有确有无法通用化的来源格式时才增加版本化适配器。这样新增专栏通常只需新增清单，而不是新增脚本。通用 Markdown 重写、链接校验和锁文件读写由共享引擎负责。
 
 ## 仓库结构与职责
 
@@ -83,7 +83,9 @@ reference/
 │   ├── ai-agent-book.json
 │   ├── ai-infra-book.json
 │   ├── easy-rl.json
-│   └── hello-agents.json
+│   ├── hello-agents.json
+│   ├── lianglianglee-architecture.json
+│   └── lianglianglee-continuous-delivery.json
 ├── markdown/                    # 对外发布的完整 Markdown，纳入版本控制
 │   ├── ai-agent-book/
 │   │   └── zh-CN-complete.md
@@ -91,8 +93,11 @@ reference/
 │   │   └── zh-CN-complete.md
 │   ├── easy-rl/
 │   │   └── zh-CN-complete.md
-│   └── hello-agents/
-│       └── zh-CN-complete.md
+│   ├── hello-agents/
+│   │   └── zh-CN-complete.md
+│   └── geektime/
+│       ├── 从0开始学架构.md
+│       └── 持续交付36讲.md
 ├── reports/                     # 可选的已审阅报告；临时报告不提交
 ├── tests/
 ├── tools/
@@ -113,7 +118,7 @@ reference/
 
 ### 清单
 
-每本书使用一个 JSON 清单描述稳定的人工决策。JSON 是 Python 标准库可直接解析的格式，避免更新和检查命令依赖第三方配置解析器。清单不记录瞬时 commit，只记录“跟踪哪个仓库、哪个分支、哪些文件及其顺序”。示例：
+每本书使用一个 JSON 清单描述稳定的人工决策。JSON 是 Python 标准库可直接解析的格式，避免更新和检查命令依赖第三方配置解析器。清单不记录瞬时 commit，只记录“跟踪哪个仓库、哪个分支、哪些文件及其顺序”。来源为普通 Markdown 时可省略 `adapter`，默认使用 `generic`；静态站点导出的文章则声明正文容器，交由通用 HTML 抽取器转换。示例：
 
 ```json
 {
@@ -123,23 +128,25 @@ reference/
     "ref": "main"
   },
   "language": "zh-CN",
-  "adapter": "ai_agent_book",
-  "output": "markdown/ai-agent-book/zh-CN-complete.md",
+  "output": "markdown/example/zh-CN-complete.md",
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
   "sections": [
     {
-      "title": "导言",
-      "parts": [{"path": "book/introduction.md", "title": "引言"}]
-    },
-    {
       "title": "正文",
-      "include": ["book/chapter1.md", "book/chapter2.md"]
+      "selection": {
+        "include_globs": ["book/专栏/示例/*.md"],
+        "exclude_paths": ["book/专栏/示例/宣传文.md"]
+      }
     }
   ],
-  "completeness": {"required_globs": ["book/*.md"]}
+  "completeness": {"required_globs": ["book/专栏/示例/*.md"]}
 }
 ```
 
-清单中的仓库地址必须处于代码审查过的允许列表。`include` 与 `required_globs` 同时存在：前者定义顺序，后者阻止新增源文件被静默遗漏。
+清单中的仓库地址必须处于代码审查过的允许列表。章节可以使用 `parts` 精确列出文件和人工阅读顺序，也可以使用 `selection.include_globs` 选择同一目录下的文件并按自然文件名排序；后者适合编号专栏。一个清单可以声明多个主题章节，生成时依次成为二级标题，篇目成为三级标题，避免长文档只有一个“正文”章节。`exclude_paths` 是明确的人工排除清单，例如宣传文；它仍受 `required_globs` 覆盖，因此新增内容不会被静默遗漏。`render.source_format: html_article` 要求同时声明 `article_class`，引擎只提取对应容器，不把导航、页脚或 favicon 等站点外壳带入整合文档。
 
 ### 锁文件
 
@@ -169,11 +176,11 @@ reference/
 
 ### 本地与 CI 获取策略
 
-本地开发可显式使用已有的 sibling checkout，例如 `--source-root ../ai-agent-book`。该模式只验证和读取工作树，拒绝脏工作树，且不执行 fetch、checkout、reset 或任何写入操作。
+本地开发可显式使用已有源码 checkout 的共同父目录，例如源仓库位于 `../lianglianglee` 时使用 `--source-root ..`。该模式只验证和读取工作树，拒绝脏工作树，且不执行 fetch、checkout、reset 或任何写入操作。
 
-CI 与标准更新命令使用 `reference/.cache/sources/<book>/` 作为 Git 忽略的缓存目录。缓存中的仓库只以 detached HEAD 检出 lock 或待更新 commit；不使用开发者工作区的绝对路径。缓存目录可随时删除并重建。
+CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/` 作为 Git 忽略的缓存目录。同一上游仓库的多份整合文档共享一个 Git 对象缓存，并依次以 detached HEAD 稀疏检出各自所需文件；不使用开发者工作区的绝对路径。缓存目录可随时删除并重建。
 
-缓存只稀疏检出清单显式列出的 Markdown 源文件；同时读取锁定提交的 Git 树元数据来确认本地图片、目录和证据链接的类型。生成 Raw 或 GitHub 链接不需要下载对应图片、PDF、绘图脚本或 vendored 资源，因此资源与正文混放的上游仓库也不会扩大缓存规模。
+缓存只稀疏检出清单解析后的 Markdown 源文件；同时读取锁定提交的 Git 树元数据来确认本地图片、目录和证据链接的类型。生成 Raw 或 GitHub 链接不需要下载对应图片、PDF、绘图脚本或 vendored 资源，因此资源与正文混放的上游仓库也不会扩大缓存规模。
 
 ## 生成与检查契约
 
@@ -183,7 +190,7 @@ CI 与标准更新命令使用 `reference/.cache/sources/<book>/` 作为 Git 忽
 
 1. 读取远端 ref 的最新 commit；若与 lock 相同，跳过该书。
 2. 在缓存中检出新 commit 的清单源文件，并建立该 commit 的 Git 树索引。
-3. 运行对应适配器和通用引擎，生成 `markdown/<book>/` 文件。
+3. 运行通用引擎；仅在清单显式选择时再运行对应适配器，生成 `markdown/<book>/` 文件。
 4. 在 Markdown frontmatter 写入读者元信息（标题、作者、语言、标签和首末发布日期）；来源、锁定提交和生成器版本写入正文的文档信息表与 `sources.lock.json`。
 5. 写入新的 `sources.lock.json`，然后运行全部检查。
 
@@ -196,7 +203,8 @@ CI 与标准更新命令使用 `reference/.cache/sources/<book>/` 作为 Git 忽
 - 相对图片路径必须存在于锁定提交的 Git 树中，并改写为 `https://raw.githubusercontent.com/<owner>/<repo>/<commit>/<path>`。
 - 相对 Markdown、目录和报告链接按 Git 树中的 blob/tree 类型改写为 `https://github.com/<owner>/<repo>/blob/<commit>/<path>` 或 `tree/<commit>/<path>`。
 - 外部 `https:`、锚点、`mailto:` 和 `data:` 链接保持不变。
-- Markdown 图片、Pandoc 图片属性、HTML `<img>`、居中 `div`、`figure` 和 `figcaption` 都转换为标准 Markdown 图片和正文标题。
+- Markdown 图片、Pandoc 图片属性、HTML `<img>`、居中 `div`、`figure` 和 `figcaption` 都转换为标准 Markdown 图片和正文标题；静态 HTML 专栏仅转换所声明文章容器内的正文。
+- 若上游将尺寸参数保存在真实文件名中（例如 `diagram.png?wh=1740*733`），引擎先按普通 URL 查询参数解析，找不到资源时再按 Git 树中的字面文件名解析，并对 Raw URL 正确编码。
 - 目标位于源仓库外、源文件不存在或 URL 方案不在允许列表时，生成失败。
 
 使用 commit SHA 而不是 `main` 或 `master` 是强制要求。分支会移动，而已发布文档中的图片和来源不能移动。

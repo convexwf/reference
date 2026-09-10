@@ -14,6 +14,7 @@ import re
 import tempfile
 from dataclasses import dataclass
 from fnmatch import fnmatchcase
+from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping
 from urllib.parse import quote, unquote, urlsplit
@@ -28,7 +29,7 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "5"
+ENGINE_VERSION = "7"
 
 
 class ReferenceError(RuntimeError):
@@ -48,6 +49,8 @@ class PartSpec:
 class SectionSpec:
     title: str
     parts: tuple[PartSpec, ...]
+    include_globs: tuple[str, ...] = ()
+    exclude_paths: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -65,6 +68,8 @@ class Manifest:
     tags: tuple[str, ...]
     sections: tuple[SectionSpec, ...]
     required_globs: tuple[str, ...]
+    source_format: str
+    article_class: str | None
     raw: dict[str, Any]
 
     def iter_parts(self) -> Iterable[PartSpec]:
@@ -143,7 +148,7 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
     repository = _require_string(source.get("repository"), "source.repository", origin)
     ref = _require_string(source.get("ref"), "source.ref", origin)
     language = _require_string(data.get("language"), "language", origin)
-    adapter = _require_string(data.get("adapter"), "adapter", origin)
+    adapter = _require_string(data.get("adapter", "generic"), "adapter", origin)
     try:
         get_adapter(adapter)
     except ValueError as exc:
@@ -174,24 +179,49 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
             raise ReferenceError(f"{section_origin} must be an object")
         section_title = _require_string(section_data.get("title"), "title", section_origin)
         parts_data = section_data.get("parts")
-        if not isinstance(parts_data, list) or not parts_data:
-            raise ReferenceError(f"{section_origin}: parts must be a non-empty array")
+        selection_data = section_data.get("selection")
+        if (parts_data is None) == (selection_data is None):
+            raise ReferenceError(f"{section_origin}: define exactly one of parts or selection")
         parts: list[PartSpec] = []
-        for part_index, part_data in enumerate(parts_data, start=1):
-            part_origin = f"{section_origin}: parts[{part_index}]"
-            if not isinstance(part_data, dict):
-                raise ReferenceError(f"{part_origin} must be an object")
-            empty_note = part_data.get("empty_note")
-            if empty_note is not None and not isinstance(empty_note, str):
-                raise ReferenceError(f"{part_origin}: empty_note must be a string")
-            parts.append(
-                PartSpec(
-                    path=_safe_relative(part_data.get("path"), "path", part_origin),
-                    title=_require_string(part_data.get("title"), "title", part_origin),
-                    empty_note=empty_note.strip() if empty_note else None,
+        include_globs: tuple[str, ...] = ()
+        exclude_paths: tuple[str, ...] = ()
+        if parts_data is not None:
+            if not isinstance(parts_data, list) or not parts_data:
+                raise ReferenceError(f"{section_origin}: parts must be a non-empty array")
+            for part_index, part_data in enumerate(parts_data, start=1):
+                part_origin = f"{section_origin}: parts[{part_index}]"
+                if not isinstance(part_data, dict):
+                    raise ReferenceError(f"{part_origin} must be an object")
+                empty_note = part_data.get("empty_note")
+                if empty_note is not None and not isinstance(empty_note, str):
+                    raise ReferenceError(f"{part_origin}: empty_note must be a string")
+                parts.append(
+                    PartSpec(
+                        path=_safe_relative(part_data.get("path"), "path", part_origin),
+                        title=_require_string(part_data.get("title"), "title", part_origin),
+                        empty_note=empty_note.strip() if empty_note else None,
+                    )
                 )
+        else:
+            if not isinstance(selection_data, dict):
+                raise ReferenceError(f"{section_origin}: selection must be an object")
+            include_data = selection_data.get("include_globs")
+            if not isinstance(include_data, list) or not include_data:
+                raise ReferenceError(f"{section_origin}: selection.include_globs must be a non-empty array")
+            if not all(isinstance(item, str) for item in include_data):
+                raise ReferenceError(f"{section_origin}: selection.include_globs must contain strings")
+            exclude_data = selection_data.get("exclude_paths", [])
+            if not isinstance(exclude_data, list) or not all(isinstance(item, str) for item in exclude_data):
+                raise ReferenceError(f"{section_origin}: selection.exclude_paths must be a string array")
+            include_globs = tuple(
+                _safe_relative(item, "selection.include_globs entry", section_origin)
+                for item in include_data
             )
-        sections.append(SectionSpec(section_title, tuple(parts)))
+            exclude_paths = tuple(
+                _safe_relative(item, "selection.exclude_paths entry", section_origin)
+                for item in exclude_data
+            )
+        sections.append(SectionSpec(section_title, tuple(parts), include_globs, exclude_paths))
 
     completeness = data.get("completeness", {})
     if not isinstance(completeness, dict):
@@ -200,6 +230,18 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
     if not isinstance(globs_data, list) or not all(isinstance(item, str) for item in globs_data):
         raise ReferenceError(f"{origin}: completeness.required_globs must be a string array")
     required_globs = tuple(_safe_relative(item, "required_globs entry", origin) for item in globs_data)
+
+    render = data.get("render", {})
+    if not isinstance(render, dict):
+        raise ReferenceError(f"{origin}: render must be an object")
+    source_format = _require_string(render.get("source_format", "markdown"), "render.source_format", origin)
+    if source_format not in {"markdown", "html_article"}:
+        raise ReferenceError(f"{origin}: unsupported render.source_format: {source_format}")
+    article_class = render.get("article_class")
+    if source_format == "html_article":
+        article_class = _require_string(article_class, "render.article_class", origin)
+    elif article_class is not None:
+        raise ReferenceError(f"{origin}: render.article_class is only valid for html_article")
 
     return Manifest(
         identifier=identifier,
@@ -213,6 +255,8 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
         tags=tags,
         sections=tuple(sections),
         required_globs=required_globs,
+        source_format=source_format,
+        article_class=article_class,
         raw=data,
     )
 
@@ -319,16 +363,72 @@ def _matches_repository_glob(path: str, pattern: str) -> bool:
     return match_at(0, 0)
 
 
+def _natural_path_key(path: str) -> tuple[tuple[int, object], ...]:
+    """Sort source filenames numerically while retaining deterministic Unicode order."""
+
+    return tuple(
+        (0, int(piece)) if piece.isdecimal() else (1, piece.casefold())
+        for piece in re.split(r"(\d+)", path)
+    )
+
+
+def _title_from_path(path: str) -> str:
+    """Derive a concise reader heading for declaratively selected source files."""
+
+    title = Path(path).stem.strip()
+    return re.sub(r"^\d+\s+", "", title).strip() or title
+
+
+def resolve_section_parts(section: SectionSpec, repository_entries: Mapping[str, str] | None) -> tuple[PartSpec, ...]:
+    """Resolve explicit or declarative section sources from a pinned Git tree."""
+
+    if section.parts:
+        return section.parts
+    if repository_entries is None:
+        raise ReferenceError(f"{section.title}: declarative selection requires a Git tree index")
+    candidates = [
+        path
+        for path, kind in repository_entries.items()
+        if kind == "blob"
+        and any(_matches_repository_glob(path, pattern) for pattern in section.include_globs)
+        and path not in section.exclude_paths
+    ]
+    if not candidates:
+        raise ReferenceError(f"{section.title}: selection matched no source files")
+    return tuple(PartSpec(path=path, title=_title_from_path(path)) for path in sorted(candidates, key=_natural_path_key))
+
+
+def resolved_sections(snapshot: SourceSnapshot) -> tuple[tuple[SectionSpec, tuple[PartSpec, ...]], ...]:
+    """Return every section with source paths fixed by the snapshot's Git tree."""
+
+    return tuple(
+        (section, resolve_section_parts(section, snapshot.repository_entries))
+        for section in snapshot.manifest.sections
+    )
+
+
+def selected_source_paths(manifest: Manifest, repository_entries: Mapping[str, str]) -> tuple[str, ...]:
+    """Resolve all source paths before sparse checkout materializes their blobs."""
+
+    paths: list[str] = []
+    for section in manifest.sections:
+        paths.extend(part.path for part in resolve_section_parts(section, repository_entries))
+    if len(paths) != len(set(paths)):
+        raise ReferenceError(f"{manifest.identifier}: source selected more than once")
+    return tuple(paths)
+
+
 def validate_manifest_sources(snapshot: SourceSnapshot) -> None:
     """Ensure all listed source files exist exactly once and globs are complete."""
 
     listed: set[str] = set()
-    for part in snapshot.manifest.iter_parts():
-        if part.path in listed:
-            raise ReferenceError(f"{snapshot.manifest.identifier}: source listed more than once: {part.path}")
-        listed.add(part.path)
-        if not _source_path(snapshot, part.path).is_file():
-            raise ReferenceError(f"{snapshot.manifest.identifier}: missing source: {part.path}")
+    for _, parts in resolved_sections(snapshot):
+        for part in parts:
+            if part.path in listed:
+                raise ReferenceError(f"{snapshot.manifest.identifier}: source listed more than once: {part.path}")
+            listed.add(part.path)
+            if not _source_path(snapshot, part.path).is_file():
+                raise ReferenceError(f"{snapshot.manifest.identifier}: missing source: {part.path}")
 
     discovered: set[str] = set()
     if snapshot.repository_entries is None:
@@ -346,7 +446,12 @@ def validate_manifest_sources(snapshot: SourceSnapshot) -> None:
             discovered.update(
                 path for path in source_files if _matches_repository_glob(path, pattern)
             )
-    omitted = discovered - listed
+    excluded = {
+        path
+        for section in snapshot.manifest.sections
+        for path in section.exclude_paths
+    }
+    omitted = discovered - listed - excluded
     if omitted:
         names = ", ".join(sorted(omitted))
         raise ReferenceError(f"{snapshot.manifest.identifier}: source omitted from manifest: {names}")
@@ -412,14 +517,25 @@ def _repository_relative_target(target: str, source: Path, snapshot: SourceSnaps
     path_text, suffix = split_target(target)
     if not path_text or is_external_target(path_text):
         return None
-    resolved = (source.parent / Path(unquote(path_text))).resolve()
-    try:
-        relative = resolved.relative_to(snapshot.root.resolve())
-    except ValueError:
-        return None
-    if _repository_entry_kind(snapshot, relative) is None:
-        return None
-    return relative, suffix
+
+    def resolve_relative(value: str) -> Path | None:
+        resolved = (source.parent / Path(unquote(value))).resolve()
+        try:
+            return resolved.relative_to(snapshot.root.resolve())
+        except ValueError:
+            return None
+
+    relative = resolve_relative(path_text)
+    if relative is not None and _repository_entry_kind(snapshot, relative) is not None:
+        return relative, suffix
+    # Some static-site exports keep a CDN resize suffix in the actual filename
+    # (for example ``diagram.png?wh=1740*733``).  Prefer a normal URL query,
+    # but fall back to that exact Git-tree path when no ordinary file exists.
+    if suffix.startswith("?"):
+        literal = resolve_relative(path_text + suffix)
+        if literal is not None and _repository_entry_kind(snapshot, literal) is not None:
+            return literal, ""
+    return None
 
 
 def _github_url(base: str, relative: Path, suffix: str = "") -> str:
@@ -530,12 +646,18 @@ def image_alt_text(raw_target: str) -> str:
     return stem or "image"
 
 
+def markdown_image_alt_text(value: str) -> str:
+    """Escape HTML alt text before placing it between Markdown brackets."""
+
+    return value.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+
+
 def _html_image_to_markdown(tag: str, source: Path, snapshot: SourceSnapshot) -> str:
     raw_target = html_attribute(tag, "src")
     if raw_target is None:
         return tag
     target = rewrite_image_target(raw_target, source, snapshot)
-    alt = html_attribute(tag, "alt") or image_alt_text(raw_target)
+    alt = markdown_image_alt_text(html_attribute(tag, "alt") or image_alt_text(raw_target))
     return f"![{alt}]({target})"
 
 
@@ -593,15 +715,219 @@ def rewrite_assets(line: str, source: Path, snapshot: SourceSnapshot, align_div_
     return line.strip() if converted_html_image or converted_paragraph else line.rstrip()
 
 
+@dataclass
+class _HtmlNode:
+    """A minimal HTML tree used only for configured article extraction."""
+
+    tag: str
+    attrs: dict[str, str]
+    children: list[object]
+
+
+class _ArticleHtmlParser(HTMLParser):
+    """Parse a static HTML export without adding a third-party dependency."""
+
+    _VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "wbr"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.root = _HtmlNode("root", {}, [])
+        self.stack = [self.root]
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        normalized = tag.lower()
+        node = _HtmlNode(normalized, {name.lower(): value or "" for name, value in attrs}, [])
+        self.stack[-1].children.append(node)
+        if normalized not in self._VOID_TAGS:
+            self.stack.append(node)
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag: str) -> None:
+        normalized = tag.lower()
+        for index in range(len(self.stack) - 1, 0, -1):
+            if self.stack[index].tag == normalized:
+                del self.stack[index:]
+                return
+
+    def handle_data(self, data: str) -> None:
+        self.stack[-1].children.append(data)
+
+
+def _walk_html(nodes: Iterable[object]) -> Iterable[_HtmlNode]:
+    for node in nodes:
+        if isinstance(node, _HtmlNode):
+            yield node
+            yield from _walk_html(node.children)
+
+
+def _html_plain_text(nodes: Iterable[object]) -> str:
+    fragments: list[str] = []
+    for node in nodes:
+        if isinstance(node, str):
+            fragments.append(node)
+        elif isinstance(node, _HtmlNode):
+            fragments.append(_html_plain_text(node.children))
+    return "".join(fragments)
+
+
+def _collapse_html_whitespace(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _html_inline(nodes: Iterable[object], source: Path, snapshot: SourceSnapshot) -> str:
+    fragments: list[str] = []
+    for node in nodes:
+        if isinstance(node, str):
+            fragments.append(node)
+            continue
+        if not isinstance(node, _HtmlNode):
+            continue
+        tag = node.tag
+        if tag in {"script", "style", "noscript"}:
+            continue
+        if tag == "br":
+            fragments.append("  \n")
+            continue
+        if tag == "img":
+            raw_target = node.attrs.get("src")
+            if raw_target is None:
+                continue
+            target = rewrite_image_target(raw_target, source, snapshot)
+            alt = markdown_image_alt_text(node.attrs.get("alt") or image_alt_text(raw_target))
+            fragments.append(f"![{alt}]({target})")
+            continue
+        content = _html_inline(node.children, source, snapshot)
+        if tag in {"strong", "b"}:
+            fragments.append(f"**{content.strip()}**")
+        elif tag in {"em", "i"}:
+            fragments.append(f"*{content.strip()}*")
+        elif tag == "code":
+            fragments.append(f"`{content.strip()}`")
+        elif tag == "a":
+            target = node.attrs.get("href")
+            label = _collapse_html_whitespace(content)
+            if target and label:
+                fragments.append(f"[{label}]({rewrite_link_target(target, source, snapshot)})")
+            else:
+                fragments.append(content)
+        else:
+            fragments.append(content)
+    return "".join(fragments)
+
+
+def _html_list(node: _HtmlNode, source: Path, snapshot: SourceSnapshot, depth: int = 0) -> str:
+    """Render nested HTML lists into portable Markdown list items."""
+
+    lines: list[str] = []
+    items = [child for child in node.children if isinstance(child, _HtmlNode) and child.tag == "li"]
+    for index, item in enumerate(items, start=1):
+        nested = [child for child in item.children if isinstance(child, _HtmlNode) and child.tag in {"ul", "ol"}]
+        text = _collapse_html_whitespace(
+            _html_inline(
+                (child for child in item.children if child not in nested),
+                source,
+                snapshot,
+            )
+        )
+        marker = f"{index}." if node.tag == "ol" else "-"
+        if text:
+            lines.append(f"{'  ' * depth}{marker} {text}")
+        for child in nested:
+            lines.extend(_html_list(child, source, snapshot, depth + 1).splitlines())
+    return "\n".join(lines)
+
+
+def _html_blocks(nodes: Iterable[object], source: Path, snapshot: SourceSnapshot) -> list[str]:
+    blocks: list[str] = []
+    for node in nodes:
+        if isinstance(node, str):
+            text = _collapse_html_whitespace(node)
+            if text:
+                blocks.append(text)
+            continue
+        if not isinstance(node, _HtmlNode) or node.tag in {"script", "style", "noscript"}:
+            continue
+        tag = node.tag
+        if tag in {"div", "section", "article", "main", "body"}:
+            blocks.extend(_html_blocks(node.children, source, snapshot))
+        elif tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+            content = _collapse_html_whitespace(_html_inline(node.children, source, snapshot))
+            if content:
+                blocks.append(f"{'#' * int(tag[1])} {content}")
+        elif tag == "p":
+            content = _collapse_html_whitespace(_html_inline(node.children, source, snapshot))
+            if content:
+                blocks.append(content)
+        elif tag in {"ul", "ol"}:
+            content = _html_list(node, source, snapshot)
+            if content:
+                blocks.append(content)
+        elif tag == "blockquote":
+            content = "\n\n".join(_html_blocks(node.children, source, snapshot))
+            if content:
+                blocks.append("\n".join(f"> {line}" if line else ">" for line in content.splitlines()))
+        elif tag == "pre":
+            code = _html_plain_text(node.children).strip("\n")
+            language = ""
+            code_nodes = [child for child in node.children if isinstance(child, _HtmlNode) and child.tag == "code"]
+            if code_nodes:
+                for class_name in code_nodes[0].attrs.get("class", "").split():
+                    if class_name.startswith("language-"):
+                        language = class_name.removeprefix("language-")
+                        break
+            if code:
+                blocks.append(f"```{language}\n{code}\n```")
+        elif tag == "img":
+            content = _collapse_html_whitespace(_html_inline([node], source, snapshot))
+            if content:
+                blocks.append(content)
+        elif tag == "hr":
+            blocks.append("---")
+        else:
+            content = _collapse_html_whitespace(_html_inline([node], source, snapshot))
+            if content:
+                blocks.append(content)
+    return blocks
+
+
+def html_article_to_markdown(document: str, article_class: str, source: Path, snapshot: SourceSnapshot) -> str:
+    """Extract a configured static-site article container as portable Markdown."""
+
+    parser = _ArticleHtmlParser()
+    parser.feed(document)
+    parser.close()
+    article = next(
+        (
+            node
+            for node in _walk_html(parser.root.children)
+            if node.tag == "div" and article_class in node.attrs.get("class", "").split()
+        ),
+        None,
+    )
+    if article is None:
+        raise ReferenceError(f"{snapshot.manifest.identifier}: missing HTML article container .{article_class}")
+    blocks = _html_blocks(article.children, source, snapshot)
+    if not blocks:
+        raise ReferenceError(f"{snapshot.manifest.identifier}: HTML article container .{article_class} is empty")
+    return "\n\n".join(blocks) + "\n"
+
+
 def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
     """Lift a source chapter under a level-three generated part heading."""
 
     source = _source_path(snapshot, part.path)
-    lines = source.read_text(encoding="utf-8").splitlines()
+    source_text = source.read_text(encoding="utf-8")
+    if snapshot.manifest.source_format == "html_article":
+        assert snapshot.manifest.article_class is not None
+        source_text = html_article_to_markdown(source_text, snapshot.manifest.article_class, source, snapshot)
+    lines = source_text.splitlines()
     result: list[str] = []
     in_fence = False
     align_div_depth = 0
     title_written = False
+    previous_heading_level = 3
 
     for line in lines:
         if FENCE_MARKER.match(line):
@@ -622,8 +948,14 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
             if not title_written and level == 1:
                 result.append(f"### {part.title}")
                 title_written = True
+                previous_heading_level = 3
             else:
-                result.append(f"{'#' * min(level + 2, 6)} {heading_text}")
+                # Static-site HTML sometimes skips heading levels for visual
+                # styling.  Preserve depth where possible, but fill a gap so
+                # the portable document always has a valid outline.
+                rendered_level = min(level + 2, 6, previous_heading_level + 1)
+                result.append(f"{'#' * rendered_level} {heading_text}")
+                previous_heading_level = rendered_level
             continue
 
         align_opens = len(ALIGN_DIV_TAG.findall(line))
@@ -688,15 +1020,16 @@ def build_document(snapshot: SourceSnapshot) -> str:
     """Build a portable single Markdown document from an exact source snapshot."""
 
     validate_manifest_sources(snapshot)
+    sections = resolved_sections(snapshot)
     lines = _front_matter(snapshot)
-    for section in snapshot.manifest.sections:
+    for section, parts in sections:
         lines.append(f"- [{section.title}](#{slugify(section.title)})")
-        for part in section.parts:
+        for part in parts:
             lines.append(f"  - [{part.title}](#{slugify(part.title)})")
     lines.extend(["", "---", ""])
-    for section in snapshot.manifest.sections:
+    for section, parts in sections:
         lines.extend([f"## {section.title}", ""])
-        for part in section.parts:
+        for part in parts:
             lines.append(transform_part(part, snapshot).rstrip())
             lines.append("")
     document = "\n".join(lines).rstrip() + "\n"

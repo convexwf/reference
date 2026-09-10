@@ -14,16 +14,31 @@
   },
   "sections": [
     {
-      "title": "正文",
+      "title": "导读",
       "parts": [
-        {"path": "manuscripts/00-前言.md", "title": "前言"},
+        {"path": "manuscripts/00-前言.md", "title": "前言"}
+      ]
+    },
+    {
+      "title": "第一部分：模型与负载",
+      "parts": [
         {"path": "manuscripts/01-初识 AI Infra.md", "title": "第一章 初识 AI Infra"},
         {"path": "manuscripts/02-模型架构.md", "title": "第二章 模型架构"},
-        {"path": "manuscripts/03-推理与训练负载.md", "title": "第三章 推理与训练负载"},
+        {"path": "manuscripts/03-推理与训练负载.md", "title": "第三章 推理与训练负载"}
+      ]
+    },
+    {
+      "title": "第二部分：芯片与系统",
+      "parts": [
         {"path": "manuscripts/04-加速器架构.md", "title": "第四章 加速器架构"},
         {"path": "manuscripts/05-算子与运行时.md", "title": "第五章 算子与运行时"},
         {"path": "manuscripts/06-超节点.md", "title": "第六章 超节点"},
-        {"path": "manuscripts/07-数据中心网络.md", "title": "第七章 数据中心网络"},
+        {"path": "manuscripts/07-数据中心网络.md", "title": "第七章 数据中心网络"}
+      ]
+    },
+    {
+      "title": "第三部分：推理与训练系统",
+      "parts": [
         {"path": "manuscripts/08-推理优化.md", "title": "第八章 推理优化"},
         {"path": "manuscripts/09-分布式推理.md", "title": "第九章 分布式推理"},
         {"path": "manuscripts/10-训练系统.md", "title": "第十章 训练系统"},

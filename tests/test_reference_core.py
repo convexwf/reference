@@ -51,6 +51,18 @@ class ReferenceCoreTest(unittest.TestCase):
         (self.root / "docs").mkdir()
         (self.root / "images").mkdir()
         (self.root / "images" / "演示 图.png").write_bytes(b"fixture")
+        (self.root / "articles").mkdir()
+        (self.root / "articles" / "lesson.md").write_text(
+            "<!DOCTYPE html><html><body><div class=\"book-post\">"
+            "<h1>00 HTML 课程</h1><p>正文 <strong>重点</strong>，"
+            "<a href=\"../evidence/data.md\">资料</a>。</p>"
+            "<h3>跳过的源标题层级</h3>"
+            "<p><img src=\"../images/diagram.png?wh=100\" alt=\"流程图 [详情]\"></p>"
+            "<ul><li>第一项</li><li>第二项</li></ul>"
+            "<pre><code class=\"language-python\">print('ok')</code></pre>"
+            "</div></body></html>",
+            encoding="utf-8",
+        )
         (self.root / "docs" / "first.md").write_text(
             "# 原始标题\n\n"
             "<div align=\"center\">\n"
@@ -114,7 +126,52 @@ class ReferenceCoreTest(unittest.TestCase):
         self.assertIn(f"https://github.com/example/fixture-book/tree/{COMMIT}/evidence", document)
 
     def test_sparse_checkout_contains_only_listed_parts(self) -> None:
-        self.assertEqual(_sparse_patterns(self.manifest), ["/docs/first.md", "/docs/next.md"])
+        self.assertEqual(_sparse_patterns(("docs/first.md", "docs/next.md")), ["/docs/first.md", "/docs/next.md"])
+
+    def test_html_article_profile_selects_sources_and_converts_content(self) -> None:
+        data = manifest_data()
+        data.pop("adapter")
+        data["render"] = {"source_format": "html_article", "article_class": "book-post"}
+        data["sections"] = [
+            {
+                "title": "正文",
+                "selection": {
+                    "include_globs": ["articles/*.md"],
+                    "exclude_paths": ["articles/promo.md"],
+                },
+            }
+        ]
+        data["completeness"] = {"required_globs": ["articles/*.md"]}
+        manifest = manifest_from_data(data)
+        snapshot = SourceSnapshot(
+            manifest,
+            self.root,
+            COMMIT,
+            "2026-09-14T00:00:00+00:00",
+            "2024-01-01",
+            "2026-09-14",
+            {
+                "articles": "tree",
+                "articles/lesson.md": "blob",
+                "articles/promo.md": "blob",
+                "images": "tree",
+                "images/diagram.png?wh=100": "blob",
+                "evidence": "tree",
+                "evidence/data.md": "blob",
+            },
+        )
+        document = build_document(snapshot)
+        raw = f"https://raw.githubusercontent.com/example/fixture-book/{COMMIT}/images/diagram.png%3Fwh=100"
+        self.assertIn("### lesson", document)
+        self.assertIn("#### 跳过的源标题层级", document)
+        self.assertIn("正文 **重点**，[资料]", document)
+        self.assertIn(raw, document)
+        self.assertIn("![流程图 \\[详情\\]]", document)
+        self.assertIn(f"https://github.com/example/fixture-book/blob/{COMMIT}/evidence/data.md", document)
+        self.assertIn("- 第一项", document)
+        self.assertIn("```python\nprint('ok')\n```", document)
+        self.assertNotIn("<!DOCTYPE", document)
+        self.assertNotIn("<div", document)
 
     def test_completeness_ignores_nested_archive_copy(self) -> None:
         tree_snapshot = replace(

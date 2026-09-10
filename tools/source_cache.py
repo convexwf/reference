@@ -5,7 +5,14 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from tools.reference_core import REPOSITORY_ROOT, Manifest, ReferenceError, SourceSnapshot
+from tools.reference_core import (
+    REPOSITORY_ROOT,
+    Manifest,
+    ReferenceError,
+    SourceSnapshot,
+    github_slug,
+    selected_source_paths,
+)
 
 
 CACHE_ROOT = REPOSITORY_ROOT / ".cache" / "sources"
@@ -30,14 +37,13 @@ def _commit_date(root: Path, commit: str) -> str:
     return _git(["show", "-s", "--format=%cI", commit], root)
 
 
-def _document_dates(manifest: Manifest, root: Path) -> tuple[str, str]:
+def _document_dates(identifier: str, paths: tuple[str, ...], root: Path) -> tuple[str, str]:
     """Return the first and latest commit date for the included source files."""
 
-    paths = [part.path for part in manifest.iter_parts()]
     latest = _git(["log", "-1", "--format=%cI", "--", *paths], root)
     history = _git(["log", "--reverse", "--format=%cI", "--", *paths], root)
     if not latest or not history:
-        raise ReferenceError(f"{manifest.identifier}: included sources have no Git history")
+        raise ReferenceError(f"{identifier}: included sources have no Git history")
     return history.splitlines()[0][:10], latest[:10]
 
 
@@ -56,7 +62,7 @@ def resolve_remote_commit(manifest: Manifest) -> str:
     return commit
 
 
-def _sparse_patterns(manifest: Manifest) -> list[str]:
+def _sparse_patterns(paths: tuple[str, ...]) -> list[str]:
     """Materialize only Markdown parts explicitly listed by a manifest.
 
     Linked assets are resolved against the pinned Git tree, not the sparse
@@ -64,7 +70,14 @@ def _sparse_patterns(manifest: Manifest) -> list[str]:
     notebooks, and large image collections just to construct immutable URLs.
     """
 
-    return sorted({f"/{part.path}" for part in manifest.iter_parts()})
+    return sorted({f"/{path}" for path in paths})
+
+
+def _cache_path(manifest: Manifest) -> Path:
+    """Reuse one sparse cache for every document sourced from a repository."""
+
+    owner, repository = github_slug(manifest.repository)
+    return CACHE_ROOT / f"{owner.lower()}--{repository.lower()}"
 
 
 def _repository_entries(root: Path, commit: str) -> dict[str, str]:
@@ -88,7 +101,7 @@ def _repository_entries(root: Path, commit: str) -> dict[str, str]:
 def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
     """Return a detached cache checkout at *commit*, never a contributor checkout."""
 
-    target = CACHE_ROOT / manifest.identifier
+    target = _cache_path(manifest)
     if not target.exists():
         target.parent.mkdir(parents=True, exist_ok=True)
         _git(["clone", "--no-checkout", "--filter=blob:none", manifest.repository, str(target)])
@@ -97,19 +110,21 @@ def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
     current_remote = _git(["remote", "get-url", "origin"], target)
     if current_remote != manifest.repository:
         _git(["remote", "set-url", "origin", manifest.repository], target)
-    _git(["sparse-checkout", "init", "--no-cone"], target)
-    _git(["sparse-checkout", "set", "--no-cone", *_sparse_patterns(manifest)], target)
     # Frontmatter follows the original per-repository builders and records
     # the first/latest included-source commit dates.  Keep history metadata
     # complete while retaining blob filtering and sparse checkout for assets.
     if _git(["rev-parse", "--is-shallow-repository"], target) == "true":
         _git(["fetch", "--unshallow", "--filter=blob:none", "origin"], target)
     _git(["fetch", "--filter=blob:none", "origin", commit], target)
+    entries = _repository_entries(target, commit)
+    paths = selected_source_paths(manifest, entries)
+    _git(["sparse-checkout", "init", "--no-cone"], target)
+    _git(["sparse-checkout", "set", "--no-cone", *_sparse_patterns(paths)], target)
     _git(["checkout", "--detach", "--force", commit], target)
     actual = _git(["rev-parse", "HEAD"], target)
     if actual != commit:
         raise ReferenceError(f"{manifest.identifier}: cache checkout mismatch: expected {commit}, got {actual}")
-    published_at, updated_at = _document_dates(manifest, target)
+    published_at, updated_at = _document_dates(manifest.identifier, paths, target)
     return SourceSnapshot(
         manifest,
         target,
@@ -117,7 +132,7 @@ def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
         _commit_date(target, actual),
         published_at,
         updated_at,
-        _repository_entries(target, actual),
+        entries,
     )
 
 
@@ -129,13 +144,16 @@ def snapshot_from_local(manifest: Manifest, source_root: Path) -> SourceSnapshot
     working trees.
     """
 
-    target = (source_root / manifest.identifier).resolve()
+    _, repository = github_slug(manifest.repository)
+    target = (source_root / repository).resolve()
     if not (target / ".git").exists():
         raise ReferenceError(f"{manifest.identifier}: expected local git checkout at {target}")
     if _git(["status", "--porcelain"], target):
         raise ReferenceError(f"{manifest.identifier}: local source checkout is dirty: {target}")
     commit = _git(["rev-parse", "HEAD"], target)
-    published_at, updated_at = _document_dates(manifest, target)
+    entries = _repository_entries(target, commit)
+    paths = selected_source_paths(manifest, entries)
+    published_at, updated_at = _document_dates(manifest.identifier, paths, target)
     return SourceSnapshot(
         manifest,
         target,
@@ -143,5 +161,5 @@ def snapshot_from_local(manifest: Manifest, source_root: Path) -> SourceSnapshot
         _commit_date(target, commit),
         published_at,
         updated_at,
-        _repository_entries(target, commit),
+        entries,
     )
