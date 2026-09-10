@@ -1,0 +1,74 @@
+{
+  "id": "lianglianglee-mysql",
+  "title": "MySQL实战45讲",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/MySQL实战45讲.md",
+  "front_matter": {
+    "authors": ["林晓斌（丁奇）"],
+    "tags": ["mysql", "database", "performance", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "导读",
+      "selection": {
+        "include_globs": ["book/专栏/MySQL实战45讲/00 *.md"]
+      }
+    },
+    {
+      "title": "基础架构、事务与索引",
+      "selection": {
+        "include_globs": [
+          "book/专栏/MySQL实战45讲/0[1-9] *.md",
+          "book/专栏/MySQL实战45讲/1[0-5] *.md"
+        ]
+      }
+    },
+    {
+      "title": "查询执行与锁",
+      "selection": {
+        "include_globs": [
+          "book/专栏/MySQL实战45讲/1[6-9] *.md",
+          "book/专栏/MySQL实战45讲/2[0-2] *.md"
+        ]
+      }
+    },
+    {
+      "title": "日志、复制与高可用",
+      "selection": {
+        "include_globs": [
+          "book/专栏/MySQL实战45讲/2[3-9] *.md",
+          "book/专栏/MySQL实战45讲/30 *.md"
+        ]
+      }
+    },
+    {
+      "title": "运维与内部机制",
+      "selection": {
+        "include_globs": [
+          "book/专栏/MySQL实战45讲/3[1-9] *.md",
+          "book/专栏/MySQL实战45讲/4[0-5] *.md"
+        ]
+      }
+    },
+    {
+      "title": "扩展阅读与结束语",
+      "selection": {
+        "include_globs": [
+          "book/专栏/MySQL实战45讲/我的MySQL心路历程.md",
+          "book/专栏/MySQL实战45讲/结束语*.md"
+        ]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/MySQL实战45讲/*.md"]
+  }
+}

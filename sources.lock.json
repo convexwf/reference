@@ -3,7 +3,7 @@
     "ai-agent-book": {
       "commit": "cf7f7a8e16b234ac303034e4ec8f75bf2d61ac2c",
       "commit_date": "2026-09-15T03:02:39Z",
-      "generator_version": "ai_agent_book@1;engine@7",
+      "generator_version": "ai_agent_book@1;engine@8",
       "manifest_sha256": "1adecb27a90f4773c76d0754544cc638c9b9eac73b77732e5616a4072e483870",
       "ref": "main",
       "repository": "https://github.com/bojieli/ai-agent-book.git"
@@ -11,7 +11,7 @@
     "ai-infra-book": {
       "commit": "58636943ba89f24b854f04f0f8f2fffe7b323829",
       "commit_date": "2026-09-15T09:31:35+08:00",
-      "generator_version": "ai_infra_book@1;engine@7",
+      "generator_version": "ai_infra_book@1;engine@8",
       "manifest_sha256": "60b976b37141632289c36156c38ddde06f7d8fbf248879cf039fda4da22c5015",
       "ref": "main",
       "repository": "https://github.com/bojieli/ai-infra-book.git"
@@ -19,7 +19,7 @@
     "easy-rl": {
       "commit": "6b7df8451f74f16d5efb6abc1b94a8746890a0ad",
       "commit_date": "2025-12-30T23:48:17+08:00",
-      "generator_version": "easy_rl@1;engine@7",
+      "generator_version": "easy_rl@1;engine@8",
       "manifest_sha256": "63010951f6eaa98a49613b99941dd4857f22df0cd50f443c440e5034909c46ff",
       "ref": "master",
       "repository": "https://github.com/datawhalechina/easy-rl.git"
@@ -27,15 +27,23 @@
     "hello-agents": {
       "commit": "4f7682ceafe573d07cd8a7d0b89908500e83227d",
       "commit_date": "2026-09-04T17:03:14+08:00",
-      "generator_version": "hello_agents@1;engine@7",
+      "generator_version": "hello_agents@1;engine@8",
       "manifest_sha256": "00dab919d6c8df5d3d237512c48666d646b13a495ab8098586285091fd4fc4dd",
       "ref": "main",
       "repository": "https://github.com/datawhalechina/hello-agents.git"
     },
+    "lianglianglee-ai-tech-insider": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "078da925b167465ca5c37dbd48063909fe42a8247feeb3cf380d959721744734",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
     "lianglianglee-architecture": {
       "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
       "commit_date": "2024-12-14T17:33:19+08:00",
-      "generator_version": "generic@1;engine@7",
+      "generator_version": "generic@1;engine@8",
       "manifest_sha256": "68f6525398125ef8d671a3ec2cf8fc92f6d211372113d04a70509ce07ac2c1e8",
       "ref": "main",
       "repository": "https://github.com/Yvan0329/lianglianglee.git"
@@ -43,8 +51,88 @@
     "lianglianglee-continuous-delivery": {
       "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
       "commit_date": "2024-12-14T17:33:19+08:00",
-      "generator_version": "generic@1;engine@7",
+      "generator_version": "generic@1;engine@8",
       "manifest_sha256": "bf4af7187cc1b431d0b0b29e1bea995171b8cc12fd788186a51207aa57ecab5d",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-distributed-finance": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "1d7ab5936951371d3c8ab48196146d150705be55d67ef1c49321ee2582e2f630",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-flutter": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "ee6ab59400bd9ba57b64f37e27b24f4464bcd39ce1491f615a811b265e9f0eeb",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-high-concurrency": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "ef762279a961215b15b88d4a0c7b9dd0432cbf5c0ff9cd626aa9f4c228b29192",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-http": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "7c857ccb15463835f71be77d15bf68498eb97526236bd3f0902a31d2c0e57165",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-instant-messaging": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "1eb0c942abe525d42ac7a996df48b513392d0498b21c12b0d31a8ce181588c6a",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-kafka": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "aa76fdd3177dc0d3faf13d5dde72bcdffbb16dc0bbbe50e6ff7111087a220b77",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-left-ear": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "9036c79d9a7e9ff27d2653690d99de6b29e53264e7879553fecb8135383547df",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-linux-performance": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "68f7be443342c71fa8ae02bdf0ed9ce187be436d7e076281cf4bac86a7af387d",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-mysql": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "487dff37de0a97da0a1bdd29a6cf1a7c6860aae5283a8b5080c659a4c75fc8d2",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-recommendation-system": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@8",
+      "manifest_sha256": "ac31285ec864d7ff899bf04b08f3492131ea2bf4e530429efa227816568cc555",
       "ref": "main",
       "repository": "https://github.com/Yvan0329/lianglianglee.git"
     }

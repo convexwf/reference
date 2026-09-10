@@ -11,6 +11,7 @@ from tools.reference_core import (
     assert_document_contract,
     build_document,
     manifest_from_data,
+    rewrite_link_target,
     validate_manifest_sources,
 )
 from tools.source_cache import _sparse_patterns
@@ -124,6 +125,29 @@ class ReferenceCoreTest(unittest.TestCase):
         base = f"https://github.com/example/fixture-book/blob/{COMMIT}"
         self.assertIn(f"{base}/evidence/data.json#result", document)
         self.assertIn(f"https://github.com/example/fixture-book/tree/{COMMIT}/evidence", document)
+
+    def test_build_recovers_unique_asset_from_legacy_relative_path(self) -> None:
+        source = self.root / "docs" / "first.md"
+        source.write_text(
+            source.read_text(encoding="utf-8")
+            + "\n![迁移后的图片](../legacy-copy/assets/%E6%BC%94%E7%A4%BA%20%E5%9B%BE.png)\n",
+            encoding="utf-8",
+        )
+        sparse_snapshot = replace(
+            self.snapshot,
+            repository_entries={
+                "docs/first.md": "blob",
+                "docs/next.md": "blob",
+                "images/演示 图.png": "blob",
+            },
+        )
+        document = build_document(sparse_snapshot)
+        raw = f"https://raw.githubusercontent.com/example/fixture-book/{COMMIT}/images/%E6%BC%94%E7%A4%BA%20%E5%9B%BE.png"
+        self.assertEqual(document.count(raw), 4)
+
+    def test_preserves_malformed_third_party_url(self) -> None:
+        target = "https://github.com/ethereum/wiki/blob/master/[中文]-權益證明機制FAQ.md"
+        self.assertEqual(rewrite_link_target(target, self.root / "docs" / "first.md", self.snapshot), target)
 
     def test_sparse_checkout_contains_only_listed_parts(self) -> None:
         self.assertEqual(_sparse_patterns(("docs/first.md", "docs/next.md")), ["/docs/first.md", "/docs/next.md"])

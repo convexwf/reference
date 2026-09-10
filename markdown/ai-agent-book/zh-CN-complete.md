@@ -22,7 +22,7 @@ updated_at: "2026-09-14"
 | 上游仓库 | [bojieli/ai-agent-book](https://github.com/bojieli/ai-agent-book) |
 | 锁定提交 | [cf7f7a8e16b2](https://github.com/bojieli/ai-agent-book/commit/cf7f7a8e16b234ac303034e4ec8f75bf2d61ac2c) |
 | 提交时间 | 2026-09-15T03:02:39Z |
-| 生成器版本 | `ai_agent_book@1;engine@7` |
+| 生成器版本 | `ai_agent_book@1;engine@8` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 

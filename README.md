@@ -10,8 +10,19 @@
 - `hello-agents` 的中文主教程
 - `lianglianglee-architecture` 的《从 0 开始学架构》专栏
 - `lianglianglee-continuous-delivery` 的《持续交付36讲》专栏
+- `lianglianglee-distributed-finance` 的《分布式金融架构课》专栏
+- `lianglianglee-linux-performance` 的《Linux性能优化实战》专栏
+- `lianglianglee-mysql` 的《MySQL实战45讲》专栏
+- `lianglianglee-instant-messaging` 的《即时消息技术剖析与实战》专栏
+- `lianglianglee-high-concurrency` 的《高并发系统设计40问》专栏
+- `lianglianglee-kafka` 的《Kafka核心技术与实战》专栏
+- `lianglianglee-ai-tech-insider` 的《AI技术内参》专栏
+- `lianglianglee-flutter` 的《Flutter核心技术与实战》专栏
+- `lianglianglee-left-ear` 的《左耳听风》专栏
+- `lianglianglee-recommendation-system` 的《推荐系统三十六式》专栏
+- `lianglianglee-http` 的《透视HTTP协议》专栏
 
-生成结果位于 `markdown/`，具体路径由各清单的 `output` 决定；例如两份 GeekTime 专栏位于 `markdown/geektime/`。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
+生成结果位于 `markdown/`，具体路径由各清单的 `output` 决定；GeekTime 专栏位于 `markdown/geektime/`。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 
 本地使用：
 

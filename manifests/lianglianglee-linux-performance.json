@@ -1,0 +1,89 @@
+{
+  "id": "lianglianglee-linux-performance",
+  "title": "Linux性能优化实战",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/Linux性能优化实战.md",
+  "front_matter": {
+    "authors": ["倪朋飞"],
+    "tags": ["linux", "performance", "systems", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "导读",
+      "selection": {
+        "include_globs": ["book/专栏/Linux性能优化实战/0[0-1] *.md"]
+      }
+    },
+    {
+      "title": "CPU 性能",
+      "selection": {
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/0[2-9] *.md",
+          "book/专栏/Linux性能优化实战/1[0-4] *.md"
+        ]
+      }
+    },
+    {
+      "title": "内存性能",
+      "selection": {
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/1[5-9] *.md",
+          "book/专栏/Linux性能优化实战/2[0-2] *.md"
+        ]
+      }
+    },
+    {
+      "title": "文件系统与磁盘 I/O",
+      "selection": {
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/2[3-9] *.md",
+          "book/专栏/Linux性能优化实战/3[0-2] *.md"
+        ]
+      }
+    },
+    {
+      "title": "网络性能",
+      "selection": {
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/3[3-9] *.md",
+          "book/专栏/Linux性能优化实战/4[0-5] *.md"
+        ]
+      }
+    },
+    {
+      "title": "综合诊断与监控",
+      "selection": {
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/4[6-9] *.md",
+          "book/专栏/Linux性能优化实战/5[0-8] *.md"
+        ]
+      }
+    },
+    {
+      "title": "加餐与用户故事",
+      "selection": {
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/加餐*.md",
+          "book/专栏/Linux性能优化实战/用户故事*.md"
+        ]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/Linux性能优化实战/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/Linux性能优化实战/*.md"]
+  }
+}

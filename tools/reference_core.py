@@ -29,7 +29,7 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "7"
+ENGINE_VERSION = "8"
 
 
 class ReferenceError(RuntimeError):
@@ -497,7 +497,7 @@ def split_target(target: str) -> tuple[str, str]:
 def is_external_target(target: str) -> bool:
     """Return whether a target should be preserved as-is."""
 
-    return target.startswith(("#", "/", "data:")) or bool(urlsplit(target).scheme)
+    return target.startswith(("#", "/", "data:")) or bool(re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", target))
 
 
 def _repository_entry_kind(snapshot: SourceSnapshot, relative: Path) -> str | None:
@@ -538,6 +538,39 @@ def _repository_relative_target(target: str, source: Path, snapshot: SourceSnaps
     return None
 
 
+def _unique_repository_asset_target(target: str, snapshot: SourceSnapshot) -> tuple[Path, str] | None:
+    """Recover a moved local image when its immutable basename is unique.
+
+    Some static-site exports retain a relative path to a previous copy of the
+    same course.  The path no longer resolves, but the image blob remains in
+    the pinned repository under the course's current ``assets/`` directory.
+    A basename fallback is safe only when exactly one blob in the Git tree has
+    that name; ambiguous assets deliberately remain unresolved for review.
+    """
+
+    path_text, suffix = split_target(target)
+    if not path_text or is_external_target(path_text):
+        return None
+    basename = Path(unquote(path_text)).name
+    if not basename:
+        return None
+    if snapshot.repository_entries is not None:
+        matches = [
+            Path(path)
+            for path, kind in snapshot.repository_entries.items()
+            if kind == "blob" and Path(path).name == basename
+        ]
+    else:
+        matches = [
+            path.relative_to(snapshot.root)
+            for path in snapshot.root.rglob(basename)
+            if path.is_file()
+        ]
+    if len(matches) == 1:
+        return matches[0], suffix
+    return None
+
+
 def _github_url(base: str, relative: Path, suffix: str = "") -> str:
     encoded = quote(relative.as_posix(), safe="/-._~!$&'()*+,;=:@")
     return f"{base}/{encoded}{suffix}"
@@ -552,7 +585,13 @@ def _rewrite_pinned_raw_target(target: str, snapshot: SourceSnapshot) -> str | N
     """Pin an absolute Raw URL when it already points at this source repository."""
 
     path_text, suffix = split_target(target)
-    parsed = urlsplit(path_text)
+    try:
+        parsed = urlsplit(path_text)
+    except ValueError:
+        # Keep malformed third-party URLs untouched.  The integration must not
+        # reject an otherwise valid source document merely because a reference
+        # embeds unescaped brackets in its path.
+        return None
     if parsed.scheme not in {"http", "https"} or parsed.hostname != "raw.githubusercontent.com":
         return None
     pieces = parsed.path.lstrip("/").split("/", 3)
@@ -569,7 +608,10 @@ def _rewrite_pinned_source_link(target: str, snapshot: SourceSnapshot) -> str | 
     """Pin absolute GitHub blob/tree links that already point at this source."""
 
     path_text, suffix = split_target(target)
-    parsed = urlsplit(path_text)
+    try:
+        parsed = urlsplit(path_text)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"} or parsed.hostname != "github.com":
         return None
     pieces = parsed.path.strip("/").split("/", 4)
@@ -591,6 +633,8 @@ def rewrite_image_target(target: str, source: Path, snapshot: SourceSnapshot) ->
     if pinned is not None:
         return pinned
     resolved = _repository_relative_target(target, source, snapshot)
+    if resolved is None:
+        resolved = _unique_repository_asset_target(target, snapshot)
     if resolved is None:
         return target
     relative, suffix = resolved
@@ -641,7 +685,10 @@ def image_alt_text(raw_target: str) -> str:
 
     path_text, _ = split_target(raw_target)
     if path_text.startswith(("http://", "https://")):
-        path_text = urlsplit(path_text).path
+        try:
+            path_text = urlsplit(path_text).path
+        except ValueError:
+            pass
     stem = Path(unquote(path_text)).stem
     return stem or "image"
 

@@ -29,7 +29,7 @@ updated_at: "2026-08-14"
 | 上游仓库 | [datawhalechina/hello-agents](https://github.com/datawhalechina/hello-agents) |
 | 锁定提交 | [4f7682ceafe5](https://github.com/datawhalechina/hello-agents/commit/4f7682ceafe573d07cd8a7d0b89908500e83227d) |
 | 提交时间 | 2026-09-04T17:03:14+08:00 |
-| 生成器版本 | `hello_agents@1;engine@7` |
+| 生成器版本 | `hello_agents@1;engine@8` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 

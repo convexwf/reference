@@ -1,0 +1,65 @@
+{
+  "id": "lianglianglee-flutter",
+  "title": "Flutter核心技术与实战",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/Flutter核心技术与实战.md",
+  "front_matter": {
+    "authors": ["陈航"],
+    "tags": ["flutter", "dart", "mobile-development", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "入门与 Dart 基础",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/0[0-8]*.md"]
+      }
+    },
+    {
+      "title": "Widget 与界面构建",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/0[9]*.md", "book/专栏/Flutter核心技术与实战/1[0-8]*.md"]
+      }
+    },
+    {
+      "title": "交互、数据与网络",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/1[9]*.md", "book/专栏/Flutter核心技术与实战/2[0-5]*.md"]
+      }
+    },
+    {
+      "title": "平台互操作与适配",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/2[6-9]*.md", "book/专栏/Flutter核心技术与实战/3[0-3]*.md"]
+      }
+    },
+    {
+      "title": "构建、调试、测试与发布",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/3[4-9]*.md", "book/专栏/Flutter核心技术与实战/4[0-2]*.md"]
+      }
+    },
+    {
+      "title": "混合开发框架",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/4[3-4]*.md"]
+      }
+    },
+    {
+      "title": "特别放送与结束语",
+      "selection": {
+        "include_globs": ["book/专栏/Flutter核心技术与实战/特别放送*.md", "book/专栏/Flutter核心技术与实战/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/Flutter核心技术与实战/*.md"]
+  }
+}

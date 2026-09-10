@@ -1,0 +1,97 @@
+{
+  "id": "lianglianglee-ai-tech-insider",
+  "title": "AI技术内参",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/AI技术内参.md",
+  "front_matter": {
+    "authors": ["陈天"],
+    "tags": ["artificial-intelligence", "machine-learning", "data-science", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "顶级会议论文精读",
+      "selection": {
+        "include_globs": ["book/专栏/AI技术内参/0[0-2][0-9]*.md", "book/专栏/AI技术内参/030*.md"]
+      }
+    },
+    {
+      "title": "搜索与排序",
+      "selection": {
+        "include_globs": [
+          "book/专栏/AI技术内参/03[1-9]*.md",
+          "book/专栏/AI技术内参/04[0-9]*.md",
+          "book/专栏/AI技术内参/05[0-7]*.md"
+        ]
+      }
+    },
+    {
+      "title": "推荐系统",
+      "selection": {
+        "include_globs": [
+          "book/专栏/AI技术内参/05[8-9]*.md",
+          "book/专栏/AI技术内参/06[0-9]*.md",
+          "book/专栏/AI技术内参/07[0-8]*.md"
+        ]
+      }
+    },
+    {
+      "title": "广告系统",
+      "selection": {
+        "include_globs": [
+          "book/专栏/AI技术内参/079*.md",
+          "book/专栏/AI技术内参/08[0-9]*.md",
+          "book/专栏/AI技术内参/09[0-6]*.md"
+        ]
+      }
+    },
+    {
+      "title": "自然语言处理",
+      "selection": {
+        "include_globs": [
+          "book/专栏/AI技术内参/09[7-9]*.md",
+          "book/专栏/AI技术内参/10[0-9]*.md",
+          "book/专栏/AI技术内参/11[0-4]*.md"
+        ]
+      }
+    },
+    {
+      "title": "计算机视觉",
+      "selection": {
+        "include_globs": ["book/专栏/AI技术内参/11[5-9]*.md", "book/专栏/AI技术内参/12[0-6]*.md"]
+      }
+    },
+    {
+      "title": "数据科学家与团队",
+      "selection": {
+        "include_globs": [
+          "book/专栏/AI技术内参/12[7-9]*.md",
+          "book/专栏/AI技术内参/1[3-4][0-9]*.md",
+          "book/专栏/AI技术内参/150*.md"
+        ]
+      }
+    },
+    {
+      "title": "人工智能趋势与学习",
+      "selection": {
+        "include_globs": ["book/专栏/AI技术内参/15[1-6]*.md"]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/AI技术内参/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/AI技术内参/*.md"]
+  }
+}

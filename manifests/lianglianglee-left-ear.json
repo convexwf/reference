@@ -1,0 +1,72 @@
+{
+  "id": "lianglianglee-left-ear",
+  "title": "左耳听风",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/左耳听风.md",
+  "front_matter": {
+    "authors": ["陈皓"],
+    "tags": ["software-engineering", "distributed-systems", "career-development", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "技术成长与工程实践",
+      "selection": {
+        "include_globs": ["book/专栏/左耳听风/0[01][0-9]*.md"]
+      }
+    },
+    {
+      "title": "分布式系统与编程范式",
+      "selection": {
+        "include_globs": [
+          "book/专栏/左耳听风/02[0-9]*.md",
+          "book/专栏/左耳听风/03[0-9]*.md",
+          "book/专栏/左耳听风/040*.md"
+        ]
+      }
+    },
+    {
+      "title": "弹力、治理与性能设计",
+      "selection": {
+        "include_globs": [
+          "book/专栏/左耳听风/04[1-9]*.md",
+          "book/专栏/左耳听风/05[0-9]*.md",
+          "book/专栏/左耳听风/06[0-8]*.md"
+        ]
+      }
+    },
+    {
+      "title": "程序员练级攻略",
+      "selection": {
+        "include_globs": [
+          "book/专栏/左耳听风/069*.md",
+          "book/专栏/左耳听风/07[0-9]*.md",
+          "book/专栏/左耳听风/08[0-9]*.md",
+          "book/专栏/左耳听风/090*.md"
+        ]
+      }
+    },
+    {
+      "title": "面试、学习与沟通",
+      "selection": {
+        "include_globs": ["book/专栏/左耳听风/09[1-9]*.md", "book/专栏/左耳听风/10[0-6]*.md"]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/左耳听风/107*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/左耳听风/*.md"]
+  }
+}

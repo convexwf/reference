@@ -1,0 +1,53 @@
+{
+  "id": "lianglianglee-instant-messaging",
+  "title": "即时消息技术剖析与实战",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/即时消息技术剖析与实战.md",
+  "front_matter": {
+    "authors": ["袁武林"],
+    "tags": ["instant-messaging", "distributed-systems", "real-time", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "导读与核心消息链路",
+      "selection": {
+        "include_globs": ["book/专栏/即时消息技术剖析与实战/0[0-9] *.md"]
+      }
+    },
+    {
+      "title": "高可用与弹性扩缩容",
+      "selection": {
+        "include_globs": ["book/专栏/即时消息技术剖析与实战/1[0-3] *.md"]
+      }
+    },
+    {
+      "title": "多媒体与基础设施",
+      "selection": {
+        "include_globs": [
+          "book/专栏/即时消息技术剖析与实战/1[4-9] *.md",
+          "book/专栏/即时消息技术剖析与实战/20 *.md"
+        ]
+      }
+    },
+    {
+      "title": "实战、答疑与结束语",
+      "selection": {
+        "include_globs": [
+          "book/专栏/即时消息技术剖析与实战/2[1-2] *.md",
+          "book/专栏/即时消息技术剖析与实战/结束语*.md"
+        ]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/即时消息技术剖析与实战/*.md"]
+  }
+}

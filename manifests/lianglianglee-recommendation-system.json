@@ -1,0 +1,59 @@
+{
+  "id": "lianglianglee-recommendation-system",
+  "title": "推荐系统三十六式",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/推荐系统三十六式.md",
+  "front_matter": {
+    "authors": ["王喆"],
+    "tags": ["recommendation-systems", "machine-learning", "data-engineering", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "推荐基础与内容理解",
+      "selection": {
+        "include_globs": ["book/专栏/推荐系统三十六式/0[0-6]*.md"]
+      }
+    },
+    {
+      "title": "协同过滤、矩阵分解与模型融合",
+      "selection": {
+        "include_globs": ["book/专栏/推荐系统三十六式/0[7-9]*.md", "book/专栏/推荐系统三十六式/1[0-5]*.md"]
+      }
+    },
+    {
+      "title": "探索、深度学习与候选策略",
+      "selection": {
+        "include_globs": ["book/专栏/推荐系统三十六式/1[6-9]*.md", "book/专栏/推荐系统三十六式/2[0-3]*.md"]
+      }
+    },
+    {
+      "title": "系统架构与工程实践",
+      "selection": {
+        "include_globs": ["book/专栏/推荐系统三十六式/2[4-9]*.md", "book/专栏/推荐系统三十六式/3[0-3]*.md"]
+      }
+    },
+    {
+      "title": "效果、产品与团队",
+      "selection": {
+        "include_globs": ["book/专栏/推荐系统三十六式/3[4-6]*.md"]
+      }
+    },
+    {
+      "title": "加餐与结束语",
+      "selection": {
+        "include_globs": ["book/专栏/推荐系统三十六式/加餐*.md", "book/专栏/推荐系统三十六式/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/推荐系统三十六式/*.md"]
+  }
+}

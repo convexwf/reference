@@ -1,0 +1,64 @@
+{
+  "id": "lianglianglee-distributed-finance",
+  "title": "分布式金融架构课",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/分布式金融架构课.md",
+  "front_matter": {
+    "authors": ["任杰"],
+    "tags": ["distributed-systems", "financial-architecture", "fintech", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "导读与金融业务",
+      "selection": {
+        "include_globs": [
+          "book/专栏/分布式金融架构课/0[0-3] *.md"
+        ]
+      }
+    },
+    {
+      "title": "领域建模与数据质量",
+      "selection": {
+        "include_globs": [
+          "book/专栏/分布式金融架构课/0[4-9] *.md",
+          "book/专栏/分布式金融架构课/1[0-1] *.md"
+        ]
+      }
+    },
+    {
+      "title": "分布式正确性与容灾",
+      "selection": {
+        "include_globs": [
+          "book/专栏/分布式金融架构课/1[2-9] *.md",
+          "book/专栏/分布式金融架构课/2[0-1] *.md"
+        ]
+      }
+    },
+    {
+      "title": "答疑与特别策划",
+      "selection": {
+        "include_globs": [
+          "book/专栏/分布式金融架构课/春节策划*.md",
+          "book/专栏/分布式金融架构课/答疑集锦*.md"
+        ]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/分布式金融架构课/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/分布式金融架构课/*.md"]
+  }
+}

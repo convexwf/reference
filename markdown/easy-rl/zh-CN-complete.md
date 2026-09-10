@@ -23,7 +23,7 @@ updated_at: "2025-12-30"
 | 上游仓库 | [datawhalechina/easy-rl](https://github.com/datawhalechina/easy-rl) |
 | 锁定提交 | [6b7df8451f74](https://github.com/datawhalechina/easy-rl/commit/6b7df8451f74f16d5efb6abc1b94a8746890a0ad) |
 | 提交时间 | 2025-12-30T23:48:17+08:00 |
-| 生成器版本 | `easy_rl@1;engine@7` |
+| 生成器版本 | `easy_rl@1;engine@8` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 

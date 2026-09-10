@@ -1,0 +1,70 @@
+{
+  "id": "lianglianglee-high-concurrency",
+  "title": "高并发系统设计40问",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/高并发系统设计40问.md",
+  "front_matter": {
+    "authors": ["李智慧"],
+    "tags": ["high-concurrency", "distributed-systems", "architecture", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "设计原则与基础",
+      "selection": {
+        "include_globs": ["book/专栏/高并发系统设计40问/0[0-6]*.md"]
+      }
+    },
+    {
+      "title": "存储、缓存与消息",
+      "selection": {
+        "include_globs": [
+          "book/专栏/高并发系统设计40问/0[7-9]*.md",
+          "book/专栏/高并发系统设计40问/1[0-9]*.md",
+          "book/专栏/高并发系统设计40问/20*.md"
+        ]
+      }
+    },
+    {
+      "title": "服务化与系统治理",
+      "selection": {
+        "include_globs": [
+          "book/专栏/高并发系统设计40问/2[1-9]*.md",
+          "book/专栏/高并发系统设计40问/3[0-6]*.md"
+        ]
+      }
+    },
+    {
+      "title": "高并发系统案例",
+      "selection": {
+        "include_globs": ["book/专栏/高并发系统设计40问/3[7-9]*.md", "book/专栏/高并发系统设计40问/40*.md"]
+      }
+    },
+    {
+      "title": "加餐、测试与用户故事",
+      "selection": {
+        "include_globs": [
+          "book/专栏/高并发系统设计40问/加餐*.md",
+          "book/专栏/高并发系统设计40问/期中测试*.md",
+          "book/专栏/高并发系统设计40问/用户故事*.md"
+        ]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/高并发系统设计40问/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/高并发系统设计40问/*.md"]
+  }
+}

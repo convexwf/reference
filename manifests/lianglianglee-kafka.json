@@ -1,0 +1,71 @@
+{
+  "id": "lianglianglee-kafka",
+  "title": "Kafka核心技术与实战",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/geektime/Kafka核心技术与实战.md",
+  "front_matter": {
+    "authors": ["胡夕"],
+    "tags": ["kafka", "messaging", "stream-processing", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "基础、部署与集群配置",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/0[0-8]*.md"]
+      }
+    },
+    {
+      "title": "生产者",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/0[9]*.md", "book/专栏/Kafka核心技术与实战/1[0-4]*.md"]
+      }
+    },
+    {
+      "title": "消费者与消费组",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/1[5-9]*.md", "book/专栏/Kafka核心技术与实战/2[0-2]*.md"]
+      }
+    },
+    {
+      "title": "副本、请求与控制器",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/2[3-9]*.md"]
+      }
+    },
+    {
+      "title": "运维、安全与监控",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/3[0-8]*.md"]
+      }
+    },
+    {
+      "title": "流处理实践",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/3[9]*.md", "book/专栏/Kafka核心技术与实战/4[0-2]*.md"]
+      }
+    },
+    {
+      "title": "加餐与用户故事",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/加餐*.md", "book/专栏/Kafka核心技术与实战/用户故事*.md"]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/Kafka核心技术与实战/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/Kafka核心技术与实战/*.md"]
+  }
+}

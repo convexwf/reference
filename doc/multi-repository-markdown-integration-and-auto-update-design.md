@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 | --- | --- |
 | **文档标题** | 多仓库 Markdown 整合与自动更新技术方案 |
-| **文档版本** | v0.2 |
+| **文档版本** | v0.4 |
 | **创建日期** | 2026-09-14 |
 | **更新日期** | 2026-09-15 |
 | **文档作者** | Codex |
@@ -85,7 +85,17 @@ reference/
 │   ├── easy-rl.json
 │   ├── hello-agents.json
 │   ├── lianglianglee-architecture.json
-│   └── lianglianglee-continuous-delivery.json
+│   ├── lianglianglee-continuous-delivery.json
+│   ├── lianglianglee-distributed-finance.json
+│   ├── lianglianglee-flutter.json
+│   ├── lianglianglee-high-concurrency.json
+│   ├── lianglianglee-http.json
+│   ├── lianglianglee-instant-messaging.json
+│   ├── lianglianglee-kafka.json
+│   ├── lianglianglee-left-ear.json
+│   ├── lianglianglee-linux-performance.json
+│   ├── lianglianglee-mysql.json
+│   └── lianglianglee-recommendation-system.json
 ├── markdown/                    # 对外发布的完整 Markdown，纳入版本控制
 │   ├── ai-agent-book/
 │   │   └── zh-CN-complete.md
@@ -96,8 +106,19 @@ reference/
 │   ├── hello-agents/
 │   │   └── zh-CN-complete.md
 │   └── geektime/
+│       ├── AI技术内参.md
+│       ├── Flutter核心技术与实战.md
+│       ├── Kafka核心技术与实战.md
+│       ├── Linux性能优化实战.md
+│       ├── MySQL实战45讲.md
+│       ├── 分布式金融架构课.md
+│       ├── 即时消息技术剖析与实战.md
 │       ├── 从0开始学架构.md
-│       └── 持续交付36讲.md
+│       ├── 左耳听风.md
+│       ├── 持续交付36讲.md
+│       ├── 推荐系统三十六式.md
+│       ├── 透视HTTP协议.md
+│       └── 高并发系统设计40问.md
 ├── reports/                     # 可选的已审阅报告；临时报告不提交
 ├── tests/
 ├── tools/
@@ -205,6 +226,8 @@ CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/`
 - 外部 `https:`、锚点、`mailto:` 和 `data:` 链接保持不变。
 - Markdown 图片、Pandoc 图片属性、HTML `<img>`、居中 `div`、`figure` 和 `figcaption` 都转换为标准 Markdown 图片和正文标题；静态 HTML 专栏仅转换所声明文章容器内的正文。
 - 若上游将尺寸参数保存在真实文件名中（例如 `diagram.png?wh=1740*733`），引擎先按普通 URL 查询参数解析，找不到资源时再按 Git 树中的字面文件名解析，并对 Raw URL 正确编码。
+- 若静态站点遗留了已移动副本的相对图片路径，且锁定 Git 树中同名 blob 唯一，引擎会回退到该 blob；存在同名歧义时拒绝生成，避免错误替换资源。
+- 对带未转义方括号等无法被 URL 解析器读取的第三方外链，保留原始链接继续生成；仅能确认属于当前上游仓库的合法 URL 才会固定到 commit。
 - 目标位于源仓库外、源文件不存在或 URL 方案不在允许列表时，生成失败。
 
 使用 commit SHA 而不是 `main` 或 `master` 是强制要求。分支会移动，而已发布文档中的图片和来源不能移动。
