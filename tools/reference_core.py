@@ -29,7 +29,7 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "8"
+ENGINE_VERSION = "9"
 
 
 class ReferenceError(RuntimeError):
@@ -96,6 +96,24 @@ class SourceSnapshot:
 
 MARKDOWN_IMAGE_TARGET = re.compile(
     r"(?P<prefix>!\[[^\]]*\]\()(?P<target><[^>]+>|[^)\s]+)(?P<rest>[^)]*\))"
+)
+MARKDOWN_IMAGE_LINE = re.compile(
+    r"^(?P<prefix>\s*!\[)(?P<alt>(?:\\.|[^\]])*)(?P<suffix>\]\(.+\))\s*$"
+)
+# A caption must include a figure/table number.  Merely beginning with “图” is
+# not enough: ordinary prose such as “图形可以……” is not a figure caption.
+FIGURE_CAPTION = re.compile(
+    r"^(?:(?:图|表)\s*\d+(?:[.．-]\d+)*|(?:fig(?:ure)?|table)\.?\s*\d+(?:[.．-]\d+)*).+",
+    re.IGNORECASE,
+)
+GENERIC_IMAGE_ALT_TEXTS = frozenset(
+    {
+        "图片描述",
+        "图像描述",
+        "图片",
+        "image description",
+        "image placeholder",
+    }
 )
 MARKDOWN_LINK_TARGET = re.compile(
     r"(?<!\!)\[(?P<label>[^\]]*)\]\((?P<target><[^>]+>|[^)\s]+)(?P<rest>[^)]*\))"
@@ -699,6 +717,30 @@ def markdown_image_alt_text(value: str) -> str:
     return value.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
 
 
+def promote_caption_to_generic_image_alt(lines: list[str]) -> None:
+    """Use an adjacent numbered figure caption to improve a placeholder alt.
+
+    A number of sources write an image and its visible caption as neighbouring
+    HTML blocks, but supply only a literal placeholder such as “图片描述” for
+    the image alt attribute.  The visible caption remains intact; this adds
+    the same useful description to Markdown's non-visual image text.
+    """
+
+    for index, line in enumerate(lines):
+        image = MARKDOWN_IMAGE_LINE.match(line)
+        if image is None or image.group("alt").strip().casefold() not in GENERIC_IMAGE_ALT_TEXTS:
+            continue
+        next_index = index + 1
+        while next_index < len(lines) and not lines[next_index].strip():
+            next_index += 1
+        if next_index == len(lines):
+            continue
+        caption = lines[next_index].strip()
+        if not FIGURE_CAPTION.match(caption):
+            continue
+        lines[index] = f"{image.group('prefix')}{markdown_image_alt_text(caption)}{image.group('suffix')}"
+
+
 def _html_image_to_markdown(tag: str, source: Path, snapshot: SourceSnapshot) -> str:
     raw_target = html_attribute(tag, "src")
     if raw_target is None:
@@ -1011,6 +1053,7 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
         align_div_depth += align_opens - closings_to_remove
         result.append(rewrite_assets(line, source, snapshot, closings_to_remove))
 
+    promote_caption_to_generic_image_alt(result)
     if not title_written:
         result.insert(0, f"### {part.title}")
         if not lines and part.empty_note:

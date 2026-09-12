@@ -27,7 +27,7 @@
     "hello-agents": {
       "commit": "4f7682ceafe573d07cd8a7d0b89908500e83227d",
       "commit_date": "2026-09-04T17:03:14+08:00",
-      "generator_version": "hello_agents@1;engine@8",
+      "generator_version": "hello_agents@1;engine@9",
       "manifest_sha256": "00dab919d6c8df5d3d237512c48666d646b13a495ab8098586285091fd4fc4dd",
       "ref": "main",
       "repository": "https://github.com/datawhalechina/hello-agents.git"

@@ -11,6 +11,7 @@ from tools.reference_core import (
     assert_document_contract,
     build_document,
     manifest_from_data,
+    promote_caption_to_generic_image_alt,
     rewrite_link_target,
     validate_manifest_sources,
 )
@@ -69,6 +70,10 @@ class ReferenceCoreTest(unittest.TestCase):
             "<div align=\"center\">\n"
             "<img src=\"../images/演示 图.png\" alt=\"示例图\">\n"
             "</div>\n\n"
+            "<div align=\"center\">\n"
+            "<img src=\"../images/演示 图.png\" alt=\"图片描述\">\n"
+            "<p>图 1.1 测试流程图</p>\n"
+            "</div>\n\n"
             "![另一张图](../images/演示%20图.png){width=60%}\n\n"
             "[下一章](next.md#more)\n\n"
             "![官方图](https://raw.githubusercontent.com/example/fixture-book/main/images/演示%20图.png)\n\n"
@@ -96,7 +101,7 @@ class ReferenceCoreTest(unittest.TestCase):
     def test_build_rewrites_images_links_and_html(self) -> None:
         document = build_document(self.snapshot)
         raw = f"https://raw.githubusercontent.com/example/fixture-book/{COMMIT}/images/%E6%BC%94%E7%A4%BA%20%E5%9B%BE.png"
-        self.assertEqual(document.count(raw), 3)
+        self.assertEqual(document.count(raw), 4)
         self.assertIn(f"https://github.com/example/fixture-book/blob/{COMMIT}/docs/next.md#more", document)
         self.assertIn("### 第一章", document)
         self.assertIn("#### 小节", document)
@@ -107,6 +112,10 @@ class ReferenceCoreTest(unittest.TestCase):
         self.assertNotIn("align=", document)
         self.assertNotIn("{width=60%}", document)
         self.assertIn("**图注**与*强调*", document)
+        self.assertIn(f"![示例图]({raw})", document)
+        self.assertIn(f"![图 1.1 测试流程图]({raw})", document)
+        self.assertIn("图 1.1 测试流程图", document)
+        self.assertNotIn("![图片描述]", document)
         self.assertNotIn("<strong", document)
         self.assertNotIn("<p", document)
 
@@ -143,11 +152,28 @@ class ReferenceCoreTest(unittest.TestCase):
         )
         document = build_document(sparse_snapshot)
         raw = f"https://raw.githubusercontent.com/example/fixture-book/{COMMIT}/images/%E6%BC%94%E7%A4%BA%20%E5%9B%BE.png"
-        self.assertEqual(document.count(raw), 4)
+        self.assertEqual(document.count(raw), 5)
 
     def test_preserves_malformed_third_party_url(self) -> None:
         target = "https://github.com/ethereum/wiki/blob/master/[中文]-權益證明機制FAQ.md"
         self.assertEqual(rewrite_link_target(target, self.root / "docs" / "first.md", self.snapshot), target)
+
+    def test_caption_promotes_only_generic_alt_with_adjacent_numbered_caption(self) -> None:
+        lines = [
+            "![图片描述](https://example.com/diagram.png)",
+            "",
+            "图 1.1 测试流程图",
+            "![图片描述](https://example.com/uncaptioned.png)",
+            "这是一段普通说明。",
+            "![已有说明](https://example.com/retained.png)",
+            "图 1.2 不应覆盖已有说明",
+        ]
+
+        promote_caption_to_generic_image_alt(lines)
+
+        self.assertEqual(lines[0], "![图 1.1 测试流程图](https://example.com/diagram.png)")
+        self.assertEqual(lines[3], "![图片描述](https://example.com/uncaptioned.png)")
+        self.assertEqual(lines[5], "![已有说明](https://example.com/retained.png)")
 
     def test_sparse_checkout_contains_only_listed_parts(self) -> None:
         self.assertEqual(_sparse_patterns(("docs/first.md", "docs/next.md")), ["/docs/first.md", "/docs/next.md"])
