@@ -159,7 +159,10 @@ reference/
       "title": "正文",
       "selection": {
         "include_globs": ["book/专栏/示例/*.md"],
-        "exclude_paths": ["book/专栏/示例/宣传文.md"]
+        "exclude_paths": ["book/专栏/示例/宣传文.md"],
+        "title_overrides": {
+          "book/专栏/示例/index.md": "课程导读"
+        }
       }
     }
   ],
@@ -167,7 +170,7 @@ reference/
 }
 ```
 
-清单中的仓库地址必须处于代码审查过的允许列表。章节可以使用 `parts` 精确列出文件和人工阅读顺序，也可以使用 `selection.include_globs` 选择同一目录下的文件并按自然文件名排序；后者适合编号专栏。一个清单可以声明多个主题章节，生成时依次成为二级标题，篇目成为三级标题，避免长文档只有一个“正文”章节。`exclude_paths` 是明确的人工排除清单，例如宣传文；它仍受 `required_globs` 覆盖，因此新增内容不会被静默遗漏。`render.source_format: html_article` 要求同时声明 `article_class`，引擎只提取对应容器，不把导航、页脚或 favicon 等站点外壳带入整合文档。
+清单中的仓库地址必须处于代码审查过的允许列表。章节可以使用 `parts` 精确列出文件和人工阅读顺序，也可以使用 `selection.include_globs` 选择同一目录下的文件并按自然文件名排序；后者适合编号专栏。`selection.title_overrides` 可为个别选中文件指定读者可见标题，适合无标题的 `index.md` 等页面。一个清单可以声明多个主题章节，生成时依次成为二级标题，篇目成为三级标题，避免长文档只有一个“正文”章节。`exclude_paths` 是明确的人工排除清单，例如宣传文；它仍受 `required_globs` 覆盖，因此新增内容不会被静默遗漏。`render.source_format: html_article` 要求同时声明 `article_class`，引擎只提取对应容器，不把导航、页脚或 favicon 等站点外壳带入整合文档。
 
 ### 锁文件
 

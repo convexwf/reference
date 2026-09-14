@@ -16,6 +16,14 @@
       "ref": "main",
       "repository": "https://github.com/bojieli/ai-infra-book.git"
     },
+    "all-in-rag": {
+      "commit": "cec956e80ae28d6c0ca84c9d39dddcf61ad633fd",
+      "commit_date": "2026-10-01T05:49:14+08:00",
+      "generator_version": "generic@1;engine@9",
+      "manifest_sha256": "9cc0e36f2121eb2e308624aeb950b7e76f443ae9bfeb78b42f860d981e35d61c",
+      "ref": "main",
+      "repository": "https://github.com/datawhalechina/all-in-rag.git"
+    },
     "easy-rl": {
       "commit": "6b7df8451f74f16d5efb6abc1b94a8746890a0ad",
       "commit_date": "2025-12-30T23:48:17+08:00",
@@ -23,6 +31,14 @@
       "manifest_sha256": "63010951f6eaa98a49613b99941dd4857f22df0cd50f443c440e5034909c46ff",
       "ref": "master",
       "repository": "https://github.com/datawhalechina/easy-rl.git"
+    },
+    "easy-vibe": {
+      "commit": "130e9b75b28b524e8cc74e615fd9733a4e2b330d",
+      "commit_date": "2026-08-25T09:49:19+08:00",
+      "generator_version": "easy_vibe@4;engine@9",
+      "manifest_sha256": "e1983ff8ee2bd440ad9163a250207c5ebc4abcdff1ad1c563814b3c56affadff",
+      "ref": "main",
+      "repository": "https://github.com/datawhalechina/easy-vibe.git"
     },
     "hello-agents": {
       "commit": "4f7682ceafe573d07cd8a7d0b89908500e83227d",
@@ -135,6 +151,22 @@
       "manifest_sha256": "ac31285ec864d7ff899bf04b08f3492131ea2bf4e530429efa227816568cc555",
       "ref": "main",
       "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "pumpkin-book": {
+      "commit": "58add39800dfbef65c93b2226d9a514f4cc9da0e",
+      "commit_date": "2026-01-21T20:59:15+08:00",
+      "generator_version": "generic@1;engine@9",
+      "manifest_sha256": "dbbbed51b4114732a73ff221099c10f787e610c19e3bd400e5dd53c0d968aa63",
+      "ref": "master",
+      "repository": "https://github.com/datawhalechina/pumpkin-book.git"
+    },
+    "whale-quant": {
+      "commit": "aa791a1b14c287d9809c3cdeabc9be3e5425157b",
+      "commit_date": "2026-01-15T21:02:09+08:00",
+      "generator_version": "whale_quant@1;engine@9",
+      "manifest_sha256": "96dff0c00ebd182479576c2f1ce4c7623b0123b096b3ed3db3055e83dbceea45",
+      "ref": "master",
+      "repository": "https://github.com/datawhalechina/whale-quant.git"
     }
   },
   "version": 1

@@ -8,6 +8,10 @@
 - `ai-infra-book` 的简体中文 AI Infra 教程
 - `easy-rl` 的中文完整教程
 - `hello-agents` 的中文主教程
+- `pumpkin-book` 的《南瓜书》机器学习公式详解
+- `whale-quant` 的量化金融与 Python 开发教程
+- `all-in-rag` 的 RAG 技术全栈指南
+- `easy-vibe` 的简体中文 AI 编程教程
 - `lianglianglee-architecture` 的《从 0 开始学架构》专栏
 - `lianglianglee-continuous-delivery` 的《持续交付36讲》专栏
 - `lianglianglee-distributed-finance` 的《分布式金融架构课》专栏

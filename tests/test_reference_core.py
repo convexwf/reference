@@ -175,6 +175,87 @@ class ReferenceCoreTest(unittest.TestCase):
         self.assertEqual(lines[3], "![图片描述](https://example.com/uncaptioned.png)")
         self.assertEqual(lines[5], "![已有说明](https://example.com/retained.png)")
 
+    def test_easy_vibe_adapter_removes_site_scaffolding_and_uses_source_titles(self) -> None:
+        (self.root / "docs" / "first.md").write_text(
+            "---\n"
+            "title: 站点标题\n"
+            "---\n\n"
+            "<script setup>\n"
+            "import DemoCard from '@theme/DemoCard.vue'\n"
+            "</script>\n\n"
+            "# 课程标题\n\n"
+            "<!-- 站点构建时的 TODO 注释 -->\n\n"
+            "<DemoCard\n"
+            "  title=\"互动内容\"\n"
+            "/>\n\n"
+            "# 后续章节\n\n"
+            "```python\n"
+            "import os\n"
+            "```\n",
+            encoding="utf-8",
+        )
+        data = manifest_data()
+        data["adapter"] = "easy_vibe"
+        manifest = manifest_from_data(data)
+        snapshot = replace(self.snapshot, manifest=manifest)
+
+        document = build_document(snapshot)
+
+        self.assertIn("- [课程标题](#课程标题)", document)
+        self.assertIn("### 课程标题", document)
+        self.assertIn("#### 后续章节", document)
+        self.assertIn("```python\nimport os\n```", document)
+        self.assertNotIn("title: 站点标题", document)
+        self.assertNotIn("<script", document)
+        self.assertNotIn("import DemoCard", document)
+        self.assertNotIn("<DemoCard", document)
+        self.assertNotIn("站点构建时的 TODO 注释", document)
+
+    def test_easy_vibe_adapter_preserves_nested_fenced_code_examples(self) -> None:
+        (self.root / "docs" / "first.md").write_text(
+            "# 嵌套围栏\n\n"
+            "````markdown\n"
+            "```html\n"
+            "<p>示例 HTML</p>\n"
+            "```\n"
+            "````\n",
+            encoding="utf-8",
+        )
+        data = manifest_data()
+        data["adapter"] = "easy_vibe"
+        manifest = manifest_from_data(data)
+        snapshot = replace(self.snapshot, manifest=manifest)
+
+        document = build_document(snapshot)
+
+        self.assertIn("<p>示例 HTML</p>", document)
+
+    def test_easy_vibe_adapter_uses_manifest_title_before_late_source_h1(self) -> None:
+        (self.root / "docs" / "first.md").write_text(
+            "这里是没有标题的导言。\n\n# 本节课你将学到\n",
+            encoding="utf-8",
+        )
+        data = manifest_data()
+        data["adapter"] = "easy_vibe"
+        manifest = manifest_from_data(data)
+        snapshot = replace(self.snapshot, manifest=manifest)
+
+        document = build_document(snapshot)
+
+        self.assertIn("### 第一章\n这里是没有标题的导言。\n\n#### 本节课你将学到", document)
+
+    def test_whale_quant_adapter_normalizes_space_before_tabs_in_prose(self) -> None:
+        (self.root / "docs" / "first.md").write_text("# 标题\n\n \t混合缩进的正文\n", encoding="utf-8")
+        data = manifest_data()
+        data["adapter"] = "whale_quant"
+        manifest = manifest_from_data(data)
+        snapshot = replace(self.snapshot, manifest=manifest)
+
+        document = build_document(snapshot)
+
+        self.assertNotIn(" \t", document)
+        self.assertIn("\t混合缩进的正文", document)
+
     def test_sparse_checkout_contains_only_listed_parts(self) -> None:
         self.assertEqual(_sparse_patterns(("docs/first.md", "docs/next.md")), ["/docs/first.md", "/docs/next.md"])
 
@@ -188,6 +269,7 @@ class ReferenceCoreTest(unittest.TestCase):
                 "selection": {
                     "include_globs": ["articles/*.md"],
                     "exclude_paths": ["articles/promo.md"],
+                    "title_overrides": {"articles/lesson.md": "自定义课名"},
                 },
             }
         ]
@@ -212,7 +294,7 @@ class ReferenceCoreTest(unittest.TestCase):
         )
         document = build_document(snapshot)
         raw = f"https://raw.githubusercontent.com/example/fixture-book/{COMMIT}/images/diagram.png%3Fwh=100"
-        self.assertIn("### lesson", document)
+        self.assertIn("### 自定义课名", document)
         self.assertIn("#### 跳过的源标题层级", document)
         self.assertIn("正文 **重点**，[资料]", document)
         self.assertIn(raw, document)
@@ -242,6 +324,9 @@ class ReferenceCoreTest(unittest.TestCase):
     def test_contract_rejects_local_image(self) -> None:
         with self.assertRaisesRegex(ReferenceError, "local image target"):
             assert_document_contract("# 文档\n\n![本地](images/local.png)\n")
+
+    def test_contract_allows_html_examples_in_inline_code(self) -> None:
+        assert_document_contract("# 文档\n\n使用 `<img>` 标签显示图片。\n")
 
 
 if __name__ == "__main__":

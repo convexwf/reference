@@ -1,0 +1,66 @@
+{
+  "id": "easy-vibe",
+  "title": "Easy-Vibe：从零开始学 AI 编程",
+  "source": {
+    "repository": "https://github.com/datawhalechina/easy-vibe.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "adapter": "easy_vibe",
+  "output": "markdown/easy-vibe/zh-CN-complete.md",
+  "front_matter": {
+    "authors": ["Datawhale Easy-Vibe 课程贡献者"],
+    "tags": ["ai-coding", "vibe-coding", "full-stack", "tutorial"]
+  },
+  "sections": [
+    {
+      "title": "导读",
+      "parts": [
+        {"path": "docs/zh-cn/guide/introduction.md", "title": "项目介绍"}
+      ]
+    },
+    {
+      "title": "第一阶段：从想法到原型",
+      "selection": {
+        "include_globs": ["docs/zh-cn/stage-1/**/*.md"]
+      }
+    },
+    {
+      "title": "第二阶段：全栈开发与项目实践",
+      "selection": {
+        "include_globs": ["docs/zh-cn/stage-2/**/*.md"]
+      }
+    },
+    {
+      "title": "第三阶段：AI 原生进阶开发",
+      "selection": {
+        "include_globs": ["docs/zh-cn/stage-3/**/*.md"],
+        "title_overrides": {
+          "docs/zh-cn/stage-3/ai-advanced/rag-introduction/index.md": "RAG 基础与企业级演进"
+        }
+      }
+    },
+    {
+      "title": "附录：技术知识库",
+      "selection": {
+        "include_globs": ["docs/zh-cn/appendix/**/*.md"]
+      }
+    },
+    {
+      "title": "Vibe 故事",
+      "selection": {
+        "include_globs": ["docs/zh-cn/vibe-stories/*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "docs/zh-cn/guide/introduction.md",
+      "docs/zh-cn/stage-1/**/*.md",
+      "docs/zh-cn/stage-2/**/*.md",
+      "docs/zh-cn/stage-3/**/*.md",
+      "docs/zh-cn/appendix/**/*.md",
+      "docs/zh-cn/vibe-stories/*.md"
+    ]
+  }
+}

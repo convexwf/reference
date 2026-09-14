@@ -16,6 +16,11 @@ class Adapter:
 
     identifier: str
     version: str
+    source_h1_titles: bool = False
+    promote_repeated_h1: bool = False
+    strip_vitepress_scaffolding: bool = False
+    robust_fences: bool = False
+    normalize_space_before_tabs: bool = False
 
 
 _ADAPTERS = {
@@ -23,6 +28,15 @@ _ADAPTERS = {
     "ai_agent_book": Adapter("ai_agent_book", "1"),
     "ai_infra_book": Adapter("ai_infra_book", "1"),
     "easy_rl": Adapter("easy_rl", "1"),
+    "easy_vibe": Adapter(
+        "easy_vibe",
+        "4",
+        source_h1_titles=True,
+        promote_repeated_h1=True,
+        strip_vitepress_scaffolding=True,
+        robust_fences=True,
+    ),
+    "whale_quant": Adapter("whale_quant", "1", normalize_space_before_tabs=True),
     "hello_agents": Adapter("hello_agents", "1"),
 }
 

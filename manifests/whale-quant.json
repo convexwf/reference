@@ -1,0 +1,69 @@
+{
+  "id": "whale-quant",
+  "title": "WhaleQuant：量化金融与 Python 开发教程",
+  "source": {
+    "repository": "https://github.com/datawhalechina/whale-quant.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "whale_quant",
+  "output": "markdown/whale-quant/zh-CN-complete.md",
+  "front_matter": {
+    "authors": ["Datawhale WhaleQuant 课程贡献者"],
+    "tags": ["quantitative-finance", "quantitative-trading", "python", "machine-learning", "tutorial"]
+  },
+  "sections": [
+    {
+      "title": "导读",
+      "parts": [
+        {"path": "docs/README.md", "title": "项目介绍"}
+      ]
+    },
+    {
+      "title": "第一部分：量化投资与金融基础",
+      "parts": [
+        {"path": "docs/ch01_投资与量化投资/ch01_投资与量化投资.md", "title": "第1章 投资与量化投资"},
+        {"path": "docs/ch02_金融市场的基础概念/ch02_金融市场的基础概念.md", "title": "第2章 金融市场的基础概念"},
+        {"path": "docs/ch02_金融市场的基础概念/2.1_宏观经济学基础概念.md", "title": "2.1 宏观经济学基础概念"},
+        {"path": "docs/ch02_金融市场的基础概念/2.2_货币金融学基础概念.md", "title": "2.2 货币金融学基础概念"},
+        {"path": "docs/ch02_金融市场的基础概念/2.3_投资学基础概念.md", "title": "2.3 投资学基础概念"},
+        {"path": "docs/ch02_金融市场的基础概念/2.4_数理统计的基本概念.md", "title": "2.4 数理统计的基本概念"}
+      ]
+    },
+    {
+      "title": "第二部分：数据、策略与回测",
+      "parts": [
+        {"path": "docs/ch03_股票数据获取/ch03_股票数据获取.md", "title": "第3章 股票数据获取"},
+        {"path": "docs/ch04_量化选股策略/ch04_量化选股策略.md", "title": "第4章 量化选股策略"},
+        {"path": "docs/ch05_量化择时策略/ch05_量化择时策略.md", "title": "第5章 量化择时策略"},
+        {"path": "docs/ch06_量化调仓策略/ch06_量化调仓策略.md", "title": "第6章 量化调仓策略"},
+        {"path": "docs/ch07_量化回测/ch07_量化回测.md", "title": "第7章 量化回测"}
+      ]
+    },
+    {
+      "title": "第三部分：机器学习量化策略",
+      "parts": [
+        {"path": "docs/ch08_机器学习与量化策略/ch08_机器学习与量化策略.md", "title": "第8章 机器学习与量化策略"},
+        {"path": "docs/ch08_机器学习与量化策略/8.1_小波分析去噪与股价预测.md", "title": "8.1 小波分析去噪与股价预测"},
+        {"path": "docs/ch08_机器学习与量化策略/8.2_机器学习分类与量化选股.md", "title": "8.2 机器学习分类与量化选股"},
+        {"path": "docs/ch08_机器学习与量化策略/8.3_时间序列预测与量化择时.md", "title": "8.3 时间序列预测与量化择时"},
+        {"path": "docs/ch08_机器学习与量化策略/8.4_非结构化数据与量化策略.md", "title": "8.4 非结构化数据与量化策略"},
+        {"path": "docs/ch08_机器学习与量化策略/8.5_机器学习量化策略基础实战.md", "title": "8.5 机器学习量化策略基础实战"},
+        {"path": "docs/ch08_机器学习与量化策略/8.6_深度学习量化策略基础实战.md", "title": "8.6 深度学习量化策略基础实战"}
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "docs/README.md",
+      "docs/ch01_*/*.md",
+      "docs/ch02_*/*.md",
+      "docs/ch03_*/*.md",
+      "docs/ch04_*/*.md",
+      "docs/ch05_*/*.md",
+      "docs/ch06_*/*.md",
+      "docs/ch07_*/*.md",
+      "docs/ch08_*/*.md"
+    ]
+  }
+}

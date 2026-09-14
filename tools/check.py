@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
+from adapters import get_adapter
 from tools.reference_core import (
     ReferenceError,
     assert_document_contract,
@@ -64,7 +65,7 @@ def main() -> int:
             if not destination.is_file():
                 raise ReferenceError(f"{manifest.identifier}: missing generated Markdown: {destination}")
             actual = destination.read_text(encoding="utf-8")
-            assert_document_contract(actual)
+            assert_document_contract(actual, robust_fences=get_adapter(manifest.adapter).robust_fences)
             if actual != expected:
                 raise ReferenceError(f"{manifest.identifier}: generated Markdown is stale; run tools.update")
             print(f"valid: {manifest.identifier} ({snapshot.commit[:12]})")

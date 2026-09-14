@@ -51,6 +51,7 @@ class SectionSpec:
     parts: tuple[PartSpec, ...]
     include_globs: tuple[str, ...] = ()
     exclude_paths: tuple[str, ...] = ()
+    title_overrides: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -137,6 +138,28 @@ FIGCAPTION_TAG = re.compile(r"</?figcaption(?:\s+[^>]*)?>", re.IGNORECASE)
 FENCE_MARKER = re.compile(r"^\s*(?P<fence>`{3,}|~{3,})")
 HEADING = re.compile(r"^(#{1,6})(\s+)(.*?)(\s*)$")
 PANDOC_HEADING_ATTRIBUTES = re.compile(r"\s*\{[^{}\n]*\}\s*$")
+VITEPRESS_COMPONENT_TAG = re.compile(r"^\s*</?(?P<tag>[A-Z][A-Za-z0-9.-]*)\b")
+VITEPRESS_SCRIPT_OPEN = re.compile(r"^\s*<script(?:\s|>)", re.IGNORECASE)
+
+
+def advance_fence_state(line: str, state: tuple[str, int] | None) -> tuple[str, int] | None:
+    """Track Markdown fences without mistaking nested shorter fences for closes.
+
+    A four-backtick fenced example may legitimately show a triple-backtick
+    fenced snippet.  Only a marker with the same character, at least the
+    opening length, and no info string closes the outer block.
+    """
+
+    match = FENCE_MARKER.match(line)
+    if not match:
+        return state
+    marker = match.group("fence")
+    if state is None:
+        return (marker[0], len(marker))
+    character, minimum_length = state
+    if marker[0] == character and len(marker) >= minimum_length and not line[match.end() :].strip():
+        return None
+    return state
 
 
 def _require_string(value: object, name: str, origin: str) -> str:
@@ -203,6 +226,7 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
         parts: list[PartSpec] = []
         include_globs: tuple[str, ...] = ()
         exclude_paths: tuple[str, ...] = ()
+        title_overrides: tuple[tuple[str, str], ...] = ()
         if parts_data is not None:
             if not isinstance(parts_data, list) or not parts_data:
                 raise ReferenceError(f"{section_origin}: parts must be a non-empty array")
@@ -231,6 +255,9 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
             exclude_data = selection_data.get("exclude_paths", [])
             if not isinstance(exclude_data, list) or not all(isinstance(item, str) for item in exclude_data):
                 raise ReferenceError(f"{section_origin}: selection.exclude_paths must be a string array")
+            title_data = selection_data.get("title_overrides", {})
+            if not isinstance(title_data, dict):
+                raise ReferenceError(f"{section_origin}: selection.title_overrides must be an object")
             include_globs = tuple(
                 _safe_relative(item, "selection.include_globs entry", section_origin)
                 for item in include_data
@@ -239,7 +266,16 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
                 _safe_relative(item, "selection.exclude_paths entry", section_origin)
                 for item in exclude_data
             )
-        sections.append(SectionSpec(section_title, tuple(parts), include_globs, exclude_paths))
+            title_overrides = tuple(
+                sorted(
+                    (
+                        _safe_relative(path, "selection.title_overrides key", section_origin),
+                        _require_string(title, "selection.title_overrides value", section_origin),
+                    )
+                    for path, title in title_data.items()
+                )
+            )
+        sections.append(SectionSpec(section_title, tuple(parts), include_globs, exclude_paths, title_overrides))
 
     completeness = data.get("completeness", {})
     if not isinstance(completeness, dict):
@@ -413,7 +449,15 @@ def resolve_section_parts(section: SectionSpec, repository_entries: Mapping[str,
     ]
     if not candidates:
         raise ReferenceError(f"{section.title}: selection matched no source files")
-    return tuple(PartSpec(path=path, title=_title_from_path(path)) for path in sorted(candidates, key=_natural_path_key))
+    title_overrides = dict(section.title_overrides)
+    unmatched_overrides = set(title_overrides) - set(candidates)
+    if unmatched_overrides:
+        names = ", ".join(sorted(unmatched_overrides))
+        raise ReferenceError(f"{section.title}: title overrides do not match selected source files: {names}")
+    return tuple(
+        PartSpec(path=path, title=title_overrides.get(path, _title_from_path(path)))
+        for path in sorted(candidates, key=_natural_path_key)
+    )
 
 
 def resolved_sections(snapshot: SourceSnapshot) -> tuple[tuple[SectionSpec, tuple[PartSpec, ...]], ...]:
@@ -741,6 +785,65 @@ def promote_caption_to_generic_image_alt(lines: list[str]) -> None:
         lines[index] = f"{image.group('prefix')}{markdown_image_alt_text(caption)}{image.group('suffix')}"
 
 
+def strip_vitepress_scaffolding(source_text: str) -> str:
+    """Remove site-runtime constructs while preserving Markdown and code blocks.
+
+    VitePress permits page-level YAML, Vue setup blocks and custom components.
+    Those constructs add navigation or interactive widgets in the source site,
+    but do not render in a portable single Markdown document.  Component tags
+    are removed while their ordinary Markdown children remain available to
+    readers; fenced code is never altered.
+    """
+
+    lines = source_text.splitlines()
+    if lines and lines[0].strip() == "---":
+        for index, line in enumerate(lines[1:], start=1):
+            if line.strip() == "---":
+                lines = lines[index + 1 :]
+                break
+
+    result: list[str] = []
+    fence_state: tuple[str, int] | None = None
+    in_script = False
+    in_html_comment = False
+    pending_component_open = False
+    for line in lines:
+        if FENCE_MARKER.match(line):
+            fence_state = advance_fence_state(line, fence_state)
+            result.append(line)
+            continue
+        if fence_state is not None:
+            result.append(line)
+            continue
+        if in_html_comment:
+            if "-->" in line:
+                in_html_comment = False
+            continue
+        if line.lstrip().startswith("<!--"):
+            if "-->" not in line:
+                in_html_comment = True
+            continue
+        if in_script:
+            if "</script>" in line.lower():
+                in_script = False
+            continue
+        if VITEPRESS_SCRIPT_OPEN.match(line):
+            if "</script>" not in line.lower():
+                in_script = True
+            continue
+        if pending_component_open:
+            if ">" in line:
+                pending_component_open = False
+            continue
+        component = VITEPRESS_COMPONENT_TAG.match(line)
+        if component:
+            if not line.lstrip().startswith("</") and ">" not in line:
+                pending_component_open = True
+            continue
+        result.append(line)
+    return "\n".join(result)
+
+
 def _html_image_to_markdown(tag: str, source: Path, snapshot: SourceSnapshot) -> str:
     raw_target = html_attribute(tag, "src")
     if raw_target is None:
@@ -767,6 +870,12 @@ def rewrite_semantic_html(line: str) -> str:
     line = HTML_STRONG_TAG.sub(strong_replacer, line)
     line = HTML_EMPHASIS_TAG.sub(emphasis_replacer, line)
     return HTML_PARAGRAPH_TAG.sub("", line)
+
+
+def normalize_space_before_tabs(line: str) -> str:
+    """Avoid whitespace-check failures from prose copied with mixed indentation."""
+
+    return re.sub(r" +\t", "\t", line)
 
 
 def rewrite_assets(line: str, source: Path, snapshot: SourceSnapshot, align_div_closes: int = 0) -> str:
@@ -1008,22 +1117,31 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
 
     source = _source_path(snapshot, part.path)
     source_text = source.read_text(encoding="utf-8")
+    adapter = get_adapter(snapshot.manifest.adapter)
+    if adapter.strip_vitepress_scaffolding:
+        source_text = strip_vitepress_scaffolding(source_text)
     if snapshot.manifest.source_format == "html_article":
         assert snapshot.manifest.article_class is not None
         source_text = html_article_to_markdown(source_text, snapshot.manifest.article_class, source, snapshot)
     lines = source_text.splitlines()
+    first_nonempty = next((line for line in lines if line.strip()), "")
+    source_h1_is_leading = bool(HEADING.match(first_nonempty) and first_nonempty.startswith("# "))
     result: list[str] = []
     in_fence = False
+    fence_state: tuple[str, int] | None = None
     align_div_depth = 0
     title_written = False
     previous_heading_level = 3
 
     for line in lines:
         if FENCE_MARKER.match(line):
-            in_fence = not in_fence
+            if adapter.robust_fences:
+                fence_state = advance_fence_state(line, fence_state)
+            else:
+                in_fence = not in_fence
             result.append(line.rstrip())
             continue
-        if in_fence:
+        if fence_state is not None if adapter.robust_fences else in_fence:
             # Line-ending whitespace has no meaning in a fenced block, while
             # leaving it intact makes generated output fail Git whitespace
             # checks and creates needless future diffs.
@@ -1035,23 +1153,34 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
             level = len(heading.group(1))
             heading_text = PANDOC_HEADING_ATTRIBUTES.sub("", heading.group(3)).strip()
             if not title_written and level == 1:
-                result.append(f"### {part.title}")
+                title = heading_text if adapter.source_h1_titles and source_h1_is_leading else part.title
+                result.append(f"### {title}")
                 title_written = True
                 previous_heading_level = 3
             else:
                 # Static-site HTML sometimes skips heading levels for visual
                 # styling.  Preserve depth where possible, but fill a gap so
                 # the portable document always has a valid outline.
+                if adapter.promote_repeated_h1 and title_written and level == 1:
+                    level = 2
                 rendered_level = min(level + 2, 6, previous_heading_level + 1)
                 result.append(f"{'#' * rendered_level} {heading_text}")
                 previous_heading_level = rendered_level
             continue
 
+        if adapter.source_h1_titles and not title_written and line.strip():
+            result.append(f"### {part.title}")
+            title_written = True
+            previous_heading_level = 3
+
         align_opens = len(ALIGN_DIV_TAG.findall(line))
         align_closes = len(BARE_DIV_CLOSE_TAG.findall(line))
         closings_to_remove = min(align_div_depth + align_opens, align_closes)
         align_div_depth += align_opens - closings_to_remove
-        result.append(rewrite_assets(line, source, snapshot, closings_to_remove))
+        rendered_line = rewrite_assets(line, source, snapshot, closings_to_remove)
+        if adapter.normalize_space_before_tabs:
+            rendered_line = normalize_space_before_tabs(rendered_line)
+        result.append(rendered_line)
 
     promote_caption_to_generic_image_alt(result)
     if not title_written:
@@ -1111,19 +1240,29 @@ def build_document(snapshot: SourceSnapshot) -> str:
 
     validate_manifest_sources(snapshot)
     sections = resolved_sections(snapshot)
+    rendered_sections = tuple(
+        (section, tuple((part, transform_part(part, snapshot)) for part in parts))
+        for section, parts in sections
+    )
+
+    def rendered_part_title(part: PartSpec, content: str) -> str:
+        heading = HEADING.match(content.splitlines()[0]) if content else None
+        return heading.group(3).strip() if heading else part.title
+
     lines = _front_matter(snapshot)
-    for section, parts in sections:
+    for section, parts in rendered_sections:
         lines.append(f"- [{section.title}](#{slugify(section.title)})")
-        for part in parts:
-            lines.append(f"  - [{part.title}](#{slugify(part.title)})")
+        for part, content in parts:
+            title = rendered_part_title(part, content)
+            lines.append(f"  - [{title}](#{slugify(title)})")
     lines.extend(["", "---", ""])
-    for section, parts in sections:
+    for section, parts in rendered_sections:
         lines.extend([f"## {section.title}", ""])
-        for part in parts:
-            lines.append(transform_part(part, snapshot).rstrip())
+        for _, content in parts:
+            lines.append(content.rstrip())
             lines.append("")
     document = "\n".join(lines).rstrip() + "\n"
-    assert_document_contract(document)
+    assert_document_contract(document, robust_fences=get_adapter(snapshot.manifest.adapter).robust_fences)
     return document
 
 
@@ -1133,27 +1272,55 @@ def _clean_markdown_target(target: str) -> str:
     return target
 
 
-def assert_document_contract(document: str) -> None:
+def without_inline_code_spans(line: str) -> str:
+    """Remove Markdown inline-code spans before applying portability checks."""
+
+    result: list[str] = []
+    cursor = 0
+    while cursor < len(line):
+        opening = line.find("`", cursor)
+        if opening == -1:
+            result.append(line[cursor:])
+            break
+        result.append(line[cursor:opening])
+        marker_end = opening
+        while marker_end < len(line) and line[marker_end] == "`":
+            marker_end += 1
+        marker = line[opening:marker_end]
+        closing = line.find(marker, marker_end)
+        if closing == -1:
+            result.append(line[opening:])
+            break
+        cursor = closing + len(marker)
+    return "".join(result)
+
+
+def assert_document_contract(document: str, robust_fences: bool = False) -> None:
     """Reject output that is stale, malformed, or not portable enough to publish."""
 
     in_fence = False
+    fence_state: tuple[str, int] | None = None
     h1_count = 0
     previous_level = 0
     for number, line in enumerate(document.splitlines(), start=1):
         if FENCE_MARKER.match(line):
-            in_fence = not in_fence
+            if robust_fences:
+                fence_state = advance_fence_state(line, fence_state)
+            else:
+                in_fence = not in_fence
             continue
-        if in_fence:
+        if fence_state is not None if robust_fences else in_fence:
             continue
         if line.rstrip() != line:
             raise ReferenceError(f"generated document has trailing whitespace at line {number}")
-        if HTML_IMAGE_TAG.search(line) or ALIGN_DIV_TAG.search(line) or FIGURE_TAG.search(line):
+        checked_line = without_inline_code_spans(line)
+        if HTML_IMAGE_TAG.search(checked_line) or ALIGN_DIV_TAG.search(checked_line) or FIGURE_TAG.search(checked_line):
             raise ReferenceError(f"generated document keeps unsupported HTML image wrapper at line {number}")
-        if HTML_STRONG_TAG.search(line) or HTML_EMPHASIS_TAG.search(line) or HTML_PARAGRAPH_TAG.search(line):
+        if HTML_STRONG_TAG.search(checked_line) or HTML_EMPHASIS_TAG.search(checked_line) or HTML_PARAGRAPH_TAG.search(checked_line):
             raise ReferenceError(f"generated document keeps presentational HTML at line {number}")
-        if PANDOC_IMAGE_ATTRIBUTES.search(line):
+        if PANDOC_IMAGE_ATTRIBUTES.search(checked_line):
             raise ReferenceError(f"generated document keeps Pandoc image attributes at line {number}")
-        for match in MARKDOWN_IMAGE_TARGET.finditer(line):
+        for match in MARKDOWN_IMAGE_TARGET.finditer(checked_line):
             target = _clean_markdown_target(match.group("target"))
             if not is_external_target(target):
                 raise ReferenceError(f"generated document keeps local image target at line {number}: {target}")
@@ -1166,7 +1333,7 @@ def assert_document_contract(document: str) -> None:
         if previous_level and level > previous_level + 1:
             raise ReferenceError(f"generated document has heading-level jump at line {number}")
         previous_level = level
-    if in_fence:
+    if fence_state is not None if robust_fences else in_fence:
         raise ReferenceError("generated document has an unclosed fenced code block")
     if h1_count != 1:
         raise ReferenceError(f"generated document must contain exactly one level-one heading, found {h1_count}")
