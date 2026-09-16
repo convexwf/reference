@@ -45,11 +45,15 @@ jobs:
             echo "No upstream source changes."
             exit 0
           fi
-          allowed='^(sources\.lock\.json|markdown/)'
-          if git diff --name-only | grep -Ev "$allowed"; then
-            echo "Refusing to automate files outside sources.lock.json and markdown/." >&2
-            exit 1
-          fi
+          while IFS= read -r -d '' path; do
+            case "$path" in
+              sources.lock.json|markdown/*) ;;
+              *)
+                printf 'Refusing to automate unexpected file: %s\n' "$path" >&2
+                exit 1
+                ;;
+            esac
+          done < <(git diff --name-only -z)
           branch="automation/source-sync-${GITHUB_RUN_ID}"
           git switch -c "$branch"
           git config user.name "reference-source-sync[bot]"
