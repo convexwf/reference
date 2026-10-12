@@ -9,7 +9,7 @@ tags:
   - "llm"
   - "tutorial"
 published_at: "2026-09-10"
-updated_at: "2026-09-14"
+updated_at: "2026-10-01"
 ---
 
 # 深入理解 AI Infra：量化分析与系统设计
@@ -21,9 +21,9 @@ updated_at: "2026-09-14"
 | 文档标题 | 深入理解 AI Infra：量化分析与系统设计 |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [bojieli/ai-infra-book](https://github.com/bojieli/ai-infra-book) |
-| 锁定提交 | [58636943ba89](https://github.com/bojieli/ai-infra-book/commit/58636943ba89f24b854f04f0f8f2fffe7b323829) |
-| 提交时间 | 2026-09-15T09:31:35+08:00 |
-| 生成器版本 | `ai_infra_book@1;engine@8` |
+| 锁定提交 | [3bdcb4fcab73](https://github.com/bojieli/ai-infra-book/commit/3bdcb4fcab73010eeaccf31cc10a8242a895d82e) |
+| 提交时间 | 2026-10-01T16:09:15+08:00 |
+| 生成器版本 | `ai_infra_book@1;engine@9` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
 
@@ -91,7 +91,7 @@ updated_at: "2026-09-14"
 
 如今，UB 已应用于昇腾 910C 和 950 系统。截至本书写作时，基于 UB 的 NPU AI 训练集群架构是国内唯一支持万卡以上规模的架构。今天回头看，万卡训练的必要性已经不难理解。系统设计需要同时看清眼前的负载和正在变化的条件。八张卡能够完成当时熟悉的任务，是一种实际经验；更大的计算需求会推动更大规模的协作，是对未来的判断。要说服别人，就需要把这一判断所依赖的趋势、资源和代价讲清楚。
 
-从模型推理加速到 AKG，再到 UB，这些工作跨越了不同的尺度，我反复遇到的却是相通的问题：计算需要的数据在哪里，数据搬移的开销是否压过了必要的计算？如果修改系统和应用的抽象，让系统掌握更多来自应用的信息，是否可以降低数据搬移的开销？
+从模型推理加速到 AKG，再到 UB，这些工作跨越了不同的尺度，我反复遇到的却是相通的问题：计算需要的数据在哪里，数据搬移的开销是否压过了必要的计算？如果修改系统和应用的抽象，让系统掌握更多来自应用的信息，是否可以降低数据搬移的开销？这些工作都始于某个比例的变化：片外存储的读取速度满足不了计算需求，促使我们用 FPGA 加速 Bing 排序；算力需求的增长快于单芯片能力的提升，促使我们推动万卡互联。
 
 2023 年离开华为创业以后，这些问题又以另一种方式出现在我面前。我们做的 Agent 需要与人实时语音交互。用户说完一句话，要等多久才能听到回答？一通电话持续半个小时，服务成本又是多少？
 
@@ -105,11 +105,15 @@ updated_at: "2026-09-14"
 
 近年来的模型设计中已经出现了这种跨层配合。DeepSeek V4 和 V4.1 是很好的例子。V4 在模型架构中就充分考虑了 Infra 的效率：将局部窗口、上下文压缩和稀疏选择结合起来，减少长上下文需要保存的状态和反复读取的数据。显存容量、存储带宽与计算之间的约束，直接影响了模型怎样表示和使用上下文。
 
-V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal Encoder-Decoder，CED）架构重新划分理解与生成的职责，针对 Agent 输入多、输出相对少的负载重新安排计算投入（见第 1.1.3 节），说明系统效率的要求能够推动模型架构本身的创新。
+V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal Encoder-Decoder，CED）架构重新划分理解与生成的职责，针对 Agent 输入多、输出相对少的负载重新安排计算投入，说明系统效率的要求能够推动模型架构本身的创新。
 
 我希望读者也能建立这种跨层理解：看到一种模型结构时，能想到它要求加速器做哪些工作；看到一种硬件能力时，能判断怎样改变模型与执行方式，才能真正把它用起来。
 
 贯穿这些分析的一条线索，是**数据搬移**。计算单元需要取得权重和中间结果，多个加速器需要交换各自算出的数据，远端服务需要接收输入并返回结果。我们看到的是模型在生成答案，底层发生的却是一次次读取、计算、保存和交接。数据放在哪里、重复使用多少次、需要经过哪些接口、后续工作是否必须等待，都会影响执行效率。
+
+可以把处理器和存储器想象成一座大楼，把数据访问点想象成厕所。如果所有厕所都集中在一楼，楼上的人每次使用都要下楼，距离和拥堵会限制整座大楼的效率；如果每层都建厕所，访问距离缩短，却要占用更多面积，还要安排管道、维护和容量。计算机体系结构也在做同样的取舍：把容量较大的存储放在较远位置，把高频使用的数据放进寄存器、缓存或片上缓冲，再通过总线和互联安排数据的移动。AI 加速器的许多设计，都是在回答同一个问题：哪些数据值得放得更近，应该准备多少，何时搬入，何时释放。
+
+从顺序纸带式的计算模型，到冯·诺依曼计算机的可寻址存储器，再到 CPU 的多级缓存、GPU 的共享内存和 AI 加速器的片上缓冲，体系结构一直在改变数据与计算单元之间的距离。真正延续下来的问题，是如何在通用性、容量、带宽、延迟和硬件成本之间安排数据路径。Transformer 同时产生权重、激活、KV 状态和专家输入等不同访问模式，单靠一套自动缓存策略很难覆盖全部情况，因此需要分块、融合、流水和专用互联共同参与。
 
 因此，本书反复追问五个问题：**搬什么、搬多少、搬几次、经过哪里、谁必须等它。** 从芯片上的存储层次，到超节点（通过高带宽互联紧密协作的一组加速器）和数据中心网络，再到终端、边缘与云（端边云）之间的任务分工，这五个问题都能帮助我们找到需要计算的量。保留数据可以减少重复计算，却会占用容量；扩大并行规模可以分担工作，却会增加通信；减少传输可能需要更多本地计算，也可能改变结果质量。
 
@@ -119,7 +123,7 @@ V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal En
 
 十二章按照“理解工作需求—认识执行资源—组织完整系统”的顺序展开，如图 0-1 所示。第一部分是模型与负载（第 1—3 章），建立分析方法，说明计算量、数据量和任务依赖从哪里来。第二部分是芯片与系统（第 4—7 章），从单加速器执行走向多加速器协作，说明资源怎样承担这些工作。第三部分是推理与训练系统（第 8—12 章），研究如何组织请求、模型状态和训练过程，并延伸到任务运行环境与端边云部署。
 
-![十二章的阅读顺序分为模型与负载、芯片与系统、推理与训练系统三个阶段。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-book-roadmap.svg)
+![十二章的阅读顺序分为模型与负载、芯片与系统、推理与训练系统三个阶段。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-book-roadmap.svg)
 
 *图 0-1　全书结构与阅读顺序。前一部分为后一部分提供分析依据；进入服务与部署之后，还要根据任务质量、完成时间和成本，重新检查模型与资源选择。*
 
@@ -214,7 +218,7 @@ V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal En
 
 图 1-1 对照了这两种组织方式。右侧的 Agent 负责组织上下文、调用模型，并执行模型选择的工具。其中，**模型接口**规定应用如何提交输入、取得输出。接口背后的运行系统计算模型输出，并保存后续步骤需要复用的上下文状态；加速器是适合并行执行大量模型运算的处理器，内存保存参数与运行状态，互联在设备之间传递数据。开发者从上层改变任务，底层要把这些变化落实为具体运算与数据访问。
 
-![应用行为的表达方式与执行路径。左侧通过代码组织程序，右侧通过上下文调用模型；实线表示向下的执行依赖，虚线表示工具执行仍需操作系统。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-programmability.svg)
+![应用行为的表达方式与执行路径。左侧通过代码组织程序，右侧通过上下文调用模型；实线表示向下的执行依赖，虚线表示工具执行仍需操作系统。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-programmability.svg)
 
 *图 1-1　应用行为的表达方式与执行路径。左侧通过代码组织程序，右侧通过上下文调用模型；实线表示向下的执行依赖，虚线表示工具执行仍需传统操作系统。加速器、内存与互联分别承担模型计算、数据存储和设备间传输的职责。*
 
@@ -230,7 +234,7 @@ V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal En
 
 华为半导体首席科学家廖恒博士提出 “十八层宝塔”，用来描述从应用、模型与软件系统，到芯片、制造工艺和底层物理的多个层次。他指出，大多数人只了解其中的一层或几层，因而错失了许多跨层联合优化的机会。[^panorama] 图 1-2 借鉴这一方法，将本书内容划分为六个层次：
 
-![从应用到硬件的六层分工。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-1-panorama.svg)
+![从应用到硬件的六层分工。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-1-panorama.svg)
 
 *图 1-2　从应用到硬件的六层分工。*
 
@@ -254,7 +258,7 @@ V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal En
 
 **推理实例**是能够独立完成模型请求的一组执行资源，可以由一个或多个加速器组成。每次请求交由其中一个实例处理。图 1-3 展示了请求分配与实例内部执行的分工：服务路由器是选择请求执行位置的软件；路由器选定实例后，由实例内部安排加速器执行模型。先分清谁负责执行，才能知道一份权重应放在哪里、一份中间结果应传给谁。
 
-![一次请求先由路由器选择推理实例，再由实例内部的调度器安排执行。灰色外框圈出同一个实例，实线表示请求和工作提交的方向。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-2-request.svg)
+![一次请求先由路由器选择推理实例，再由实例内部的调度器安排执行。灰色外框圈出同一个实例，实线表示请求和工作提交的方向。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-2-request.svg)
 
 *图 1-3　一次请求先由路由器选择推理实例，再由实例内部的调度器安排执行。灰色外框圈出同一个实例，实线表示请求和工作提交的方向。*
 
@@ -266,13 +270,13 @@ V4.1 Flash 更进一步，用非对称的因果编码器—解码器（Causal En
 
 上述每步计算反复使用的数据，首先是模型权重。模型权重是训练得到、用于把输入变换成输出的数值参数。权重在实例启动或模型切换时从存储加载，随后持续存放在显存中（称为驻留），供多次请求使用。生成时，GPU 计算单元从显存读取当前层的权重和上下文状态，完成运算，再将结果交给下一层。同一份数据由此经历两种频率不同的搬移：加载把模型送到加速器，执行则反复把所需数据送到计算单元。在多卡实例中，一张卡算出的中间结果还要传给其他卡，后续计算才能继续。中间张量是运算产生并交给后续运算的多维数值数组，矩阵就是二维张量。**外部请求可能只有一小段文字，内部搬移的数据却包括大得多的权重、状态和中间张量。**
 
-![权重加载一次，生成时逐步读取。蓝框表示显存中持续保存的同一份权重，三个绿框表示先后发生的计算；箭头表示读取或结果依赖，步骤间距不代表耗时。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-weight-lifetime.svg)
+![权重加载一次，生成时逐步读取。蓝框表示显存中持续保存的同一份权重，三个绿框表示先后发生的计算；箭头表示读取或结果依赖，步骤间距不代表耗时。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-weight-lifetime.svg)
 
 *图 1-4　权重加载一次，生成时逐步读取。蓝框表示显存中持续保存的同一份权重，三个绿框表示先后发生的计算；箭头表示读取或结果依赖，步骤间距不代表耗时。*
 
 图 1-5 展示这些软件功能对应的硬件。数据中心包含入口与 CPU 服务、共享存储，以及由多个超节点构成的加速器资源池。超节点是一组通过高带宽互联紧密协作的加速器，可以分布在多个服务器或计算托盘（机柜内装有 CPU 与加速器的可插拔单元）中。
 
-![物理连接的两层视图。上方用数据中心网络连接服务与超节点，下方放大一个超节点，显示主机、网卡、GPU 与显存；线条展示数据路径，设备数量用于示意。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-3-datacenter.svg)
+![物理连接的两层视图。上方用数据中心网络连接服务与超节点，下方放大一个超节点，显示主机、网卡、GPU 与显存；线条展示数据路径，设备数量用于示意。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-3-datacenter.svg)
 
 *图 1-5　物理连接的两层视图。上方用数据中心网络连接服务与超节点，下方放大一个超节点，显示主机、网卡、GPU 与显存；线条展示数据路径，设备数量用于示意。*
 
@@ -291,6 +295,14 @@ AI 网络与传统数据中心网络由此形成了分工。服务入口传递�
 先介绍一组贯穿全书的真实模型。DeepSeek V4 和 V4.1 Flash 提供了一条可以持续追踪的线索。V4 已经通过上下文压缩与稀疏访问改变存储和读取需求，V4.1 Flash 则进一步重新划分模型内部的职责。传统的 decoder-only（仅解码器）模型通常让输入 token 经过完整主干，逐层建立生成所需的状态；V4.1 Flash 采用**因果编码器—解码器（Causal Encoder-Decoder，CED）**架构，由编码器形成上下文表示，解码器从这些表示取得全局信息。大量输入 token 因此无需经过解码器主体的计算；生成新 token 时，模型仍依次经过编码器与解码器。输入与输出的执行路径并不对称，模型因此能针对 Agent 输入多、输出相对少的负载重新安排计算投入。[^v41-case]
 
 这是一项架构层面的选择，也会改变系统需要保存和传输什么。本书将围绕同一类会话展开讨论：Agent 等待工具返回，恢复此前上下文，处理新增输入，再继续生成。第 2 章解释 CED 的结构与状态，第 3 章分解输入和生成负载，第 4—7 章追踪加速器执行和数据路径，第 8、9 章讨论如何缓存状态、分配请求，最后比较完整任务的执行效果。开源模型 Qwen3 提供基础算例，用于建立计算方法；V4／V4.1 用于检验模型与系统如何共同改变。
+
+##### 1.1.4 从存储程序到数据流执行
+
+理解 AI 加速器，可以先把处理器和存储器想象成一座大楼。所有厕所都集中在一楼时，楼上的人每次使用都要下楼，距离和拥堵会限制整座大楼的效率；如果每层都建厕所，访问距离缩短，却要占用更多面积，还要安排管道、维护和容量。寄存器、缓存、片上缓冲、显存和主存，正是不同距离、容量和成本的数据访问点。
+
+计算机体系结构的演进，始终围绕着怎样缩短这段距离展开。存储程序计算机用可寻址存储器保存指令和数据；处理器速度提高以后，寄存器、多级缓存、预取、向量指令和并行执行相继出现，用更近的存储和更多的在途请求减少等待。GPU 和 AI 加速器又把数据复用变成显式的执行结构：线程协作使用共享内存，矩阵单元沿固定路径复用操作数，搬移引擎与计算单元并行工作，编译器安排分块、布局和缓冲。
+
+Transformer 的 prefill、decode、KV 访问和专家路由具有不同的复用范围，不能只依赖一套自动缓存策略。加速器因此需要把计算单元、局部存储和数据通路一起设计；后面的章节会从这些资源出发，说明一次模型执行怎样变成可计算、可搬移、可调度的系统工作。
 
 #### 1.2 系统设计的关键数字
 
@@ -319,7 +331,7 @@ AI 网络与传统数据中心网络由此形成了分工。服务入口传递�
 
 取其中三个历史数字：主存访问约 100 ns，同一数据中心内的一次往返约 500,000 ns，磁盘寻道约 10,000,000 ns。换算单位后即 0.1 μs、0.5 ms 和 10 ms，如图 1-6 所示。
 
-![Jeff Dean 2009 年演讲中的三种操作延迟。横轴为对数刻度，每相邻数量级相差十倍；先识别操作，再比较它们在串行等待中的代价。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-4-numbers.svg)
+![Jeff Dean 2009 年演讲中的三种操作延迟。横轴为对数刻度，每相邻数量级相差十倍；先识别操作，再比较它们在串行等待中的代价。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-4-numbers.svg)
 
 *图 1-6　Jeff Dean 2009 年演讲中的三种操作延迟。横轴为对数刻度，每相邻数量级相差十倍；先识别操作，再比较它们在串行等待中的代价。*
 
@@ -400,7 +412,7 @@ $$
 
 本书采用的分组量化方案每 128 个权重共享一个 scale，同时让部分参数继续使用 BF16。按真实模型配置计算，8 比特方案的全部权重及量化附加数据约占 73.73 GB，可以放入一张 H100 SXM，留下约 6.27 GB。图 1-7 将两种办法放在相同的容量刻度上：BF16 权重分到两张卡，或者量化后放入一张卡。
 
-![DeepSeek-R1-Distill-Llama-70B 的 BF16 权重与 8 比特量化权重在 H100 SXM 上的容量比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-capacity-path.svg)
+![DeepSeek-R1-Distill-Llama-70B 的 BF16 权重与 8 比特量化权重在 H100 SXM 上的容量比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-capacity-path.svg)
 
 *图 1-7　DeepSeek-R1-Distill-Llama-70B：BF16 权重共 141.11 GB，两卡均分后每卡约 70.55 GB；分组 8 比特量化后共 73.73 GB。各条使用相同尺度，虚线表示一张 H100 SXM 的名义 80 GB 容量。柱长只计权重及相应量化附加数据。*
 
@@ -434,7 +446,7 @@ $$
 
 单请求的容量预算上一节已经检查。生成速度方面，权重加载到显存之后，每一步仍需将参与计算的权重送到计算单元；按上述近似，每步读取约 70 GB。
 
-![本例按每参数一字节，将主要权重读取量近似取为 70 GB。权重驻留显存，计算单元每步沿同一接口读取一遍；用读取量除以接口带宽，得到 20.90 ms 的读取下界。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-read-path.svg)
+![本例按每参数一字节，将主要权重读取量近似取为 70 GB。权重驻留显存，计算单元每步沿同一接口读取一遍；用读取量除以接口带宽，得到 20.90 ms 的读取下界。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-read-path.svg)
 
 *图 1-8　本例按每参数一字节，将主要权重读取量近似取为 70 GB。权重驻留显存，计算单元每步沿同一接口读取一遍；用读取量除以接口带宽，得到 20.90 ms 的读取下界。*
 
@@ -482,7 +494,7 @@ $$
 
 另一种办法是减少需要读取的数据。运算量不变时，把权重减半，读取下界也降到约 10.45 ms。带宽翻倍让读取速度加倍，权重减半则让待读取的数据减少一半，两种办法在这条算式中取得相同结果。第 2 章和第 5 章将讨论低位宽表示的格式和转换过程。
 
-![保持运算量与读取量不变，分别把算力或带宽翻倍。蓝条是权重读取下界，橙条是矩阵计算下界；较长的读取项决定这组条件下的优化方向。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-5-budget.svg)
+![保持运算量与读取量不变，分别把算力或带宽翻倍。蓝条是权重读取下界，橙条是矩阵计算下界；较长的读取项决定这组条件下的优化方向。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-5-budget.svg)
 
 *图 1-9　保持运算量与读取量不变，分别把算力或带宽翻倍。蓝条是权重读取下界，橙条是矩阵计算下界；较长的读取项决定这组条件下的优化方向。各柱分别表示计算或数据读取的时间下界，完整执行仍须满足依赖关系。*
 
@@ -490,7 +502,7 @@ $$
 
 整批执行产生八个输出，吞吐因而从单请求模型的约 47.9 token/s 提高到约 383 token/s，而每个请求仍须等待整批执行完成。**批内复用增加同一时间内生成的输出数，单请求延迟则取决于它经历的执行与等待。**
 
-![一批八个请求共享一次权重读取，各产生一个输出。整批读取仍需约 20.90 ms，除以八得到每输出分摊的服务时间；每个请求经历整批执行。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-batch-reuse.svg)
+![一批八个请求共享一次权重读取，各产生一个输出。整批读取仍需约 20.90 ms，除以八得到每输出分摊的服务时间；每个请求经历整批执行。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-batch-reuse.svg)
 
 *图 1-10　一批八个请求共享一次权重读取，各产生一个输出。整批读取仍需约 20.90 ms，除以八得到每输出分摊的服务时间；每个请求经历整批执行。“每输出 token 分摊”是整批耗时除以输出 token 数，用于换算吞吐，不是单个请求的响应延迟。*
 
@@ -502,13 +514,13 @@ $$
 
 本例取 $b_W=1$、$\Pi=989.4\times10^{12}\ \mathrm{FLOP/s}$、$\beta=3.35\times10^{12}\ \mathrm{bytes/s}$，得到 $B_*\approx147.7$。在这一只计主要矩阵运算与权重读取的模型中，batch 较小时，增加请求可以分摊权重读取开销；超过约 148 后，计算耗时超过权重读取耗时，继续增加 batch 会近似按比例增加整批时间。该转折点只比较矩阵运算与权重读取，没有计入各请求的上下文状态：按 1.2.3 节的容量预算，一张 H100 SXM 容纳 73.73 GB 权重后只剩约 6.27 GB，无法容纳 148 条请求的 KV。
 
-![批内请求增加时，矩阵运算量随请求数成正比增长，权重读取保持每批 70 GB。约 148 个请求处两项下界相等，随后计算耗时决定整体速度。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-batch-transition.svg)
+![批内请求增加时，矩阵运算量随请求数成正比增长，权重读取保持每批 70 GB。约 148 个请求处两项下界相等，随后计算耗时决定整体速度。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-batch-transition.svg)
 
 *图 1-11　批内请求增加时，矩阵运算量按 $2BN$ 增长，权重读取保持每批 70 GB。约 148 个请求处两项下界相等，随后计算耗时决定整体速度。*
 
 把每批输出数 $B$ 除以上图中的时间下界，便得到这组题设对应的吞吐上界。转折前，共享的读取由更多输出分摊；转折后，计算时间与输出数一起增长，曲线逐渐趋于平坦。
 
-![上述批处理模型的理想输出吞吐率。每批输出数除以时间下界得到曲线；竖虚线与前图对应同一个约 148 请求的转折点。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-batch-throughput.svg)
+![上述批处理模型的理想输出吞吐率。每批输出数除以时间下界得到曲线；竖虚线与前图对应同一个约 148 请求的转折点。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-batch-throughput.svg)
 
 *图 1-12　上述批处理模型的理想输出吞吐率。每批输出数除以时间下界得到曲线；竖虚线与前图对应同一个约 148 请求的转折点。*
 
@@ -522,11 +534,11 @@ $$
 
 前面的模型预测了两个趋势：batch 较小时，吞吐随 batch 增加；整批时间则受到一次权重读取的限制。真实程序中，每条新增请求还会增加上下文访问与计算。图 1-13、1-14 给出 Qwen3-8B 在 RTX PRO 6000 Blackwell Workstation Edition 上使用 BF16 权重的测量结果。这张卡有 96 GB 显存、1.792 TB/s 显存带宽，BF16 输入、FP32 累加的稠密矩阵峰值为 503.8 TFLOP/s。vLLM 是加州大学伯克利分校等机构的研究者在 2023 年提出的开源推理服务系统，负责组织模型请求并执行推理，最初重点解决的是 KV 缓存浪费显存、限制 batch size 的问题。本次采用 0.23 版本的 eager 模式，即按程序运行顺序逐项向加速器提交工作。每请求输入 2048 个 token、生成 256 个 token，每档 batch 测量三次。[^measurement] 吞吐表示单位时间内产生的输出数；**每输出 token 时间**（time per output token，TPOT）在这里表示客户端观察到的平均输出间隔。
 
-![Qwen3-8B 实测的整批输出吞吐。四档请求数等距排列，纵轴从零开始；模型、精度、输入输出长度和计时范围保持一致。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-measured-throughput.svg)
+![Qwen3-8B 实测的整批输出吞吐。四档请求数等距排列，纵轴从零开始；模型、精度、输入输出长度和计时范围保持一致。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-measured-throughput.svg)
 
 *图 1-13　Qwen3-8B 实测的整批输出吞吐。四档请求数等距排列，纵轴从零开始；模型、精度、输入输出长度和计时范围保持一致。*
 
-![同一组实测中的每请求输出间隔。吞吐增加的同时，单个请求的平均间隔也在增大；两张图分别说明加速器的输出速度和用户的等待时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-measured-tpot.svg)
+![同一组实测中的每请求输出间隔。吞吐增加的同时，单个请求的平均间隔也在增大；两张图分别说明加速器的输出速度和用户的等待时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-measured-tpot.svg)
 
 *图 1-14　同一组实测中的每请求输出间隔。吞吐增加的同时，单个请求的平均间隔也在增大；两张图分别说明加速器的输出速度和用户的等待时间。*
 
@@ -556,7 +568,7 @@ $$
 
 #### 1.4 需求如何推动架构设计
 
-前面的估算把硬件当作给定条件；反过来，这些硬件本身也是为应对具体需求而设计的。架构设计从需要解决的问题出发。不同年代的业务规模、设备能力与软件要求，决定了设计者首先需要改变什么。本节依次分析 Google 在 2013 年面对的语音推理需求、微软在 2015—2016 年扩展 Azure 云网络的需求，以及华为在大模型发展过程中组织多设备计算与存储的需求。
+前面的估算把硬件当作给定条件；反过来，这些硬件本身也是为应对具体需求而设计的。推动架构变化的因素主要有两类：需求变化，如业务规模扩大或出现新的负载；硬件变化，如某类器件的性能提升快于其他器件。两类变化最终都体现为比例的改变。计算量与数据读取量、带宽与处理能力、需求增长与单芯片能力，这些比例一旦改变，原先合理的分工就可能不再合算。本节先分析三个案例：Google 在 2013 年面对的语音推理需求、微软在 2015—2016 年扩展 Azure 云网络的需求，以及华为在大模型发展过程中组织多设备计算与存储的需求；再说明这类变化如何在 AI 系统中逐级传递。
 
 ##### 1.4.1 TPU
 
@@ -566,11 +578,11 @@ TPU 是 Google 为神经网络计算设计的张量处理器，其第一代产�
 
 专用处理器可以为反复出现的矩阵运算配置更多计算单元，再用片上缓冲和数据通路为计算单元提供输入。响应时间与功耗要求决定了应如何分配计算、存储和通信资源。这样，应用规模的变化就落实到了芯片设计上。
 
-![专用处理器围绕反复出现的矩阵运算组织计算阵列和输入输出缓冲。缓冲是临时保存待计算或已算完数据的存储区域；三个方框及其箭头展示数据搬移方向。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-design-tpu.svg)
+![专用处理器围绕反复出现的矩阵运算组织计算阵列和输入输出缓冲。缓冲是临时保存待计算或已算完数据的存储区域；三个方框及其箭头展示数据搬移方向。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-design-tpu.svg)
 
 *图 1-15　专用处理器围绕反复出现的矩阵运算组织计算阵列和输入输出缓冲。缓冲是临时保存待计算或已算完数据的存储区域；三个方框及其箭头展示数据搬移方向。*
 
-第 4 章将介绍 TPU 的矩阵阵列、缓冲和数据通路。本例说明的关系是：应用的使用量达到一定规模后，专用处理器就可能比通用处理器更合算。
+第 4 章将介绍 TPU 的矩阵阵列、缓冲和数据通路。每日计算需求 $QF_1$ 接近数据中心的空闲算力时，专用处理器便可能比通用处理器更合算。
 
 ##### 1.4.2 SmartNIC
 
@@ -584,11 +596,11 @@ $$
 n_{\mathrm{core}}=\frac{\lambda_{\mathrm{packet}}}{\mu_{\mathrm{core}}}\approx3\text{—}6.
 $$
 
-其中 $\lambda_{\mathrm{packet}}$ 为包到达率，$\mu_{\mathrm{core}}$ 为单核处理率。这些核反复完成相同的包处理流程；将相应工作移到网卡，就可以把 CPU 时间留给应用。[^nic]
+其中 $\lambda_{\mathrm{packet}}$ 为包到达率，$\mu_{\mathrm{core}}$ 为单核处理率。链路带宽提高使 $\lambda_{\mathrm{packet}}$ 随之增大，$\mu_{\mathrm{core}}$ 却没有同步提高，所需核数便随两者之比增加。这些核反复完成相同的包处理流程；将相应工作移到网卡，就可以把 CPU 时间留给应用。[^nic]
 
 Azure 的做法是让主机软件管理复杂策略，把适合重复执行的包处理规则交给 FPGA。数据经过网卡时就完成这些处理，CPU 可以把更多时间用于客户应用。设计的关键是兼顾软件更新能力与硬件处理速度。
 
-![可编程网卡在数据进入主机前完成指定的包处理。图中实线跟踪数据；网卡承担的处理减少主机 CPU 的辅助工作。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-design-smartnic.svg)
+![可编程网卡在数据进入主机前完成指定的包处理。图中实线跟踪数据；网卡承担的处理减少主机 CPU 的辅助工作。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-design-smartnic.svg)
 
 *图 1-16　可编程网卡在数据进入主机前完成指定的包处理。图中实线跟踪数据；网卡承担的处理减少主机 CPU 的辅助工作。*
 
@@ -600,19 +612,36 @@ SmartNIC 改变了单台服务器内部的分工。若问题是单个加速器�
 
 例如，两张卡的显存总量可能足够保存权重，但执行计算的加速器必须能够访问所需的数据。若一步计算依赖另一张卡的结果，就要等待交接；若多张卡共同完成一个操作，还要组织相应的协作。加速器数增加带来了资源，也增加了连接这些资源的工作。
 
-华为面向昇腾等异构计算设备推进的 **UB（Unified Bus，统一互联）**，把问题扩大到多设备协作。根据项目参与者的回顾，相关研究在 OpenAI 于 2020 年发布自回归语言模型 GPT-3 之前已经开始；GPT-3 展现出大模型的能力后，业界更广泛地认识到多设备协同的需求，项目投入随之扩大。
+华为面向昇腾等异构计算设备推进的 **UB（Unified Bus，统一互联）**，把问题扩大到多设备协作。笔者于 2020—2023 年参与这一项目，相关研究在 2019 年已经启动，早于 OpenAI 于 2020 年发布自回归语言模型 GPT-3；GPT-3 展现出大模型的能力后，业界更广泛地认识到多设备协同的需求，项目投入随之扩大。模型训练所需的算力增长远快于单个加速器能力的提升，两者之比不断扩大，协同工作的加速器只能越来越多。
 
 这一时期的核心需求是让规模不断增长的模型使用多张加速卡，并使计算设备更方便地访问其他设备上的内存和数据。数据一旦跨过主机边界，软件就要改用消息传递接口、重新安排缓冲区，再经过网卡驱动和协议栈，每多一层抽象就多一段时间。UB 让设备直接访问其他设备的内存，把这些抽象层去掉，使一次远程访问的耗时逼近线路时延决定的下限，上层也能更灵活地组织资源。统一的访问机制使设备能直接使用更大范围内的资源，拓扑则决定这些访问的距离与带宽。模型分工与互联设计由此紧密相连。第 6.5.5 节从超节点规模的角度讨论 UB 的组织方式，第 7.3 节和第 7.4 节沿着一次远程访问的路径推导它的延迟、请求速率和连接状态，并算出去掉的各层抽象原来各占多少时间。
 
-![统一互联连接不同设备的计算与存储资源。模型分工确定要交换什么，互联负责把数据送到后续使用它的设备。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/figure-1-design-ub.svg)
+![统一互联连接不同设备的计算与存储资源。模型分工确定要交换什么，互联负责把数据送到后续使用它的设备。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/figure-1-design-ub.svg)
 
 *图 1-17　统一互联连接不同设备的计算与存储资源。模型分工确定要交换什么，互联负责把数据送到后续使用它的设备。*
 
-从语音推理到云网络，再到大模型的多设备执行，这些设计分别着重提高计算效率、减少主机 CPU 占用和改善跨设备访问。需求改变了需要优先解决的瓶颈，也改变了硬件、软件与互联之间的分工。
-
-对照开篇的六层图，三个案例分别从不同问题出发，却都会改变计算与数据搬移的组织。应用需求推动专用硬件的设计，处理位置改变主机与网卡之间的工作分配，更大的模型则要求重新安排设备协作。后续章节将沿这些关系展开本书的主线：**数据搬移塑造了 AI Infra 的架构。**
-
 以本章的两卡模型部署为例：权重均分可以满足逐卡容量约束，但每个阶段还要等待输入数据和前序结果。增加加速器改变了 $M_{\mathrm{cap}}$ 和可用算力，也引入新的通信量与依赖。因此，第一步先检查每个加速器能否容纳所需数据，第二步计算各加速器的运算量与读写量，第三步根据执行依赖计算总时间。模型再大、加速器再多，这一分析顺序仍然成立。
+
+##### 1.4.4 变化的逐级传递
+
+三个案例中的设计一经部署，又会带来新的约束。FPGA 部署到 Azure 服务器以后，云平台需要负责 FPGA 逻辑的更新和故障处理[^azure]；UB 把大量加速器连成一体以后，每次同步要等待的设备增多，可能出错的部件也增多。在 AI 系统中，这种逐级传递仍在继续，下表按本书章节顺序列出主要环节。
+
+| 变化 | 不再成立的假设 | 章节 |
+| --- | --- | --- |
+| 神经网络的执行时间集中在矩阵运算 | 通用处理器能以合理的面积与功耗完成主要计算 | 第 4、5 章 |
+| 模型权重超过单卡显存 | 一个模型可以放在一张卡上 | 第 6 章 |
+| 训练与推理跨越多台服务器同步执行 | 网络流量来自相互独立的数据流，可以统计复用 | 第 7 章 |
+| decode 每读一遍权重只完成少量计算 | 峰值算力决定执行速度 | 第 8 章 |
+| 上下文变长，KV 的规模接近甚至超过权重 | 上下文状态较小，可以随时重算 | 第 9 章 |
+| 训练规模达到上千张卡 | 故障是偶发事件 | 第 10 章 |
+| Agent 与 RL 负载成批创建工具环境 | 容器中的程序相互独立，各自决定运行节奏 | 第 11 章 |
+| 端侧设备能够运行模型 | 计算集中到云端总能缩短完成时间 | 第 12 章 |
+
+与通用操作系统和云平台相比，AI 系统有一个有利条件：负载种类少，而且事先已知。通用平台要运行事先未知的程序，只能依靠统一的抽象、严格的隔离和统计复用；AI 系统围绕少数模型和确定的执行过程设计，可以提前掌握第 1.1.1 节所说的计算与数据依赖，并据此打破原有的抽象边界。例如，第 11 章的 RL 沙箱平台根据训练框架提供的抢占信息，主动暂停相应的沙箱。
+
+AI 系统中的许多单项技术并非新发明：第 8 章的 KV 分页管理借用操作系统的分页，第 11 章的沙箱放置采用 2001 年提出的 power-of-k-choices 随机选择算法，虚拟机内存回收沿用 2002 年提出的 balloon 机制。[^old-ideas]比例改变以后，原先不划算或用不上的方法又变得合算；一项技术是否适用，仍需按当前的比例重新计算。
+
+从语音推理到云网络，再到大模型的多设备执行，需求与硬件的变化决定了首先要解决哪个瓶颈，也重新划分了硬件、软件与互联之间的工作。对照开篇的六层图，这些设计都重新组织了计算与数据搬移。三条线索贯穿后续各章：比例的变化解释为什么需要新的设计，数据搬移说明新设计改变了什么，第 1.3.4 节的物理极限衡量设计达到了什么程度。本书的主线由此展开：**数据搬移塑造了 AI Infra 的架构。**
 
 #### 谬误与陷阱
 
@@ -621,6 +650,8 @@ SmartNIC 改变了单台服务器内部的分工。若问题是单个加速器�
 **误区：显存能容纳权重，就能支持目标并发数。** 权重只是常驻数据的一部分。上下文状态、工作区和运行时预留的空间共同占用显存，多加速器还必须逐卡核算。
 
 **误区：比旧实现快了三成，优化就算成功。** 不知道硬件允许的极限，就无法判断这三成是逼近了上限，还是离上限仍有一个数量级。应当先算出极限，再按第 1.3.4 节的顺序查明差距来自模型漏项还是系统开销。
+
+**误区：在上一代场景中成熟的系统，可以直接用于新的负载。** 每种系统设计都以设计时的比例为前提。通用容器平台假定请求来自相互独立的租户，程序自行决定运行节奏；RL 训练中的沙箱却成批创建，节奏由 GPU 一侧决定，照搬原有设计会让昂贵的加速器空等（第 11 章）。沿用一种设计之前，应先检查它所依赖的比例是否仍然成立。
 
 **误区：吞吐率提高，每个用户的等待时间就会缩短。** 批内复用减少每个输出分摊的读取开销，但每个请求仍须经历排队和整批执行。吞吐与响应时间应同时报告。
 
@@ -644,37 +675,39 @@ SmartNIC 改变了单台服务器内部的分工。若问题是单个加速器�
 
 [^panorama]: “十八层宝塔”由华为半导体首席科学家廖恒博士在 2026 年 7 月的一次公开长访谈中提出，用来描述从应用到制造工艺的层层依赖。
 
-[^dean]: Jeff Dean，LADIS 2009 演讲，[本地 PDF](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/scaling-history/jeff-dean-ladis2009.pdf)，“Numbers Everyone Should Know”及纸笔估算部分。寻道算例设连续执行 20 次随机读取。
+[^dean]: Jeff Dean，LADIS 2009 演讲，[本地 PDF](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/scaling-history/jeff-dean-ladis2009.pdf)，“Numbers Everyone Should Know”及纸笔估算部分。寻道算例设连续执行 20 次随机读取。
 
-[^h100]: NVIDIA，[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)与[规格页面快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)。本章采用 SXM 形态与 BF16 稠密矩阵运算规格；原始输入版本和校验值见[配图来源清单](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/sources.json)。
+[^h100]: NVIDIA，[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)与[规格页面快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)。本章采用 SXM 形态与 BF16 稠密矩阵运算规格；原始输入版本和校验值见[配图来源清单](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/sources.json)。
 
-[^budget]: [70B 近似预算复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/decode-budget-base.md)及配套场景；[单位与逐卡容量复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/basics-70b-bf16-balanced.md)。1.3 的时间估算图读取这组固定的 70B 近似结果；1.2.3 的容量图使用真实权重索引与分组量化结果。
+[^budget]: [70B 近似预算复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/decode-budget-base.md)及配套场景；[单位与逐卡容量复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/basics-70b-bf16-balanced.md)。1.3 的时间估算图读取这组固定的 70B 近似结果；1.2.3 的容量图使用真实权重索引与分组量化结果。
 
-[^roofline]: Williams、Waterman、Patterson，[Roofline 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/roofline.pdf)。
+[^roofline]: Williams、Waterman、Patterson，[Roofline 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/roofline.pdf)。
 
-[^followup]: [补测记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch01/01-04/FOLLOWUP.md)与[加速器事件计时](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch01/01-04/results/step-summary.json)。补测同时关闭了前缀缓存并重新构造了输入，逐步日志的影响无法与这些条件完全分开；加速器事件只覆盖模型执行，不含采样与输出。
+[^followup]: [补测记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch01/01-04/FOLLOWUP.md)与[加速器事件计时](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch01/01-04/results/step-summary.json)。补测同时关闭了前缀缓存并重新构造了输入，逐步日志的影响无法与这些条件完全分开；加速器事件只覆盖模型执行，不含采样与输出。
 
-[^measurement]: [练习 1-4 记录说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch01/01-04/README.md)、[结构化分析结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch01/01-04/results/analysis.json)及[后续补测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch01/01-04/FOLLOWUP.md)。正文和图 1-13、图 1-14 采用最初记录的短输入组。
+[^measurement]: [练习 1-4 记录说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch01/01-04/README.md)、[结构化分析结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch01/01-04/results/analysis.json)及[后续补测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch01/01-04/FOLLOWUP.md)。正文和图 1-13、图 1-14 采用最初记录的短输入组。
 
-[^tpu]: Jouppi 等，[TPU v1 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tpu-v1.pdf)，第 2 节关于起源、架构与实现的说明。三分钟语音搜索是论文记载的历史需求预测。
+[^tpu]: Jouppi 等，[TPU v1 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tpu-v1.pdf)，第 2 节关于起源、架构与实现的说明。三分钟语音搜索是论文记载的历史需求预测。
 
-[^nic]: [笔者博士论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/bojieli-phd-thesis.pdf)，第 4.2.1 节简单转发基线；[核数预算复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/nic-budget-book.md)。约六千万包每秒来自 40 Gbit/s 与每帧占用 84 字节线时的计算，3 至 6 核对应简单转发基线。
+[^nic]: [笔者博士论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/bojieli-phd-thesis.pdf)，第 4.2.1 节简单转发基线；[核数预算复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/nic-budget-book.md)。约六千万包每秒来自 40 Gbit/s 与每帧占用 84 字节线时的计算，3 至 6 核对应简单转发基线。
 
-[^abstraction]: 相关研究见[抽象边界调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/system-abstraction-boundary/report.md)；基础模型承接多种下游任务的讨论见 [Stanford CRFM](https://crfm.stanford.edu/report.html)。
+[^abstraction]: 相关研究见[抽象边界调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/system-abstraction-boundary/report.md)；基础模型承接多种下游任务的讨论见 [Stanford CRFM](https://crfm.stanford.edu/report.html)。
 
 [^request]: 请求图是通用职责示意；调度与状态管理的职责划分可参照 v0.26.0 的 [vLLM Scheduler 文档](https://docs.vllm.ai/en/v0.26.0/api/vllm/v1/core/sched/scheduler/)；1.3.3 节的实测使用 vLLM 0.23.0。路由策略、tokenizer 位置以及 prefill／decode 是否分离属于部署选择。
 
 [^datacenter]: 具体产品例子见 [NVIDIA GB200 NVL72](https://www.nvidia.com/en-us/data-center/gb200-nvl72/)、[硬件指南](https://docs.nvidia.com/dgx/dgxgb200-user-guide/hardware.html)与[网络指南](https://docs.nvidia.com/dgx/dgxgb200-user-guide/networking.html)。图 1-5 使用一般化连接。
 
-[^real70]: 参数与 BF16 字节数来自 [DeepSeek-R1-Distill-Llama-70B 公开权重索引](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-r1-distill-llama-70b/model.safetensors.index.json)及[固定版本配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/models/deepseek-r1-distill-llama-70b/config.json)。分组量化的权重总量采用[逐项计算记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/dense-quant-deepseek-r1-distill-llama-70b-tp1-pp8-80gb-8192.json)中的全模型汇总，每组 128 个参数、scale 占 2 字节。RTX 4090 的 24 GB 名义规格见[官方页面存档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/hardware/nvidia-rtx4090-page.txt)。本节用规格标称 GB 作统一容量预算。
+[^real70]: 参数与 BF16 字节数来自 [DeepSeek-R1-Distill-Llama-70B 公开权重索引](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-r1-distill-llama-70b/model.safetensors.index.json)及[固定版本配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/models/deepseek-r1-distill-llama-70b/config.json)。分组量化的权重总量采用[逐项计算记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/dense-quant-deepseek-r1-distill-llama-70b-tp1-pp8-80gb-8192.json)中的全模型汇总，每组 128 个参数、scale 占 2 字节。RTX 4090 的 24 GB 名义规格见[官方页面存档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/hardware/nvidia-rtx4090-page.txt)。本节用规格标称 GB 作统一容量预算。
 
-[^azure]: Firestone 等，微软，[Azure Accelerated Networking: SmartNICs in the Public Cloud](https://www.usenix.org/conference/nsdi18/presentation/firestone)，NSDI 2018；[原论文文本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/editorial-context/2026-09-10/azure-smartnic-nsdi2018.txt)。摘要给出 2015 年末部署、2016 年向客户提供服务的时间，第 3 节说明减少 CPU 占用、保持可编程性与支持更高带宽的设计目标。
+[^azure]: Firestone 等，微软，[Azure Accelerated Networking: SmartNICs in the Public Cloud](https://www.usenix.org/conference/nsdi18/presentation/firestone)，NSDI 2018；[原论文文本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/editorial-context/2026-09-10/azure-smartnic-nsdi2018.txt)。摘要给出 2015 年末部署、2016 年向客户提供服务的时间，第 3 节说明减少 CPU 占用、保持可编程性与支持更高带宽的设计目标。
 
-[^gpu-numbers]: 数字取自[固定 GPU 规格与逐项出处](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/hardware.json)，对应 `rtx4090`、`a100-80gb-sxm`、`h100-sxm`；各精度、累加方式与稠密条件分别核对。GB 与 TB 在本表均为十进制单位。
+[^old-ideas]: power-of-k-choices 见 M. Mitzenmacher, The Power of Two Choices in Randomized Load Balancing, IEEE TPDS, 2001；balloon 机制见 C. A. Waldspurger, Memory Resource Management in VMware ESX Server, OSDI 2002。两篇文献均由 [DSec 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/dsec-sandbox.txt)引用，相应机制见第 11.2.2 节与第 11.3.2 节。
 
-[^model-numbers]: [速查数字复算源码](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch01/reference_numbers.py)根据固定 Qwen3-8B 配置统计 prefill 与 decode 的矩阵运算，读取量来自[批内权重复用计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/batch-reuse-h100-2k.md)。权重占用包含完整嵌入表，逐步生成时只读取当前 token 对应的嵌入行；读写时间采用每份主要数据访问一次的理想条件。
+[^gpu-numbers]: 数字取自[固定 GPU 规格与逐项出处](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/hardware.json)，对应 `rtx4090`、`a100-80gb-sxm`、`h100-sxm`；各精度、累加方式与稠密条件分别核对。GB 与 TB 在本表均为十进制单位。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^model-numbers]: [速查数字复算源码](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch01/reference_numbers.py)根据固定 Qwen3-8B 配置统计 prefill 与 decode 的矩阵运算，读取量来自[批内权重复用计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/batch-reuse-h100-2k.md)。权重占用包含完整嵌入表，逐步生成时只读取当前 token 对应的嵌入行；读写时间采用每份主要数据访问一次的理想条件。
+
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
 #### 本章小结
 
@@ -708,13 +741,13 @@ SmartNIC 改变了单台服务器内部的分工。若问题是单个加速器�
 
 要计算执行时间，先要知道哪些运算能够同时开始。考虑四个 token、三层网络，横轴是 token 在序列中的位置索引，纵轴是层数。本章用“词元”指词表中的一个条目，用 token 指它在序列中的一次出现；同一个词元在序列中出现多次时，位置索引用来区分它们。循环神经网络（RNN）把前一 token 位置的状态传给后一 token 位置，token 状态满足 $h_t=f(x_t,h_{t-1})$。其中 $x_t$ 是当前输入，$h_t$ 是处理到当前 token 位置时保存的状态，$f$ 是用模型权重做的变换。当前结果依赖前一 token 位置，所以同一层按位置顺序执行。即使四个输入已经全部到达，第 $t$ 个 token 仍要等待第 $t-1$ 个 token。
 
-![循环神经网络的依赖。相同颜色的圆点表示各 token 位置的计算，箭头指向需要前一结果的节点；同层 token 位置沿横向逐次推进。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-1-dependencies.svg)
+![循环神经网络的依赖。相同颜色的圆点表示各 token 位置的计算，箭头指向需要前一结果的节点；同层 token 位置沿横向逐次推进。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-1-dependencies.svg)
 
 *图 2-1　循环神经网络的依赖。相同颜色的圆点表示各 token 位置的计算，箭头指向需要前一结果的节点；同层 token 位置沿横向逐次推进。*
 
 Transformer 用注意力机制让一个 token 读取其他位置的信息；“因果”表示当前 token 位置只能使用自身及此前位置的信息。因果 Transformer 的依赖形式不同。第 $l$ 层计算某个位置时，通过注意力读取上一层中该位置及其之前各 token 位置的表示。只要输入 token 已知，并且上一层的相应表示已经完成，同一层不同位置的计算就不需要再等待本层前一个 token 的输出。因果掩码用来规定各 token 位置允许访问哪些信息，屏蔽当前 token 位置之后的信息。按查询与被查询 token 位置排列，掩码呈三角形；掩码限制信息来源，却不要求所有已知 token 逐个执行。网络深度方向的依赖仍然存在：下一层使用这一层的结果。
 
-![因果 Transformer 的层间依赖。各查询读取上一层中允许访问的位置；上一层完成后，同一层的已知输入 token 可以并行计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-causal-dependencies.svg)
+![因果 Transformer 的层间依赖。各查询读取上一层中允许访问的位置；上一层完成后，同一层的已知输入 token 可以并行计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-causal-dependencies.svg)
 
 *图 2-2　因果 Transformer 的层间依赖。各查询读取上一层中允许访问的位置；上一层完成后，同一层的已知输入 token 可以并行计算。*
 
@@ -791,7 +824,7 @@ $$
 
 先跟踪单个 token 的计算。模型从该 token 的隐藏向量产生三种表示：**查询** $Q$ 用来提出“当前需要什么信息”，**键** $K$ 用来与查询计算匹配分数，**值** $V$ 是被选中后汇总到输出的信息。三者都由同一个 token 的输入经过不同权重矩阵产生。线性投影就是这样的矩阵乘法：把输入特征变换到另一组坐标。
 
-![同一个 token 的输入经不同投影产生查询、键和值。注意力先用查询与键计算 token 之间的关系，再用这些关系汇总值。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-qkv-objects.svg)
+![同一个 token 的输入经不同投影产生查询、键和值。注意力先用查询与键计算 token 之间的关系，再用这些关系汇总值。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-qkv-objects.svg)
 
 *图 2-3　同一个 token 的输入经不同投影产生查询、键和值。注意力先用查询与键计算 token 之间的关系，再用这些关系汇总值。*
 
@@ -807,7 +840,7 @@ $$
 
 $A$ 是各查询对上下文 token 的权重，$\mathcal M$ 是因果掩码，$d_h$ 是头维度。点积决定哪些位置与当前查询相关，Softmax 将分数转成加权系数，再用这些系数汇总值向量。Qwen3 在点积前还要做**查询与键归一化（QK Norm）**和**旋转位置编码（Rotary Position Embedding，RoPE）**：前者调整各头查询与键的数值尺度，后者通过随位置变化的旋转，使点积包含相对位置信息。
 
-![两段上下文形成长方形加三角形。蓝色为三个新 token 分别读取两个旧 token，绿色为新输入内部的因果访问，空白为被屏蔽的未来 token 位置。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-causal-pairs.svg)
+![两段上下文形成长方形加三角形。蓝色为三个新 token 分别读取两个旧 token，绿色为新输入内部的因果访问，空白为被屏蔽的未来 token 位置。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-causal-pairs.svg)
 
 *图 2-4　两段上下文形成长方形加三角形。蓝色为三个新 token 分别读取两个旧 token，绿色为新输入内部的因果访问，空白为被屏蔽的未来 token 位置。每个有色格表示一次查询—键配对；横轴对应被读取的 token，纵轴对应新输入的查询 token。*
 
@@ -837,7 +870,7 @@ $$
 
 式中 $\odot$ 表示对应元素相乘；gate 是门控分支，up 是升维分支，down 是降维投影。三者产生的中间向量称为激活。gate 与 up 将每行从 $d$ 维升到 $f$ 维，down 再降回 $d$ 维。三个矩阵因此合计 $3df$ 个参数，处理 $m$ 个 token 的特征向量需 $6mdf$ FLOPs。Qwen3-8B 取 $d=4096,f=12288$，FFN 约有 1.51 亿个参数，BF16 权重占 288 MiB。升维后较宽的激活也需要临时空间，但只需在相应计算期间保留。
 
-![SwiGLU 的两条升维分支。gate 经 SiLU 后调节 up 的对应元素，乘积再由 down 投影降回主干维度。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-ffn-gates.svg)
+![SwiGLU 的两条升维分支。gate 经 SiLU 后调节 up 的对应元素，乘积再由 down 投影降回主干维度。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-ffn-gates.svg)
 
 *图 2-5　SwiGLU 的两条升维分支。gate 经 SiLU 后调节 up 的对应元素，乘积再由 down 投影降回主干维度。*
 
@@ -845,7 +878,7 @@ $$
 
 除矩阵变换外，一层之内还有子层之间的连接。残差连接把子层的输入保留下来，在该子层完成变换后，与输出逐元素相加。这样，一条路径执行新变换，另一条路径直接传递已有表示。下面把注意力、前馈和两次残差连接连成完整的一层。
 
-![Qwen3-8B 一层的骨架。先完成注意力子层，再完成前馈子层；左侧的残差连接保留子层输入，再与变换结果相加。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-2-layer.svg)
+![Qwen3-8B 一层的骨架。先完成注意力子层，再完成前馈子层；左侧的残差连接保留子层输入，再与变换结果相加。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-2-layer.svg)
 
 *图 2-6　Qwen3-8B 一层的骨架。先完成注意力子层，再完成前馈子层；左侧的残差连接保留子层输入，再与变换结果相加。*
 
@@ -951,11 +984,11 @@ $$
 
 完整回答会重复执行许多步，同一份上下文也随之读取许多次。下面固定一条普通串行生成请求：$B=1$，已恢复前缀为 $S$，本次输入 $P\ge1$ 个 token，最终返回 $G\ge1$ 个 token。令 $H=S+P$。prefill 处理新输入并产生首个输出，随后执行 $n_d=G-1$ 次 decode。最后返回的 token 尚未重新送入模型，所以请求结束时并不自动为它保存 KV。
 
-![四步生成的上下文读写。每一步读取蓝色的已有位置，再追加一个橙色新 token；本图初始上下文为 4 个 token，四步后共保留 8 个。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-history.svg)
+![四步生成的上下文读写。每一步读取蓝色的已有位置，再追加一个橙色新 token；本图初始上下文为 4 个 token，四步后共保留 8 个。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-history.svg)
 
 *图 2-7　四步生成的上下文读写。每一步读取蓝色的已有位置，再追加一个橙色新 token；本图初始上下文为 4 个 token，四步后共保留 8 个。*
 
-![同一 batch 的主要投影权重可共享读取，各请求则各有一份上下文。图中固定每请求 8K 上下文，分别累计共享权重与独立 KV 的逻辑读取量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-history-batch.svg)
+![同一 batch 的主要投影权重可共享读取，各请求则各有一份上下文。图中固定每请求 8K 上下文，分别累计共享权重与独立 KV 的逻辑读取量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-history-batch.svg)
 
 *图 2-8　同一 batch 的主要投影权重可共享读取，各请求则各有一份上下文。图中固定每请求 8K 上下文，分别累计共享权重与独立 KV 的逻辑读取量。权重项按整个 decode batch 读取一次计量；KV 项累加各独立请求在本步读取的上下文状态。*
 
@@ -979,7 +1012,7 @@ $$
 
 输出变长时，各步固定部分的累计工作量随 $n_d$ 线性增长，生成过程中新增的上下文还会使一部分累计运算量按生成步数的平方增长。返回一个 token 时 $G=1$、$n_d=0$，只有 prefill；这一特殊情形也说明为什么完整回答包含 $G-1$ 次后续 decode。
 
-图 2-7 沿生成步数累加读取，图 2-8 沿请求数累加读取。多条独立请求的状态容量与上下文访问分别相加，批内权重则共同使用。长度不同时，逐请求代入各自的 $H$ 与 $n_d$：输出越长，已有上下文被读取的次数就越多；输入越长，第一次 decode 要访问的上下文就越多。对实际对话，可先根据每轮输入长度、缓存命中情况和返回的 token 数，还原这条调用链；[已保存的 Chat 长度核算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/sealed-chat-known-prefill.md)给出了具体代入过程。
+图 2-7 沿生成步数累加读取，图 2-8 沿请求数累加读取。多条独立请求的状态容量与上下文访问分别相加，批内权重则共同使用。长度不同时，逐请求代入各自的 $H$ 与 $n_d$：输出越长，已有上下文被读取的次数就越多；输入越长，第一次 decode 要访问的上下文就越多。对实际对话，可先根据每轮输入长度、缓存命中情况和返回的 token 数，还原这条调用链；[已保存的 Chat 长度核算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/sealed-chat-known-prefill.md)给出了具体代入过程。
 
 > **练习 2-3〔延伸〕：输出变长后，KV 容量与累计读取量如何增长**
 >
@@ -999,7 +1032,7 @@ $$
 
 以只有四个查询头的单层为例。MHA 为四个查询头各存一份 $K$、$V$；GQA 可以让前两个查询头共享第一份 $K$、$V$，后两个共享第二份；MQA 则让四个查询头共用一份。若上下文长度和头宽相同，需要保存的 KV 份数依次为四、二、一。因此，GQA 在此例中把上下文存储量减半。四个查询头仍可给同一段上下文打出四组不同的分数，这正是“共享上下文表示”与“合并查询”之间的区别。
 
-![固定四个查询头，分别为每头、每组和全部查询保存 KV。连线表示使用关系；共享上下文后，各查询仍分别产生自己的评分与输出。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-3-sharing.svg)
+![固定四个查询头，分别为每头、每组和全部查询保存 KV。连线表示使用关系；共享上下文后，各查询仍分别产生自己的评分与输出。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-3-sharing.svg)
 
 *图 2-9　固定四个查询头，分别为每头、每组和全部查询保存 KV。连线表示使用关系；共享上下文后，各查询仍分别产生自己的评分与输出。*
 
@@ -1009,7 +1042,7 @@ Qwen3-8B 采用这种共享方式，让每四个查询头共用一组 KV，总�
 
 可以直接由组数预测资源变化。将 $n_{\mathrm{KV}}$ 减半，键值投影参数和上下文状态容量都减半；查询头数 $n_Q$ 不变，查询与上下文交互的运算量仍按原来的头数累计。
 
-![固定 Qwen 层数、头宽、8192 个上下文 token 与 BF16，只改变 KV 组数。实际模型采用 GQA；其余两柱是用于分析共享比例的结构变体。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-4-cache.svg)
+![固定 Qwen 层数、头宽、8192 个上下文 token 与 BF16，只改变 KV 组数。实际模型采用 GQA；其余两柱是用于分析共享比例的结构变体。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-4-cache.svg)
 
 *图 2-10　固定 Qwen 层数、头宽、8192 个上下文 token 与 BF16，只改变 KV 组数。实际模型采用 GQA；其余两柱是用于分析共享比例的结构变体。*
 
@@ -1019,7 +1052,7 @@ KV 共享也说明，基础设施的限制会影响模型设计。MQA 的原论�
 
 GQA、MQA 靠减少 KV 组数节省空间，多头潜变量注意力（Multi-head Latent Attention，MLA）则靠降低上下文表示的维度节省空间。可以先把输入投影为低维潜变量 $c$，再通过上投影得到用于注意力的 $K$、$V$。模型在训练中学习这些低维表示与上投影，生成时将上下文以 $c$ 的形式保存。
 
-![两种计算路径改变上投影的位置。展开路径先恢复上下文键，紧凑路径先变换当前查询，再直接读取潜变量；结合律保证对应点积可以按这两种次序计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-mla-paths.svg)
+![两种计算路径改变上投影的位置。展开路径先恢复上下文键，紧凑路径先变换当前查询，再直接读取潜变量；结合律保证对应点积可以按这两种次序计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-mla-paths.svg)
 
 *图 2-11　两种计算路径改变上投影的位置。展开路径先恢复上下文键，紧凑路径先变换当前查询，再直接读取潜变量；结合律保证对应点积可以按这两种次序计算。*
 
@@ -1035,7 +1068,7 @@ $$
 
 展开缓存将潜变量先恢复为各头的 $K$、$V$，再保存这些向量；同样的 8192 个 token 需要约 11.25 GiB。紧凑缓存则保存上投影之前的潜变量。两者的容量差异因此来自缓存位于线性变换的哪一侧：紧凑缓存每步变换当前查询，展开缓存直接读取各头的上下文向量。[^source-2]
 
-![Kimi K3 的 24 层 MLA 在相同 8K 上下文、BF16 下的两种存储量。紧凑路径保存上投影前的表示，展开路径保存各头的键和值。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-mla-capacity.svg)
+![Kimi K3 的 24 层 MLA 在相同 8K 上下文、BF16 下的两种存储量。紧凑路径保存上投影前的表示，展开路径保存各头的键和值。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-mla-capacity.svg)
 
 *图 2-12　Kimi K3 的 24 层 MLA 在相同 8K 上下文、BF16 下的两种存储量。紧凑路径保存上投影前的表示，展开路径保存各头的键和值。*
 
@@ -1057,19 +1090,19 @@ DeepSeek V4-Flash 使用两种压缩注意力：**压缩稀疏注意力（Compre
 
 一次 CSA 查询的主注意力最多读取窗口加 512 个压缩条目，但索引打分仍扫描已保存的压缩索引条目。在 $S=8192$ 时，一个 CSA 层保留 2048 个压缩条目：主注意力状态约 2 MiB、索引约 0.5 MiB，窗口约 0.125 MiB；主注意力选中的压缩条目合计最多约 0.5 MiB，索引扫描却仍需处理那 2048 个索引条目。HCA 则有 64 个已生成的条目，主注意力状态约 0.0625 MiB，并访问窗口状态与这组粗粒度压缩条目。
 
-将 43 层相加，按上述 BF16 参考格式，在 8192 个 token 的上下文下，窗口、压缩上下文和索引共 59.125 MiB；另有约 11.641 MiB 的 FP32 压缩器缓冲，合计约 70.8 MiB。最后一次查询的主注意力（含窗口）与索引读取量合计 27.625 MiB。[状态分解](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/state-deepseek-v4-flash-n8192-b1-native.md)逐项列出了这些数据，因此能看出选中的条目数、保存的状态大小和每步读取量分别代表什么。
+将 43 层相加，按上述 BF16 参考格式，在 8192 个 token 的上下文下，窗口、压缩上下文和索引共 59.125 MiB；另有约 11.641 MiB 的 FP32 压缩器缓冲，合计约 70.8 MiB。最后一次查询的主注意力（含窗口）与索引读取量合计 27.625 MiB。[状态分解](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/state-deepseek-v4-flash-n8192-b1-native.md)逐项列出了这些数据，因此能看出选中的条目数、保存的状态大小和每步读取量分别代表什么。
 
-![上下文压缩与索引选择的先后关系。上方只示意八个 token 产生两条记录的数量关系，省略 V4 CSA 的重叠投影与加权汇总，下方展示一次查询先扫描索引再读取主注意力状态的过程。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-5-sparse.svg)
+![上下文压缩与索引选择的先后关系。上方只示意八个 token 产生两条记录的数量关系，省略 V4 CSA 的重叠投影与加权汇总，下方展示一次查询先扫描索引再读取主注意力状态的过程。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-5-sparse.svg)
 
 *图 2-13　上下文压缩与索引选择的先后关系。上方只示意八个 token 产生两条记录的数量关系，省略 V4 CSA 的重叠投影与加权汇总，下方展示一次查询先扫描索引再读取主注意力状态的过程。*
 
-![DeepSeek V4-Flash 在 8K 上下文下的四项状态。窗口、压缩上下文和索引保存已处理的上下文信息；压缩缓冲保存尚在汇总或更新中的数据，单独计入容量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-sparse-capacity.svg)
+![DeepSeek V4-Flash 在 8K 上下文下的四项状态。窗口、压缩上下文和索引保存已处理的上下文信息；压缩缓冲保存尚在汇总或更新中的数据，单独计入容量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-sparse-capacity.svg)
 
 *图 2-14　DeepSeek V4-Flash 在 8K 上下文下的四项状态。窗口、压缩上下文和索引保存已处理的上下文信息；压缩缓冲保存尚在汇总或更新中的数据，单独计入容量。*
 
 压缩还引入一种与查询不同的更新节奏。新 token 到达时，先更新当前压缩块；累计处理的 token 数达到压缩比要求后，再生成一个长期条目。CSA 每四个 token 完成一块，HCA 每 128 个 token 完成一块。因此，在处理同一个输入 token 时，主注意力访问多少条目、索引扫描多少条目、压缩器是否完成一块，需要分别计算。处理到第 128 个 token 时，两种压缩块可能同时完成。[^source-14]
 
-![压缩比为四时的一个压缩块的生成过程。前几次输入更新同一块内缓冲，第四个 token 到来后形成可供后续查询使用的压缩条目。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-compression-steps.svg)
+![压缩比为四时的一个压缩块的生成过程。前几次输入更新同一块内缓冲，第四个 token 到来后形成可供后续查询使用的压缩条目。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-compression-steps.svg)
 
 *图 2-15　压缩比为四时的一个压缩块的生成过程。前几次输入更新同一块内缓冲，第四个 token 到来后形成可供后续查询使用的压缩条目。*
 
@@ -1089,7 +1122,7 @@ $$
 
 若键宽为 $d_k$、值宽为 $d_v$，状态始终有 $d_kd_v$ 个元素。新增 token 改变的是矩阵内容，而不是矩阵大小。逐 token 的上下文列表因此变成了一组累积的键值关联；查询从这组关联中取得输出。
 
-![固定矩阵的递推更新。新键和值的外积加入旧状态，矩阵形状保持不变；查询使用更新后的状态计算输出。本图采用简单累加递推。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-recurrence.svg)
+![固定矩阵的递推更新。新键和值的外积加入旧状态，矩阵形状保持不变；查询使用更新后的状态计算输出。本图采用简单累加递推。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-recurrence.svg)
 
 *图 2-16　固定矩阵的递推更新。新键和值的外积加入旧状态，矩阵形状保持不变；查询使用更新后的状态计算输出。本图采用简单累加递推。*
 
@@ -1107,15 +1140,15 @@ Kimi K3 共 93 层，其中 69 个 KDA 层、24 个 MLA 层。8192 个 token 的
 
 Qwen3.6-35B-A3B 同样需要分别计算线性注意力层和完整注意力层的状态占用。其 30 个线性注意力层加 10 个完整注意力层，每请求每个上下文 token 的全局 KV 为 20 KiB，另有 60 MiB 的固定 FP32 递推状态，以及 1.875 MiB 的 BF16 短卷积槽位。上下文为 8192 个 token 时，三项合计 221.9 MiB。这些状态来自注意力分支。随后的混合专家（Mixture of Experts，MoE）分支提供多个前馈子网络，由路由器为每个 token 选择其中一部分来执行，决定同一主干中实际使用哪些权重。这些供选择的子网络称为路由专家，所有 token 都执行的一支称为共享专家。注意力与 MoE 两类机制共同组成完整模型。
 
-![Qwen3.6 的两类层。配置决定每层采用线性或完整注意力，随后都执行路由专家和共享专家；上方两个分支分别表示线性注意力和完整注意力，模型分别有 30 层与 10 层。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-6-hybrid.svg)
+![Qwen3.6 的两类层。配置决定每层采用线性或完整注意力，随后都执行路由专家和共享专家；上方两个分支分别表示线性注意力和完整注意力，模型分别有 30 层与 10 层。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-6-hybrid.svg)
 
 *图 2-17　Qwen3.6 的两类层。配置决定每层采用线性或完整注意力，随后都执行路由专家和共享专家；上方两个分支分别表示线性注意力和完整注意力，模型分别有 30 层与 10 层。*
 
-![上下文增长时的状态容量。横纵轴均为对数刻度；五个模型分别通过逐 token 追加、递推、压缩和跨层共享组织状态。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-7-state-growth.svg)
+![上下文增长时的状态容量。横纵轴均为对数刻度；五个模型分别通过逐 token 追加、递推、压缩和跨层共享组织状态。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-7-state-growth.svg)
 
 *图 2-18　上下文增长时的状态容量。横纵轴均为对数刻度；五个模型分别通过逐 token 追加、递推、压缩和跨层共享组织状态。纵轴为单请求的状态容量，横轴按上下文 token 数计量。*
 
-![同一组模型每步计入的状态访问。逐 token 上下文计读取，递推矩阵计一读一写；这些是指定路径的逻辑数据量，用于比较容量与访问的不同增长方式。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-state-access.svg)
+![同一组模型每步计入的状态访问。逐 token 上下文计读取，递推矩阵计一读一写；这些是指定路径的逻辑数据量，用于比较容量与访问的不同增长方式。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-state-access.svg)
 
 *图 2-19　同一组模型每步计入的状态访问。逐 token 上下文计读取，递推矩阵计一读一写；这些是指定路径的逻辑数据量，用于比较容量与访问的不同增长方式。每步指为一个请求生成下一个 token 的一次 decode；纵轴不包含模型权重读取。*
 
@@ -1153,7 +1186,7 @@ $c_{\mathrm{state}}$ 为每个上下文 token 增加的状态字节数，$H_*$ �
 | DeepSeek V4-Flash，生产混合格式 | 3,514.25 | 27.455 | 12.556 |
 | DeepSeek V4.1 Flash，生产混合格式 | 890 | 6.953 | 11.375 |
 
-Kimi K3 的两种 MLA 表示展示了缓存路径对容量的影响：表中的紧凑路径每个 token 增加 27,648 B，本书采用的 Hugging Face 参考实现将 K/V 展开，每个 token 增加 1,474,560 B。[跨模型缓存计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/kv-comparison-n8192-b1.md)列出了两种路径的精确字节数。
+Kimi K3 的两种 MLA 表示展示了缓存路径对容量的影响：表中的紧凑路径每个 token 增加 27,648 B，本书采用的 Hugging Face 参考实现将 K/V 展开，每个 token 增加 1,474,560 B。[跨模型缓存计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/kv-comparison-n8192-b1.md)列出了两种路径的精确字节数。
 
 两代 Flash 的行采用生产混合格式：V4-Flash 的主记录为 FP8/BF16 混合、每条 584 B，索引为 MXFP4（每 32 个 4 位值共用一个 scale 的格式）；V4.1 Flash 的格式见下文。第 2.3.3 节的 V4-Flash 数字则按 BF16 参考格式计算，同一 8K 上下文下，全局历史为 53.75 MiB（另有 5.375 MiB 窗口），一次查询读取 27.625 MiB。表中 V4-Flash 的 27.455 MiB 是生产格式下的全局历史驻留量，与 BF16 参考格式的读取量 27.625 MiB 只是数值接近。
 
@@ -1167,7 +1200,7 @@ Kimi K3 的两种 MLA 表示展示了缓存路径对容量的影响：表中的�
 
 编码器先处理输入。解码器需要的全局 KV 由编码器末层表示投影生成，不必让每个输入 token 都先经过全部解码器层。解码器每层的局部 SWA 则仍依赖该层自己的输入表示，因此要把提示末尾最多 128 个 token 的编码器输出送入解码器，构建局部状态，下文称为末尾窗口重放。开始逐 token 生成后，新 token 依次经过编码器和解码器的全部 40 层。第 3 章再计算节省了哪些输入工作，第 8 章区分编码器和解码器的两种重放。
 
-![CED 把全局 KV 的生成与解码器局部状态的构建分开。大部分提示 token 只执行编码器主体及全局 KV 投影；末尾窗口的编码器输出还经过解码器，近似构建局部 SWA。生成的新 token 仍通过全部 40 层。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-v41-ced-path.svg)
+![CED 把全局 KV 的生成与解码器局部状态的构建分开。大部分提示 token 只执行编码器主体及全局 KV 投影；末尾窗口的编码器输出还经过解码器，近似构建局部 SWA。生成的新 token 仍通过全部 40 层。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-v41-ced-path.svg)
 
 *图 2-20　CED 把全局 KV 的生成与解码器局部状态的构建分开。大部分提示 token 只执行编码器主体及全局 KV 投影；末尾窗口的编码器输出还经过解码器，近似构建局部 SWA。生成的新 token 仍通过全部 40 层。*
 
@@ -1175,7 +1208,7 @@ Kimi K3 的两种 MLA 表示展示了缓存路径对容量的影响：表中的�
 
 共享也改变了各层能够独立选择的信息。复用层不再生成自己的全局 K/V，但每层仍保留独立的查询 Q 和局部 SWA，因而可以对共享条目计算不同的注意力权重，形成新的输出。缓存共享减少了一类逐层独立表示，却没有把所有层的计算变成相同操作。
 
-![V4 与 V4.1 的全局 KV 保存方式。左侧以三个代表层示意逐层保存；右侧显示 V4.1 四个独立保存全局 KV 的层及共享关系。实线表示数据读取；各使用层仍有自己的 Q 与局部 SWA，图中省略其他计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-v41-sharing.svg)
+![V4 与 V4.1 的全局 KV 保存方式。左侧以三个代表层示意逐层保存；右侧显示 V4.1 四个独立保存全局 KV 的层及共享关系。实线表示数据读取；各使用层仍有自己的 Q 与局部 SWA，图中省略其他计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-v41-sharing.svg)
 
 *图 2-21　V4 与 V4.1 的全局 KV 保存方式。左侧以三个代表层示意逐层保存；右侧显示 V4.1 四个独立保存全局 KV 的层及共享关系。实线表示数据读取；各使用层仍有自己的 Q 与局部 SWA，图中省略其他计算。*
 
@@ -1203,7 +1236,7 @@ $$
 
 候选池让后续层的搜索量有了上限，也使首轮筛选影响后续选择：某个缓存条目一旦落在候选池之外，本次查询的后续 Reindex 层便无法再选入该条目。模型训练需要适应这一搜索范围，第 10 章将说明 V4.1 如何把候选限制纳入后训练。
 
-![V4.1 解码器的分层缓存条目选择。首个 Full 层先扫描全局，选出最多 16,384 个候选条目；后续 Reindex 在候选内重新选 512 个，Reuse 使用已有选择。示意条目数量不按比例；各层独立 Q 与局部 SWA 未画出。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-v41-selection.svg)
+![V4.1 解码器的分层缓存条目选择。首个 Full 层先扫描全局，选出最多 16,384 个候选条目；后续 Reindex 在候选内重新选 512 个，Reuse 使用已有选择。示意条目数量不按比例；各层独立 Q 与局部 SWA 未画出。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-v41-selection.svg)
 
 *图 2-22　V4.1 解码器的分层缓存条目选择。首个 Full 层先扫描全局，选出最多 16,384 个候选条目；后续 Reindex 在候选内重新选 512 个，Reuse 使用已有选择。示意条目数量不按比例；各层独立 Q 与局部 SWA 未画出。*
 
@@ -1244,7 +1277,7 @@ $$
 | 均匀分派 | 256 | 2 | 1.5 GiB |
 | 集中分派到同一组 8 个专家 | 8 | 64 | 48 MiB |
 
-![64 个 token 各选八个专家，总计 512 次分派。分散时可覆盖 256 个专家，集中时只访问八个；每专家处理的行数随之改变。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-expert-reuse.svg)
+![64 个 token 各选八个专家，总计 512 次分派。分散时可覆盖 256 个专家，集中时只访问八个；每专家处理的行数随之改变。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-expert-reuse.svg)
 
 *图 2-23　64 个 token 各选八个专家，总计 512 次分派。分散时可覆盖 256 个专家，集中时只访问八个；每专家处理的行数随之改变。*
 
@@ -1280,7 +1313,7 @@ Kimi K3 每个 MoE 层有 896 个路由专家，每个 token 选择其中 16 个
 
 专家结构也可以作类似调整，同时保持参数量和运算量不变。单层路由专家的总参数为 $3Edf$，单 token 专家运算量为 $6k_{\mathrm{top}}df$。将专家数 $E$ 减半、中间维度 $f$ 加倍、选中数 $k_{\mathrm{top}}$ 减半，这两个量都不变。Qwen3-235B-A22B 的 128 个宽度 1536 的专家、每 token 选 8 个，可以与 64 个宽度 3072 的专家、每 token 选 4 个作这一对照。路由输出维度与每专家接收行数仍会改变，从而改变分组矩阵乘法（把多个专家的矩阵乘法组织成一次执行）的形状。
 
-用算例核对基线与两个变体。在 16 个 token 的算例中，三种专家粒度的专家矩阵运算量保持相同，基线与 64 专家变体均约为 454 GFLOPs。专家数减半、单专家宽度加倍时，同样多的权重分成更少的大矩阵；专家数加倍、宽度减半时，则成为更多的小矩阵。路由器要为每个专家计算路由分数，因此其参数也随专家数变化。[专家粒度计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen235-granularity-baseline.md)将路由与专家矩阵分别累计，说明专家参数总量相同时，矩阵形状为何仍会不同。
+用算例核对基线与两个变体。在 16 个 token 的算例中，三种专家粒度的专家矩阵运算量保持相同，基线与 64 专家变体均约为 454 GFLOPs。专家数减半、单专家宽度加倍时，同样多的权重分成更少的大矩阵；专家数加倍、宽度减半时，则成为更多的小矩阵。路由器要为每个专家计算路由分数，因此其参数也随专家数变化。[专家粒度计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen235-granularity-baseline.md)将路由与专家矩阵分别累计，说明专家参数总量相同时，矩阵形状为何仍会不同。
 
 矩阵和状态的形状也决定多卡分工的最小单位。128 个专家可分成八组，每组 16 个；四个 KV 头按完整头分工时只能形成四份，八卡执行就需要复制部分 KV 或调整分组。第 5 章从矩阵分块分析执行效率，第 6 章将进一步把这些矩阵和状态分配到各张卡。
 
@@ -1298,7 +1331,7 @@ Kimi K3 希望当前层能够按需要选取不同深度的信息，而不只是
 
 后续层还要使用这些块表示，本次前向中要继续保存，前向结束后即可释放。上下文 KV 则要保留到后续生成步骤。两者需要保存的时间范围不同：AttnRes 增加一次前向中的临时存储，KV 随请求跨多次调用保留。[^source-19]
 
-![普通残差与四路 mHC 的连接范围。普通残差保留一条子层输入旁路；mHC 汇合多路状态供子层计算，再混合输出。两种图中的子层输入均为 4096 维。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-8-residual.svg)
+![普通残差与四路 mHC 的连接范围。普通残差保留一条子层输入旁路；mHC 汇合多路状态供子层计算，再混合输出。两种图中的子层输入均为 4096 维。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-8-residual.svg)
 
 *图 2-24　普通残差与四路 mHC 的连接范围。普通残差保留一条子层输入旁路；mHC 汇合多路状态供子层计算，再混合输出。两种图中的子层输入均为 4096 维。*
 
@@ -1350,15 +1383,15 @@ V4.1 Flash 的执行阶段如下：40 层分成 20 层因果编码器和 20 层�
 
 表中还有三个关系。Qwen3.6 的总参数比 Qwen3-8B 多，主干宽度却只有一半：它把大量参数放进可选择的专家，每个 token 只调用其中八个。Qwen3-8B 与 DeepSeek V4-Flash 的主干同为 4096 维，DeepSeek V4-Flash 通过每层 256 个专家形成更大的参数集合。Kimi K3 又将专家计算移到 3584 维潜空间，使专家输入不必与主干采用相同的宽度。这些差异说明，“保存多大的模型”和“一个 token 做多少工作”需要分别计算。表 2-1、2-2、2-4、2-5、2-6 将逐个展开这五个模型，DeepSeek-V3 的表 2-3 用作 MLA 的历史参照。
 
-![五模型的主干层数，使用同一线性尺度。层数决定同类工作沿网络深度重复多少次。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-architecture.svg)
+![五模型的主干层数，使用同一线性尺度。层数决定同类工作沿网络深度重复多少次。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-architecture.svg)
 
 *图 2-25　五模型的主干层数，使用同一线性尺度。层数决定同类工作沿网络深度重复多少次。*
 
-![同一线性尺度下的主干隐藏维度。每个 token 的特征宽度决定投影的输入或输出尺寸。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-architecture-width.svg)
+![同一线性尺度下的主干隐藏维度。每个 token 的特征宽度决定投影的输入或输出尺寸。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-architecture-width.svg)
 
 *图 2-26　同一线性尺度下的主干隐藏维度。每个 token 的特征宽度决定投影的输入或输出尺寸。*
 
-![每个 MoE 层保存的路由专家数量。Qwen3-8B 使用稠密前馈层，其路由专家数为零；每个 token 实际选中数见表 2-A。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-architecture-experts.svg)
+![每个 MoE 层保存的路由专家数量。Qwen3-8B 使用稠密前馈层，其路由专家数为零；每个 token 实际选中数见表 2-A。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-architecture-experts.svg)
 
 *图 2-27　每个 MoE 层保存的路由专家数量。Qwen3-8B 使用稠密前馈层，其路由专家数为零；每个 token 实际选中数见表 2-A。*
 
@@ -1386,15 +1419,15 @@ $g$ 表示模型层的类别，同一类层采用相同的注意力、前馈网�
 
 先依次比较完整权重、单步计算量和上下文状态大小，再通过各模型的分项表说明差异分别来自哪些矩阵和状态。
 
-![五模型完整权重统一用 BF16 表示时的容量，使用同一线性尺度。这里累计全部参数，包括每次仅选中部分的路由专家。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-resources.svg)
+![五模型完整权重统一用 BF16 表示时的容量，使用同一线性尺度。这里累计全部参数，包括每次仅选中部分的路由专家。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-resources.svg)
 
 *图 2-28　五模型完整权重统一用 BF16 表示时的容量，使用同一线性尺度。这里累计全部参数，包括每次仅选中部分的路由专家。*
 
-![相同单请求、已有 8K 上下文时的单步矩阵运算量。按各模型在表 2-C 说明的执行路径累计，Kimi K3 采用紧凑 MLA。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-resources-compute.svg)
+![相同单请求、已有 8K 上下文时的单步矩阵运算量。按各模型在表 2-C 说明的执行路径累计，Kimi K3 采用紧凑 MLA。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-resources-compute.svg)
 
 *图 2-29　相同单请求、已有 8K 上下文时的单步矩阵运算量。按各模型在表 2-C 说明的执行路径累计，Kimi K3 采用紧凑 MLA。*
 
-![相同 8K 上下文下的每请求状态。上下文表示采用 BF16，递推矩阵和压缩缓冲采用相应实现的精度；各项合计为一条请求保存 8192 个上下文 token 的容量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-resources-state.svg)
+![相同 8K 上下文下的每请求状态。上下文表示采用 BF16，递推矩阵和压缩缓冲采用相应实现的精度；各项合计为一条请求保存 8192 个上下文 token 的容量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-resources-state.svg)
 
 *图 2-30　相同 8K 上下文下的每请求状态。上下文表示采用 BF16，递推矩阵和压缩缓冲采用相应实现的精度；各项合计为一条请求保存 8192 个上下文 token 的容量。*
 
@@ -1462,7 +1495,7 @@ Kimi K3 文本主干约有 2.78 万亿个参数，绝大多数位于 92 个 MoE 
 
 **上下文从 8K 增至 1M 时的运算量与状态增长。** 长文档问答和多轮任务会放大上下文访问的成本。下面保持单请求、一次新增一个 token 和末尾 token 词表头不变。8K 场景有 8192 个历史 token；1M 场景有 1,048,575 个历史 token，加上当前查询正好为 1,048,576 个可见位置。
 
-![五模型在 8K 与 1M 上下文下的单步矩阵运算量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-long-context-compute.svg)
+![五模型在 8K 与 1M 上下文下的单步矩阵运算量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-long-context-compute.svg)
 
 *图 2-31　8K／1M 上下文下再处理一个 token 的矩阵运算量。沿用表 2-C 的执行路径，横轴为对数刻度；1M 包含当前查询。*
 
@@ -1512,11 +1545,11 @@ $$
 
 4-bit 方案的 39.500 GB 包括低位宽矩阵、仍采用高精度的参数，以及 scale 与打包开销，比把所有参数一律按半字节折算的结果更大。换到一张显存 80 GB（十进制）的 H100 SXM、固定预留 2 GiB 时，8-bit 方案可放 1 条 8K 请求，4-bit 方案可放 14 条。上下文从 8K 增至 32K 时，每请求 KV 增至四倍，4-bit 方案可同时容纳的请求数降到 3 条。压缩权重释放的空间可以保存更多请求的上下文，但每条上下文越长，能同时容纳的请求就越少。[^source-23]
 
-![权重、固定预留和一条请求 KV 的逐项容量。短竖线标出 RTX 4090 的 24 GB 与 H100 SXM 的 80 GB 容量；KV 采用 BF16、上下文长度 8192，固定预留为 2 GiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-9-capacity.svg)
+![权重、固定预留和一条请求 KV 的逐项容量。短竖线标出 RTX 4090 的 24 GB 与 H100 SXM 的 80 GB 容量；KV 采用 BF16、上下文长度 8192，固定预留为 2 GiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-9-capacity.svg)
 
 *图 2-32　权重、固定预留和一条请求 KV 的逐项容量。短竖线标出 RTX 4090 的 24 GB 与 H100 SXM 的 80 GB 容量；KV 采用 BF16、上下文长度 8192，固定预留为 2 GiB。“工作区预留”指执行所需的临时空间，“单请求 KV”指一条 8192 个 token 的上下文的缓存。*
 
-![70B 的 4-bit 方案在同一张 80 GB 的 H100 SXM 上，上下文长度从 8K 增至 32K 时可同时容纳的独立请求数。每请求状态增加，使剩余空间容纳的请求数减少。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-history-capacity.svg)
+![70B 的 4-bit 方案在同一张 80 GB 的 H100 SXM 上，上下文长度从 8K 增至 32K 时可同时容纳的独立请求数。每请求状态增加，使剩余空间容纳的请求数减少。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-history-capacity.svg)
 
 *图 2-33　70B 的 4-bit 方案在同一张 80 GB 的 H100 SXM 上，上下文长度从 8K 增至 32K 时可同时容纳的独立请求数。每请求状态增加，使剩余空间容纳的请求数减少。*
 
@@ -1538,7 +1571,7 @@ $$
 
 改变模型结构时，权重预算与状态预算会一起变化。增加层数或 KV 头数会增大每请求的 $K$，留给权重的空间随之减少；跨卡部署则扩大总容量，同时增加通信。Llama 3 报告中的 405B BF16 推理使用两台、共 16 张 H100，其所需容量超出了单台服务器能提供的显存。[^codesign] 模型规模、状态结构与卡数因此需要一起选择。
 
-![从加速器反推权重预算。RTX 4090 的 24 GB 中先为 4 条 8K 请求的 KV 和 2 GiB 工作区预留空间，余量给出 BF16 参数上界；图中容量均为十进制 GB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-reverse-budget.svg)
+![从加速器反推权重预算。RTX 4090 的 24 GB 中先为 4 条 8K 请求的 KV 和 2 GiB 工作区预留空间，余量给出 BF16 参数上界；图中容量均为十进制 GB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-reverse-budget.svg)
 
 *图 2-34　从加速器反推权重预算。RTX 4090 的 24 GB 中先为 4 条 8K 请求的 KV 和 2 GiB 工作区预留空间，余量给出 BF16 参数上界；图中容量均为十进制 GB。*
 
@@ -1570,11 +1603,11 @@ $$
 
 因此，比较模型需要同时回答两个问题：能否完成同一任务，以及完成任务需要多少资源。先按相同标准判断答案，再将各自的输入长度代入模型表，才能把结构差异与实际用途联系起来。[^source-9]
 
-![生成四个输出的调用顺序。prefill 处理 128 个输入并产生首输出，随后三次 decode 各将前一输出送回模型；最终保留 131 个 token。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-10-request.svg)
+![生成四个输出的调用顺序。prefill 处理 128 个输入并产生首输出，随后三次 decode 各将前一输出送回模型；最终保留 131 个 token。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-10-request.svg)
 
 *图 2-35　生成四个输出的调用顺序。prefill 处理 128 个输入并产生首输出，随后三次 decode 各将前一输出送回模型；最终保留 131 个 token。*
 
-![输入 128 个 token、输出四个 token 时，各模型处理同一请求所需的矩阵运算量。模型执行范围与缓存路径见本节题设；这是逐调用累计的计算量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/figure-2-request-compute.svg)
+![输入 128 个 token、输出四个 token 时，各模型处理同一请求所需的矩阵运算量。模型执行范围与缓存路径见本节题设；这是逐调用累计的计算量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/figure-2-request-compute.svg)
 
 *图 2-36　输入 128 个 token、输出四个 token 时，各模型处理同一请求所需的矩阵运算量。模型执行范围与缓存路径见本节题设；这是逐调用累计的计算量。*
 
@@ -1596,7 +1629,7 @@ $$
 
 #### 本章练习与复现
 
-练习 2-2、2-5、2-7 为核心；其余练习用于分析特殊情况，并将方法应用于其他模型。先独立完成预测与推导，再用配套计算核对。计算命令在仓库根目录运行，完整变体参见[第 2 章扩写资料](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/archive/outlines/extensions/02-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84.md)。
+练习 2-2、2-5、2-7 为核心；其余练习用于分析特殊情况，并将方法应用于其他模型。先独立完成预测与推导，再用配套计算核对。计算命令在仓库根目录运行，完整变体参见[第 2 章扩写资料](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/archive/outlines/extensions/02-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84.md)。
 
 | 对应内容 | 本地复算入口 |
 | --- | --- |
@@ -1612,7 +1645,7 @@ $$
 | 已知轨迹字段代入 | `python3 calculations/calc.py trace-resource-bridge --format md` |
 | 五模型请求比较 | `python3 calculations/calc.py request-model-comparison --format md` |
 
-本章配图、计算数据与重建方法见[配图目录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/README.md)。章末资料介绍了各模型的结构与设计。
+本章配图、计算数据与重建方法见[配图目录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/README.md)。章末资料介绍了各模型的结构与设计。
 
 <a id="model-matrix-tables"></a>
 
@@ -1860,67 +1893,67 @@ V3 将两种节省资源的方法组合起来：MLA 用低秩潜变量表示上�
 
 Engram 首先从 n-gram 对应的 24 个桶各取一个 256 维向量，拼成 6144 维输入，再经表中的投影形成四路键和一个共享值；归一化点积与门控将其写入四路残差。查表不计作矩阵乘法，读取载荷、门控和加权归约分别列在计算记录中。查表地址只由 token 序列决定，与激活无关，因此可以在该层执行之前预取，第 6.7.4 节比较表放在主机内存、HBM 或 ROM 的代价。最后的 mHC 加权汇合与 RMSNorm（均方根归一化）不引入另一份词表权重。[^v41-forward]
 
-[^comparison-data]: [五模型比较数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/model-comparison.json)；[表格生成程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/compare_models.py)；[五模型统一计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/src/infra_calc/topics/chapter2_models.py)；[Qwen3.6 末尾 token 输出头计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-prefill-last-head.md)。
+[^comparison-data]: [五模型比较数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/model-comparison.json)；[表格生成程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/compare_models.py)；[五模型统一计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/src/infra_calc/topics/chapter2_models.py)；[Qwen3.6 末尾 token 输出头计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-prefill-last-head.md)。
 
-[^source-1]: [Qwen3-8B 配置与参数计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-8b-prefill-8192.md)，参数总数为 $8{,}190{,}735{,}360$。
+[^source-1]: [Qwen3-8B 配置与参数计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-8b-prefill-8192.md)，参数总数为 $8{,}190{,}735{,}360$。
 
-[^source-2]: [Kimi K3 MLA 展开计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/k3-mla-expanded-b1-t8192-s0.md)。
+[^source-2]: [Kimi K3 MLA 展开计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/k3-mla-expanded-b1-t8192-s0.md)。
 
-[^source-3]: [Kimi K3 专家计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/experts-kimi-k3-b64-balanced.md)。
+[^source-3]: [Kimi K3 专家计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/experts-kimi-k3-b64-balanced.md)。
 
-[^source-4]: [mHC 运算量](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hc-deepseek-v4-flash-b1-t8192.md)。
+[^source-4]: [mHC 运算量](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hc-deepseek-v4-flash-b1-t8192.md)。
 
-[^source-5]: [DeepSeek V4-Flash MTP 计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-mtp-first-call.md)。
+[^source-5]: [DeepSeek V4-Flash MTP 计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-mtp-first-call.md)。
 
-[^source-6]: [V3 前向计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v3-forward-prefill.md)。
+[^source-6]: [V3 前向计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v3-forward-prefill.md)。
 
-[^source-7]: [Kimi K3 模型配置说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/model-resource-accounting.md)；[Kimi K3 前向计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/forward-kimi-k3-b1-t8192-s0-compact.md)。
+[^source-7]: [Kimi K3 模型配置说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/model-resource-accounting.md)；[Kimi K3 前向计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/forward-kimi-k3-b1-t8192-s0-compact.md)。
 
-[^source-8]: [五模型完整请求与逐调用计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/chapter2-model-comparison.json)；运行 `python3 calculations/reproduce_ch02.py`。五个模型统一使用本章表 2-C 的路径；Kimi K3 使用紧凑 MLA，旧的展开路径与 V4-Pro 对照保留在[历史请求记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/request-four-models-book.json)。
+[^source-8]: [五模型完整请求与逐调用计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/chapter2-model-comparison.json)；运行 `python3 calculations/reproduce_ch02.py`。五个模型统一使用本章表 2-C 的路径；Kimi K3 使用紧凑 MLA，旧的展开路径与 V4-Pro 对照保留在[历史请求记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/request-four-models-book.json)。
 
-[^source-9]: [配对检索实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch02/02-09/paired-retrieval/README.md)。Qwen 使用 BF16／vLLM；DeepSeek V4-Flash 使用 MXFP4 专家、FP8 KV／SGLang，并将部分权重放在 CPU 内存。
+[^source-9]: [配对检索实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch02/02-09/paired-retrieval/README.md)。Qwen 使用 BF16／vLLM；DeepSeek V4-Flash 使用 MXFP4 专家、FP8 KV／SGLang，并将部分权重放在 CPU 内存。
 
-[^source-10]: [序列依赖计算记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/sequence-dependencies-book.md)。
+[^source-10]: [序列依赖计算记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/sequence-dependencies-book.md)。
 
-[^source-11]: [逐层记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-8b-decode-b1-s8192.md)。
+[^source-11]: [逐层记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-8b-decode-b1-s8192.md)。
 
-[^source-12]: [跨章核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/qa/qwen-cross-chapter-review.md)。
+[^source-12]: [跨章核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/qa/qwen-cross-chapter-review.md)。
 
-[^source-13]: [缓存累计计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/cache-sequence-qwen3-8b-b1.md)。
+[^source-13]: [缓存累计计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/cache-sequence-qwen3-8b-b1.md)。
 
-[^source-14]: [缓存后缀续算记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-prefix-flash-6144-2048.md)。
+[^source-14]: [缓存后缀续算记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-prefix-flash-6144-2048.md)。
 
-[^source-15]: [块式状态与缓冲记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/k3-kda-chunk-t8192-c64.md)。
+[^source-15]: [块式状态与缓冲记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/k3-kda-chunk-t8192-c64.md)。
 
-[^source-16]: [混合状态计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/state-kimi-k3-n8192-b1-compact.md)。
+[^source-16]: [混合状态计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/state-kimi-k3-n8192-b1-compact.md)。
 
-[^source-17]: [完整模型实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch02/02-05/full-model-run/README.md)。
+[^source-17]: [完整模型实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch02/02-05/full-model-run/README.md)。
 
-[^source-18]: [均匀路由](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-decode-b64.md)；[集中路由](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-decode-b64-concentrated.md)。
+[^source-18]: [均匀路由](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-decode-b64.md)；[集中路由](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-decode-b64-concentrated.md)。
 
-[^source-19]: [逐层调度记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/k3-attn-res-b1-t8192.md)。
+[^source-19]: [逐层调度记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/k3-attn-res-b1-t8192.md)。
 
-[^source-20]: [Qwen3.6 前向记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-prefill-8192.md)。
+[^source-20]: [Qwen3.6 前向记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-prefill-8192.md)。
 
-[^source-21]: [DeepSeek V4-Flash 完整前向记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/forward-deepseek-v4-flash-b1-t8192-s0.md)。
+[^source-21]: [DeepSeek V4-Flash 完整前向记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/forward-deepseek-v4-flash-b1-t8192-s0.md)。
 
-[^source-22]: [完整前向记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/forward-kimi-k3-b1-t8192-s0-compact.md)。
+[^source-22]: [完整前向记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/forward-kimi-k3-b1-t8192-s0-compact.md)。
 
-[^source-23]: [8K 容量表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/llama70-capacity-8k.md)；[32K 对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/llama70-capacity-32k.md)。
+[^source-23]: [8K 容量表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/llama70-capacity-8k.md)；[32K 对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/llama70-capacity-32k.md)。
 
-[^long-context-data]: [8K／200K／1M 比较数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch02/long-context-comparison.json)；[统一计算实现](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/src/infra_calc/topics/chapter2_models.py)。计算检查 8K 数值与图 2-29、图 2-30 一致，并核对压缩块边界、候选上限和逐层运算。
+[^long-context-data]: [8K／200K／1M 比较数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch02/long-context-comparison.json)；[统一计算实现](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/src/infra_calc/topics/chapter2_models.py)。计算检查 8K 数值与图 2-29、图 2-30 一致，并核对压缩块边界、候选上限和逐层运算。
 
-[^architecture-motivation]: [DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/deepseek-v4.txt)第 2.2 节说明 mHC 的多路表示与稳定传播，第 2.3 节说明 CSA／HCA；[Kimi K3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/kimi-k3.txt)说明 Attention Residuals 沿深度选择信息的动机与块式实现。
+[^architecture-motivation]: [DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/deepseek-v4.txt)第 2.2 节说明 mHC 的多路表示与稳定传播，第 2.3 节说明 CSA／HCA；[Kimi K3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/kimi-k3.txt)说明 Attention Residuals 沿深度选择信息的动机与块式实现。
 
-[^codesign]: [MQA 原文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/mqa.txt)摘要；[GQA 原文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/gqa.txt)摘要；[Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/llama3.txt)第 6.1 节。容量示例按题设的服务状态推导。
+[^codesign]: [MQA 原文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/mqa.txt)摘要；[GQA 原文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/gqa.txt)摘要；[Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/llama3.txt)第 6.1 节。容量示例按题设的服务状态推导。
 
-[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/core_principles.py)。
+[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/core_principles.py)。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
-[^v41-candidate]: [DeepSeek V4.1 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 2.3.2 节 Hierarchical Sparse Indexer 使用 candidate pool 和 candidate positions；Figure 5 展示共享候选池与后续 top-k 的区别。
+[^v41-candidate]: [DeepSeek V4.1 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 2.3.2 节 Hierarchical Sparse Indexer 使用 candidate pool 和 candidate positions；Figure 5 展示共享候选池与后续 top-k 的区别。
 
-[^v41-forward]: [V4.1 Flash 完整文本矩阵计算实现](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/src/infra_calc/topics/v41_forward.py)；[CED 8K 输入](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-forward-prefill-8192-ced.md)、[参考全层输入](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-forward-prefill-8192-reference.md)、[8K decode](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-forward-decode-8192-ced.md)、[1M decode](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-forward-decode-1m-ced.md)。[计算与复核记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ch02-five-models-2026-09-10/README.md)。
+[^v41-forward]: [V4.1 Flash 完整文本矩阵计算实现](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/src/infra_calc/topics/v41_forward.py)；[CED 8K 输入](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-forward-prefill-8192-ced.md)、[参考全层输入](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-forward-prefill-8192-reference.md)、[8K decode](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-forward-decode-8192-ced.md)、[1M decode](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-forward-decode-1m-ced.md)。[计算与复核记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ch02-five-models-2026-09-10/README.md)。
 
 #### 本章小结
 
@@ -1944,7 +1977,7 @@ Engram 首先从 n-gram 对应的 24 个桶各取一个 256 维向量，拼成 6
 
 负载是一定时间内到达系统、等待和执行的工作集合。先按时间顺序分析单个请求。恢复 $S$ 个上下文 token，处理 $P$ 个新输入，返回 $G$ 个 token，调用链由一次 prefill 和 $n_d=G-1$ 次 decode 构成。把后续 decode 从 $j=0$ 开始编号，第 $j$ 次开始时，已有上下文为 $S+P+j$。因此，每次调用的资源需求可以用第 2 章的方法算出，调用之间的顺序则由生成依赖确定。[^model]
 
-![恢复 6144 个上下文 token，处理 2048 个新输入并生成 4 个输出。首输出来自 prefill，后续 3 次 decode 各追加一个 token；纵向表示调用次序，间距用于示意。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-1-stages.svg)
+![恢复 6144 个上下文 token，处理 2048 个新输入并生成 4 个输出。首输出来自 prefill，后续 3 次 decode 各追加一个 token；纵向表示调用次序，间距用于示意。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-1-stages.svg)
 
 *图 3-1　恢复 6144 个上下文 token，处理 2048 个新输入并生成 4 个输出。首输出来自 prefill，后续 3 次 decode 各追加一个 token；纵向表示调用次序，间距用于示意。*
 
@@ -1969,7 +2002,7 @@ $$
 
 TTFT（time to first token）是从请求到达到首个 token 返回的时间，本书也称首响应。首响应衡量多久开始输出，完整请求延迟衡量多久生成完，平均 token 间隔衡量输出节奏。把某一段时间缩短，只会直接改变包含这段时间的指标。例如，减少请求开始执行前的排队会改善 TTFT，却不会自动缩短已经开始生成后的 token 间隔。
 
-![请求到达、首输出与末输出决定三个计时区间。首响应包含开始生成前的等待，输出间隔描述生成过程，完整请求时间从到达累计到结束。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-request-clocks.svg)
+![请求到达、首输出与末输出决定三个计时区间。首响应包含开始生成前的等待，输出间隔描述生成过程，完整请求时间从到达累计到结束。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-request-clocks.svg)
 
 *图 3-2　请求到达、首输出与末输出决定三个计时区间。首响应包含开始生成前的等待，输出间隔描述生成过程，完整请求时间从到达累计到结束。*
 
@@ -1996,7 +2029,7 @@ $$
 
 将各时间段占用的空间乘以持续时间再相加，就得到占用空间随时间变化的曲线下面积。其单位为 byte·s：1 GiB 状态持续占用空间 10 秒，对应 10 GiB·s。状态没有变大，但这段时间里这块空间不能供其他请求使用。若任务以平均每秒 $\lambda$ 个的速度持续到达，每个任务都占用 $M_0$ 字节、平均等待 $\tau$ 秒，稳定情况下仅这些等待任务的平均占用就约为 $\lambda M_0\tau$。工具等待由此也会成为容量问题。
 
-![1 GiB 状态持续占用空间 10 秒，对应面积为 10 GiB·s。横轴为状态驻留时间，纵轴为占用空间；面积描述这段等待期间的累计存储占用。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-state-time-area.svg)
+![1 GiB 状态持续占用空间 10 秒，对应面积为 10 GiB·s。横轴为状态驻留时间，纵轴为占用空间；面积描述这段等待期间的累计存储占用。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-state-time-area.svg)
 
 *图 3-3　1 GiB 状态持续占用空间 10 秒，对应面积为 10 GiB·s。横轴为状态驻留时间，纵轴为占用空间；面积描述这段等待期间的累计存储占用。*
 
@@ -2020,17 +2053,17 @@ $$
 | 时段变化，前一分钟 | 29,900.8 | 1,736.8 |
 | 时段变化，后一分钟 | 6,963.2 | 7,471.2 |
 
-![两分钟总量相同的三个时间窗中的请求组成。长输入类为 8192 输入、256 输出，长输出类为 1024 输入、2048 输出；两类混合比例改变阶段需求。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-2-workload-budget.svg)
+![两分钟总量相同的三个时间窗中的请求组成。长输入类为 8192 输入、256 输出，长输出类为 1024 输入、2048 输出；两类混合比例改变阶段需求。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-2-workload-budget.svg)
 
 *图 3-4　两分钟总量相同的三个时间窗中的请求组成。长输入类为 8192 输入、256 输出，长输出类为 1024 输入、2048 输出；两类混合比例改变阶段需求。各类请求的输入、输出长度均以 token 为单位。*
 
-![三个时间窗中，请求组成对应的输入与后续生成需求。输入数按 token 计，后续生成按每请求的一次 decode 步计；每请求首输出已计入 prefill。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-stage-demand.svg)
+![三个时间窗中，请求组成对应的输入与后续生成需求。输入数按 token 计，后续生成按每请求的一次 decode 步计；每请求首输出已计入 prefill。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-stage-demand.svg)
 
 *图 3-5　三个时间窗中，请求组成对应的输入与后续生成需求。输入数按 token 计，后续生成按每请求的一次 decode 步计；每请求首输出已计入 prefill。输入项统计每秒新处理的输入 token；decode 项统计所有请求每秒需要执行的后续 decode 步，每步推进一个 token。*
 
 **队列假设：窗口内均匀到达、处理率固定。** 使用流体队列模型，把离散的生成工作近似为连续流量；每个窗口内均匀到达，处理率固定，初始队列为空。单位是一条请求的一次后续 decode 步，prefill 能力单独核算。
 
-![工作先进入队列，再由处理资源完成。到来快于处理时差额留在队列中；处理快于到来时，资源逐步消化已有积压。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-queue-mechanism.svg)
+![工作先进入队列，再由处理资源完成。到来快于处理时差额留在队列中；处理快于到来时，资源逐步消化已有积压。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-queue-mechanism.svg)
 
 *图 3-6　工作先进入队列，再由处理资源完成。到来快于处理时差额留在队列中；处理快于到来时，资源逐步消化已有积压。*
 
@@ -2046,7 +2079,7 @@ $$
 
 令 decode 队列初始为空，先把请求的生成工作均匀汇入各窗口。均匀混合和前一分钟的处理能力都足够；后一分钟每秒多到来 $7471.2-5591.33\approx1879.87$ 步，60 秒便留下约 112,792 步；停止到达后，按 $112792/5591.33$ 计算，还需约 20.17 秒才能排空。前一分钟未使用的能力无法保存到后一分钟，这正是全局均值掩盖积压的原因。[^workload]
 
-![两张 RTX PRO 6000 每秒最多完成约 5,591 个 decode 步时的流体模型。后一分钟积压至 112,792 步，120 秒后停止到达，再经过约 20.17 秒排空。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-queue-backlog.svg)
+![两张 RTX PRO 6000 每秒最多完成约 5,591 个 decode 步时的流体模型。后一分钟积压至 112,792 步，120 秒后停止到达，再经过约 20.17 秒排空。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-queue-backlog.svg)
 
 *图 3-7　两张 RTX PRO 6000 每秒最多完成约 5,591 个 decode 步时的流体模型。后一分钟积压至 112,792 步，120 秒后停止到达，再经过约 20.17 秒排空。*
 
@@ -2060,7 +2093,7 @@ $$
 | 最后一条请求完成时距起点的时间 | 419.8 s | 418.7 s |
 | 抢占事件 | 62 | 24 |
 
-![同一实际实例回放两种到达序列的结果。完整请求 p95 接近，首响应 p95 则相差约 16 秒；模型、加速器、KV 池与并发上限均按正文实验条件固定。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-arrival-measured.svg)
+![同一实际实例回放两种到达序列的结果。完整请求 p95 接近，首响应 p95 则相差约 16 秒；模型、加速器、KV 池与并发上限均按正文实验条件固定。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-arrival-measured.svg)
 
 *图 3-8　同一实际实例回放两种到达序列的结果。完整请求 p95 接近，首响应 p95 则相差约 16 秒；模型、加速器、KV 池与并发上限均按正文实验条件固定。*
 
@@ -2118,13 +2151,15 @@ $$
 
 核算成本时，还要考虑价格本身的变化。token 单价降低后，仍需计算完成任务的总成本。用简单假设说明：新系统 token 单价降到原来的 1/10，每任务用量却增加到 20 倍，成功率由 50% 提高到 80%。只计模型成本，并假定重复尝试的分布稳定，每个成功任务的成本比为 $2\times\frac{0.5}{0.8}=1.25$。价格下降、质量提高和成功任务成本上升可以同时发生。对带上下文的 Agent，可以沿实际轨迹累加各次尝试，再以通过检查的任务数作分母。[^cost]
 
-![各尝试 100 次的教学比较。所有尝试的成本都进入分子，通过检查的成功任务数进入分母；两种策略的成功任务成本分别为 2 和 2.5 单位。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-success-cost.svg)
+![各尝试 100 次的教学比较。所有尝试的成本都进入分子，通过检查的成功任务数进入分母；两种策略的成功任务成本分别为 2 和 2.5 单位。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-success-cost.svg)
 
 *图 3-9　各尝试 100 次的教学比较。所有尝试的成本都进入分子，通过检查的成功任务数进入分母；两种策略的成功任务成本分别为 2 和 2.5 单位。*
 
 > **练习 3-3〔延伸〕：成功率提高能否抵消单次尝试成本的增加**
 >
 > 旧方法每次尝试成本为 1 单位、成功率为 50%；新方法成本为 2 单位、成功率为 80%。计算平均每完成一个成功任务所需的成本，并判断新方法是否更省。若新方法成本降到 1.5 单位，成功率至少应达到多少，才能使每个成功任务的平均成本不高于旧方法？对需要多次采样的任务，说明生成、验证和失败尝试的开销应怎样计入总成本。
+>
+> 沿用第 3.2.4 节末的决策请求算例：决策模型处理一条请求花费 0.000081 美元，转交 LLM 每条花费 0.013880 美元。设转交前后的成功率分别为 $p_1,p_2$，求转交比例为 1% 和 5% 时每条请求的平均费用；$p_2/p_1$ 至少达到多少，转交才能降低每个成功任务的费用？
 
 ##### 3.2.3 智能体工作负载
 
@@ -2151,7 +2186,7 @@ $$
 
 开启思考模式后，任务共输出 2,733 个 token，其中 2,553 个在思考结束符（标志思考内容结束的记号）之前，3 个为结束符，177 个在之后。思考占据绝大多数生成工作，工具调用则把模型的决策转化为文件修改与测试操作。沿执行顺序累计模型调用与工具执行的实际耗时，再加上控制和交接时间，就得到用户等待整个任务完成的时间。
 
-![代码任务中四轮模型调用的实际耗时，各轮从自己的起点计时。模型时间合计 76.294 秒，工具合计约 0.078 秒，整任务另含控制与交接时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-3-agent.svg)
+![代码任务中四轮模型调用的实际耗时，各轮从自己的起点计时。模型时间合计 76.294 秒，工具合计约 0.078 秒，整任务另含控制与交接时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-3-agent.svg)
 
 *图 3-10　代码任务中四轮模型调用的实际耗时，各轮从自己的起点计时。模型时间合计 76.294 秒，工具合计约 0.078 秒，整任务另含控制与交接时间。*
 
@@ -2161,15 +2196,15 @@ $$
 
 工具之间的依赖关系也影响总时间。设模型先计算 2 秒，随后调用两个工具，耗时分别为 6 秒和 10 秒，最后再计算 3 秒。若第二个工具依赖第一个的结果，总时间为 $2+6+10+3=21$ 秒；若工具相互独立，总时间为 $2+\max(6,10)+3=15$ 秒。并行减少了 6 秒，但两个工具的总执行工作仍为 16 秒。
 
-![两个工具存在前后依赖时的任务时间线。模型先运行 2 秒，工具 A 用 6 秒，工具 B 用 10 秒，模型最后运行 3 秒，总计 21 秒。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-tool-dependency.svg)
+![两个工具存在前后依赖时的任务时间线。模型先运行 2 秒，工具 A 用 6 秒，工具 B 用 10 秒，模型最后运行 3 秒，总计 21 秒。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-tool-dependency.svg)
 
 *图 3-11　两个工具存在前后依赖时的任务时间线。模型先运行 2 秒，工具 A 用 6 秒，工具 B 用 10 秒，模型最后运行 3 秒，总计 21 秒。*
 
-![两个工具独立时可以同时开始，模型在较慢的工具 B 完成后继续，任务共 15 秒。与前图使用相同时间尺度；工具工作总量仍为 16 秒。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-tool-parallel.svg)
+![两个工具独立时可以同时开始，模型在较慢的工具 B 完成后继续，任务共 15 秒。与前图使用相同时间尺度；工具工作总量仍为 16 秒。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-tool-parallel.svg)
 
 *图 3-12　两个工具独立时可以同时开始，模型在较慢的工具 B 完成后继续，任务共 15 秒。与前图使用相同时间尺度；工具工作总量仍为 16 秒。*
 
-![两个生成分支指向同一份公共前缀，并各自保存新增尾部。箭头表示引用关系，共享前缀只计一份容量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-branch-state.svg)
+![两个生成分支指向同一份公共前缀，并各自保存新增尾部。箭头表示引用关系，共享前缀只计一份容量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-branch-state.svg)
 
 *图 3-13　两个生成分支指向同一份公共前缀，并各自保存新增尾部。箭头表示引用关系，共享前缀只计一份容量。*
 
@@ -2189,9 +2224,23 @@ $$
 
 已有前缀时，输入处理的工作量由追加长度与恢复方式共同决定。若编码器 SWA 命中缓存，编码器主体便可以继续处理追加的输入；编码器 SWA 缺失，则先重放前缀末尾窗口。两条路径随后都要构建本轮的解码器 SWA。第 8 章将用 8K 与 128K 上下文的教学算例，比较保存状态和重新执行的成本。
 
-![同一批 8K 输入中，各 token 经过的专家层数之和。普通全层路径执行 40 层；CED 路径执行 20 层编码器，并为最近 128 个 token 重放 20 层解码器。灰色说明项仍需另外计算；生成阶段执行完整主干。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-v41-ced.svg)
+![同一批 8K 输入中，各 token 经过的专家层数之和。普通全层路径执行 40 层；CED 路径执行 20 层编码器，并为最近 128 个 token 重放 20 层解码器。灰色说明项仍需另外计算；生成阶段执行完整主干。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-v41-ced.svg)
 
 *图 3-14　同一批 8K 输入中，各 token 经过的专家层数之和。普通全层路径执行 40 层；CED 路径执行 20 层编码器，并为最近 128 个 token 重放 20 层解码器。灰色说明项仍需另外计算；生成阶段执行完整主干。*
+
+**算例：Jev 为什么一眨眼就给出答案。** 2026 年 9 月，前 OpenAI 研究员 Diogo Almeida 创办的 TypeSafe AI 发布了 Jev 模型。按创始人在发布文章中的说法，他在 OpenAI 参与了让语言模型学会遵循指令、与人对话的方法，这些工作后来成了 ChatGPT 背后的研究。[^jev] Jev 的官方演示相当吸睛：同一条客服请求，GPT-5.6 Terra 用了 8.566 秒，Jev 只用 0.114 秒，费用也只有前者的 1/171。不少人的第一反应是：这还是 Transformer 吗？是不是用了什么了不起的 infra？读过本书就会发现，这其实没有什么秘密，读者也可以轻松实现。
+
+Jev 不生成文字。调用方提交一段状态（例如一张工单）和若干问题，每个问题的选项事先给定，模型返回各选项的概率。回到第 3.1.1 节的调用链，这类请求只有 prefill，没有 decode。状态和所有问题拼在一起做一次前向，每个问题末位置的输出分布就是答案，好比图 3-13 中从同一前缀分出的几条分支，每条只走一步就停下。问题之间互不依赖，请求结束后也不必保留 KV。至于这些概率能否直接当作置信度，靠的是训练：TypeSafe 称其方法为 RLCD，思路与学术界的 RLCR 相同，都在奖励中加入 Brier 分数，让模型给出的概率与实际正确率相符。[^rlcr]
+
+下面用本书的条件验证这一点。Jev 只按输入收费，每百万 token 0.042 美元；演示中 Jev 花费 0.000081 美元，折算下来输入约 1929 个 token。把这条请求放到 Qwen3-8B 上，一次前向约 28 TFLOPs，H100 SXM 按 40% 的算力效率计算约需 70 ms，与演示中的 0.114 秒相当。换成 DeepSeek V4.1 Flash 并走 CED 路径，运算量也只多出约四分之一。如果交给普通 LLM，prefill 之后还要逐个生成 token，每一步受内存带宽限制，约需 9 ms。生成 64 个 token，延迟就增至 0.65 秒，是决策请求的 9 倍；由于 decode 可以合批，GPU 时间却只多 28%。图 3-15 把两种执行方式画在同一条时间轴上：一眨眼给出答案，靠的是省掉了串行生成。[^decision-calc]
+
+![同一条 1929 个 token 的请求在 H100 SXM 上的两种执行方式。上图为决策请求，一次前向后同时读出 8 个问题的答案；下图为普通 LLM，prefill 之后逐个生成 64 个 token。模型为 Qwen3-8B，算力效率取 40%，带宽效率取 50%。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-decision-request.svg)
+
+*图 3-15　同一条 1929 个 token 的请求在 H100 SXM 上的两种执行方式。上图为决策请求，一次前向后同时读出 8 个问题的答案；下图为普通 LLM，prefill 之后逐个生成 64 个 token。模型为 Qwen3-8B，算力效率取 40%，带宽效率取 50%。*
+
+价格同样不神秘。按 DeepSeek 推理系统报告的口径，每 GPU 小时租金取 2 美元，则 8B 稠密模型或 V4.1 Flash 每处理一百万个输入 token，算力成本约为 0.02 至 0.025 美元，Jev 的价格是这一成本的 1.7 至 2 倍。也就是说，这一档模型只靠普通的 prefill 就能做到这个价格；反过来，若价格要覆盖成本，Jev 每个 token 的运算量大致不会超过 8B 稠密模型的两倍。演示中 171 倍的费用差距，只有一小部分来自省去生成：在同一模型上，省去 64 至 512 个输出 token，GPU 时间只减少到原来的 1/1.3 至 1/3.4。其余差距来自前沿模型本身的价格，以及推理时生成的大量 token。
+
+实际使用时，决策模型没有把握的请求还要转交 LLM 重新处理。设转交比例为 $e$，每条请求的平均费用为 $c_{\mathrm{dec}}+e\,c_{\mathrm{LLM}}$。按演示中的两个费用计算，$e$ 只要超过约 0.58%，转交 LLM 的费用就会超过决策模型本身的费用。因此，第 3.2.2 节成功任务成本中的 $c$ 也要计入转交费用。决策模型是否更省钱，要看有多少请求需要转交，以及接手的 LLM 价格多高。
 
 #### 3.3 多模态与实时交互
 
@@ -2211,15 +2260,15 @@ $$
 
 但编码结果不止这一份。为向语言模型提供不同深度的视觉信息，DeepStack 将视觉编码器中间层的特征送入相应语言层。模型还取三个中间视觉层的这类特征，将它们与最终层特征拼接，完整张量为 $[400,10240]$，占 8,192,000 bytes，即 7.8125 MiB。四组特征对应同一组 400 个视觉 token：特征宽度变为四倍，语言序列仍增加 400 个视觉 token。视觉编码的矩阵运算量约为 1.310 TFLOPs；图片解码与缩放发生在编码之前，语言计算则在编码之后。[^vision]
 
-![图像从像素网格变为视觉 token。640×640 的方形图片切成 40×40 个块，相邻 2×2 块合并成一个 token，形成 20×20、共 400 个视觉 token。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-vision-shapes.svg)
+![图像从像素网格变为视觉 token。640×640 的方形图片切成 40×40 个块，相邻 2×2 块合并成一个 token，形成 20×20、共 400 个视觉 token。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-vision-shapes.svg)
 
-*图 3-15　图像从像素网格变为视觉 token。640×640 的方形图片切成 40×40 个块，相邻 2×2 块合并成一个 token，形成 20×20、共 400 个视觉 token。*
+*图 3-16　图像从像素网格变为视觉 token。640×640 的方形图片切成 40×40 个块，相邻 2×2 块合并成一个 token，形成 20×20、共 400 个视觉 token。*
 
-![视觉 token 数与每 token 特征宽度分别计量。四组 2560 维 BF16 编码特征占 7.8125 MiB；这些视觉 token 进入语言模型后，另产生各层的 KV 状态。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-vision-state.svg)
+![视觉 token 数与每 token 特征宽度分别计量。四组 2560 维 BF16 编码特征占 7.8125 MiB；这些视觉 token 进入语言模型后，另产生各层的 KV 状态。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-vision-state.svg)
 
-*图 3-16　视觉 token 数与每 token 特征宽度分别计量。四组 2560 维 BF16 编码特征占 7.8125 MiB；这些视觉 token 进入语言模型后，另产生各层的 KV 状态。*
+*图 3-17　视觉 token 数与每 token 特征宽度分别计量。四组 2560 维 BF16 编码特征占 7.8125 MiB；这些视觉 token 进入语言模型后，另产生各层的 KV 状态。*
 
-图 3-15 与图 3-16 中，视觉编码改变了视觉 token 数和特征宽度；进入语言模型后，还会产生另一种表示。编码缓存（encoder cache，EC）保存视觉编码器的输出，语言主干则产生 KV 缓存。该配置的语言 KV 每 token 占 144 KiB，400 个视觉 token 对应 56.25 MiB。因此，同一张教学截图在三个处理阶段对应不同的数据量：原始压缩文件 0.8 MB、完整 BF16 EC 7.8125 MiB、视觉 token 的逻辑 KV 56.25 MiB。[^epd]
+图 3-16 与图 3-17 中，视觉编码改变了视觉 token 数和特征宽度；进入语言模型后，还会产生另一种表示。编码缓存（encoder cache，EC）保存视觉编码器的输出，语言主干则产生 KV 缓存。该配置的语言 KV 每 token 占 144 KiB，400 个视觉 token 对应 56.25 MiB。因此，同一张教学截图在三个处理阶段对应不同的数据量：原始压缩文件 0.8 MB、完整 BF16 EC 7.8125 MiB、视觉 token 的逻辑 KV 56.25 MiB。[^epd]
 
 | 对象 | 本例大小 | 决定它能否复用的条件 |
 | --- | ---: | --- |
@@ -2271,19 +2320,19 @@ $$
 
 将缓冲改为 60 ms，这次停顿消失，首播却推迟到 98 ms。增加缓冲可以避免这次到达时间波动造成的播放中断，代价是更晚开始；若音频的平均到达速度长期低于播放速度，有限缓冲终究会耗尽。[^audio]
 
-![可组合的多模态阶段。编码形成模型输入，语言模型生成回复，声学模块将回复转成音频，接收方的缓冲与播放设备决定何时真正发声。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-4-realtime.svg)
+![可组合的多模态阶段。编码形成模型输入，语言模型生成回复，声学模块将回复转成音频，接收方的缓冲与播放设备决定何时真正发声。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-4-realtime.svg)
 
-*图 3-17　可组合的多模态阶段。编码形成模型输入，语言模型生成回复，声学模块将回复转成音频，接收方的缓冲与播放设备决定何时真正发声。*
+*图 3-18　可组合的多模态阶段。编码形成模型输入，语言模型生成回复，声学模块将回复转成音频，接收方的缓冲与播放设备决定何时真正发声。*
 
-![八块音频的教学播放时间线。每块长 20 ms，圆点标到达，短竖线标原定播放时刻，色条标实际播放；第三块晚到 5 ms，后续播放随之顺延。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-audio-timing.svg)
+![八块音频的教学播放时间线。每块长 20 ms，圆点标到达，短竖线标原定播放时刻，色条标实际播放；第三块晚到 5 ms，后续播放随之顺延。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-audio-timing.svg)
 
-*图 3-18　八块音频的教学播放时间线。每块长 20 ms，圆点标到达，短竖线标原定播放时刻，色条标实际播放；第三块晚到 5 ms，后续播放随之顺延。*
+*图 3-19　八块音频的教学播放时间线。每块长 20 ms，圆点标到达，短竖线标原定播放时刻，色条标实际播放；第三块晚到 5 ms，后续播放随之顺延。*
 
-播放连续性之外，还要单独检查打断响应。图 3-19 从用户发出打断计时，追踪本地播放何时真正停止；远端生成是否停止需要沿另一条控制路径判断。
+播放连续性之外，还要单独检查打断响应。图 3-20 从用户发出打断计时，追踪本地播放何时真正停止；远端生成是否停止需要沿另一条控制路径判断。
 
-![同一教学场景中的本地打断。123 ms 发出操作，130 ms 设备静音；远端计算是否停止属于另一条控制路径。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-audio-interrupt.svg)
+![同一教学场景中的本地打断。123 ms 发出操作，130 ms 设备静音；远端计算是否停止属于另一条控制路径。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-audio-interrupt.svg)
 
-*图 3-19　同一教学场景中的本地打断。123 ms 发出操作，130 ms 设备静音；远端计算是否停止属于另一条控制路径。*
+*图 3-20　同一教学场景中的本地打断。123 ms 发出操作，130 ms 设备静音；远端计算是否停止属于另一条控制路径。*
 
 打断涉及几项操作：应用发出取消指令，播放设备静音，后端停止生成，并释放缓冲与状态。教学时序在 123 ms 发出打断，控制延迟 5 ms，设备每 10 ms 检查并执行一次控制指令，于是 130 ms 静音，用户感受到的打断延迟为 7 ms。设备静音、后端停止生成和释放缓冲与状态，分别对应停止播放、停止计算和释放存储三个时刻：后端停止生成决定后续计算何时结束，缓冲释放决定容量何时可供其他任务使用。[^audio-interrupt]
 
@@ -2319,9 +2368,9 @@ $$
 
 除计算量外，训练还带来新的状态保存需求。除了计算 $\mathrm dW$ 要用的 $X$，对非线性运算求梯度也需要相应的中间结果。参数梯度在反向传播中产生，再由优化器用来计算参数更新量。优化器的状态记录多次更新积累的信息，因此需要保留到下一次更新。每类数据的保留期限取决于最后一次使用它的操作：某层激活通常在该层反向计算用完后释放，优化器动量则需要跨越多次更新持续保留。
 
-![激活的生命周期：一层激活从前向完成后保留到相应反向用完。横轴按事件排列，间距仅表示过程顺序；相应反向计算用完这些激活后，即可释放其占用的空间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-activation-lifetime.svg)
+![激活的生命周期：一层激活从前向完成后保留到相应反向用完。横轴按事件排列，间距仅表示过程顺序；相应反向计算用完这些激活后，即可释放其占用的空间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-activation-lifetime.svg)
 
-*图 3-20　激活的生命周期：一层激活从前向完成后保留到相应反向用完。横轴按事件排列，间距仅表示过程顺序；相应反向计算用完这些激活后，即可释放其占用的空间。*
+*图 3-21　激活的生命周期：一层激活从前向完成后保留到相应反向用完。横轴按事件排列，间距仅表示过程顺序；相应反向计算用完这些激活后，即可释放其占用的空间。*
 
 **例题 3-3：梯度与优化器状态为何使训练内存需求成倍增加？**
 
@@ -2329,13 +2378,13 @@ $$
 
 明确状态需求之后，再分析数据如何分批进入训练。micro-batch（微批次）是一次前向和反向实际处理的数据子集；完整的训练 batch 可以由多个 micro-batch 组成。micro-batch 与参数更新也要区分。显存无法容纳完整的训练 batch 时，可以分多个 micro-batch 累计梯度，最后再更新一次参数。保持目标、有效标签和归一化一致时，将同一训练 batch 拆成更多 micro-batch，会改变执行顺序与激活的生命周期，而总训练数据量保持不变。第 10 章将据此讨论分片和流水。
 
-![训练沿前向依赖计算输出，再沿反向依赖传递梯度。当前层既向前层传输入梯度，也计算自己的权重梯度，供优化器更新。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-5-training.svg)
+![训练沿前向依赖计算输出，再沿反向依赖传递梯度。当前层既向前层传输入梯度，也计算自己的权重梯度，供优化器更新。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-5-training.svg)
 
-*图 3-21　训练沿前向依赖计算输出，再沿反向依赖传递梯度。当前层既向前层传输入梯度，也计算自己的权重梯度，供优化器更新。*
+*图 3-22　训练沿前向依赖计算输出，再沿反向依赖传递梯度。当前层既向前层传输入梯度，也计算自己的权重梯度，供优化器更新。*
 
-![Qwen3-8B 全参数训练的参数相关状态。每参数包括 2 字节计算权重和 4 组 4 字节状态，共 18 字节；激活和工作区的容量需求按各自的生命周期单独计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-training-states.svg)
+![Qwen3-8B 全参数训练的参数相关状态。每参数包括 2 字节计算权重和 4 组 4 字节状态，共 18 字节；激活和工作区的容量需求按各自的生命周期单独计算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-training-states.svg)
 
-*图 3-22　Qwen3-8B 全参数训练的参数相关状态。每参数包括 2 字节计算权重和 4 组 4 字节状态，共 18 字节；激活和工作区的容量需求按各自的生命周期单独计算。*
+*图 3-23　Qwen3-8B 全参数训练的参数相关状态。每参数包括 2 字节计算权重和 4 组 4 字节状态，共 18 字节；激活和工作区的容量需求按各自的生命周期单独计算。*
 
 训练过程中还要不断准备下一批输入。CPU 读取、解码、分词并组成 batch，再把张量送到加速器。双缓冲可以在计算当前 batch 时准备下一个 batch：一个缓冲供计算读取，另一个接收新数据，交替使用。计算用完已准备的数据后，就必须等待新输入；取回加速器结果时又会等待相应计算完成。第 5 章将结合前向、反向和参数更新的执行顺序，分析数据准备与计算如何重叠。
 
@@ -2367,9 +2416,9 @@ micro-batch 与更新数则控制工作的重复次数。设每个 micro-batch �
 | 其中因果注意力 $QK^{\mathsf T}$ 与 $AV$ 前反向 | 59.381 |
 | 总参数代入 $6ND$ | 402.591 |
 
-![Qwen3-8B、8192 个 token 输入的全参数训练。全部输入 token 执行词表头、没有重计算；按矩阵逐项累计，前向加反向为 431.368 TFLOPs。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-training-flops.svg)
+![Qwen3-8B、8192 个 token 输入的全参数训练。全部输入 token 执行词表头、没有重计算；按矩阵逐项累计，前向加反向为 431.368 TFLOPs。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-training-flops.svg)
 
-*图 3-23　Qwen3-8B、8192 个 token 输入的全参数训练。全部输入 token 执行词表头、没有重计算；按矩阵逐项累计，前向加反向为 431.368 TFLOPs。*
+*图 3-24　Qwen3-8B、8192 个 token 输入的全参数训练。全部输入 token 执行词表头、没有重计算；按矩阵逐项累计，前向加反向为 431.368 TFLOPs。*
 
 把 402.591 TFLOPs 的粗算修正到 431.368 TFLOPs，需要先说明哪些工作漏算了、哪些多算了。查询与上下文之间的矩阵乘法不对应一份模型参数，却在前反向中贡献 59.381 TFLOPs；另一方面，词嵌入等模块虽然包含参数，但并不对每个 token 执行完整矩阵乘法，不能一律按 $6ND$ 计入。两项修正相抵后，矩阵运算总量比粗算高约 7.15%。这属于第 1.3.4 节所说的第一类差距：粗算漏掉了注意力的二次项，又多算了不参与完整矩阵乘法的参数，要改的是模型本身，与实现无关。只有修正后的下界，才能用来衡量系统的利用率。
 
@@ -2446,13 +2495,13 @@ $$
 
 如果样本保留比例从 1/2 降到 1/4，但仍要求得到 16 条保留样本，教学对照改为生成 64 条。生成与参考模型计算翻倍，更新量不变，总矩阵运算量增到 3,410.701 TFLOPs，约增加 56.3%。每个保留样本分摊的矩阵运算量从 136.347 增到 213.169 TFLOPs。增加的 1229.142 TFLOPs 全部来自额外回答的生成与参考模型计算；进入更新的 16 条样本保持不变。[^rl-low]
 
-![强化学习中的角色和数据流。生成端产生回答，反馈环节评价结果，筛选后送给学习器更新；新权重再用于下一批生成。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-6-rl.svg)
+![强化学习中的角色和数据流。生成端产生回答，反馈环节评价结果，筛选后送给学习器更新；新权重再用于下一批生成。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-6-rl.svg)
 
-*图 3-24　强化学习中的角色和数据流。生成端产生回答，反馈环节评价结果，筛选后送给学习器更新；新权重再用于下一批生成。*
+*图 3-25　强化学习中的角色和数据流。生成端产生回答，反馈环节评价结果，筛选后送给学习器更新；新权重再用于下一批生成。*
 
-![保持 16 条有效样本的目标，生成数由 32 增到 64。生成时的输入处理、后续 decode 和参考模型评分随回答总数增加，策略更新处理的样本数保持相同。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-rl-stage-work.svg)
+![保持 16 条有效样本的目标，生成数由 32 增到 64。生成时的输入处理、后续 decode 和参考模型评分随回答总数增加，策略更新处理的样本数保持相同。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-rl-stage-work.svg)
 
-*图 3-25　保持 16 条有效样本的目标，生成数由 32 增到 64。生成时的输入处理、后续 decode 和参考模型评分随回答总数增加，策略更新处理的样本数保持相同。*
+*图 3-26　保持 16 条有效样本的目标，生成数由 32 增到 64。生成时的输入处理、后续 decode 和参考模型评分随回答总数增加，策略更新处理的样本数保持相同。*
 
 更新完成后，生成副本需要获得新权重。设有 $r$ 个副本，逐个独立发送大小为 $M_W$ 的完整权重，则传输量为 $rM_W$。Qwen3-8B BF16 的一份权重约为 16.381 GB，四个副本共需约 65.526 GB。优化器状态留在学习器，用于下一次更新；生成副本只需要执行前向所需的权重。广播或分层分发则可以让多个副本共用部分传输路径，减少重复发送。
 
@@ -2492,15 +2541,15 @@ $$
 
 **例题 3-5：训练规模拟合关系能否预测更大模型的损失？** 从公开训练记录中选定六个较小模型的观测值用于拟合，另将两个较大模型的观测留出。先选定拟合方法，再比较留出模型的预测值与实际观测值。
 
-解：datablations 是研究模型与数据规模变化的公开实验记录，C4 是这些记录使用的一套文本语料。以其中八个模型为例，用六个较小模型拟合曲线，将 $N\ge2\times10^9$ 的两个模型留作检验。两个大模型的实际损失分别约为 2.574、2.337，拟合曲线预测为 2.583、2.363。预测略高于实际值，均方根误差约为 0.0193 nats/token。nat 是使用自然对数时的信息量单位，nats/token 表示每个 token 的平均损失。图 3-26 用不同标记区分拟合点与检验点。[^fit]
+解：datablations 是研究模型与数据规模变化的公开实验记录，C4 是这些记录使用的一套文本语料。以其中八个模型为例，用六个较小模型拟合曲线，将 $N\ge2\times10^9$ 的两个模型留作检验。两个大模型的实际损失分别约为 2.574、2.337，拟合曲线预测为 2.583、2.363。预测略高于实际值，均方根误差约为 0.0193 nats/token。nat 是使用自然对数时的信息量单位，nats/token 表示每个 token 的平均损失。图 3-27 用不同标记区分拟合点与检验点。[^fit]
 
-![八个公开 C4 观测的预测与实际损失。6 点用于拟合，2 点预先留出作检验；对角线表示预测等于观测，点到线的偏差反映误差。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-7-scaling.svg)
+![八个公开 C4 观测的预测与实际损失。6 点用于拟合，2 点预先留出作检验；对角线表示预测等于观测，点到线的偏差反映误差。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-7-scaling.svg)
 
-*图 3-26　八个公开 C4 观测的预测与实际损失。6 点用于拟合，2 点预先留出作检验；对角线表示预测等于观测，点到线的偏差反映误差。*
+*图 3-27　八个公开 C4 观测的预测与实际损失。6 点用于拟合，2 点预先留出作检验；对角线表示预测等于观测，点到线的偏差反映误差。*
 
-![同一组预测误差的放大视图。F1—F6 为拟合点，H1—H2 为留出点；纵轴是预测减观测，保留正负号。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-scaling-residual.svg)
+![同一组预测误差的放大视图。F1—F6 为拟合点，H1—H2 为留出点；纵轴是预测减观测，保留正负号。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-scaling-residual.svg)
 
-*图 3-27　同一组预测误差的放大视图。F1—F6 为拟合点，H1—H2 为留出点；纵轴是预测减观测，保留正负号。*
+*图 3-28　同一组预测误差的放大视图。F1—F6 为拟合点，H1—H2 为留出点；纵轴是预测减观测，保留正负号。*
 
 留出检验之所以必要，是因为拟合只保证曲线尽量贴近用于求系数的数据。将较大模型排除在拟合之外，再比较预测与实际损失，才能检查这条关系能否预测新规模。这里的两个误差分别约为 $0.009$ 和 $0.026$；将它们平方、取平均再开方，便得到均方根误差。
 
@@ -2512,9 +2561,9 @@ $$
 
 **固定目标损失下的训练投入与累计服务成本。** 固定拟合目标损失为 2.9，用矩阵运算量估算训练与服务成本，再统一折算为 H100 SXM 的 GPU 时间（GPU 数量与使用时长的乘积，以 GPU 秒或 GPU 小时计）。请求取 $P=512,G=128$，训练运算量为 $6ND$，每个完整请求的运算量为 $2N[P+(G-1)]$。H100 SXM 的 BF16 稠密峰值为 989.4 TFLOP/s；Llama 3 在 H100 上预训练时报告的 BF16 MFU（定义见第 1.2.2 节）为 38%–43%，训练与服务都取 40%，折算后每 GPU 秒完成 395.76 TFLOP。[^llama3] 0.1B 模型需要约 298.6B 训练 token，超过拟合所用数据量的上界，因此成本图用虚线标注这条外推曲线。按这条外推曲线计算，0.1B 模型训练约需 125.7 H100 GPU 小时，比 0.5B 模型多 73.5 GPU 小时；每次调用则少用约 0.00129 GPU 秒。调用约 2.048 亿次时，两者总成本相等。在此之前，0.1B 模型多付的训练成本尚未收回；在此之后，每次服务节省的成本累计超过了前期投入。训练与服务按同一系数折算，所以该交点只取决于运算量，与 MFU 的取值无关。[^lifecycle]
 
-![训练与服务累计成本的题设比较。截距是训练投入，斜率是单次调用成本；虚线标出超出拟合参数或数据范围的方案，竖线为约 2.048 亿次的成本交点；纵轴为按 40% MFU 折算的 H100 SXM GPU 小时。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-lifecycle-cost.svg)
+![训练与服务累计成本的题设比较。截距是训练投入，斜率是单次调用成本；虚线标出超出拟合参数或数据范围的方案，竖线为约 2.048 亿次的成本交点；纵轴为按 40% MFU 折算的 H100 SXM GPU 小时。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-lifecycle-cost.svg)
 
-*图 3-28　训练与服务累计成本的题设比较。截距是训练投入，斜率是单次调用成本；虚线标出超出拟合参数或数据范围的方案，竖线为约 2.048 亿次的成本交点。图例中的 B 表示十亿个模型参数；纵轴为按 40% MFU 折算的 H100 SXM GPU 小时。*
+*图 3-29　训练与服务累计成本的题设比较。截距是训练投入，斜率是单次调用成本；虚线标出超出拟合参数或数据范围的方案，竖线为约 2.048 亿次的成本交点。图例中的 B 表示十亿个模型参数；纵轴为按 40% MFU 折算的 H100 SXM GPU 小时。*
 
 回到参数与数据的分配，还可以直接预测预算增加后的结果。由最优解表达式可得 $N_{\mathrm{opt}}\propto C^{\beta/(\alpha+\beta)}$，再代回计算约束，得到 $D_{\mathrm{opt}}\propto C^{\alpha/(\alpha+\beta)}$。若两个指数相等，预算增至四倍，参数和训练数据各增至两倍。拟合指数的意义由此变得具体：指数决定新增计算应如何分给模型与数据。
 
@@ -2550,9 +2599,9 @@ $$
 
 式中 $n_L$ 为主干层数，$h$ 为隐藏维度，$f$ 为专家中间维度，$k_{\mathrm{routed}}$ 与 $k_{\mathrm{shared}}$ 为每 token 选中的路由专家数与共享专家数；系数 $18=3\times2\times3$，依次对应三个投影、每次乘加计 2 FLOPs、前反向合计为前向的三倍。DeepSeek V4-Flash 的主干专家约 45.4495 GFLOPs/token，按 32T 累计约 $1.45438\times10^{24}$ FLOPs；DeepSeek V4-Pro 约 169.2465 GFLOPs/token，按 33T 累计约 $5.58513\times10^{24}$ FLOPs。整步训练计算由这些专家矩阵与注意力、路由、MTP、优化器和重计算共同组成。报告的损失权重也不是执行比例，例如 MTP 权重为 0.3，不表示只执行 30% 的辅助计算。[^training]
 
-![相近参数规模的模型投入不同数量的训练 token。柱值为报告训练数据量除以参数量，Qwen 采用模型系列披露的数据预算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-8-history.svg)
+![相近参数规模的模型投入不同数量的训练 token。柱值为报告训练数据量除以参数量，Qwen 采用模型系列披露的数据预算。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-8-history.svg)
 
-*图 3-29　相近参数规模的模型投入不同数量的训练 token。柱值为报告训练数据量除以参数量，Qwen 采用模型系列披露的数据预算。*
+*图 3-30　相近参数规模的模型投入不同数量的训练 token。柱值为报告训练数据量除以参数量，Qwen 采用模型系列披露的数据预算。*
 
 > **练习 3-9〔延伸〕：增加训练数据或专家数量会改变哪些资源需求**
 >
@@ -2570,11 +2619,11 @@ DeepSeek-V3 报告预训练 2.664M H800 GPU 小时；14.8T token 只对应预训
 
 用 GPU 小时换算实际历时，要除以同期使用的卡数。对 Llama 3.1 405B，取公开的 30.84M H100 GPU 小时，并假设这项工作全部使用最大规模 16,384 卡，实际历时约为 $30.84\times10^6/(16384\times24)\approx78.43$ 天。某个阶段使用的卡数更少时，相同 GPU 小时需要更长的实际时间；训练资源的分配时序因此决定训练完成时间。
 
-上述用量来自三种加速器，GPU 小时不能直接跨设备比较投入规模。按 BF16 稠密峰值算力折算：A100 80GB 为 312 TFLOP/s，H100 与 H800 同为 989.4 TFLOP/s（H800 只是互联带宽更低），一个 H100 或 H800 GPU 小时约相当于 $989.4/312\approx3.17$ 个 A100 GPU 小时。图 3-30 把三组公开用量统一折算为 A100 80GB 等效小时；折算假定各设备的实际利用率相近，用于比较投入规模，不表示效率或成本差异。
+上述用量来自三种加速器，GPU 小时不能直接跨设备比较投入规模。按 BF16 稠密峰值算力折算：A100 80GB 为 312 TFLOP/s，H100 与 H800 同为 989.4 TFLOP/s（H800 只是互联带宽更低），一个 H100 或 H800 GPU 小时约相当于 $989.4/312\approx3.17$ 个 A100 GPU 小时。图 3-31 把三组公开用量统一折算为 A100 80GB 等效小时；折算假定各设备的实际利用率相近，用于比较投入规模，不表示效率或成本差异。
 
-![Llama 与 DeepSeek-V3 的公开训练用量统一折算为 A100 80GB 等效 GPU 小时。H100 与 H800 小时按 BF16 稠密峰值之比约 3.17 放大，DeepSeek-V3 只计预训练阶段；横轴为对数尺度。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch03/figure-3-9-gpu-hours.svg)
+![Llama 与 DeepSeek-V3 的公开训练用量统一折算为 A100 80GB 等效 GPU 小时。H100 与 H800 小时按 BF16 稠密峰值之比约 3.17 放大，DeepSeek-V3 只计预训练阶段；横轴为对数尺度。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch03/figure-3-9-gpu-hours.svg)
 
-*图 3-30　Llama 与 DeepSeek-V3 的公开训练用量统一折算为 A100 80GB 等效 GPU 小时。Llama 1／Llama 2 为 A100 实测小时；H100 与 H800 小时按 BF16 稠密峰值之比 $989.4/312\approx3.17$ 折算，DeepSeek-V3 只计预训练阶段。横轴为对数尺度；折算假定各设备实际利用率相近，不表示效率或成本差异。*
+*图 3-31　Llama 与 DeepSeek-V3 的公开训练用量统一折算为 A100 80GB 等效 GPU 小时。Llama 1／Llama 2 为 A100 实测小时；H100 与 H800 小时按 BF16 稠密峰值之比 $989.4/312\approx3.17$ 折算，DeepSeek-V3 只计预训练阶段。横轴为对数尺度；折算假定各设备实际利用率相近，不表示效率或成本差异。*
 
 以上几组用量都属于预训练，后训练的投入同样可以用 GPU 小时比较。Qwen3 技术报告的表 21 把同一个 8B 模型的 RL 与 OPD 两条后训练路线并列，投入分别为 17,920 与 1,800 GPU 小时。两条路线可以二选一，各自包含生成、反馈与学习工作。把 GPU 小时对应到具体阶段和加速器，再结合各阶段的执行过程，就能解释训练投入主要消耗在哪里。
 
@@ -2628,91 +2677,97 @@ $$
 
 任务是修复区间合并函数，使嵌套区间和端点相接的区间正确合并，同时不修改输入及其嵌套列表。模型可以读取指定文件、改写它、运行固定测试并结束任务，控制器不替模型修改代码。关闭思考模式时，模型在 12 轮内读文件一次、改写五次、运行测试六次，仍未完成；开启后，四轮分别是输出截断、写文件、运行测试和结束。首轮截断产生的等待同样计入任务总时间。[^agent]
 
-[^model]: [第 2 章模型架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/02-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84.md)，§2.2 的请求调用约定和 Qwen3-8B KV 计数；[四模型请求计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/request-four-models-book.md)。
+[^model]: [第 2 章模型架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/02-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84.md)，§2.2 的请求调用约定和 Qwen3-8B KV 计数；[四模型请求计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/request-four-models-book.md)。
 
-[^cost]: [2023—2026 年 token 成本调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/token-cost-2023-2026/report.md)，§2、§4、§11；API 价格、生产成本与成功任务成本分开。
+[^cost]: [2023—2026 年 token 成本调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/token-cost-2023-2026/report.md)，§2、§4、§11；API 价格、生产成本与成功任务成本分开。
 
-[^servegen]: [ServeGen，NSDI 2026](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/NSDI/2026/selected/nsdi26-xiang-servegen.pdf)，§2–7；[资料与源码阅读笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/workload-and-provisioning.md)。
+[^servegen]: [ServeGen，NSDI 2026](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/NSDI/2026/selected/nsdi26-xiang-servegen.pdf)，§2–7；[资料与源码阅读笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/workload-and-provisioning.md)。
 
-[^workload]: [请求分布与资源配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/workload-and-provisioning.md)，两分钟固定输入和首 token 修正后的阶段需求；[RTX PRO 6000 上 64 条序列的 decode 带宽下界](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/batch-reuse-rtxpro6000-mix.md)，平均上下文取 2742 个 token。
+[^workload]: [请求分布与资源配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/workload-and-provisioning.md)，两分钟固定输入和首 token 修正后的阶段需求；[RTX PRO 6000 上 64 条序列的 decode 带宽下界](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/batch-reuse-rtxpro6000-mix.md)，平均上下文取 2742 个 token。
 
-[^arrival]: [练习 3-2：真实两分钟回放](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-02/README.md)，完整输入、发送与完成记录、KV 采样及运行范围。
+[^arrival]: [练习 3-2：真实两分钟回放](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-02/README.md)，完整输入、发送与完成记录、KV 采样及运行范围。
 
-[^serve-replay]: [ServeGen 窗口的实际回放](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-02/servegen-replay/README.md)。
+[^serve-replay]: [ServeGen 窗口的实际回放](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-02/servegen-replay/README.md)。
 
-[^agent-calc]: [开启思考模式的真实轨迹复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/agent-thinking-on.md)。
+[^agent-calc]: [开启思考模式的真实轨迹复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/agent-thinking-on.md)。
 
-[^context]: [上下文组织与 Agent 案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/author-context-and-design.md)，连接作者 AI Agent 书第 2 章与实验记录。
+[^context]: [上下文组织与 Agent 案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/author-context-and-design.md)，连接作者 AI Agent 书第 2 章与实验记录。
 
-[^reasoning]: [练习 3-3：1024 预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-03/README.md)与[4096 预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-03/wide-budget/README.md)；理论背景见[Test-Time Compute](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/test-time-compute.pdf)。
+[^reasoning]: [练习 3-3：1024 预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-03/README.md)与[4096 预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-03/wide-budget/README.md)；理论背景见[Test-Time Compute](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/test-time-compute.pdf)。
 
-[^reasoning-off]: [关闭思考模式的诊断](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-03/no-thinking/README.md)，分别记录按预定标准评分的结果、事后从输出中提取答案的结果，以及并发进程的观测数据。
+[^reasoning-off]: [关闭思考模式的诊断](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-03/no-thinking/README.md)，分别记录按预定标准评分的结果、事后从输出中提取答案的结果，以及并发进程的观测数据。
 
-[^agent]: [练习 3-4：两条代码 Agent 轨迹](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-04/README.md)，含独立检查与额外别名条件。
+[^agent]: [练习 3-4：两条代码 Agent 轨迹](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-04/README.md)，含独立检查与额外别名条件。
 
-[^retrieval]: [检索与生成算例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/retrieval-and-generation.md)。
+[^retrieval]: [检索与生成算例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/retrieval-and-generation.md)。
 
-[^agent-speedup]: [仅将首轮模型段加速两倍](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/agent-thinking-on-double-first.md)。
+[^agent-speedup]: [仅将首轮模型段加速两倍](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/agent-thinking-on-double-first.md)。
 
-[^vision]: [视觉编码矩阵与张量计数](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/vision-encoding-single.md)。
+[^jev]: [TypeSafe AI 首页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/typesafe-home.txt)的定价与并排演示；[发布博客](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/typesafe-jev-blog.txt)含创始人自述，并说明并行采样、RLCD 与评测口径；[接口文档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/typesafe-docs-intro.txt)说明问题在同一状态上并行求值。
 
-[^epd]: [多模态输入的字节、状态与阶段放置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/multimodal-stage-placement.md)，固定 Qwen3-VL-4B 配置、预处理与完整 DeepStack EC。
+[^rlcr]: [Beyond Binary Rewards: Training LMs to Reason About Their Uncertainty](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/rlcr.pdf)，§3 的 RLCR 奖励。
 
-[^media]: [生成模型取材与执行路径](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/generative-multimodal-models.md)；[Omni 音频](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/omni-audio-book.md)、[Fish 音频](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/fish-audio-book.md)、[FLUX 图像](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/image-generation-flux.md)、[H3 视频](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/video-generation-book.md)、[Wan 视频](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/video-generation-wan.md)。
+[^decision-calc]: [决策请求的执行路径与定价比较](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/decision-request-book.md)，含 V4.1 Flash 全层路径、512 个输出 token 的 LLM 路径与 DeepSeek 价目对照，可用 `python3 calculations/calc.py decision-request --format md` 复算；[DeepSeek 推理系统概述](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/deepseek-serving-report.txt)的每 GPU 小时 2 美元口径；[DeepSeek 模型与价格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/deepseek-pricing-zh.txt)。
 
-[^image]: [Qwen 图像生成请求计数](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/image-generation-book.md)。
+[^vision]: [视觉编码矩阵与张量计数](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/vision-encoding-single.md)。
 
-[^aoi]: [AOI 论文与关键帧案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/author-context-and-design.md)。
+[^epd]: [多模态输入的字节、状态与阶段放置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/multimodal-stage-placement.md)，固定 Qwen3-VL-4B 配置、预处理与完整 DeepStack EC。
 
-[^audio-real]: [两份历史语音记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-05/historical-arrivals/README.md)。
+[^media]: [生成模型取材与执行路径](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/generative-multimodal-models.md)；[Omni 音频](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/omni-audio-book.md)、[Fish 音频](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/fish-audio-book.md)、[FLUX 图像](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/image-generation-flux.md)、[H3 视频](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/video-generation-book.md)、[Wan 视频](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/video-generation-wan.md)。
 
-[^audio]: [40 ms 缓冲教学时序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/audio-timing-base.md)与[60 ms 缓冲](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/audio-timing-large-buffer.md)。
+[^image]: [Qwen 图像生成请求计数](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/image-generation-book.md)。
 
-[^audio-interrupt]: [打断与静音的教学算例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/audio-timing-interrupt.md)。
+[^aoi]: [AOI 论文与关键帧案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/author-context-and-design.md)。
 
-[^training]: [训练计算量笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/training-compute.md)，线性层前反向、序列分布与 DeepSeek V4-Flash 专家分项计算。
+[^audio-real]: [两份历史语音记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-05/historical-arrivals/README.md)。
 
-[^train-matrix]: [Qwen3-8B 的 8K 训练矩阵](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-qwen3-8b-t8192.md)。
+[^audio]: [40 ms 缓冲教学时序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/audio-timing-base.md)与[60 ms 缓冲](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/audio-timing-large-buffer.md)。
 
-[^qwen]: [Qwen3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/qwen3.pdf)，§3.2 的三阶段预训练及表 21 的后训练分支。
+[^audio-interrupt]: [打断与静音的教学算例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/audio-timing-interrupt.md)。
 
-[^mask]: [标签减半](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-qwen3-8b-mask-half.md)与[显式压缩词表头](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-qwen3-8b-compact-half.md)。
+[^training]: [训练计算量笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/training-compute.md)，线性层前反向、序列分布与 DeepSeek V4-Flash 专家分项计算。
 
-[^nonmatrix]: [训练非矩阵补算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-nonmatrix-book.md)，与[8K 变体](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-nonmatrix-8192.md)分别计量。
+[^train-matrix]: [Qwen3-8B 的 8K 训练矩阵](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-qwen3-8b-t8192.md)。
 
-[^v4-training]: [DeepSeek V4-Flash 在线压缩器](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-online-r4-tail-emits.md)、[注意力反向](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-attention-training-window128.md)、[MoE 单层训练](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-moe-training-balanced.md)、[mHC 包装反向](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-hc-training-128.md)、[优化器分组](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-optimizer-flash-base-unresolved.md)。
+[^qwen]: [Qwen3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/qwen3.pdf)，§3.2 的三阶段预训练及表 21 的后训练分支。
 
-[^r1]: [DeepSeek-R1 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-r1.pdf)。
+[^mask]: [标签减半](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-qwen3-8b-mask-half.md)与[显式压缩词表头](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-qwen3-8b-compact-half.md)。
 
-[^v4]: [DeepSeek V4 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v4.pdf)，§5.1 的领域专家与多教师 OPD、§5.2 的教师调度、rollout 与沙箱。
+[^nonmatrix]: [训练非矩阵补算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-nonmatrix-book.md)，与[8K 变体](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-nonmatrix-8192.md)分别计量。
 
-[^verl]: [实验 10-8：固定 verl 最小训练流程](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-08/README.md)。本章用这一实验区分任务质量与参数更新，完整系统的组织方式见第 10 章。
+[^v4-training]: [DeepSeek V4-Flash 在线压缩器](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-online-r4-tail-emits.md)、[注意力反向](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-attention-training-window128.md)、[MoE 单层训练](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-moe-training-balanced.md)、[mHC 包装反向](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-hc-training-128.md)、[优化器分组](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-optimizer-flash-base-unresolved.md)。
 
-[^verl-loss]: [固定 verl 训练配置的损失归一化与参数更新过程](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/qa/verl-recipe-loss-closure.md)，绑定原配置、源码与导出张量。
+[^r1]: [DeepSeek-R1 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-r1.pdf)。
 
-[^rl]: [Qwen 教学 RL batch](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/rl-qwen8-base.md)。
+[^v4]: [DeepSeek V4 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v4.pdf)，§5.1 的领域专家与多教师 OPD、§5.2 的教师调度、rollout 与沙箱。
 
-[^rl-low]: [降低样本保留比例、保持保留样本数](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/rl-qwen8-low-acceptance.md)。
+[^verl]: [实验 10-8：固定 verl 最小训练流程](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-08/README.md)。本章用这一实验区分任务质量与参数更新，完整系统的组织方式见第 10 章。
 
-[^scaling]: [Kaplan Scaling Laws](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/scaling-laws.pdf)，§6；[Chinchilla](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/chinchilla.pdf)，计算最优分配与拟合方法。
+[^verl-loss]: [固定 verl 训练配置的损失归一化与参数更新过程](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/qa/verl-recipe-loss-closure.md)，绑定原配置、源码与导出张量。
 
-[^fit]: [公开 C4 八点拟合](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/datablations-real-c4-eight-point-fit.md)，来源日志、排除项和四项敏感性随报告保存。
+[^rl]: [Qwen 教学 RL batch](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/rl-qwen8-base.md)。
 
-[^llama3]: [Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/llama3.pdf)，训练预算、损失预测与下游任务表现；§3.3.2 与表 4 给出 H100 上 38%–43% 的 BF16 MFU。
+[^rl-low]: [降低样本保留比例、保持保留样本数](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/rl-qwen8-low-acceptance.md)。
 
-[^llama3-card]: [Meta Llama 3 模型卡](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/token-cost/2026-09-07/llama3-card.md)，Base pretrained models 表中 Llama 3 8B 与 Llama2 70B 两列。
+[^scaling]: [Kaplan Scaling Laws](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/scaling-laws.pdf)，§6；[Chinchilla](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/chinchilla.pdf)，计算最优分配与拟合方法。
 
-[^local-train]: [练习 3-8：固定文本上的六次小模型实训](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch03/03-08/README.md)，保存 checkpoint 与两个 seed 的完整结果。
+[^fit]: [公开 C4 八点拟合](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/datablations-real-c4-eight-point-fit.md)，来源日志、排除项和四项敏感性随报告保存。
 
-[^beyond]: [Beyond Chinchilla-Optimal，ICML 2024 正式版](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/beyond-chinchilla-icml24.pdf)，推理需求、实验范围与长训练外推。
+[^llama3]: [Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/llama3.pdf)，训练预算、损失预测与下游任务表现；§3.3.2 与表 4 给出 H100 上 38%–43% 的 BF16 MFU。
 
-[^lifecycle]: [根据 C4 拟合结果估算生命周期成本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/real-c4-lifecycle-512-128.md)，费用按 H100 SXM GPU 秒计。
+[^llama3-card]: [Meta Llama 3 模型卡](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/token-cost/2026-09-07/llama3-card.md)，Base pretrained models 表中 Llama 3 8B 与 Llama2 70B 两列。
 
-[^history]: [训练投入与 Scaling Law 历史笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/scaling-history.md)及[锁定公开字段的复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-history-published.md)。
+[^local-train]: [练习 3-8：固定文本上的六次小模型实训](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch03/03-08/README.md)，保存 checkpoint 与两个 seed 的完整结果。
 
-[^source-1]: [多模态计算资料](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/generative-multimodal-models.md)。
+[^beyond]: [Beyond Chinchilla-Optimal，ICML 2024 正式版](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/beyond-chinchilla-icml24.pdf)，推理需求、实验范围与长训练外推。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^lifecycle]: [根据 C4 拟合结果估算生命周期成本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/real-c4-lifecycle-512-128.md)，费用按 H100 SXM GPU 秒计。
+
+[^history]: [训练投入与 Scaling Law 历史笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/scaling-history.md)及[锁定公开字段的复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-history-published.md)。
+
+[^source-1]: [多模态计算资料](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/generative-multimodal-models.md)。
+
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
 #### 本章小结
 
@@ -2724,11 +2779,15 @@ $$
 
 ### 第四章 加速器架构
 
-一段计算用时 100 μs，其中矩阵乘法占 60 μs，其余工作占 40 μs。把矩阵单元的速度提高一倍，总时间降为 70 μs，加速比约为 1.4。若矩阵乘法只占 10 μs，同样的改动只能把总时间降到 95 μs。增加的计算能力相同，收益却相差悬殊。架构设计要解决的，正是在芯片面积、功耗和存储容量的限制下，选择能最大限度缩短执行时间的方案。
+一段计算用时 100 μs，其中矩阵乘法占 60 μs，其余工作占 40 μs。把矩阵单元的速度提高一倍，总时间降为 70 μs，加速比约为 1.4。若矩阵乘法只占 10 μs，同样的改动只能把总时间降到 95 μs。增加的计算能力相同，收益却相差悬殊。通用处理器把芯片面积分配给各类指令；神经网络的执行时间主要花在矩阵运算上以后，这种分配就不再合算，专用矩阵单元应运而生。架构设计要解决的，正是在芯片面积、功耗和存储容量的限制下，选择能最大限度缩短执行时间的方案。
 
-第 2、3 章介绍了模型的计算图，以及请求在不同阶段的计算需求。本章以 Qwen3-8B 的查询投影（Q 投影）为例，即把当前 token 的隐藏向量变换成注意力查询的矩阵乘法，说明加速器如何完成这些计算。先计算运算次数和读写的数据量，再逐步考虑矩阵分块、存储层次和数据依赖，解释实际执行时间为什么与理想估算不同。随后加入注意力和专家计算，分析更复杂的算子如何使用同一套硬件；再集中比较 NVIDIA、昇腾与 Apple 的代际演进，说明模型需求如何推动这些部件共同变化。
+第 2、3 章介绍了模型计算和不同阶段的负载。本章先用 Qwen3-8B 的查询投影计算运算次数和访问量，再把分析扩展到注意力和前馈网络。矩阵乘法说明操作数如何复用，QK、Softmax、PV 则说明矩阵结果如何交给向量单元处理，再返回矩阵单元。由此可以看清，计算速度、片上存储和单元之间的交接为何需要一起设计。
 
-本章围绕三个问题展开：任务需要多少计算、存储和传输；计算单元为什么会等待数据或前一步结果；提高某一部分的性能以后，哪一部分会成为新的瓶颈。理解这三个问题，就能够用同一种方法分析 GPU、昇腾、Apple 芯片以及更专用的设计。
+本章采用同一套分析方法比较 GPU、昇腾和 Apple：先列出计算和数据依赖，再把工作分配给硬件单元，计算各级接口的流量，最后用执行时间线检查等待与重叠。架构取舍也沿这条线展开：把常见计算和数据路径交给专用硬件，可以减少指令和搬移开销；软件则需要安排分块、布局、缓冲和同步，使程序充分利用这些路径。第 5 章进一步说明编译器和算子开发者如何完成这些安排。
+
+处理器和存储器之间的关系，可以想象成一座大楼里的厕所。所有厕所都集中在一楼，容量集中却会带来距离和拥堵；每层都设置厕所，访问更近，却要占用更多面积和维护成本。计算机体系结构通过寄存器、缓存、片上缓冲、显存和互联，把高频数据放到更靠近计算单元的位置。CPU 主要依靠硬件缓存和乱序执行隐藏访问延迟；GPU 和 AI 加速器则进一步使用共享内存、矩阵单元、搬移引擎和显式流水安排数据复用。
+
+这条演进路线并没有取消存储与计算的分工，而是在缩短数据路径、增加局部复用，并把更多搬移决策交给硬件、编译器和运行时。Transformer 同时包含高复用的矩阵乘、低批量的矩阵—向量乘、增长中的 KV 状态和动态的专家路由，因此计算单元、存储层次和互联必须共同设计。本章后面的每个部件，都要回答三个问题：数据离计算单元多远，能够复用多少次，下一步何时可以读取。
 
 #### 4.1 从模型计算认识加速器
 
@@ -2768,7 +2827,7 @@ $$
 
 图 4-1 将权重读取分摊到输入行：单行独自承担 32 MiB，256 行则每行分摊 128 KiB。
 
-![两种调用都使用同一份 32 MiB 权重。上方是一行输入，下方以部分条带示意 256 行；每行分摊的权重读取从 32 MiB 减至 128 KiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-1-reuse.svg)
+![两种调用都使用同一份 32 MiB 权重。上方是一行输入，下方以部分条带示意 256 行；每行分摊的权重读取从 32 MiB 减至 128 KiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-1-reuse.svg)
 
 *图 4-1　两种调用都使用同一份 32 MiB 权重。上方是一行输入，下方以部分条带示意 256 行；每行分摊的权重读取从 32 MiB 减至 128 KiB。*
 
@@ -2786,27 +2845,38 @@ $$
 
 ##### 4.1.2 加速器的组成与分工
 
-主机（host）通常是运行框架、准备输入并发起任务的 CPU 一侧，加速器负责执行模型计算；在主机—设备（host–device）的编程接口中，加速器一侧通常称为设备。对有独立显存的 GPU，主机内存和显存是两处存储。运行投影前，输入与权重先放到加速器可访问的位置；CPU 随后提交命令，给出算子、数据地址与执行参数。数据已经驻留时，后续调用可以反复引用同一地址。
+CPU 一侧运行框架、准备输入并提交任务，通常称为主机；加速器一侧执行模型计算，称为设备。输入和权重先放到设备能够访问的存储中，CPU 再提交算子、数据地址和执行参数。数据驻留在设备上以后，后续调用可以继续使用同一地址。
 
-图 4-2 展示了加速器内部各部分如何协作完成一次矩阵乘法。片外内存保存较大的输入和权重；共享缓存是由多组计算单元共同访问、自动保留近期数据的存储；局部缓冲是分配给当前计算组暂存输入的存储；矩阵单元反复更新部分和；累加存储把部分和留到本块计算结束。向量与通用计算单元负责结果变换、地址计算和流程控制等工作。
+图 4-2 展示一次矩阵乘法经过的硬件部件。片外内存保存输入和权重，共享缓存保留近期访问的数据，局部缓冲暂存当前计算块的操作数。矩阵单元沿 K 维反复乘加，累加存储保存部分和，计算结束后再交给向量单元处理或写回内存。
 
-![主机、显存与芯片内部的关系。实线表示数据经过缓存、局部缓冲、矩阵单元和累加存储，虚线表示主机提交工作。图按硬件功能分组。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-2-components.svg)
+![主机提交计算任务，操作数经过片外内存、缓存和局部缓冲进入矩阵单元，部分和保存在片上，结果交给向量单元或写回。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-2-components.svg)
 
-*图 4-2　主机、显存与芯片内部的关系。实线表示数据经过缓存、局部缓冲、矩阵单元和累加存储，虚线表示主机提交工作。图按硬件功能分组。*
+*图 4-2　主机提交任务，设备完成搬移、计算和结果处理。部分和留在片上，减少反复写回内存的开销。*
 
-计算一个输出块时，需要沿 K 维依次读入多块输入和权重。每完成一次乘加，部分和仍留在累加存储中，下一块继续更新它。如果每次更新都写回片外，中间结果就要反复写出、读入；把部分和留在片上，这些访问就只剩最后一次写回。数据重复使用的次数越多，留在片上就越有价值。
+NVIDIA 将线程执行、Tensor Core、寄存器和共享内存组织在 SM（流式多处理器）内。昇腾 DaVinci 以 Scalar、Vector、Cube 和 MTE 分别承担控制、向量计算、矩阵计算和搬移。Apple 的 Metal 用线程组组织 GPU 上的工作，组内线程共享局部存储并同步。三种组织方式都需要回答同一个问题：操作数何时到达，结果放在哪里，下一步何时可以读取它。[^architecture]
 
-NVIDIA 把一组可协作执行的线程、通用计算单元、矩阵单元与局部存储组织为流式多处理器（Streaming Multiprocessor，SM），其中矩阵乘加单元称为 Tensor Core。SM 内由线程协作使用、由软件管理的缓冲称为共享内存（shared memory）。线程是程序中分别执行指令的工作单位；一次提交到加速器上运行的函数称为 kernel（内核），一个 kernel 可以由许多线程协作执行。昇腾 DaVinci 架构中的 Scalar、Vector、Cube 和 MTE 则分别指控制单元、向量计算单元、矩阵计算单元与数据搬移单元。Apple 的 Metal 是提交 GPU 工作的编程接口，用线程组组织能够共享局部存储并同步的线程。虽然名称不同，这些部件都要解决几个共同问题：操作数如何到达执行单元，结果如何保存，下一项工作何时可以开始。[^architecture]
+###### GPU 与 DaVinci 如何分配搬移和同步工作
 
-沿图 4-2 中的箭头可以区分两种等待。一种是数据尚未到达，例如输入块仍在传输；另一种是前一项计算尚未结束，例如 Softmax 正在等待查询与键的点积（QK）完成。增加带宽能够缩短第一类等待，改变分块或执行顺序能够改变第二类等待。后续各节将分别展开这两种机制。
+GPU 的普通加载可以利用硬件缓存；高性能 kernel 则主动把 tile 放入共享内存，安排异步拷贝和同步。DaVinci 为矩阵输入、部分和、向量工作分别配置片上缓冲，算子或编译器需要按这些用途安排数据。下面的对照说明，两类架构把哪些工作交给硬件，哪些工作留给软件。
 
-这些部件各分到多少资源，并非一次确定。模型与芯片在一代代设计中相互影响。现有加速器的能力影响模型的状态大小、矩阵形状和通信方式，软件通过压缩、融合和并行提高执行效率；当某种负载长期占据较大比重，芯片设计者便会考虑为它增加专用能力。新一代芯片投入使用后，不同模型的运行成本又会随之改变。设计和制造都需要时间，所以硬件回应的是此前已经观察到、并且预计会延续的需求。第 4.6 节将沿三家架构的代际变化，具体展开图 4-3 中的每一段关系。
+| 维度 | NVIDIA GPU（CUDA 的典型高性能路径） | 昇腾 DaVinci（典型高性能路径） |
+| --- | --- | --- |
+| 矩阵计算 | SM 内 Tensor Core 处理 tile；线程束负责协作 | Cube 处理矩阵 tile，Vector/Scalar 处理逐元素、归约和控制 |
+| 全局内存到片上 | L2/L1 等缓存通常由硬件管理；为了稳定复用，可显式使用 shared memory、异步拷贝或 TMA | MTE/NDDMA 按描述符在 Global Memory、L1/UB 和 L0 之间搬移；路径通常由算子或编译器规划 |
+| 部分和 | 寄存器、shared memory 或新一代专用矩阵存储 | L0C 保存 Cube 的部分和，再由后续阶段写回或交给 Vector |
+| 搬移与计算重叠 | `memcpy_async`、TMA、barrier 和 pipeline 表达交接 | MTE 与 Cube/Vector 通过 flag、event 或编译器生成的同步交接 |
+| 同步 | warp、block、cluster、device 等层级分别同步；内存可见性另有语义 | 核内阶段、Cube/Vector 交接和核间通信使用相应 flag/同步协议 |
+| 程序员承担的工作 | 普通 load 可以交给缓存；高性能路径仍需安排 tile、shared memory、布局和异步依赖 | 更早面对 L1/UB/L0 的容量、布局、搬移阶段和交接；Developer 模式可自动插入部分同步 |
 
-这种反馈已有公开的实例。DeepSeek V3 报告针对 H800 上的执行瓶颈，提出通信卸载、跨互联的一致操作、低精度累加和量化支持等硬件需求；其中，通信卸载源于部分 SM 被通信占用。[^feedback]
+在 DaVinci 上执行注意力，一组完整查询行依次经过 Cube 的 QK、Vector 的 Softmax 和 Cube 的 PV。Cube 使用 L0A/L0B 中的操作数，在 L0C 中累加；Vector 使用 UB（统一缓冲）中的数据。MTE 在各级存储之间搬移，Scalar 发起指令并处理依赖。图 4-3 将计算顺序与这些存储位置对应起来。[^ascend-history]
 
-![模型与硬件跨代协同。实线沿时间向下：现有加速器影响模型选择，软件运行暴露长期瓶颈，硬件设计回应这些需求，新加速器使更多模型方案成为可能。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-codesign-loop.svg)
+![DaVinci 中的计算单元与片上存储：Cube 使用 L0A/L0B 和 L0C，Vector 使用 UB，MTE 搬移数据，Scalar 发起计算并同步。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-davinci-attention-path.svg)
 
-*图 4-3　模型与硬件跨代协同。实线沿时间向下：现有加速器影响模型选择，软件运行暴露长期瓶颈，硬件设计回应这些需求，新加速器使更多模型方案成为可能。*
+*图 4-3　DaVinci 如何计算注意力。上方是计算顺序，下方是计算单元、片上存储和数据交接路径。*
+
+这里需要区分两种关系。计算单元可以独立发起工作，让不同数据块并行推进；有依赖的结果仍要及时交接。独立调度与紧密的数据连接可以同时存在。910B/910C 分开控制 AIC 与 AIV，950 又用 CV 通路连接 Cube 的 L1 和 Vector 的 UB，正是分别改善调度和交接的两种做法。[^ascend-history][^ascend]
+
+矩阵和向量的专用分工提高了单位面积内的计算能力，明确的片上通路减少了数据搬移。软件需要把计算组织成硬件支持的块，安排布局、缓冲和完成事件。框架用户主要调用算子库；这些底层决策由编译器和算子开发者承担。高性能 CUDA 同样要管理共享内存和异步依赖，两类架构的差别体现在存储用途、可用路径以及编译器代办的工作上。第 5 章将用 AKG 和 TileLang 展示这条责任边界。
 
 ##### 4.1.3 芯片面积、功耗与封装的限制
 
@@ -2852,7 +2922,7 @@ $$
 
 比原来高 25%，与论文报告的 24% 一致。热量要从芯片面积上散出去，所以总功耗下降，散热压力未必减小。图 4-4 下半部分并列展示这两个例子的数字。
 
-![上：同一驱动门经数百微米横向连线传送信号，要给沿线分布电容充电；折叠后改为数微米的垂直连接。下：电压从 0.85 V 降到 0.55 V 使动态功耗降到 0.42；功耗降到 0.75 而投影面积降到 0.60，功率密度反而升到 1.25。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-energy-wire.svg)
+![上：同一驱动门经数百微米横向连线传送信号，要给沿线分布电容充电；折叠后改为数微米的垂直连接。下：电压从 0.85 V 降到 0.55 V 使动态功耗降到 0.42；功耗降到 0.75 而投影面积降到 0.60，功率密度反而升到 1.25。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-energy-wire.svg)
 
 *图 4-4　上：同一驱动门经数百微米横向连线传送信号，要给沿线分布电容充电；折叠后改为数微米的垂直连接。下：电压从 0.85 V 降到 0.55 V 使动态功耗降到 0.42；功耗降到 0.75 而投影面积降到 0.60，功率密度反而升到 1.25。*
 
@@ -2881,7 +2951,7 @@ $$
 
 合计 0.534 J，其中权重读取占 90%：单请求 decode 的能量几乎全部消耗在搬移上。HBM 行取自 28 nm 工艺的 HBM2 能耗模型，计算行取自 45 nm 逻辑工艺的乘加能耗，两行工艺不同，所以这笔账给出的是搬移与计算两类能量的量级比较。这一步的时间则受带宽限制：按 3.35 TB/s 读完这 16.345 GB 需要 4.9 ms，0.534 J 平摊到这段时间只有约 110 W。图 4-5 下半部分假设同样的 16.345 GB 全部来自某一层次：KB 级 SRAM 只需 0.020 J，MB 级 SRAM 0.204 J，NVLink-C2C 链路 0.170 J，HBM 0.519 J，LPDDR 则为 2.62 J。
 
-![上：各级存储与链路每 byte 能耗，对数坐标。下：Qwen3-8B 单请求 8K decode 一步的能量分账（权重 0.481 J、KV 0.038 J、计算 0.015 J），以及同样字节全部来自某一层次时的能量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-energy-ladder.svg)
+![上：各级存储与链路每 byte 能耗，对数坐标。下：Qwen3-8B 单请求 8K decode 一步的能量分账（权重 0.481 J、KV 0.038 J、计算 0.015 J），以及同样字节全部来自某一层次时的能量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-energy-ladder.svg)
 
 *图 4-5　上：各级存储与链路每 byte 能耗，对数坐标。下：Qwen3-8B 单请求 8K decode 一步的能量分账（权重 0.481 J、KV 0.038 J、计算 0.015 J），以及同样 16.345 GB 全部来自某一层次时的能量。*
 
@@ -2907,7 +2977,7 @@ $$
 
 表中各代的增长都可以拆到堆数、每堆容量和引脚速率上。H100 的 5 堆构成 5,120 位接口，5,120 位乘以 5.24 Gbit/s 再除以 8，约为 3,350 GB/s。H100 到 H200，容量增长 76%，来自每堆从 16 GB 换成 24 GB、堆数从 5 增到 6；带宽增长 43%，来自多出的一堆和引脚速率从 5.24 Gbit/s 提高到 6.25 Gbit/s。H200 到 B200 又增加两堆：H100 与 H200 都只有一颗 die，分别接 5 堆和 6 堆；B200 的 8 堆沿两颗光罩上限 die 的外侧排列（图 4-6）。堆数由 Blackwell 技术简报中 192 GB、7.7 TB/s 的配置按每堆 24 GB 推得；本书其余各节采用 HGX B200 平台每 GPU 180 GB、8 TB/s 的规格。
 
-![封装俯视示意：两颗达到光罩上限的 die 居中，八堆 HBM 沿两侧边缘排列，中介层承载 die 与 HBM 之间以及 die 之间的连线。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-energy-package.svg)
+![封装俯视示意：两颗达到光罩上限的 die 居中，八堆 HBM 沿两侧边缘排列，中介层承载 die 与 HBM 之间以及 die 之间的连线。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-energy-package.svg)
 
 *图 4-6　封装俯视示意：两颗达到光罩上限的 die 居中，八堆 HBM 沿两侧边缘排列，中介层承载 die 与 HBM 之间以及 die 之间的连线。每堆带宽由 1,024 根引脚与引脚速率决定，每堆容量由层数与每层容量决定。*
 
@@ -2923,7 +2993,7 @@ $$
 
 设实际每 FLOP 能耗为 $e$。$e\le b$ 时，峰值频率可以持续；$e>b$ 时，功率控制器会降低频率，降到多少由 $P\propto fV^2$ 决定：电压不变时，功率随频率线性下降，持续频率为峰值的 $b/e$；电压随频率同步下降时，$P\propto f^3$，持续频率为峰值的 $(b/e)^{1/3}$。图 4-7 画出这两条曲线：$e$ 为预算的 1.5 倍时，前者降到 0.67，后者只降到 0.87。持续算力随频率等比例下降，所以按峰值算力预测的计算时间比实际短。峰值算力是硬件的物理极限，却不是在任何条件下都能达到：功率封顶时，极限本身随持续频率一起下移，此时衡量利用率应当以持续算力为分母。
 
-![持续频率与峰值频率之比随 e/b 的变化：电压不变时为 b/e，电压随频率下降时为 (b/e)^(1/3)。e/b 不超过 1 时峰值频率可以持续；e/b 为 1.5 时两条曲线分别给出 0.67 与 0.87。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-energy-power-cap.svg)
+![持续频率与峰值频率之比随 e/b 的变化：电压不变时为 b/e，电压随频率下降时为 (b/e)^(1/3)。e/b 不超过 1 时峰值频率可以持续；e/b 为 1.5 时两条曲线分别给出 0.67 与 0.87。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-energy-power-cap.svg)
 
 *图 4-7　持续频率与峰值频率之比随每 FLOP 能耗 $e$ 与预算 $b$ 之比的变化：电压不变时为 $b/e$，电压随频率下降时为 $(b/e)^{1/3}$。$e/b$ 不超过 1 时峰值频率可以持续；$e/b$ 为 1.5 时两条曲线分别给出 0.67 与 0.87。*
 
@@ -2931,7 +3001,9 @@ $$
 
 #### 4.2 计算单元
 
-第 4.1 节用运算速率表示矩阵单元的性能。本节解释这一速率从何而来：一条指令处理多大的矩阵，为什么小矩阵难以充分利用计算单元，以及矩阵结果还要经过哪些向量与控制操作。
+Transformer 层把两类计算反复连接起来。线性投影、QK 和 PV 需要大量规则乘加；归一化、RoPE、Softmax 和门控激活需要逐元素运算、特殊函数和归约。注意力形成 QK → Softmax → PV 的矩阵—向量—矩阵顺序；前馈网络则在投影与下一次投影之间完成激活和门控乘法。
+
+这种交替决定了硬件分工。矩阵单元利用块内复用提高乘加吞吐，向量单元处理非线性和归约，控制单元与搬移单元为两者准备操作数并安排交接。评价一段计算的速度，要同时看矩阵形状、向量工作和交接流量。本节先分析两类计算，再把它们放回注意力流水中。
 
 ##### 4.2.1 矩阵单元为什么适合神经网络
 
@@ -2939,7 +3011,7 @@ $$
 
 计算一个 $m\times n$ 输出块时，同一行输入参与 $n$ 个输出元素的计算，同一列权重参与 $m$ 个输出元素的计算。矩阵单元让多个乘加单元共享这些操作数：数据在相邻计算单元间传递，部分和留在本地更新。一条指令描述整块工作，控制成本也由大量运算共同分摊。第 5 章将进一步说明，软件如何组织块大小和遍历顺序，让这些小步持续取得所需数据。
 
-![三行三列的乘加阵列示意。输入沿行传递，权重沿列传递，每个乘加单元保留自己的部分和。这里用小阵列解释操作数复用。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-matrix-array.svg)
+![三行三列的乘加阵列示意。输入沿行传递，权重沿列传递，每个乘加单元保留自己的部分和。这里用小阵列解释操作数复用。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-matrix-array.svg)
 
 *图 4-8　三行三列的乘加阵列示意。输入沿行传递，权重沿列传递，每个乘加单元保留自己的部分和。这里用小阵列解释操作数复用。*
 
@@ -2957,11 +3029,11 @@ $$
 
 继续使用行方向按 16 补齐的实现。前一种分派执行 $256\times16=4096$ 行，其中 512 行有效；后一种执行 $8\times64=512$ 行，全部有效。两种分派的有效计算量相同，补齐后前一种的执行量却是后一种的八倍。一批 token 选中了哪些专家，既决定需要读取哪些权重，也决定每个专家处理多少行，从而影响矩阵单元的利用率。
 
-![一个专家的 16 行计算块。每专家只有两行时，剩余十四行填零；每专家有 64 行时，可组成四个完整块，图中展示其中一块。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-3-expert-rows.svg)
+![一个专家的 16 行计算块。每专家只有两行时，剩余十四行填零；每专家有 64 行时，可组成四个完整块，图中展示其中一块。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-3-expert-rows.svg)
 
 *图 4-9　一个专家的 16 行计算块。每专家只有两行时，剩余十四行填零；每专家有 64 行时，可组成四个完整块，图中展示其中一块。*
 
-![相同 512 行有效输入在全部专家上的执行量。分散到 256 个专家后总计执行 4096 行，集中到八个专家时只执行 512 行。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-expert-padding-total.svg)
+![相同 512 行有效输入在全部专家上的执行量。分散到 256 个专家后总计执行 4096 行，集中到八个专家时只执行 512 行。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-expert-padding-total.svg)
 
 *图 4-10　相同 512 行有效输入在全部专家上的执行量。分散到 256 个专家后总计执行 4096 行，集中到八个专家时只执行 512 行。*
 
@@ -2969,9 +3041,11 @@ $$
 
 这解释了为什么库为不同形状准备多种 kernel：大矩阵利用阵列复用，小矩阵需要更合适的执行粒度，多个小任务还可以通过分组减少调度空隙。Tensor Core 与昇腾 Cube 专门执行规则矩阵运算，通用执行单元保留对其他形状的处理能力；两者配合处理实际负载中大小不同的矩阵。[^nvidia]
 
-##### 4.2.2 向量与控制单元负责哪些工作
+##### 4.2.2 矩阵计算之间的向量运算与控制
 
-除了矩阵乘法，Transformer 层还包含归一化、位置编码和激活函数；专家模型还要做路由。这些步骤包含逐元素运算，也包含多个元素之间的依赖。
+沿一层 Transformer 的计算顺序看，向量工作既有矩阵计算前的输入准备，也有矩阵计算后的结果处理：RMSNorm 为投影准备输入，RoPE 修改 Q 和 K，Softmax 把注意力分数变成概率，SiLU 和逐元素乘法组成门控激活。MoE 还需要选择专家、聚集输入并合并输出。
+
+其中有些操作只读取一个元素，例如激活函数；有些操作需要一整行，例如 Softmax 的最大值和分母。这个区别决定了后续计算何时能够启动。
 
 以一行有 $n$ 个分数的 Softmax 为例，为保证数值稳定，先求最大值，再计算平移后的指数，最后求和并归一化：
 
@@ -2991,11 +3065,13 @@ $$
 
 Qwen3-8B 一层的 32 个 Q 头和 8 个 K 头，每头旋转 128 维，共有 $(32+8)\times64=2560$ 对分量。每对需要四次乘法、两次加减，每个 token 共 15,360 FLOPs。各头在同一位置使用相同系数，因而可以共享一张表：为 1,024 个位置各保存 64 个 cos 和 64 个 sin，BF16 存储只需 $1024\times128\times2=256$ KiB。[^nonmatrix]
 
-预计算把重复的三角函数求值转成系数读取，旋转本身仍按每个 token 执行。压力于是从特殊函数计算转到表访问与向量运算上。
+预计算省去了重复的三角函数求值，运行时仍要读取系数并完成旋转。由此可见，向量单元的需求包括计算吞吐、归约速度和操作数供给。矩阵单元越快，这些工作在总时间中的比重越大，资源配比也就越需要调整。
 
-##### 4.2.3 NVIDIA、昇腾和 Apple 如何执行注意力计算
+##### 4.2.3 QK、Softmax、PV 如何组成流水线
 
-注意力把前两节的矩阵计算与向量计算连接起来：$Z=QK^{\mathsf T}$ 生成分数，$P=\operatorname{Softmax}(Z)$ 生成概率，$O=PV$ 形成输出。同一块数据必须依次经过这三步；多个块则可以在不同资源上交错推进。
+注意力中的 $Z=QK^{\mathsf T}$ 产生分数，$P=\operatorname{Softmax}(Z)$ 产生概率，$O=PV$ 得到输出。对同一组查询行，这三步依次执行；分成多组后，矩阵单元可以计算下一组 QK，向量单元同时处理上一组 Softmax。要维持这种流水，片上必须同时容纳几组不同进度的数据，交接接口也必须及时传递分数和概率。
+
+这给出一个架构判断：矩阵—向量交替越频繁，中间结果越值得留在片上。为这类交接配置专用通路，可以减少外围存储接口的写读；通路的格式、布局和容量则成为软件安排流水的条件。下面先比较三种架构的资源，再计算它们需要怎样的配比。
 
 | 工作 | NVIDIA GPU | 昇腾 | Apple GPU |
 | --- | --- | --- | --- |
@@ -3013,7 +3089,7 @@ $$
 \tau\ge\max(T_{\mathrm{matrix}},T_{\mathrm{smem}},T_{\mathrm{exp}}).
 $$
 
-![同一注意力块在四种资源配置下的服务周期。矩阵、共享内存和指数三项分别比较，单独增加一种能力后，其他资源可能成为较长的一项。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-4-attention.svg)
+![同一注意力块在四种资源配置下的服务周期。矩阵、共享内存和指数三项分别比较，单独增加一种能力后，其他资源可能成为较长的一项。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-4-attention.svg)
 
 *图 4-11　同一注意力块在四种资源配置下的服务周期。矩阵、共享内存和指数三项分别比较，单独增加一种能力后，其他资源可能成为较长的一项。“×2”表示相应资源的吞吐能力提高一倍，横轴为完成同一计算块所需的时钟周期数。*
 
@@ -3047,7 +3123,7 @@ $$
 
 再看执行。压缩值 $q$ 与 scale $a$ 一起表示近似值 $\hat w=aq$。可以先展开成 BF16 再做矩阵乘法，也可以让低精度矩阵指令处理 $q$，随后按 scale 调整结果。图 4-12 并列展示这两种实现：前者先花时间展开权重，并保存高精度副本，后者把缩放和合并放进执行过程。
 
-![相同压缩权重的两条计算路径。先展开会形成 32 MiB 的 BF16 副本；低精度路径在计算过程中完成缩放和合并。压缩权重及 scale 共 8.5 MiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-5-precision.svg)
+![相同压缩权重的两条计算路径。先展开会形成 32 MiB 的 BF16 副本；低精度路径在计算过程中完成缩放和合并。压缩权重及 scale 共 8.5 MiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-5-precision.svg)
 
 *图 4-12　相同压缩权重的两条计算路径。先展开会形成 32 MiB 的 BF16 副本；低精度路径在计算过程中完成缩放和合并。压缩权重及 scale 共 8.5 MiB。*
 
@@ -3099,7 +3175,7 @@ $$
 
 以 RTX 4090 的 24 GB 显存为可用容量，留 2 GiB 工作区。扣除权重后，约 5.47 GB 用于 KV。$S=8192$ 时每条请求需要 1.125 GiB，约 1.21 GB，四条请求的 KV 共约 4.83 GB，可以容纳；增加到五条后，共需约 6.04 GB，超过剩余容量。上下文翻倍后，每条请求 KV 翻倍，最大请求数降为两条。[^capacity]
 
-![RTX 4090 的 24 GB 显存中的权重、工作区和 KV。8K 四请求与 16K 两请求可以容纳，8K 五请求超过虚线标出的容量上限。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-6-capacity.svg)
+![RTX 4090 的 24 GB 显存中的权重、工作区和 KV。8K 四请求与 16K 两请求可以容纳，8K 五请求超过虚线标出的容量上限。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-6-capacity.svg)
 
 *图 4-13　RTX 4090 的 24 GB 显存中的权重、工作区和 KV。8K 四请求与 16K 两请求可以容纳，8K 五请求超过虚线标出的容量上限。*
 
@@ -3129,6 +3205,12 @@ $$
 
 因此，分析同一份数据时，需要区分三个量：数据本身占用的空间、各计算块请求读取的字节数、某一级接口实际传输的字节数。算术强度也随观察层次变化。用 L2 请求量计算的强度要与 L2 带宽一起使用，用 DRAM 流量计算的强度则与片外带宽一起使用。第 4.8 节将用实际计数展示这种差别。
 
+L2 的另一项作用由其位置决定。GPU 的 SM 按图形处理簇（Graphics Processing Cluster，GPC）分组；L2 则分为多个分片，各自负责一段地址，并通过片上交叉互连（crossbar）与全部 SM 相连。RTX PRO 6000 有 188 个 SM，L2 共 128 MiB。寄存器、共享内存和一级缓存均为各 SM 私有。自 Hopper 起，同一 GPC 内的若干 SM 可组成**线程块簇（thread block cluster）**，簇内 SM 可直接读写彼此的共享内存，即分布式共享内存。除此之外，SM 之间没有共享的存储：一个 SM 的结果要交给另一个 SM，只能先写入 L2 分片，再由对方读回（图 4-14）。因此，L2 既是片外数据进入芯片的入口，也是簇以外 SM 交换数据的唯一途径。
+
+![GPU 片上存储与数据通路：SM 的共享内存为私有，簇内 SM 可以互访，其余 SM 之间的数据经交叉互连与 L2 分片中转。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-l2-structure.svg)
+
+*图 4-14　GPU 片上存储与数据通路。虚线框内的 SM 组成线程块簇，可直接访问彼此的共享内存；其余 SM 之间的数据经交叉互连写入 L2 分片（①），再由读取方取回（②）。图中 SM、GPC 与分片的数量仅为示意。*
+
 增大计算块通常能增加数据复用，但也需要更大的缓冲。RTX 5090 与 RTX PRO 6000 采用 SM120 架构，每个 SM 的一级数据缓存与共享内存合计 128 KB，其中最多 100 KB 可配置为共享内存，由驻留在该 SM 上的计算组共用：每个计算组需要 32 KiB 时，可以驻留三组；每组扩到 64 KiB 后，只能驻留一组。[^blackwell-evolution] 一组等待数据时，另一组可以继续计算。因此，同时运行的组数减少后，计算单元更容易闲置。选择块大小时，要同时考虑每组能减少多少重复读取，以及还能容纳多少组相互独立的计算。
 
 片上缓冲容量也随代际增加。A100 每个 SM 的共享内存容量上限为 164 KB，H100 为 228 KB。[^evolution] 更多计算组驻留在片上，也能发出更多相互独立的读取请求。
@@ -3141,9 +3223,9 @@ $$
 
 全部专家的权重都保存在内存中，而每步需要读取哪些权重由路由结果决定。八条请求的专家选择分散时，权重、scale 与 KV 的每步访问约为 75.967 GB；集中选择相同专家时，降至约 24.737 GB。在 H200 上，仅传输这些字节分别需要约 15.8 ms 和 5.2 ms；改用 8 TB/s 的 HGX B200，分别为约 9.5 ms 和 3.1 ms。专家复用把流量减少到约三分之一，加速器升级则把传输一个字节所需的时间减少到原来的约六成，两种改动作用在公式 $T=V/R$ 的不同位置。
 
-![读取请求从发出到返回一直占用请求记录空间。多个独立请求交叠，才能在单次访问等待期间持续利用接口；图中只画四个代表请求。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-memory-inflight.svg)
+![读取请求从发出到返回一直占用请求记录空间。多个独立请求交叠，才能在单次访问等待期间持续利用接口；图中只画四个代表请求。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-memory-inflight.svg)
 
-*图 4-14　读取请求从发出到返回一直占用请求记录空间。多个独立请求交叠，才能在单次访问等待期间持续利用接口；图中只画四个代表请求。*
+*图 4-15　读取请求从发出到返回一直占用请求记录空间。多个独立请求交叠，才能在单次访问等待期间持续利用接口；图中只画四个代表请求。*
 
 上述 $V/R$ 计算假定接口可以持续达到给定带宽。要维持这种速度，就必须在一次访问等待返回时继续发出其他请求。将内存接口一次传输的基本单位称为访存事务。设接口中最多同时有 $N_o$ 个在途事务，每个事务带回 $s$ bytes，平均完成延迟为 $L$。一个事务从发出到返回期间占用一个位置；每秒最多完成约 $N_o/L$ 个事务，于是
 
@@ -3159,6 +3241,8 @@ $$
 
 这就是 Little 定律：平均在途请求数等于请求完成速率乘以平均请求延迟。硬件队列决定能容纳多少在途事务，而程序中相互独立的访问决定能否用满队列。若下一地址依赖上一读取结果，队列即使很深也无法填满；多个独立计算块则能提供互不等待的读取。
 
+依赖链上的每次访问都要承受完整的延迟，L2 命中延迟也正是这样测得的：单个线程反复读取，每次的地址取自上一次读到的值，数据全部驻留在 L2。RTX PRO 6000 上，一次 L2 往返约 340–390 个时钟周期，按实测 2.88 GHz 的 SM 频率约为 120–135 ns，虽短于显存访问，仍相当于数百个周期的停顿。该延迟还与数据所在的分片有关，同一程序在不同进程中测得 354–870 个周期。SM 之间的每次交接都由若干次这样的往返构成，见第 4.4.4 节。[^l2sync]
+
 > **例 4-2：换上带宽更高的显卡，KV 读取也会同比加快吗？**
 >
 > **比较在途事务数与接口带宽对 KV 读取的限制。** 读取一条请求的 8,192 个上下文 token 所对应的 KV，共 1.125 GiB。显存接口取 RTX 4090 的 1,008 GB/s，每事务 128 bytes，完成延迟取 500 ns：内存性能测量工具 Mess 在 H100 上测得的显存空载延迟为 363 ns，接近饱和带宽时升到 699—1,433 ns，500 ns 位于二者之间。[^mess] 分别计算最多允许 128 和 4,096 个在途事务时的有效读取带宽与耗时，再比较换成 RTX 5090 的 1,792 GB/s 后的结果。
@@ -3169,11 +3253,11 @@ $$
 >
 > **用满更高带宽或应对更长延迟，需要多少在途事务？** 把在途事务数提高到至少 7,000 个，才能维持 1,792 GB/s；若延迟增至 800 ns，该要求又增至 11,200 个。[^window-rtx]
 
-![每事务 128 bytes、返回延迟 500 ns 时，增加在途请求数会提高带宽上界，直到碰到 RTX 4090 或 RTX 5090 显存接口本身的速率上限。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-7-memory.svg)
+![每事务 128 bytes、返回延迟 500 ns 时，增加在途请求数会提高带宽上界，直到碰到 RTX 4090 或 RTX 5090 显存接口本身的速率上限。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-7-memory.svg)
 
-*图 4-15　每事务 128 bytes、返回延迟 500 ns 时，增加在途请求数会提高带宽上界，直到碰到 RTX 4090 或 RTX 5090 显存接口本身的速率上限。*
+*图 4-16　每事务 128 bytes、返回延迟 500 ns 时，增加在途请求数会提高带宽上界，直到碰到 RTX 4090 或 RTX 5090 显存接口本身的速率上限。*
 
-图 4-15 的两条曲线在并发较小时重合，是因为限制来自在途字节数。越过各自拐点以后，接口带宽成为新的瓶颈。实际系统中，增加并发访问还会使队列变长，延迟也随负载变化；Mess 用延迟探针与可调背景流量同时观察这两项，得到带宽—延迟曲线。[^mess] 这条曲线把“同时发起独立请求可以减少等待期间的空闲”与“请求过多会增加排队时间”放进同一张图中。
+图 4-16 的两条曲线在并发较小时重合，是因为限制来自在途字节数。越过各自拐点以后，接口带宽成为新的瓶颈。实际系统中，增加并发访问还会使队列变长，延迟也随负载变化；Mess 用延迟探针与可调背景流量同时观察这两项，得到带宽—延迟曲线。[^mess] 这条曲线把“同时发起独立请求可以减少等待期间的空闲”与“请求过多会增加排队时间”放进同一张图中。
 
 分析存储性能时，先根据容量判断数据能否驻留，再根据复用情况计算各级接口的流量，最后结合并发量和延迟判断接口能否持续传输。
 
@@ -3197,9 +3281,9 @@ $$
 
 例如，从 BF16、行宽 4,096 的矩阵中取 128 行、每行连续 128 个元素。有效数据为 $128\times128\times2=32$ KiB，每行只有 256 bytes，而相邻行起点相差 8,192 bytes。第一行起点到最后一行终点跨越 $127\times8192+256=1\,040\,640$ bytes。逐行读取只传输各行的有效区间；如果相邻线程访问相邻元素，它们的请求还可以合并成较少的事务。
 
-![每行前 256 bytes 是实际读取区间，相邻行起点相差 8192 bytes。128 行合计读取 32 KiB，行间灰色区域由步长跳过。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-8-layout.svg)
+![每行前 256 bytes 是实际读取区间，相邻行起点相差 8192 bytes。128 行合计读取 32 KiB，行间灰色区域由步长跳过。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-8-layout.svg)
 
-*图 4-16　每行前 256 bytes 是实际读取区间，相邻行起点相差 8192 bytes。128 行合计读取 32 KiB，行间灰色区域由步长跳过。*
+*图 4-17　每行前 256 bytes 是实际读取区间，相邻行起点相差 8192 bytes。128 行合计读取 32 KiB，行间灰色区域由步长跳过。*
 
 蓝色区域每行只有 256 bytes，下一行的蓝色区域却要到 8,192 bytes 之后才开始。读取整个地址跨度会把灰色空隙也搬走，逐行读取则只取得蓝色部分。由此可见行步长的作用：它告诉搬移单元下一段有效数据从哪里开始。
 
@@ -3229,21 +3313,21 @@ $$
 
 于是每块输入传输耗时 64 tick，发起后 192 tick 就绪，计算再用 128 tick。
 
-![一个输入槽从发起到释放的完整生命周期。传输 64 tick，额外等待 128 tick，数据在 192 tick 就绪，再计算 128 tick，于 320 tick 释放。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-slot-lifetime.svg)
+![一个输入槽从发起到释放的完整生命周期。传输 64 tick，额外等待 128 tick，数据在 192 tick 就绪，再计算 128 tick，于 320 tick 释放。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-slot-lifetime.svg)
 
-*图 4-17　一个输入槽从发起到释放的完整生命周期。传输 64 tick，额外等待 128 tick，数据在 192 tick 就绪，再计算 128 tick，于 320 tick 释放。一个 tick 为 B200 SM 的一个时钟周期。*
+*图 4-18　一个输入槽从发起到释放的完整生命周期。传输 64 tick，额外等待 128 tick，数据在 192 tick 就绪，再计算 128 tick，于 320 tick 释放。一个 tick 为 B200 SM 的一个时钟周期。*
 
 只有一个输入槽时，该槽经历加载、等待、计算，共 $64+128+128=320$ tick 后才能复用，四块在 1280 tick 结束。
 
-图 4-18 至图 4-20 依次画出一槽、两槽和三槽的执行，并保持时间尺度一致。先沿绿色计算区间寻找空闲，再向上查看下一块输入何时就绪，就能判断等待从何而来。
+图 4-19 至图 4-21 依次画出一槽、两槽和三槽的执行，并保持时间尺度一致。先沿绿色计算区间寻找空闲，再向上查看下一块输入何时就绪，就能判断等待从何而来。
 
-![一个输入槽的四块时序。蓝条为传输，橙线为就绪，绿条为计算，浅灰为槽占用；上一块用完后才能再次发起，完成时刻为 1280 tick。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-9-pipeline.svg)
+![一个输入槽的四块时序。蓝条为传输，橙线为就绪，绿条为计算，浅灰为槽占用；上一块用完后才能再次发起，完成时刻为 1280 tick。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-9-pipeline.svg)
 
-*图 4-18　一个输入槽的四块时序。蓝条为传输，橙线为就绪，绿条为计算，浅灰为槽占用；上一块用完后才能再次发起，完成时刻为 1280 tick。一个 tick 为 B200 SM 的一个时钟周期。*
+*图 4-19　一个输入槽的四块时序。蓝条为传输，橙线为就绪，绿条为计算，浅灰为槽占用；上一块用完后才能再次发起，完成时刻为 1280 tick。一个 tick 为 B200 SM 的一个时钟周期。*
 
-![两个输入槽使用相同时间尺度。前两块可提前发起，但第三块到 512 tick 才就绪，第二块在 448 tick 已结束，留下 64 tick 空闲。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-pipeline-two.svg)
+![两个输入槽使用相同时间尺度。前两块可提前发起，但第三块到 512 tick 才就绪，第二块在 448 tick 已结束，留下 64 tick 空闲。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-pipeline-two.svg)
 
-*图 4-19　两个输入槽使用相同时间尺度。前两块可提前发起，但第三块到 512 tick 才就绪，第二块在 448 tick 已结束，留下 64 tick 空闲。横轴一个 tick 为 B200 SM 的一个时钟周期；各行对应一个数据块，灰色表示输入槽占用，蓝色表示传输，绿色表示计算，竖标记表示数据就绪。*
+*图 4-20　两个输入槽使用相同时间尺度。前两块可提前发起，但第三块到 512 tick 才就绪，第二块在 448 tick 已结束，留下 64 tick 空闲。横轴一个 tick 为 B200 SM 的一个时钟周期；各行对应一个数据块，灰色表示输入槽占用，蓝色表示传输，绿色表示计算，竖标记表示数据就绪。*
 
 两个槽允许在时刻 0 和 64 发出前两块的读取请求。第一块在 192 开始计算、320 结束，释放的槽用于第三块，第三块在 512 就绪；第二块在 448 已算完，因此中间留下 64 tick 空闲。继续按同样次序，第四块在 768 结束。第二个槽让一部分数据加载与计算重叠，但矩阵单元仍会在两块计算之间空闲。
 
@@ -3253,9 +3337,9 @@ $$
 T_{\min}=192+4\times128=704\ \mathrm{tick}.
 $$
 
-![三个输入槽提前发起前三块，第一槽释放后接收第四块。矩阵单元从 192 连续计算到 704 tick，第四槽不再缩短完成时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-pipeline-three.svg)
+![三个输入槽提前发起前三块，第一槽释放后接收第四块。矩阵单元从 192 连续计算到 704 tick，第四槽不再缩短完成时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-pipeline-three.svg)
 
-*图 4-20　三个输入槽提前发起前三块，第一槽释放后接收第四块。矩阵单元从 192 连续计算到 704 tick，第四槽不再缩短完成时间。横轴一个 tick 为 B200 SM 的一个时钟周期；各行对应一个数据块，灰色表示输入槽占用，蓝色表示传输，绿色表示计算，竖标记表示数据就绪。*
+*图 4-21　三个输入槽提前发起前三块，第一槽释放后接收第四块。矩阵单元从 192 连续计算到 704 tick，第四槽不再缩短完成时间。横轴一个 tick 为 B200 SM 的一个时钟周期；各行对应一个数据块，灰色表示输入槽占用，蓝色表示传输，绿色表示计算，竖标记表示数据就绪。*
 
 三个槽已足以实现这一时间。前三块的读取请求分别在时刻 0、64、128 发出，分别在 192、256、320 就绪；计算从 192 开始依次进行。第一块在 320 释放槽位，立即发出第四块的读取请求，第四块在 512 就绪，早于计划开始计算的时刻 576。矩阵单元因此从 192 到 704 tick 一直连续计算，中途没有空闲。[^pipeline-extra]
 
@@ -3276,13 +3360,17 @@ $$
 
 ##### 4.4.3 单元间的数据传递
 
-输入流水减少了矩阵单元等待数据的时间，但注意力还要把矩阵结果交给向量单元，再将概率送回矩阵单元。若完整保存一个 $128\times128$ FP32 分数矩阵，需要 64 KiB；矩阵单元写一次、向量单元读一次，经过同一存储接口的数据共 128 KiB。若矩阵单元直接把结果传给向量单元，就可以省去这次中间结果写回和重新读取。
+前一节讨论输入何时到达矩阵单元。本节继续追踪计算结果：QK 产生分数，Softmax 将分数变成概率，PV 使用概率。对于 $128\times128$ 的 FP32 分数矩阵，保存整块需要 64 KiB，先写入再读取会在交接接口上产生 128 KiB 流量；直接传递这份结果则只需服务一次载荷。
+
+减少接口流量只是第一步。下一阶段还需要正确的布局和完整的输入，上一阶段使用过的缓冲也要按时释放。因此，本节固定工作量，依次改变查询行分组、缓冲槽数和交接路径，分别检查它们对依赖、并发和字节数的影响。
 
 向量计算何时开始，还取决于它需要哪些完整结果。普通逐行 Softmax 要先得到一行的全部分数，再求最大值和归一化分母。沿 QK 的内积维度计算一半时，每个分数都只是部分和；按查询行分组则可以先完成一组完整行，把它们交给 Softmax，其余行继续矩阵计算。分组方向因此决定向量单元能否提前开始计算。
 
-![矩阵与向量单元通过完整行组交接。QK 产生分数，Softmax 产生概率，PV 使用概率后释放槽；另一槽容纳相邻行组，使不同组可以重叠推进。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-matrix-vector-handoff.svg)
+![矩阵与向量单元通过完整行组交接。QK 产生分数，Softmax 产生概率，PV 使用概率后释放槽；另一槽容纳相邻行组，使不同组可以重叠推进。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-matrix-vector-handoff.svg)
 
-*图 4-21　矩阵与向量单元通过完整行组交接。QK 产生分数，Softmax 产生概率，PV 使用概率后释放槽；另一槽容纳相邻行组，使不同组可以重叠推进。*
+*图 4-22　矩阵与向量单元通过完整行组交接。QK 产生分数，Softmax 产生概率，PV 使用概率后释放槽；另一槽容纳相邻行组，使不同组可以重叠推进。*
+
+
 
 将 128 行沿查询方向分成四组、每组 32 行，一组 FP32 分数和 BF16 概率共需 $32\times128\times(4+2)=24$ KiB。下面比较使用一个和两个缓冲区保存交接数据的方案；每个缓冲区从该组 QK 开始占用，到 PV 完成才释放。QK 与 PV 共用矩阵单元，Softmax 使用向量单元，两个方向共用交接接口。使用两个缓冲区时，不同组可以同时执行不同阶段的计算。[^handoff]
 
@@ -3300,11 +3388,43 @@ $$
 
 再增加第二个槽，下一组可以使用另一槽推进，总时间降到 3200 tick，减少约 38%。随后改为直接交接，减少每次交接经过存储接口的字节数，总时间进一步降至 3008 tick，节省约 6%。继续增加槽位没有改变耗时最长单元的工作节奏，完成时间保持不变。
 
-分组提前产生完整结果，第二个槽使相邻组重叠，直接通路缩短交接时间。这三项改动分别改变依赖、可同时推进的组数和接口工作量；第 4.6.2 节将这三项改动对应到昇腾的架构演进。
+分组让完整行更早算出，第二个槽让不同组重叠，直接通路减少交接流量。三项改动各有作用，也各有代价：分组改变矩阵形状，增加槽位占用更多片上存储，直接通路要求两端的布局和同步相互匹配。第 4.6.2 节会用这些关系解释昇腾的代际变化。
+
+图 4-23 将两槽直接传递方案的逐阶段计算结果画成时间线。QK 和 PV 共用矩阵单元，两个方向共用交接接口，Softmax 独占向量单元。下方两条灰带表示槽位占用：G0 的 PV 结束前，G2 不能使用槽 0；G1 的 PV 结束前，G3 不能使用槽 1。总时间为 3008 tick，与上表对应。
+
+![两槽方案的执行时间线：矩阵、交接和向量阶段按依赖启动，两个缓冲槽从 QK 开始一直占用到 PV 结束。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-davinci-attention-timeline.svg)
+
+*图 4-23　QK、Softmax、PV 的两槽执行时间线。上图采用写出再读入，下图采用直接传递；两种路径分别用时 3200 和 3008 tick。*
+
+将这份调度映射到 DaVinci，矩阵阶段由 Cube/AIC 执行，Softmax 由 Vector/AIV 执行，搬移和交接由相应数据路径完成。MTE 还要为 QK 和 PV 准备 Q、K、V 操作数。算子程序需要表达四类条件：输入已到达、分数可读、概率可读、槽位已释放。编译器据此安排搬移、计算和等待，生成第 5 章所讨论的缓冲区、描述符与同步指令。图中的 tick 沿用本节计算参数，完整设备时间还应加入输入加载、布局转换和结果写回。
 
 > **实验 4-4 · 核心：维持连续计算需要多少片上缓冲**
 >
 > 分别画出输入流水使用一至四个缓冲槽时的时间线，根据数据到达、计算结束和缓冲区释放的时刻，确定维持连续计算所需的最少槽数；再将矩阵速率翻倍，解释最少槽数的变化。随后画出各查询行组经过 QK、Softmax 和 PV 的时间线，区分分组、增加槽位和直接传递各自省下的时间。最后在固定片上容量下，分析每组缓冲的大小如何限制能够同时驻留的组数。
+
+##### 4.4.4 SM 之间的交接：fence 与同步层级
+
+第 4.4.3 节的交接发生在 SM 内部。decode 时 batch 很小，矩阵—向量乘必须分给全部 SM 才能用满显存带宽，每个 SM 只算出输出向量的一段，而下一个算子（如 RMSNorm）需要完整的向量。此时交接跨越 SM，只能经由 L2。
+
+跨 SM 交接分两步：生产者先写数据、再写标志；消费者反复读取标志，即轮询，读到新值后再读数据。关键在于顺序。数据与标志可能位于不同的 L2 分片，两次写入分别经过交叉互连，先发出的未必先到达；消费者若先看到标志，就可能读到尚未更新的数据。因此，生产者写标志前须执行 **fence**，即保证访存顺序的指令，等待 L2 确认此前的写入均已完成；消费者看到标志后，后续读取也不得提前执行。这两条约束分别称为释放（release）语义与获取（acquire）语义，过程如图 4-24 所示。
+
+![跨 SM 交接的时序：生产者写数据，收到确认后写标志；消费者轮询到新值后读数据。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-cross-sm-handoff.svg)
+
+*图 4-24　跨 SM 交接的时序，时间自上而下。fence 使生产者等到 L2 确认数据写入后才写标志；消费者轮询到新值后再读数据。每条斜线穿过一次交叉互连，约为半次 L2 往返。*
+
+RTX PRO 6000 上，一次一对一交接约 370 ns（约 1,050 个周期），其中 fence 约占 600 个周期。去掉 fence 只需约 140 ns，接近一次 L2 往返，但无法保证结果正确。由硬件发出的信号同样受此约束：CUDA 的 PDL（Programmatic Dependent Launch，前一个 kernel 发出信号后即可启动后一个 kernel）实测每个边界约 366 ns，与软件交接相当。
+
+全部 SM 汇合的代价更高。各 SM 完成后对同一计数器加一，计数达到 188 时，轮询中的 SM 开始下一步。188 次加一在同一地址排队，合计不到 80 ns；主要开销来自两侧的 fence（各约 460 个周期）、到达与轮询的往返，以及各 SM 完成时刻的差异，共约 1,900 个周期，即约 660 ns。若还要把完整的激活向量送到每个 SM，188 个 SM 会同时读取同一组缓存行（缓存以固定大小的行为单位管理，此处每行 128 bytes），请求集中在少数分片上排队：全部 SM 同时读取同一行时，每次读取约 3,400 个周期，是各读一行时的 9 倍。将向量复制 8 份、分散到不同分片后，连同数据的一次全 SM 交接约为 1.0 μs。
+
+图 4-25 汇总了各级同步的代价。依赖跨越的范围越大，经过的存储越远，代价越高：SM 内的栅栏（barrier，参与的线程全部到达后才一起放行）由 SM 硬件计数，约 7 ns；线程块簇内经 SM 间网络同步，约 130 ns；超出簇的范围就要经由 L2，一对一交接约 370 ns，全部 SM 汇合并送达数据约 1 μs。
+
+![各级同步的代价：SM 内同步只需几纳秒，经由 L2 的同步需要数百纳秒到 1 μs。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-sync-ladder.svg)
+
+*图 4-25　RTX PRO 6000 上各级同步一次所需的时间。绿、紫、蓝三色分别对应 SM 内、线程块簇内与经由 L2 的同步；一对一交接采用释放—获取实现，全部 SM 汇合送达的是复制为 8 份的 8 KiB 向量。数值为共用 GPU 期间多次测量的最小值。*
+
+线程块簇不能取代 L2。簇与簇之间仍经由 L2；簇内分布式共享内存的读取带宽也较低，每个 SM 每周期约 1.3 bytes，而 L2 约 6.9 bytes，本 SM 的共享内存约 36 bytes。在簇内交换 16 KiB 的激活向量，比经由 L2 慢十倍以上。
+
+上述代价与 kernel 的提交方式无关。第 5.5 节的图重放与 persistent kernel 能消除主机提交和 kernel 启动的开销，却不能消除依赖本身所需的 L2 往返：只要下一个算子需要全部 SM 的结果，每个这样的边界仍需约 1 μs。第 4.1.2 节所说的第二类等待，即等待前一项计算完成，跨越 SM 时就表现为这些 L2 往返。[^l2sync]
 
 #### 4.5 多芯片封装与互联
 
@@ -3320,15 +3440,15 @@ B200 的 NV-HBI 比每颗 die 的 HBM 还快：技术简报没有注明 10 TB/s 
 
 两款产品的差别由 die 间链路带宽与每颗 die 本地 HBM 带宽之比决定。B200 的这一比值为 2.5，跨 die 读取与本地读取一样快，两颗 die 可以作为一颗 GPU 使用；910C 的比值约为 0.17，跨 die 读取耗时约为本地的 5.9 倍。由 384 颗昇腾 910C 组成的华为 CloudMatrix384 超节点在 DeepSeek-R1 的 decode 中也以 die 为单位部署专家，每颗 die 恰好放一个专家。比值小于 1 时，应让计算单元在本地反复使用大块权重，只在 die 之间传递较小的输入和结果。
 
-![计算都放在 die 0 时，要跨 die 读取 die 1 上的 32 GiB 权重。B200 的跨 die 读取受 die 1 的 HBM 限制，约 8.6 ms，与本地读取相同；昇腾 910C 受 die 间链路限制，约 127 ms。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-10-locality.svg)
+![计算都放在 die 0 时，要跨 die 读取 die 1 上的 32 GiB 权重。B200 的跨 die 读取受 die 1 的 HBM 限制，约 8.6 ms，与本地读取相同；昇腾 910C 受 die 间链路限制，约 127 ms。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-10-locality.svg)
 
-*图 4-22　计算都放在 die 0 时，要跨 die 读取 die 1 上的 32 GiB 权重。B200 的跨 die 读取受 die 1 的 HBM 限制，约 8.6 ms，与本地读取相同；昇腾 910C 受 die 间链路限制，约 127 ms。*
+*图 4-26　计算都放在 die 0 时，要跨 die 读取 die 1 上的 32 GiB 权重。B200 的跨 die 读取受 die 1 的 HBM 限制，约 8.6 ms，与本地读取相同；昇腾 910C 受 die 间链路限制，约 127 ms。*
 
-![计算放到权重所在的 die 后，链路上只交换 64 MiB 输入与结果，两侧各读本地权重。B200 仍约 8.6 ms；昇腾 910C 从约 127 ms 降到约 21.5 ms。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-locality-compute.svg)
+![计算放到权重所在的 die 后，链路上只交换 64 MiB 输入与结果，两侧各读本地权重。B200 仍约 8.6 ms；昇腾 910C 从约 127 ms 降到约 21.5 ms。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-locality-compute.svg)
 
-*图 4-23　计算放到权重所在的 die 后，链路上只交换 64 MiB 输入与结果，两侧各读本地权重。B200 仍约 8.6 ms；昇腾 910C 从约 127 ms 降到约 21.5 ms。*
+*图 4-27　计算放到权重所在的 die 后，链路上只交换 64 MiB 输入与结果，两侧各读本地权重。B200 仍约 8.6 ms；昇腾 910C 从约 127 ms 降到约 21.5 ms。*
 
-图 4-22 与图 4-23 比较计算单元与权重的相对位置：集中计算路径搬移权重，就地计算路径搬移输入并取回结果。判断如何分配计算任务时，先画出每种方案经过链路的数据，再比较总量。
+图 4-26 与图 4-27 比较计算单元与权重的相对位置：集中计算路径搬移权重，就地计算路径搬移输入并取回结果。判断如何分配计算任务时，先画出每种方案经过链路的数据，再比较总量。
 
 这种放置还创造了并行机会：两侧本地读取和计算可以分别推进，最终再交接结果。是否需要等两侧都完成，由模型的计算图决定；如果下一步要合并部分和，就在合并点形成同步。第 6 章会从具体的并行切分推导这些交接。
 
@@ -3365,13 +3485,13 @@ $$
 
 从 A100 换到 H100，带宽提高到 1.5 倍，8 KiB 传输的时间只从 2.03 降至 2.02 μs，2 MiB 传输则从 8.99 降至 6.66 μs，缩短约 26%。若改为在 H100 上把固定开销减半，小数据量的传输时间约减半，大数据量的传输也能节省约 15%。两种优化针对的是公式中不同的主导项。
 
-![一次 8 KiB 传输的启动与传输时间。固定启动开销 2 μs，NVLink 从 A100 的每方向 300 GB/s 换成 H100 的 450 GB/s，只缩短很薄的蓝色传输项。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-11-interconnect.svg)
+![一次 8 KiB 传输的启动与传输时间。固定启动开销 2 μs，NVLink 从 A100 的每方向 300 GB/s 换成 H100 的 450 GB/s，只缩短很薄的蓝色传输项。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-11-interconnect.svg)
 
-*图 4-24　一次 8 KiB 传输的启动与传输时间。固定启动开销 2 μs，NVLink 从 A100 的每方向 300 GB/s 换成 H100 的 450 GB/s，只缩短很薄的蓝色传输项。*
+*图 4-28　一次 8 KiB 传输的启动与传输时间。固定启动开销 2 μs，NVLink 从 A100 的每方向 300 GB/s 换成 H100 的 450 GB/s，只缩短很薄的蓝色传输项。*
 
-![一次 2 MiB 传输在相同启动条件下的时间。蓝色传输项占主要部分，换成 H100 的 NVLink 带来更显著的收益；本图纵轴范围与上一图分别标注。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-large-message.svg)
+![一次 2 MiB 传输在相同启动条件下的时间。蓝色传输项占主要部分，换成 H100 的 NVLink 带来更显著的收益；本图纵轴范围与上一图分别标注。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-large-message.svg)
 
-*图 4-25　一次 2 MiB 传输在相同启动条件下的时间。蓝色传输项占主要部分，换成 H100 的 NVLink 带来更显著的收益；本图纵轴范围与上一图分别标注。*
+*图 4-29　一次 2 MiB 传输在相同启动条件下的时间。蓝色传输项占主要部分，换成 H100 的 NVLink 带来更显著的收益；本图纵轴范围与上一图分别标注。*
 
 令两项相等，就得到数据量的转折点：
 
@@ -3401,9 +3521,9 @@ NVLink、华为 Unified Bus 等互联提供设备间的传输路径，完成通�
 
 再把输入减为一行。两条路径的矩阵时间变成约 2.14 μs 和 0.268 μs，32 MiB 权重连同输入输出的传输却需要约 37.3 μs。两条路径因此都先受数据读取限制。同一项 Tensor Core 改进，对大 batch 的矩阵乘法收益显著，对这次单行调用则帮助不大，要加快的仍是权重读取。
 
-![同一 V100 上的 Q 投影。4,096 行时，Tensor Core 大幅缩短矩阵计算；一行时，两条计算路径都短于权重传输。上下两组使用分别标注的时间单位。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-tensor-budget.svg)
+![同一 V100 上的 Q 投影。4,096 行时，Tensor Core 大幅缩短矩阵计算；一行时，两条计算路径都短于权重传输。上下两组使用分别标注的时间单位。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-tensor-budget.svg)
 
-*图 4-26　同一 V100 上的 Q 投影。4,096 行时，Tensor Core 大幅缩短矩阵计算；一行时，两条计算路径都短于权重传输。上下两组使用分别标注的时间单位。*
+*图 4-30　同一 V100 上的 Q 投影。4,096 行时，Tensor Core 大幅缩短矩阵计算；一行时，两条计算路径都短于权重传输。上下两组使用分别标注的时间单位。*
 
 **精度演进同时改变数值范围、存储量和执行指令。** Turing 在 Tensor Core 中加入 INT8、INT4，扩展低比特整数推理；Ampere 增加 BF16、TF32 和 2:4 结构化稀疏；TF32 在矩阵乘法中保留 FP32 的指数范围、缩短尾数，2:4 稀疏则按每四个元素中两个非零值组织计算。Hopper 的 Transformer Engine 将 FP8 矩阵指令与缩放管理结合，Blackwell 进一步支持分块缩放与 FP4。[^turing-evolution][^nvidia]
 
@@ -3411,17 +3531,17 @@ NVLink、华为 Unified Bus 等互联提供设备间的传输路径，完成通�
 
 再看存储量。沿用第 4.2.4 节每 32 个值共享一字节 scale 的分块格式；MX 是这种微缩放（microscaling）格式的名称。MXFP8 需要 $16+0.5=16.5$ MiB，MXFP4 需要 $8+0.5=8.5$ MiB。以 RTX 4090 的 1,008 GB/s 带宽读取这份 BF16 权重需 33.29 μs；以 RTX 5090 的 1,792 GB/s 读取同一份 BF16 权重需 18.72 μs，读取 MXFP4 权重则需 4.97 μs。前一步来自带宽提高，后一步来自位数与分组表示改变。
 
-![同一个 4096×4096 权重的存储与读取预算。每 32 个低精度值共享一个一字节 scale。位宽从 BF16 降至 MXFP4 后，权重与 scale 合计从 32 MiB 减至 8.5 MiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-precision.svg)
+![同一个 4096×4096 权重的存储与读取预算。每 32 个低精度值共享一个一字节 scale。位宽从 BF16 降至 MXFP4 后，权重与 scale 合计从 32 MiB 减至 8.5 MiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-precision.svg)
 
-*图 4-27　同一个 4096×4096 权重的存储与读取预算。每 32 个低精度值共享一个一字节 scale。位宽从 BF16 降至 MXFP4 后，权重与 scale 合计从 32 MiB 减至 8.5 MiB。*
+*图 4-31　同一个 4096×4096 权重的存储与读取预算。每 32 个低精度值共享一个一字节 scale。位宽从 BF16 降至 MXFP4 后，权重与 scale 合计从 32 MiB 减至 8.5 MiB。*
 
 从 33.29 μs 到 4.97 μs，权重读取预算缩小到约 1/6.69。这笔收益由两部分相乘：带宽约提高到 1.78 倍，存储量缩小到约 1/3.76。原生低精度矩阵路径直接处理压缩表示，省去第 4.2.4 节先展开路径中的高精度权重副本。
 
 **矩阵越来越快以后，架构开始减少它前后的准备与等待。** Ampere 的异步拷贝省去全局内存到共享内存的寄存器中转；Hopper 的 TMA 接手多维地址生成与搬移，并配合异步矩阵执行；Blackwell 数据中心 SM100 用张量存储（Tensor Memory，TMEM）保存矩阵累加结果。这三项改动分别改变搬移指令、通用寄存器占用和中间结果存放位置。[^blackwell-evolution]
 
-![从异步拷贝、TMA 到 TMEM，专门部件承担更多数据准备与累加状态管理。蓝色表示数据存储与搬移，橙色表示矩阵计算，紫色表示累加结果。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-nvidia-path.svg)
+![从异步拷贝、TMA 到 TMEM，专门部件承担更多数据准备与累加状态管理。蓝色表示数据存储与搬移，橙色表示矩阵计算，紫色表示累加结果。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-nvidia-path.svg)
 
-*图 4-28　从异步拷贝、TMA 到 TMEM，专门部件承担更多数据准备与累加状态管理。蓝色表示数据存储与搬移，橙色表示矩阵计算，紫色表示累加结果。*
+*图 4-32　从异步拷贝、TMA 到 TMEM，专门部件承担更多数据准备与累加状态管理。蓝色表示数据存储与搬移，橙色表示矩阵计算，紫色表示累加结果。*
 
 第 4.3.2 节的计算块需要 32 KiB 输入和 64 KiB 累加结果。三组输入与一组结果合计 160 KiB，TMEM 独立承担其中的 64 KiB，通用寄存器便可用于其他线程状态。这就是新增专用存储给工作驻留带来的直接变化。
 
@@ -3449,41 +3569,56 @@ RTX PRO 6000 与 RTX 5090 带宽同为 1,792 GB/s，工作站卡的主要增量�
 
 ##### 4.6.2 昇腾：从 CNN 的卷积展开，到 Transformer 的矩阵与向量交接
 
-早期昇腾 910（后面的代际比较中称作 910A）设计时，ResNet 等卷积神经网络（CNN）占据了大部分训练负载。笔者的设计回顾记录了这一背景；DaVinci 论文进一步给出 Scalar、Vector、Cube 和 MTE 的分工。MTE 包含 img2col、转置和解压模块，其中 img2col 在数据搬移过程中把卷积窗口组织成矩阵输入。先计算这项专用能力在 CNN 中节省了什么，再把负载换成 Transformer。[^ascend-cnn-history]
+昇腾 DaVinci 的演进可以沿数据路径来理解：先看输入如何形成矩阵，再看矩阵结果如何交给向量单元。资源投入的重点随工作负载变化。早期昇腾 910 面向 ResNet 等卷积网络时，MTE 的 img2col、转置和解压能力主要解决“如何把卷积窗口组织成矩阵输入”的问题。把输入窗口直接在片上组织后送入 Cube，可以省掉在 HBM 中生成展开矩阵再写回、读出的中间副本。[^ascend-cnn-history]
 
-**卷积展开为何值得交给硬件？** 取一个 ResNet 式的 $3\times3$ 卷积，输入为 $56\times56\times64$，输出通道数为 64，步长为 1，通过填充（padding）保持空间尺寸。输入以 FP16 保存，占 $56\times56\times64\times2=401,408$ bytes，约 0.383 MiB。每个输出位置使用九个相邻位置的 64 个通道，展开矩阵为 $3136\times576$，占约 3.445 MiB，是原输入的九倍。
+**从卷积窗口展开，到注意力结果交接。** 取一个步长为 1、填充后保持空间尺寸的 $3\times3$ 卷积，输入为 $56\times56\times64$，输出通道为 64，数据以 FP16 保存。显式展开会形成 $3136\times576$ 的矩阵，大小约 3.445 MiB，是原输入的九倍；若在 HBM 中生成再读入，额外写读共 6.891 MiB，按 910 的 1.2 TB/s 带宽约需 6.02 μs。MTE 在片上完成窗口组织，便省去这次外存往返。[^ascend-history]
 
-若先在 HBM 中生成展开矩阵，再由矩阵乘法读入，额外发生一次 3.445 MiB 写入和一次读取，共 6.891 MiB。早期 910 的 HBM 带宽为 1.2 TB/s，仅这笔展开矩阵的写读就占约 6.02 μs 的带宽时间。MTE 在片上搬移时完成窗口展开，便省去这份 HBM 中间副本的写读。输入窗口在片上组织后直接送入矩阵计算，HBM 中保留原始输入和权重。[^ascend-history]
+![卷积的两种输入准备方式。MTE 在片上展开窗口，省去 HBM 中间矩阵的写入和读取。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-img2col.svg)
 
-![同一个 3×3 卷积的两条准备路径。显式展开形成九倍大小的中间矩阵；MTE 在片上组织窗口，省去 HBM 上 6.891 MiB 的中间结果写读。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-img2col.svg)
+*图 4-33　卷积的两种输入准备方式。MTE 在片上展开窗口，省去 HBM 中间矩阵的写入和读取。*
 
-*图 4-29　同一个 3×3 卷积的两条准备路径。显式展开形成九倍大小的中间矩阵；MTE 在片上组织窗口，省去 HBM 上 6.891 MiB 的中间结果写读。*
+该卷积需要约 231.2 MFLOPs，在每周期 8,192 FLOPs 的 Cube 上约需 28,224 周期；输出 ReLU 只有 200,704 个元素，向量后处理相对较短。Cube 承担主要计算，MTE 减少输入准备中的额外写读，Vector 完成较短的后处理。
 
-再看计算分工。该卷积需要 $2\times3136\times576\times64\approx231.2$ MFLOPs。DaVinci 论文给出的 Ascend-Max Cube 为每周期 8,192 FLOPs，因此矩阵服务时间为 28,224 周期。输出 ReLU 只处理 200,704 个元素；按 256 bytes 向量宽度，一组可容纳 128 个 FP16 元素，共 1,568 组。卷积的矩阵计算量与后处理相差悬殊，Cube、Vector 和展开硬件各自承担明确的工作。
+换成注意力以后，算子序列变为
 
-**换成注意力，资源比例和数据方向一起变化。** $128\times128$、头维度 128 的注意力块，QK 与 PV 合计约 8.39 MFLOPs，在同一 Cube 速率下为 1,024 周期。Softmax 需要计算 16,384 个指数，并执行最大值归约、求和与归一化。按 256 bytes 的向量宽度，一组 FP32 数据有 64 个值，单是指数就要处理 256 组。要让指数阶段不超过矩阵的 1,024 周期，指数部分需要平均每四周期处理一组，也就是每周期 16 个指数结果。随后执行归约与归一化，形成 PV 的输入。
+$$Z=QK^{\mathsf T},\qquad P=\operatorname{Softmax}(Z),\qquad O=PV.$$
 
-同一 Cube 上，CNN 卷积的矩阵工作占 28,224 周期，注意力块只占 1,024 周期；向量工作却从简单 ReLU 变成指数、归约与归一化。DaVinci 论文的 BERT 分析中，多数层由 Cube 时间主导。把注意力单独拆开后，可以看到 Softmax 对向量吞吐提出的新需求。[^ascend-history]
+取 $128\times128$、头维度 128 的块，QK 与 PV 合计约 8.39 MFLOPs，在相同 Cube 速率下约需 1,024 周期；Softmax 却要处理 16,384 个指数，并完成最大值归约、求和和归一化。Transformer 因而形成了反复出现的“矩阵—向量—矩阵”模式：Cube 产生分数，Vector 处理逐元素和归约，Cube 再消费概率。这一顺序在不同层和查询行组中反复执行，形成了高频的结果交接需求。前馈网络中的投影、门控激活和再次投影，也要求矩阵与向量单元连续协作。
 
-在 CNN 中发挥作用的卷积窗口展开，在 Q、K、V 投影上没有工作可做，因为投影输入已经是矩阵。注意力反而需要把 QK 的结果交给 Vector 做 Softmax，再将概率交回 Cube 做 PV。img2col 节省的卷积展开工作，与这两次矩阵、向量交接所需要的工作不同；负载转变以后，新增硬件资源的重点也随之转移。
+**为什么要让 Cube 和 Vector 紧密协同？** 如果 QK 的完整分数先写入外层存储，再由 Vector 读回，矩阵计算变快后，写回和读取会成为新的串行阶段。对上面的块，分数和概率各按 FP32 交接时，每个张量占 64 KiB；两次交接经过外层接口共 256 KiB。取 1 GHz 时钟，若要在 Cube 的 1.024 μs 服务时间内完成，接口需要约 256 GB/s；代入 DaVinci 论文给出的每核 94 GB/s LLC 带宽，交接约需 2.79 μs，长于 1 GHz 下 Cube 的 1.024 μs 矩阵服务时间。[^ascend-history]
 
-**独立调度以后，交接路径怎样影响速度？** 910B 所在 Atlas A2 将矩阵核 AIC 与向量核 AIV 分开控制；910C 进一步采用双 die，每颗 die 有 24 个 AIC 和 48 个 AIV。分离控制让不同工作独立推进，AIC 与 AIV 则通过全局地址空间交换结果，实际数据经过缓存层次。CloudMatrix384 在 MLA 中压缩 KV 状态，通过融合与动态分块安排矩阵和向量工作；MTP 一次处理多个预测位置，又改变了这些计算的行数。[^ascend-history]
+这项计算说明，在上述带宽条件下，缩短交接比继续增加矩阵吞吐更能改善注意力流水。910B 所在 Atlas A2 将 AIC 与 AIV 分开控制，910C 进一步在双 die 中配置独立的 AIC 和 AIV，使矩阵与向量工作能够在不同数据块上推进；代价是程序必须明确表达数据地址、布局和交接事件。[^ascend-history]
 
-![早期同核分工、910B／910C 的独立控制，以及 950 增加的 CV 直接通路。计算单元的配比与结果交换的路径共同决定融合算子的效率。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-ascend.svg)
+![昇腾的矩阵与向量协作：早期同核分工、910B/910C 独立控制，以及 950 的 CV 直通。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-ascend.svg)
 
-*图 4-30　早期同核分工、910B／910C 的独立控制，以及 950 增加的 CV 直接通路。计算单元的配比与结果交换的路径共同决定融合算子的效率。*
+*图 4-34　昇腾的矩阵与向量协作：早期同核分工、910B/910C 独立控制，以及 950 的 CV 直通。*
 
-用同一个注意力块计算接口工作量。分数与概率各按 FP32 交接，每个张量占 64 KiB。一次交接经过外层交换接口写出、读入，共 128 KiB；QK→Softmax 和 Softmax→PV 两次合计 256 KiB。若两次交接都由同一外层接口承担，要在 1.024 μs 内完成，该接口需要约 256 GB/s。把 DaVinci 论文中每核分配的 94 GB/s 末级缓存（LLC）带宽代入，这笔工作需要约 2.79 μs，已经超过 1 GHz 下 Cube 的 1.024 μs 矩阵服务时间。矩阵计算即使继续加快，外层接口仍需搬完这些字节。
+950 在 Cube 的 L1 与 Vector 的 UB 之间增加 CV 直接通路。两次各 64 KiB 的中间张量通过直接连接交接，共传递 128 KiB，原来外层接口承担的 256 KiB 写读由此移出；取相同的 1.024 μs 交接预算，两次交接所需带宽约为 128 GB/s，改用 FP16/BF16 还可以进一步降低需求。[^ascend]
 
-昇腾 950 的下一步改动正针对这条外层接口：在 Cube 的一级缓冲 L1 与 Vector 的统一缓冲（Unified Buffer，昇腾文档简写为 UB，与第 6 章的互联 Unified Bus 并非同一概念）之间增加 CV（Cube–Vector）直接通路。两次各 64 KiB 的中间张量通过直接连接交接，共传递 128 KiB，原来外层接口的 256 KiB 写读由此移出。若要求这条直接通路在 1.024 μs 内完成两次交接，需要约 128 GB/s；若交接格式改为 FP16／BF16，需求再减半至约 64 GB/s。
+![同一注意力块的交接流量。外层接口写读共 256 KiB，直接通路传递共 128 KiB。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-cv-budget.svg)
 
-![同一注意力块的两次交接。外层交换接口承担写出和读入共 256 KiB；直接 CV 通路传递两个 64 KiB 张量，将这笔流量移出外层接口。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-cv-budget.svg)
+*图 4-35　同一注意力块的交接流量。外层接口写读共 256 KiB，直接通路传递共 128 KiB。*
 
-*图 4-31　同一注意力块的两次交接。外层交换接口承担写出和读入共 256 KiB；直接 CV 通路传递两个 64 KiB 张量，将这笔流量移出外层接口。在 1.024 μs 内完成交接，对应直接通路的带宽需求为 128 GB/s。*
+950 同时把单个 Vector Core 的 FP16/FP32 吞吐提高一倍，在 UB 与向量 ALU 之间增加寄存器文件，并优化 Softmax 与 GELU。NDDMA 负责多维搬移和地址生成，BufferID 用缓冲区标识组织同步。对相同普通向量工作 $F_v$，服务时间从 $F_v/P_v$ 降为 $F_v/(2P_v)$；但如果中间结果仍需经过外层接口，向量计算加速并不会自动消除交接瓶颈。矩阵、向量和 CV 通路必须一起配平，局部峰值才会转化为整段注意力的收益。
 
-950 同时将单个 Vector Core 的 FP16／FP32 吞吐提高一倍，在统一缓冲与向量算术逻辑单元（ALU）之间增加寄存器文件，并优化 Softmax 与激活函数 GELU 的执行。对相同普通向量工作 $F_v$，$F_v/P_v$ 降为 $F_v/(2P_v)$；如果原来向量阶段是矩阵阶段的两倍，这项改动能把二者重新配平。按前面的注意力块，指数吞吐需要达到每周期 16 个结果。新增 NDDMA 承担多维地址与布局准备，BufferID 用缓冲区标识组织同步交接。[^ascend]
+**调度如何变成程序。** 4.4.3 节的两个槽各预留 24 KiB，分别保存 FP32 分数和 BF16 概率。程序把每个查询行组编译为三个计算阶段，并把同组依赖和槽位复用依赖一起提交：
 
-950 的低精度也可以沿同一工作量理解：同频 FP8 类矩阵计算速率为 FP16 的两倍，MXFP4 为四倍。对固定矩阵 $F$，计算服务时间依次为 $F/P$、$F/(2P)$、$F/(4P)$；但 FP32 分数与概率的两次交接仍是原来的大小。只有同时改变交接路径、格式或布局，接口工作才会下降。矩阵、向量和 CV 通路一起演进，才能把局部加速变成整段注意力的收益。
+```text
+for g in query_groups:
+    slot = g % 2
+    input_ready = prepare_inputs(Q[g], K, V)
+    qk = submit(Cube.QK, after=[input_ready, slot_free[slot]])
+    scores = submit(score_transfer, after=[qk])
+    softmax = submit(Vector.Softmax, after=[scores])
+    probabilities = submit(probability_transfer, after=[softmax])
+    pv = submit(Cube.PV, after=[probabilities])
+    slot_free[slot] = pv
+wait(all_output_ready)
+```
+
+这里的 `submit` 表示登记工作及其依赖；就绪的阶段由对应单元执行。G0 和 G1 使用不同槽，可以交错推进；G2 复用槽 0，必须等 G0 的 PV 完成。数据交接使用直接通路时，`score_transfer` 和 `probability_transfer` 对应片上直接传递；采用外层交换时，则包含写出和读入。第 5 章将这些依赖展开为循环、局部张量、搬移描述符和同步指令。
+
+由此可以归纳 DaVinci 的架构取舍：规则乘加交给 Cube，逐元素和归约交给 Vector，搬移交给 MTE，三者通过有明确用途的片上存储协作。独立控制提供重叠机会，CV 直通减少交接流量。要取得这些收益，编译器和算子库需要共同确定分块、布局、槽位和同步顺序。新形状到来时，软件重新选择或生成调度；常用形状则复用已有实现。硬件效率与软件适配工作由这套分工联系起来。
 
 ##### 4.6.3 Apple：大容量统一内存，如何换算为模型运行能力
 
@@ -3503,9 +3638,9 @@ MoE 每步只访问选中的专家。相同单请求每步的权重与 KV 接口
 
 **局部存储和 GPU 专用单元怎样加入这组计算？** M3 引入 Dynamic Caching，按运行需求分配 GPU 局部内存；M4 延续这一组织。这些机制影响工作驻留和片上资源利用，模型容量则由统一内存决定。M5 又在每个 GPU 核内加入 Neural Accelerator，并通过 Metal 4 Tensor API 等接口使用；独立 Neural Engine 继续存在。GPU 内专用单元加速矩阵处理，数据准备与一般运算继续由 GPU 程序组织。[^apple-generations][^apple]
 
-![统一内存负责整机的数据容量，Dynamic Caching 管理 GPU 局部资源，M5 的 Neural Accelerator 增加 GPU 内专用计算能力。三者分别进入容量、驻留和计算时间的分析。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-apple.svg)
+![统一内存负责整机的数据容量，Dynamic Caching 管理 GPU 局部资源，M5 的 Neural Accelerator 增加 GPU 内专用计算能力。三者分别进入容量、驻留和计算时间的分析。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-apple.svg)
 
-*图 4-32　统一内存负责整机的数据容量，Dynamic Caching 管理 GPU 局部资源，M5 的 Neural Accelerator 增加 GPU 内专用计算能力。三者分别进入容量、驻留和计算时间的分析。*
+*图 4-36　统一内存负责整机的数据容量，Dynamic Caching 管理 GPU 局部资源，M5 的 Neural Accelerator 增加 GPU 内专用计算能力。三者分别进入容量、驻留和计算时间的分析。*
 
 内存带宽也在逐代提高：基础 M4 到基础 M5，统一内存带宽从 120 增至 153 GB/s，提高约 27.5%。前面 32 MiB 权重的读取时间从约 279.6 μs 降至 219.3 μs，缩短约 21.6%。Apple 公布 M5 的 GPU AI 峰值超过 M4 的四倍；同一单行投影的权重读取仍由上述带宽决定。增加输入行数以后，权重读取由更多计算共同分摊，新的矩阵单元才更容易成为主要收益来源。这一现象与 V100 上两种行数的结果完全对应。[^apple]
 
@@ -3513,7 +3648,11 @@ MoE 每步只访问选中的专家。相同单请求每步的权重与 KV 接口
 
 #### 4.7 专用架构
 
-前几节通过复用、流水与局部性提高通用加速器效率。如果负载中有些条件长期保持稳定，还可以把这些条件直接用于硬件设计：固定运算规则、固定通信次序，甚至固定权重。专用化减少某些工作，也把更多资源集中到剩余工作上。
+人脑提供了另一种组织计算的参照：神经元负责状态更新，突触保存连接强度并参与信号传递，记忆和计算分布在同一个高度并行的网络中。局部连接、稀疏活动、事件驱动和三维组织共同缩短了许多信号路径。现有神经形态芯片和存内计算器件尝试借鉴其中一部分原则；在数字芯片中，对应的工程方向则是扩大局部缓冲、提高内存带宽、缩短互联距离，并让数据尽量在靠近计算的位置完成复用。
+
+前几节说明，专用矩阵单元和片上交接可以减少指令与搬移。进一步专用化，还可以把通信顺序、存储位置乃至权重内容纳入设计。专用化的程度决定了硬件在运行时需要处理多少种情况，也决定了软件要在编译和部署阶段完成哪些安排。
+
+比较这些架构时，可以沿四个层次展开：算子是否专用，计算单元之间的路径是否固定，数据是否必须放到指定的局部存储，权重是否可写。下面从 TPU 的矩阵阵列出发，转到编译器调度的数据流和分布式片上存储，最后分析固定权重的容量、带宽与成本。
 
 ##### 4.7.1 TPU
 
@@ -3541,13 +3680,23 @@ Groq 的张量流处理器（Tensor Streaming Processor，TSP）由编译器预�
 
 晶圆尺度缩短了部分原本跨封装的连接，但数据仍沿网络经过多个计算单元。把使用同一状态的计算安排在附近，能够减少经过的链路和同步；把任务均匀摊开则有利于使用更多计算位置。分配计算任务时，既要让数据在本地复用，又要避免少数单元过忙而其余单元空闲，这与多 die 放置的原理一致。
 
-##### 4.7.3 固定数据流与固定权重
+##### 4.7.3 专用数据流的编程代价与固定权重
 
-专用化利用执行中已经确定的条件重新分配硬件资源。固定算子种类，指令和控制就能简化；固定数据流，通信就能提前安排；固定数值格式，存储器和运算单元就能按所需位宽设计；固定权重，则可以为不再变化的参数设计专门的存储结构。原来用于处理多种情况的控制和数据通路，可以相应简化。
+专用化把反复出现的工作交给硬件，也把一部分运行时决策提前到编译阶段。一条矩阵指令可以描述整块乘加；指定的局部缓冲可以保存反复使用的数据；专用连接可以按确定顺序传递中间结果。这些机制减少了指令发射、地址计算和远距离通信，软件则需要提前准备分块与搬移计划。
 
-模型改变后，可重配置设计靠更新连接与调度来适应新的计算。SambaNova 的数据流组织与 FPGA 的可重配置通路，都允许重新配置部分连接和执行顺序；固定权重设计则围绕特定参数组织存储与计算。[^special]
+这种取舍同时影响三项编程工作。首先是存储安排：张量放在哪里，局部容量能容纳几个块，哪一次读取结束后才能覆盖。其次是执行安排：矩阵、向量和搬移如何重叠，阶段之间如何同步。最后是形状适配：尾块如何处理，变长序列和专家路由如何形成均衡任务，哪些形状需要单独编译。应用开发者通常通过框架调用已有算子，编译器和算子库维护者负责这些底层工作。
 
-固定权重并不等于只能完成一种任务。改变输入，就能让同一个模型执行不同的上层任务。同一组模型权重既可以处理文档问答，也可以根据代码和测试结果提出修改；每次调用使用自己的上下文状态。因而，硬件可以针对共同的模型执行设计权重通路，同时用可写存储保存各条请求的上下文。下面把权重与上下文分别计量，计算这种分工能够释放多少容量和带宽。
+| 专用化方式 | 硬件节省的工作 | 软件需要安排的工作 |
+| --- | --- | --- |
+| 专用矩阵指令 | 每次乘加的指令与控制开销 | 分块、对齐、精度和尾块 |
+| 矩阵—向量直接交接 | 中间结果在外围接口上的写读 | 格式与布局匹配、完成事件 |
+| 指定的局部存储 | 重复访问较远存储 | 张量放置、容量分配、槽位复用 |
+| 编译期通信调度 | 运行时的逐项调度 | 依赖、执行顺序和形状变化后的重编译 |
+| 固定权重存储 | 可写权重存储与相应读取负担 | 模型版本选择、可写状态和部署周期 |
+
+SambaNova 和 FPGA 可以重新配置连接和执行顺序，Groq 将张量生成、传输和使用时刻交给编译器安排。[^special] 配置方式决定了新模型到来时需要修改哪些软件和部署计划。对同一套可用硬件，编译器也能承担更多布局和同步决策，减轻算子作者的工作。
+
+固定权重进一步利用了模型参数在部署期间保持不变这一条件。同一组权重可以处理文档问答或代码任务，每条请求则使用独立、可写的上下文。下面分别计算权重和 KV，分析独立权重存储能够释放多少容量和带宽。
 
 笔者的 OpenTallas 项目研究将不可变权重放入掩模 ROM 的架构；掩模 ROM 是一种在制造时就固定存储内容的只读存储器。下面以项目中的 Qwen3-8B 为例，通过公式估算说明“从独立 ROM 读取权重、从 HBM 读写 KV”的设计如何改变各接口的传输量。[^opentallas] 每批只读取一次本步计算所需的权重，约 $W=15.1$ GB；每条请求完整读取 8,192 个 token 的 KV，约 $K=1.21$ GB。完整驻留权重约 16.4 GB，每步读取其中参与计算的部分。
 
@@ -3559,11 +3708,11 @@ $$
 
 $B=1$ 时，HBM 读取量从约 16.3 GB 降至 1.21 GB，读取时间降为原来的约 $1/13.5$。$B=16$ 时，KV 已为约 19.3 GB，总量从约 34.5 GB 降至 19.3 GB，约为原来的 1/1.8。batch 增大已经把权重摊到更多请求上，因此进一步省去权重读取的相对收益减小。
 
-令 $BK=W$，可求得 KV 读取量与权重读取量相等的转折点，约为 $B=12.5$；从整数 batch 13 起，KV 读取量超过权重读取量。图 4-33 用水平线与斜线展示了这一转移。
+令 $BK=W$，可求得 KV 读取量与权重读取量相等的转折点，约为 $B=12.5$；从整数 batch 13 起，KV 读取量超过权重读取量。图 4-37 用水平线与斜线展示了这一转移。
 
-![固定权重的同时，各请求仍独立读取 KV。题设每请求保留 8K 上下文，batch 从 13 起 KV 读取超过共享权重读取。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-12-specialization.svg)
+![固定权重的同时，各请求仍独立读取 KV。题设每请求保留 8K 上下文，batch 从 13 起 KV 读取超过共享权重读取。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-12-specialization.svg)
 
-*图 4-33　固定权重的同时，各请求仍独立读取 KV。题设每请求保留 8K 上下文，batch 从 13 起 KV 读取超过共享权重读取。*
+*图 4-37　固定权重的同时，各请求仍独立读取 KV。题设每请求保留 8K 上下文，batch 从 13 起 KV 读取超过共享权重读取。*
 
 有了独立的 ROM 接口，权重与 KV 就可以同时读取。设两条接口的带宽分别为 $\beta_{\mathrm{ROM}}$、$\beta_{\mathrm{HBM}}$，保持模型、精度、上下文与 batch 不变，两条路径重叠时的存储时间下界为
 
@@ -3575,9 +3724,9 @@ $$
 
 独立 ROM 还释放了原来存放权重的 HBM 容量。固定 8K 上下文，以一堆 24 GB 的八层 HBM3E（第 4.1.3 节）作 KV 存储，扣除 2 GiB 工作区后，按每条 1.125 GiB 的 KV 预算，可容纳 18 条请求；原来还需存放完整 BF16 权重时只能容纳 4 条。[^core-calculation] 上下文增长到 32K，每条请求的 KV 读取增至四倍，前面的权重与 KV 交点便从约 12.5 条降至约 3.13 条。
 
-![独立只读权重改变两条存储路径。上方权重与 KV 争用 HBM；下方 ROM 提供权重，HBM 存放可写状态。箭头表示读取，KV 还需写入新状态。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-rom-paths.svg)
+![独立只读权重改变两条存储路径。上方权重与 KV 争用 HBM；下方 ROM 提供权重，HBM 存放可写状态。箭头表示读取，KV 还需写入新状态。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-rom-paths.svg)
 
-*图 4-34　独立只读权重改变两条存储路径。上方权重与 KV 争用 HBM；下方 ROM 提供权重，HBM 存放可写状态。箭头表示读取，KV 还需写入新状态。*
+*图 4-38　独立只读权重改变两条存储路径。上方权重与 KV 争用 HBM；下方 ROM 提供权重，HBM 存放可写状态。箭头表示读取，KV 还需写入新状态。*
 
 同一个 100 μs 时限也可以用来求计算单元数量。工作负载取自该项目的历史执行记录：一组张量操作，共计 15,134,641,792 次。设每条运算通道（lane）在 1 GHz 下每周期完成一次乘加（FMA），100 μs 内所需的运算通道数至少为
 
@@ -3589,9 +3738,11 @@ $$
 
 #### 4.8 根据架构分析性能、选择加速器
 
-第 4.6、4.7 节计算了不同架构如何改变计算、存储与交换工作。本节把这些结果用于设备选择：先合成执行时间模型，再用同一模型比较候选设备，随后用实测校准，最后比较完成任务的成本与能耗。
+选择加速器时，要把硬件能力与实际程序一起比较。矩阵吞吐决定乘加速度，向量吞吐决定结果处理速度，存储与交接接口决定数据何时可用。编译器和算子库决定这些能力如何组合，以及常见形状能否使用高效路径。本节先建立执行时间模型，再比较设备并用实测校准，最后计算能耗、运行成本和适配投入。
 
-选择硬件时，还要为后续的切分与调度保留一份可用的资源描述：目标精度与矩阵形状下的有效算力、各级存储容量与带宽、寄存器和共享内存限制，以及设备间的单向带宽、启动延迟和共享出口。第 5 章用其中的局部资源约束 tile（矩阵划分出的数据块）、缓冲和并发，第 6、7 章用互联参数约束跨卡放置与通信组。同一模型的运算和数据需求不变，但这些需求落到哪一级资源、经过哪些路径，会改变执行时间与最合适的切分。
+为后续分析准备的资源描述应包括：目标精度和形状下的有效算力，各级存储的容量与带宽，矩阵和向量之间的路径，缓冲与同步机制，以及跨设备接口。第 5 章用这些参数安排 tile、融合和流水，第 6、7 章继续安排跨卡放置与通信。
+
+软件适配同样要落到具体问题上：现有库是否覆盖实际形状，布局转换会增加多少流量，动态 batch 是否需要分桶，哪些阶段需要重新编译。比较同一个 QK → Softmax → PV 子图时，应同时记录中间结果的位置、格式和交接事件。由此可以区分硬件资源不足、软件尚未利用专用通路和形状本身难以充分复用这三类原因。
 
 ##### 4.8.1 从资源预算建立执行时间模型
 
@@ -3628,9 +3779,9 @@ $$
 | $M=1$ | 约 0.20 μs | 约 33.3 μs | 约 33.3 μs | 内存 |
 | $M=256$ | 约 52 μs | 约 37.4 μs | 约 52 μs | 矩阵 |
 
-![同一 Q 投影的计算与访存耗时随输入行数的变化。计算量按行数增长，片外访问同时包含固定权重和增长的输入输出；从 179 行起计算项较长。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-13-roofline.svg)
+![同一 Q 投影的计算与访存耗时随输入行数的变化。计算量按行数增长，片外访问同时包含固定权重和增长的输入输出；从 179 行起计算项较长。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-13-roofline.svg)
 
-*图 4-35　同一 Q 投影的计算与访存耗时随输入行数的变化。计算量按行数增长，片外访问同时包含固定权重和增长的输入输出；从 179 行起计算项较长。*
+*图 4-39　同一 Q 投影的计算与访存耗时随输入行数的变化。计算量按行数增长，片外访问同时包含固定权重和增长的输入输出；从 179 行起计算项较长。*
 
 还可以求出转折发生时的输入行数。令 $d=4096$，第 4.1 节的强度可写成 $I(M)=Md/(d+2M)$。令它等于 $I^*=P/R$，得到
 
@@ -3659,11 +3810,11 @@ $$
 
 每 token 的各层线性运算为 $2\times36W_{\mathrm{layer}}\approx13.89$ GFLOPs。一次 8K decode 的 QK 与 PV 另需 $4\times36\times8192\times4096\approx4.832$ GFLOPs，输出头约 1.245 GFLOPs，共约 19.97 GFLOPs。
 
-再看 prefill：处理 4,096 个新输入 token 时，线性运算按 token 数增加。因果注意力的可见位置对数为 $4096\times4097/2$；每对在 32 个头上各做一次 QK 内积与一次 PV 累加，合计 $4\times4096$ 次操作。乘以 36 层，有效 QK、PV 运算为 $2\times36\times4096\times4096\times4097$。最后一个位置计算输出头，整个 prefill 的矩阵工作约为 61.85 TFLOPs。将这两个阶段分别代入硬件参数表，得到图 4-36。
+再看 prefill：处理 4,096 个新输入 token 时，线性运算按 token 数增加。因果注意力的可见位置对数为 $4096\times4097/2$；每对在 32 个头上各做一次 QK 内积与一次 PV 累加，合计 $4\times4096$ 次操作。乘以 36 层，有效 QK、PV 运算为 $2\times36\times4096\times4096\times4097$。最后一个位置计算输出头，整个 prefill 的矩阵工作约为 61.85 TFLOPs。将这两个阶段分别代入硬件参数表，得到图 4-40。
 
-![同一 Qwen3-8B 的两种阶段预算。单请求 decode 更直接反映读取带宽，4K prefill 的矩阵预算更直接反映匹配精度的矩阵速率。两图横轴分别标注所计算的时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-evolution-convergence.svg)
+![同一 Qwen3-8B 的两种阶段预算。单请求 decode 更直接反映读取带宽，4K prefill 的矩阵预算更直接反映匹配精度的矩阵速率。两图横轴分别标注所计算的时间。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-evolution-convergence.svg)
 
-*图 4-36　同一 Qwen3-8B 的两种阶段预算。单请求 decode 更直接反映读取带宽，4K prefill 的矩阵预算更直接反映匹配精度的矩阵速率。两图横轴分别标注所计算的时间。*
+*图 4-40　同一 Qwen3-8B 的两种阶段预算。单请求 decode 更直接反映读取带宽，4K prefill 的矩阵预算更直接反映匹配精度的矩阵速率。两图横轴分别标注所计算的时间。*
 
 这组结果给出了几个直接的判断。3090 换 4090，单请求 decode 的读取下界只缩短约 7.1%，4K prefill 的矩阵时间却缩短约 57.0%。A100 换 H100，读取时间缩短约 39.1%，矩阵时间缩短约 68.5%；再换 H200，读取时间继续下降，矩阵时间基本不变。RTX 5090 与 RTX PRO 6000 读取时间相同，但后者的矩阵吞吐和容量更大。对输入较长的文档问答，4090 和 H100 的矩阵增量首先缩短 prefill；对单请求持续生成，5090 和 H200 的带宽增量直接缩短每步读取。
 
@@ -3698,13 +3849,13 @@ $$
 
 先看 RTX 单行：轮换比复用约慢 21%。一种自然的解释是：反复使用同一份权重，权重就留在了缓存里，减少了 DRAM 读取。该解释可以直接检验：若少读权重是差别来源，复用权重时，从片外读取的字节数应当更少。实验另用 NVIDIA 的 GPU kernel 性能分析工具 Nsight Compute，先按指定方式访问权重，再记录一次待测调用，汇总全部 kernel 的访问计数。
 
-![RTX PRO 6000 的投影总耗时。每个条件测十一轮、每轮十六次调用，取每轮平均耗时的中位数；计时包含提交与同步。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-14-performance.svg)
+![RTX PRO 6000 的投影总耗时。每个条件测十一轮、每轮十六次调用，取每轮平均耗时的中位数；计时包含提交与同步。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-14-performance.svg)
 
-*图 4-37　RTX PRO 6000 的投影总耗时。每个条件测十一轮、每轮十六次调用，取每轮平均耗时的中位数；计时包含提交与同步。“复用”表示多次调用读取相同权重地址；“轮换”表示调用之间更换权重地址。*
+*图 4-41　RTX PRO 6000 的投影总耗时。每个条件测十一轮、每轮十六次调用，取每轮平均耗时的中位数；计时包含提交与同步。“复用”表示多次调用读取相同权重地址；“轮换”表示调用之间更换权重地址。*
 
-![相同四个条件下另行采集的 DRAM 读取计数。单行均约 32 MiB，256 行复用为 256 bytes、轮换约 32.1 MiB。访问计数与常规计时分别测量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/figure-4-performance-traffic.svg)
+![相同四个条件下另行采集的 DRAM 读取计数。单行均约 32 MiB，256 行复用为 256 bytes、轮换约 32.1 MiB。访问计数与常规计时分别测量。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/figure-4-performance-traffic.svg)
 
-*图 4-38　相同四个条件下另行采集的 DRAM 读取计数。单行均约 32 MiB，256 行复用为 256 bytes、轮换约 32.1 MiB。访问计数与常规计时分别测量。“复用”与“轮换”分别表示保持和更换权重地址。*
+*图 4-42　相同四个条件下另行采集的 DRAM 读取计数。单行均约 32 MiB，256 行复用为 256 bytes、轮换约 32.1 MiB。访问计数与常规计时分别测量。“复用”与“轮换”分别表示保持和更换权重地址。*
 
 单行在两种权重访问方式下的 DRAM 读取都是约 32 MiB，恰好对应整份权重的规模。两种条件读取了相同规模的片外权重，单行的时间差需要沿提交、执行与等待进一步定位。256 行则是另一种情况：复用同一份权重时只读 256 bytes，轮换不同的权重副本时约读 32.1 MiB，但常规计时都在 33 μs 左右。缓存改变了片外流量，而调用总时间还包含其他计算、传输与等待。
 
@@ -3730,7 +3881,7 @@ $$
 
 ##### 4.8.4 在容量、速度、功耗与成本之间做选择
 
-第 4.8.3 节得到任务完成时间，本节将其换算为成本与能耗。先比较按使用时间计费的方案，再把空闲时间和专用架构的固定投入计入。
+第 4.8.3 节得到任务完成时间，本节将其换算为成本与能耗，再计入空闲时间、软件适配和专用架构的固定投入。软件投入包括新增算子、布局转换、调度调优和不同模型版本的维护。比较设备时，记录实际需要修改和验证的实现，可以把适配成本与运行收益放在同一部署周期内衡量。
 
 设两台整机的小时成本为 $c_A,c_B$，完成同一任务的运行时间为 $t_A,t_B$。按运行时间计费时，每任务成本与 $ct$ 成正比，因此
 
@@ -3750,7 +3901,7 @@ $$
 
 对长期服务，统计一段时间内的总耗电量，再除以这段时间的有效产出，就能把空闲和预热期间的耗电一并计入。缩短运行时间可以减少执行任务时的耗电，提高利用率则能减少每个任务分摊的空闲耗电。第 4.1.3 节的能耗分账给出了一步 decode 耗电的量级估计：单请求、8K 上下文时每 token 0.534 J，其中 0.481 J 用于读取权重；batch 为 32 时，每 token 能耗降到约 0.068 J。这笔分账不含控制、时钟、静态漏电与空闲期间的功耗，所以用总耗电除以有效产出，得到的每 token 能耗会高于这一估计。[^energy-ledger]
 
-专用化另有固定投入。设相对通用方案增加的固定成本为 $F_0$，每个有效输出节省可变成本 $\Delta c$，回本量为
+专用化还需要支付设计、部署和软件适配的固定投入。设相对通用方案增加的固定成本为 $F_0$，每个有效输出节省可变成本 $\Delta c$，回本量为
 
 $$
 V^*=\frac{F_0}{\Delta c}.
@@ -3778,115 +3929,120 @@ $$
 >
 > 沿用第 4.1.3 节的能耗表与 Qwen3-8B 单请求 8K decode 一步的读取字节数。（a）把 batch 分别取 8、32、128，分别计算每 token 的权重、KV 与计算能耗，求权重项低于计算项的最小 batch。（b）把上下文改为 32K，求 KV 项等于权重项的 batch，并解释此后继续增大 batch 为什么不再明显降低每 token 能耗。（c）选择一张卡的 TDP、峰值算力与 HBM 带宽，求峰值速率下每 FLOP 的能量预算 $b$；设实际每 FLOP 能耗为 $1.5b$，按 $P\propto fV^2$ 分别求电压不变与电压随频率下降两种情况下的持续频率比；再把（a）中 batch 为 32 时一步的能量（32 乘以每 token 能耗）除以持续频率下这一步的时间，得到平均功率，比较它与 TDP 的差距。
 
-[^qwen]: Qwen3-8B 固定配置、张量索引与模型实现见[模型配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/models/qwen3-8b/config.json)及[投影计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/projection-qwen3-8b-rtx4090-b256.md)。
+[^qwen]: Qwen3-8B 固定配置、张量索引与模型实现见[模型配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/models/qwen3-8b/config.json)及[投影计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/projection-qwen3-8b-rtx4090-b256.md)。
 
-[^projection]: [Q 投影，RTX 4090，M=1](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/projection-qwen3-8b-rtx4090-b1.md)；[M=256](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/projection-qwen3-8b-rtx4090-b256.md)。
+[^projection]: [Q 投影，RTX 4090，M=1](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/projection-qwen3-8b-rtx4090-b1.md)；[M=256](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/projection-qwen3-8b-rtx4090-b256.md)。
 
-[^architecture]: [加速器架构与执行比较](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/accelerator-architecture.md)。
+[^architecture]: [加速器架构与执行比较](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/accelerator-architecture.md)。
 
-[^tpu]: Jouppi 等，*In-Datacenter Performance Analysis of a Tensor Processing Unit*，ISCA 2017，[归档论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tpu-v1.pdf)。
+[^tpu]: Jouppi 等，*In-Datacenter Performance Analysis of a Tensor Processing Unit*，ISCA 2017，[归档论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tpu-v1.pdf)。
 
-[^nvidia]: [A100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100.pdf)、[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)、[Hopper Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-hopper-tuning.md)、[Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-blackwell-brief.pdf)与[CUTLASS Blackwell 功能](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/cutlass-blackwell.md)。
+[^nvidia]: [A100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100.pdf)、[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)、[Hopper Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-hopper-tuning.md)、[Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-blackwell-brief.pdf)与[CUTLASS Blackwell 功能](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/cutlass-blackwell.md)。
 
-[^ascend]: [昇腾 950 官方架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-950-official.pdf)，§4.1—4.1.6；早期 DaVinci 与 CANN 分离架构的页级定位见[比较笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/accelerator-architecture.md)。
+[^ascend]: [昇腾 950 官方架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-950-official.pdf)，§4.1—4.1.6；早期 DaVinci 与 CANN 分离架构的页级定位见[比较笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/accelerator-architecture.md)。
 
-[^nonmatrix]: [从算子利用率到执行中的等待](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/component-utilization-and-overlap.md)及[论文阅读记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/ASPLOS/2025/ascend-components-reading.json)。
+[^nonmatrix]: [从算子利用率到执行中的等待](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/component-utilization-and-overlap.md)及[论文阅读记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/ASPLOS/2025/ascend-components-reading.json)。
 
-[^apple]: [M2 Pro／Max 官方规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/apple-m2-pro-max.md)、[Apple GPU 架构说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/apple-gpu-architecture.md)、[Metal 存储模式](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/apple-metal-memory.json)、[M5 GPU Neural Accelerator 官方说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/apple-m5-evolution.md)。
+[^apple]: [M2 Pro／Max 官方规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/apple-m2-pro-max.md)、[Apple GPU 架构说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/apple-gpu-architecture.md)、[Metal 存储模式](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/apple-metal-memory.json)、[M5 GPU Neural Accelerator 官方说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/apple-m5-evolution.md)。
 
-[^fa4]: *FlashAttention-4*，MLSys 2026，[论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/MLSys/2026/papers/mlsys2026-ae8b0b5838ba510daff1198474e7b984.pdf)，§2.2、§3.1.1、公式 1—3 与表 1；[单 SM 独立复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/fa4-qwen8-resource-balance.md)。
+[^fa4]: *FlashAttention-4*，MLSys 2026，[论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/MLSys/2026/papers/mlsys2026-ae8b0b5838ba510daff1198474e7b984.pdf)，§2.2、§3.1.1、公式 1—3 与表 1；[单 SM 独立复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/fa4-qwen8-resource-balance.md)。
 
-[^precision]: [硬件精度审查](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/HARDWARE-AUDIT.md)、[DeepSeek V4-Flash 与 Qwen 逐阶段资源条件](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/stage-resource-bounds/README.md)、[低精度与执行路径调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/kernel-orchestration-and-quantization.md)。硬件演进与成本归因见[成本下降调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/token-cost-2023-2026/report.md)。
+[^precision]: [硬件精度审查](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/HARDWARE-AUDIT.md)、[DeepSeek V4-Flash 与 Qwen 逐阶段资源条件](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/stage-resource-bounds/README.md)、[低精度与执行路径调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/kernel-orchestration-and-quantization.md)。硬件演进与成本归因见[成本下降调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/token-cost-2023-2026/report.md)。
 
-[^quant-exp]: [实验 4-2](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-02/README.md)、[真实路由激活](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-02/routed-activations/README.md)、[128 元素分组](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-02/block-scales/README.md)、[单专家模型内替换](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-02/model-intervention/README.md)。
+[^quant-exp]: [实验 4-2](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-02/README.md)、[真实路由激活](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-02/routed-activations/README.md)、[128 元素分组](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-02/block-scales/README.md)、[单专家模型内替换](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-02/model-intervention/README.md)。
 
-[^workspace]: [实验 4-2 分配器峰值](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-02/workspace/README.md)。
+[^workspace]: [实验 4-2 分配器峰值](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-02/workspace/README.md)。
 
-[^capacity]: [Qwen3-8B 配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/models/qwen3-8b/config.json)；[存储代际完整结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/storage-generation-qwen8-235.md)。
+[^capacity]: [Qwen3-8B 配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/models/qwen3-8b/config.json)；[存储代际完整结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/storage-generation-qwen8-235.md)。
 
-[^evolution]: [从负载变化理解芯片演进](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/architecture-evolution.md)。
+[^evolution]: [从负载变化理解芯片演进](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/architecture-evolution.md)。
 
-[^storage]: [存储代际比较结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/storage-generation-qwen8-235.md)及[计算说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/storage-generation-comparison/README.md)。
+[^storage]: [存储代际比较结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/storage-generation-qwen8-235.md)及[计算说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/storage-generation-comparison/README.md)。
 
-[^mess]: *Mess*，MICRO 2024，[作者接受稿](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/MICRO/2024/paper-011.pdf)，选读物理页 3—6；[访存并发算例及限制](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/memory-bandwidth-and-concurrency.md)。
+[^mess]: *Mess*，MICRO 2024，[作者接受稿](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/MICRO/2024/paper-011.pdf)，选读物理页 3—6；[访存并发算例及限制](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/memory-bandwidth-and-concurrency.md)。
 
-[^coordinates]: [DeepSeek V4-Flash 共享专家搬移坐标结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v4-copy-coordinates-m32.md)与[源级计数说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/v4-copy-coordinates/README.md)。
+[^coordinates]: [DeepSeek V4-Flash 共享专家搬移坐标结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v4-copy-coordinates-m32.md)与[源级计数说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/v4-copy-coordinates/README.md)。
 
-[^transfer]: [Hopper Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-hopper-tuning.md)、[昇腾 950 白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-950-official.pdf)、[Rubin 官方架构说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/rubin-rechecked.md)。
+[^transfer]: [Hopper Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-hopper-tuning.md)、[昇腾 950 白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-950-official.pdf)、[Rubin 官方架构说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/rubin-rechecked.md)。
 
-[^pipeline]: [Qwen 注意力输入流水基线](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/attention-input-base.md)、[矩阵速率翻倍](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/attention-input-matrix-double.md)、[建模与独立检查](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/attention-input-pipeline/README.md)。
+[^pipeline]: [Qwen 注意力输入流水基线](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/attention-input-base.md)、[矩阵速率翻倍](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/attention-input-matrix-double.md)、[建模与独立检查](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/attention-input-pipeline/README.md)。
 
-[^handoff]: [矩阵—向量交接说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/matrix-vector-handoff/README.md)、[32 行两槽直接路径](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/matrix-vector-direct-rows32-slots2.md)。
+[^handoff]: [矩阵—向量交接说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/matrix-vector-handoff/README.md)、[32 行两槽直接路径](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/matrix-vector-direct-rows32-slots2.md)。
 
-[^package]: [Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-blackwell-brief.pdf)，10 TB/s NV-HBI；[CloudMatrix384 v2](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/cloudmatrix384-v2.pdf)，§3.3.1（910C 每 die 64 GB、1.6 TB/s，die 间每方向 270 GB/s）、§4.2 开头（decode 中每颗 die 放一个专家）与 §4.2.2；两款产品的 die 局部性计算见[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/derive.py)的 `die_locality` 项；[Vera Rubin 平台](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rubin-system.md)、[UB 与昇腾核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/UB-ASCEND-NOTES.md)。
+[^package]: [Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-blackwell-brief.pdf)，10 TB/s NV-HBI；[CloudMatrix384 v2](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/cloudmatrix384-v2.pdf)，§3.3.1（910C 每 die 64 GB、1.6 TB/s，die 间每方向 270 GB/s）、§4.2 开头（decode 中每颗 die 放一个专家）与 §4.2.2；两款产品的 die 局部性计算见[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/derive.py)的 `die_locality` 项；[Vera Rubin 平台](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rubin-system.md)、[UB 与昇腾核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/UB-ASCEND-NOTES.md)。
 
-[^tpu8]: [Inside the Eighth-Generation TPU: An Architecture Deep Dive](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/google-tpu8.md)。
+[^tpu8]: [Inside the Eighth-Generation TPU: An Architecture Deep Dive](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/google-tpu8.md)。
 
-[^special]: [Groq TSP 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/groq-tsp.pdf)、[IPU Programming Model](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/graphcore-programming.md)、[Cerebras WSE-3 数据表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/cerebras-wse3-spec.pdf)、[SambaNova SN40L 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/sambanova-sn40l-paper.pdf)。
+[^special]: [Groq TSP 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/groq-tsp.pdf)、[IPU Programming Model](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/graphcore-programming.md)、[Cerebras WSE-3 数据表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/cerebras-wse3-spec.pdf)、[SambaNova SN40L 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/sambanova-sn40l-paper.pdf)。
 
-[^opentallas]: [OpenTallas 案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/opentallas.md)。
+[^opentallas]: [OpenTallas 案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/opentallas.md)。
 
-[^stage]: [各阶段耗时下界的建模说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/stage-resource-bounds/README.md)；实际模型算子范围见[Qwen3-8B prefill128 资源结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/stage-resources-qwen8-b1-prefill128.md)。
+[^stage]: [各阶段耗时下界的建模说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/stage-resource-bounds/README.md)；实际模型算子范围见[Qwen3-8B prefill128 资源结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/stage-resources-qwen8-b1-prefill128.md)。
 
-[^hardware]: [硬件来源与精度审查](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/HARDWARE-AUDIT.md)及[官方基础表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)。
+[^hardware]: [硬件来源与精度审查](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/HARDWARE-AUDIT.md)及[官方基础表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)。
 
-[^measurement]: [实验 4-6 全部说明与原始记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-06/README.md)、[投影计时汇总](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-06/results/projection-summary.json)、[实际 DRAM／L2 计数](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch04/04-06/results/projection-traffic.json)。
+[^measurement]: [实验 4-6 全部说明与原始记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-06/README.md)、[投影计时汇总](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-06/results/projection-summary.json)、[实际 DRAM／L2 计数](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch04/04-06/results/projection-traffic.json)。
 
-[^paired]: [配对投影成本与平均功率条件](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/paired-projection-unknown.md)；RTX PRO 6000 的 600 W 取自[硬件输入表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/hardware.json)，每次调用的能耗与 Mac 持平功率由[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/derive.py)的 `energy` 项算出，见[推导数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/teaching-data.json)。
+[^paired]: [配对投影成本与平均功率条件](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/paired-projection-unknown.md)；RTX PRO 6000 的 600 W 取自[硬件输入表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/hardware.json)，每次调用的能耗与 Mac 持平功率由[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/derive.py)的 `energy` 项算出，见[推导数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/teaching-data.json)。
 
 [^host]: 主机、DMA 与统一地址的术语见 [CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-programming-guide/)。
 
-[^rtx-spec]: [RTX Blackwell 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/hardware/nvidia-rtx-blackwell-whitepaper.pdf)附录 A 表 3：RTX 4090 为 24 GB GDDR6X、1,008 GB/s、PCIe Gen 4、TGP 450 W，RTX 5090 为 32 GB GDDR7、1,792 GB/s、PCIe Gen 5、TGP 575 W；[A100 80GB 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100-80-spec.pdf)，PCIe 4.0 为 64 GB/s（双向合计）。H2D 与显存读取时间见[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/derive.py)的 `host_link` 项。
+[^rtx-spec]: [RTX Blackwell 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/hardware/nvidia-rtx-blackwell-whitepaper.pdf)附录 A 表 3：RTX 4090 为 24 GB GDDR6X、1,008 GB/s、PCIe Gen 4、TGP 450 W，RTX 5090 为 32 GB GDDR7、1,792 GB/s、PCIe Gen 5、TGP 575 W；[A100 80GB 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100-80-spec.pdf)，PCIe 4.0 为 64 GB/s（双向合计）。H2D 与显存读取时间见[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/derive.py)的 `host_link` 项。
 
-[^window-rtx]: [RTX 4090，128 个在途事务](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/window-qwen3-8b-rtx4090-n128.md)、[RTX 4090，4,096 个](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/window-qwen3-8b-rtx4090-n4096.md)、[RTX 5090，4,096 个](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/window-qwen3-8b-rtx5090-n4096.md)、[RTX 5090，延迟 800 ns](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/window-qwen3-8b-rtx5090-l800.md)；Mess 的 H100 延迟见其表 I 与图 3(h)。
+[^window-rtx]: [RTX 4090，128 个在途事务](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/window-qwen3-8b-rtx4090-n128.md)、[RTX 4090，4,096 个](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/window-qwen3-8b-rtx4090-n4096.md)、[RTX 5090，4,096 个](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/window-qwen3-8b-rtx5090-n4096.md)、[RTX 5090，延迟 800 ns](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/window-qwen3-8b-rtx5090-l800.md)；Mess 的 H100 延迟见其表 I 与图 3(h)。
 
-[^allreduce-small]: [实验 7-3 公开运行记录核验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-03/README.md)，[两台 HGX H100 原始日志](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-03/raw/hgx2.txt)：16 rank、NCCL 2.26.2，16 bytes AllReduce 非原位 24.96 μs、原位 24.93 μs。
+[^allreduce-small]: [实验 7-3 公开运行记录核验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-03/README.md)，[两台 HGX H100 原始日志](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-03/raw/hgx2.txt)：16 rank、NCCL 2.26.2，16 bytes AllReduce 非原位 24.96 μs、原位 24.93 μs。
 
-[^decode-measured]: [实验 8-1 batch 扫描](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/README.md)及其[逐行效率汇总](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)：RTX PRO 6000 Blackwell Workstation，Qwen3-8B BF16，vLLM 0.23.0，eager 模式；每行取每轮纯 decode 迭代的中位数，再取三轮中位数。与读取下界的比值由[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/derive.py)的 `measured_decode` 项算出。
+[^decode-measured]: [实验 8-1 batch 扫描](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/README.md)及其[逐行效率汇总](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)：RTX PRO 6000 Blackwell Workstation，Qwen3-8B BF16，vLLM 0.23.0，eager 模式；每行取每轮纯 decode 迭代的中位数，再取三轮中位数。与读取下界的比值由[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/derive.py)的 `measured_decode` 项算出。
 
-[^pipeline-extra]: 三槽流水、计算翻倍变体及设计转折点由[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/derive.py)生成，完整时序见[推导数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch04/teaching-data.json)。
+[^pipeline-extra]: 三槽流水、计算翻倍变体及设计转折点由[教学推导脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/derive.py)生成，完整时序见[推导数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch04/teaching-data.json)。
 
-[^feedback]: [DeepSeek V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/deepseek-v3.txt)第 3.5 节，Suggestions on Hardware Design。
+[^l2sync]: 笔者在 RTX PRO 6000 Blackwell Workstation（GB202，188 个 SM，128 MiB L2，SM 频率实测 2.88 GHz）上的测量，[测量说明与方法核查](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/opentallas/blackwell-sync-latency-notes.md)及[本书引用的数值摘录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/opentallas/blackwell-sync-latency.json)。测量程序为 OpenTallas 仓库的 `tools/gpu_microbench/`，CUDA 12.8。测量期间 GPU 由另一负载共用，正文取多次运行的最小值；中位数高 10%–40%。
 
-[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/core_principles.py)。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/core_principles.py)。
 
-[^turing-evolution]: [Turing 官方架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ch04-architecture-evolution-2026-09-10/sources/nvidia-turing.pdf)，Turing Tensor Cores 与低精度推理。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
-[^volta-evolution]: [Volta 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-v100.pdf)，Tensor Cores 与混合精度章节。
+[^turing-evolution]: [Turing 官方架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ch04-architecture-evolution-2026-09-10/sources/nvidia-turing.pdf)，Turing Tensor Cores 与低精度推理。
 
-[^blackwell-evolution]: [Blackwell Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-blackwell-guide.md)、[CUTLASS Blackwell 功能说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/cutlass-blackwell.md)及 [SM100 TMEM 示例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/cutlass-01_mma_sm100.cu)；SM120（计算能力 12.0）每个 SM 的 128 KB 一级数据缓存与 100 KB 共享内存上限见 [CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/cuda-compute-capabilities.md)。
+[^volta-evolution]: [Volta 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-v100.pdf)，Tensor Cores 与混合精度章节。
 
-[^rubin-evolution]: [NVIDIA Rubin GPU 架构说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/rubin-rechecked.md)，MoE 数据搬移、K 维指令吞吐与注意力加速。
+[^blackwell-evolution]: [Blackwell Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-blackwell-guide.md)、[CUTLASS Blackwell 功能说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/cutlass-blackwell.md)及 [SM100 TMEM 示例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/cutlass-01_mma_sm100.cu)；SM120（计算能力 12.0）每个 SM 的 128 KB 一级数据缓存与 100 KB 共享内存上限见 [CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/cuda-compute-capabilities.md)。
 
-[^apple-generations]: [Apple M3 官方架构介绍](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/apple-m3-evolution.md)、[M4 官方发布说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ch04-architecture-evolution-2026-09-10/sources/apple-m4-2024.md)与 [M4 Mac mini 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/hardware-apple-closure/apple-m4-mini-specs.md)。
+[^rubin-evolution]: [NVIDIA Rubin GPU 架构说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/rubin-rechecked.md)，MoE 数据搬移、K 维指令吞吐与注意力加速。
 
-[^ascend-history]: [DaVinci 架构论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-davinci.pdf)，§3.1—3.4；[Ascend C 指南](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-c-guide.pdf)，第 4 章耦合与分离架构；[CloudMatrix384 v2](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/cloudmatrix384-v2.pdf)，§3.3.1、§4.2.2。
+[^apple-generations]: [Apple M3 官方架构介绍](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/apple-m3-evolution.md)、[M4 官方发布说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ch04-architecture-evolution-2026-09-10/sources/apple-m4-2024.md)与 [M4 Mac mini 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/hardware-apple-closure/apple-m4-mini-specs.md)。
 
-[^evolution-quant]: [架构演进量化计算程序与说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/architecture-evolution-quantitative/README.md)、[逐项计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/architecture-evolution-quantitative/result.json)。参数读取[硬件输入表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/hardware.json)，3090 补充自 [GA102 官方白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/architecture-evolution-quantitative/sources/nvidia-ampere-ga102.pdf)表 9；完整模型配置与张量清单沿用本书 calculations。
+[^ascend-history]: [DaVinci 架构论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-davinci.pdf)，§3.1—3.4；[Ascend C 指南](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-c-guide.pdf)，第 4 章耦合与分离架构；[CloudMatrix384 v2](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/cloudmatrix384-v2.pdf)，§3.3.1、§4.2.2。
 
-[^bf16-quant]: [A100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100.pdf)，BF16 与数值格式章节；[数值范围、存储与量化复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/architecture-evolution-quantitative/result.json)。
+[^evolution-quant]: [架构演进量化计算程序与说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/architecture-evolution-quantitative/README.md)、[逐项计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/architecture-evolution-quantitative/result.json)。参数读取[硬件输入表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/hardware.json)，3090 补充自 [GA102 官方白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/architecture-evolution-quantitative/sources/nvidia-ampere-ga102.pdf)表 9；完整模型配置与张量清单沿用本书 calculations。
 
-[^ascend-cnn-history]: 笔者[《网络的智能应该放在哪里》](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/author-materials/2026-09-09/network-intelligence.md)，2023 年演讲中关于 2016 年 ResNet 设计背景的回顾；[DaVinci 架构论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-davinci.pdf) §3.2、§3.4、表 5 和 Ascend 910 系统，分别给出 img2col、资源配比、每核带宽与 1.2 TB/s HBM。
+[^bf16-quant]: [A100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100.pdf)，BF16 与数值格式章节；[数值范围、存储与量化复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/architecture-evolution-quantitative/result.json)。
 
-[^nvidia-product-lines]: [RTX PRO 6000 产品规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rtx-pro6000-spec.pdf)，ECC、MIG 与产品配置；[Hopper Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-hopper-tuning.md)，NVLink；[GA102 白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/architecture-evolution-quantitative/sources/nvidia-ampere-ga102.pdf)，3090 NVLink；[Blackwell Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-blackwell-guide.md)及 [CUTLASS Blackwell 功能](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/cutlass-blackwell.md)，SM100／SM120。
+[^ascend-cnn-history]: 笔者[《网络的智能应该放在哪里》](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/author-materials/2026-09-09/network-intelligence.md)，2023 年演讲中关于 2016 年 ResNet 设计背景的回顾；[DaVinci 架构论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-davinci.pdf) §3.2、§3.4、表 5 和 Ascend 910 系统，分别给出 img2col、资源配比、每核带宽与 1.2 TB/s HBM。
 
-[^apple-capacity-quant]: [Apple 官方配置核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/hardware-apple-closure.md)、[GPU 与容量组合](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/research/hardware-apple-closure/gpu-memory-combinations.json)及[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/hardware.json)。M3 Ultra 512 GB 由官方发布稿及 80 核 GPU 整机测试配置记录交叉确认。M5 Ultra 512 GB／1,200 GB/s 为 2026 年 8 月公布的规格，512 GB 配置计划于 2026 年 10 月下旬交付。
+[^nvidia-product-lines]: [RTX PRO 6000 产品规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rtx-pro6000-spec.pdf)，ECC、MIG 与产品配置；[Hopper Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-hopper-tuning.md)，NVLink；[GA102 白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/architecture-evolution-quantitative/sources/nvidia-ampere-ga102.pdf)，3090 NVLink；[Blackwell Tuning Guide](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-blackwell-guide.md)及 [CUTLASS Blackwell 功能](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/cutlass-blackwell.md)，SM100／SM120。
 
-[^logicfolding]: 何庭波，*Huawei’s τ Chip Was Supposed to Melt?*，ChinaXiv:202609.00031v1，2026-09-04，[归档论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/202609.00031v1.pdf)，§II—V 与图 1—2：动态功耗占比、连线电容、NPU 同性能比较（29 TOPS、0.85→0.55 V、频率降 63%、功耗降 66%）、DSP 功耗降 25% 与投影面积降 40%。
+[^apple-capacity-quant]: [Apple 官方配置核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/hardware-apple-closure.md)、[GPU 与容量组合](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/research/hardware-apple-closure/gpu-memory-combinations.json)及[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/hardware.json)。M3 Ultra 512 GB 由官方发布稿及 80 核 GPU 整机测试配置记录交叉确认。M5 Ultra 512 GB／1,200 GB/s 为 2026 年 8 月公布的规格，512 GB 配置计划于 2026 年 10 月下旬交付。
 
-[^energy-table]: [Dally，Hardware for Deep Learning，Hot Chips 2023 主题演讲](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/dally-hotchips2023.pdf)第 12、51—52 页：第 12 页 HFMA 1.5 pJ、HMMA 110 pJ、指令开销约 30 pJ 与开销占比 2000%／22%（45 nm）；第 51 页能耗表注明取自 Horowitz ISSCC 2014，工艺 45 nm；第 52 页三级存储 5／50／640 pJ 每 32 位字，未注明工艺；[Fine-Grained DRAM，MICRO 2017](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/fgdram-micro17.pdf)§1—2，HBM2 3.97 pJ/bit 及其分解，DRAM 能耗模型按 28 nm；[NVIDIA Grace Hopper Superchip Architecture In-Depth](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-grace-hopper-blog.md)，2022-11-10，NVLink-C2C 1.3 pJ/bit。
+[^logicfolding]: 何庭波，*Huawei’s τ Chip Was Supposed to Melt?*，ChinaXiv:202609.00031v1，2026-09-04，[归档论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/202609.00031v1.pdf)，§II—V 与图 1—2：动态功耗占比、连线电容、NPU 同性能比较（29 TOPS、0.85→0.55 V、频率降 63%、功耗降 66%）、DSP 功耗降 25% 与投影面积降 40%。
 
-[^energy-ledger]: [能耗分账结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/energy-ledger-book.md)，读取[单请求 8K decode 结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-8b-decode-b1-s8192.json)的字节数与 FLOPs，按上表每字节与每 FLOP 能耗相加；运行 `python3 calculations/calc.py energy-ledger --format md` 可以复算。
+[^energy-table]: [Dally，Hardware for Deep Learning，Hot Chips 2023 主题演讲](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/dally-hotchips2023.pdf)第 12、51—52 页：第 12 页 HFMA 1.5 pJ、HMMA 110 pJ、指令开销约 30 pJ 与开销占比 2000%／22%（45 nm）；第 51 页能耗表注明取自 Horowitz ISSCC 2014，工艺 45 nm；第 52 页三级存储 5／50／640 pJ 每 32 位字，未注明工艺；[Fine-Grained DRAM，MICRO 2017](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/fgdram-micro17.pdf)§1—2，HBM2 3.97 pJ/bit 及其分解，DRAM 能耗模型按 28 nm；[NVIDIA Grace Hopper Superchip Architecture In-Depth](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-grace-hopper-blog.md)，2022-11-10，NVLink-C2C 1.3 pJ/bit。
 
-[^hbm-stack]: [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)表 4：五堆 HBM3、5120 位接口、2619 MHz DDR、3352 GB/s（本章正文统一采用[数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-datasheet.pdf)取整的 3.35 TB/s，即 3,350 GB/s）、814 mm²、TSMC 4N 工艺，A100 826 mm²；[Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-blackwell-brief.pdf)第 7 页两颗光罩上限 die 与 10 TB/s NV-HBI，表 3 的 B200 192 GB／7.7 TB/s；[HGX 平台组件说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/hardware/nvidia-hgx-components.md)表 1，HGX B200 每 GPU 180 GB、最高 8 TB/s；[H200 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h200-datasheet.pdf)，141 GB／4.8 TB/s；[Micron HBM3E 产品页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/micron-hbm3e-page.md)，1024 引脚、八层 24 GB、十二层 36 GB；[SK hynix HBM 产品页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/skhynix-hbm-page.md)，9.6 Gbit/s 与 1.23 TB/s。
+[^energy-ledger]: [能耗分账结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/energy-ledger-book.md)，读取[单请求 8K decode 结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-8b-decode-b1-s8192.json)的字节数与 FLOPs，按上表每字节与每 FLOP 能耗相加；运行 `python3 calculations/calc.py energy-ledger --format md` 可以复算。
 
-[^tdp]: [H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-datasheet.pdf)，SXM 最大热设计功耗 700 W；[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)表 4，BF16 稠密 989.4 TFLOPS 与 TDP 700 W；[Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-blackwell-brief.pdf)表 3，B200 1000 W。
+[^hbm-stack]: [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)表 4：五堆 HBM3、5120 位接口、2619 MHz DDR、3352 GB/s（本章正文统一采用[数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-datasheet.pdf)取整的 3.35 TB/s，即 3,350 GB/s）、814 mm²、TSMC 4N 工艺，A100 826 mm²；[Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-blackwell-brief.pdf)第 7 页两颗光罩上限 die 与 10 TB/s NV-HBI，表 3 的 B200 192 GB／7.7 TB/s；[HGX 平台组件说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/hardware/nvidia-hgx-components.md)表 1，HGX B200 每 GPU 180 GB、最高 8 TB/s；[H200 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h200-datasheet.pdf)，141 GB／4.8 TB/s；[Micron HBM3E 产品页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/micron-hbm3e-page.md)，1024 引脚、八层 24 GB、十二层 36 GB；[SK hynix HBM 产品页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/skhynix-hbm-page.md)，9.6 Gbit/s 与 1.23 TB/s。
+
+[^tdp]: [H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-datasheet.pdf)，SXM 最大热设计功耗 700 W；[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)表 4，BF16 稠密 989.4 TFLOPS 与 TDP 700 W；[Blackwell 技术简报](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-blackwell-brief.pdf)表 3，B200 1000 W。
 
 #### 本章小结
 
-加速器分析从模型工作量出发：用状态大小筛选容量，用流量与带宽计算读取时间，用矩阵形状、精度与指令速率计算运算时间，再沿依赖安排执行。三家架构的演进说明，模型需求会改变资源配比。访问计数、kernel 记录与计时将这些预算落实为运行速度和任务成本。时间与能耗是两本账：带宽决定一步多快，每字节能耗与复用次数决定一步耗多少焦耳，功率上限又反过来压低可持续的频率。第 5 章继续研究布局、融合与调度，说明软件如何用好这些硬件资源。
+分析加速器，先计算模型的运算、状态和流量，再把它们映射到计算单元、存储接口和执行依赖。矩阵乘法体现操作数复用，注意力中的 QK、Softmax、PV 则体现矩阵与向量的高频交替。矩阵单元、向量单元、片上缓冲和交接接口配合得当，计算加速才能转化为整段执行的收益。
+
+DaVinci 的演进把这项取舍具体化：MTE 减少卷积展开的外存写读，AIC/AIV 独立控制让不同数据块交错推进，CV 直通缩短矩阵与向量的交接路径。专用化提高了计算和搬移效率，编译器与算子库则需要安排分块、布局、缓冲和同步。架构能力与软件责任应当一起比较。
+
+执行时间线检查工作能否重叠，访问计数和计时验证流量与耗时，能耗与成本计算决定部署收益。第 5 章沿同一条主线，进一步说明如何把模型计算变成循环、片上存储安排和可执行的流水程序。
 
 ### 第五章 算子与运行时
 
@@ -3894,7 +4050,7 @@ $$
 
 本章的矩阵乘算例需要约 103 GFLOPs 的运算，输入、权重和输出总共占 128 MiB，一种分块实现的读写量却达到约 3 GiB。扩大输出块可以让输入多用几次，把读写量减半，但每个块的局部存储需求也从 24 KiB 增至 80 KiB。有了这些数字，就能判断减少搬移节省的时间，能否抵消同时执行的块数变少带来的损失。
 
-第 4 章介绍了加速器的计算能力、存储容量和数据传输带宽。本章讨论程序如何利用这些资源。以一段 FFN 为例，先说明主机如何发起计算、加速器如何完成任务，再分析矩阵乘的循环与分块，以及相邻算子如何共享中间结果。随后讨论编译器和运行时如何实现这些优化，最后计算这些优化能让完整请求节省多少时间。
+第 4 章介绍了加速器的计算能力、存储容量和数据传输带宽。本章讨论程序如何利用这些资源。算子实现不仅决定执行多少乘加，也决定每份数据在哪里保存、何时搬入、能复用多少次、何时释放，以及相邻算子能否直接交接。以一段 FFN 为例，先说明主机如何发起计算、加速器如何完成任务，再分析矩阵乘的循环与分块，以及相邻算子如何共享中间结果。随后讨论编译器和运行时如何实现这些优化，最后计算这些优化能让完整请求节省多少时间。
 
 本章主要使用 Qwen3-8B 的 FFN 作为算例：隐藏宽度 $H=4096$，FFN 中间宽度 $F=12288$。先同时处理 $M=1024$ 个 token，将各 token 的 4096 维特征向量排成输入矩阵 X，计算一支投影 $C=XW$；X、W 和 C 使用 BF16，每个元素占 2 bytes，矩阵乘使用 FP32 累加。M 表示一次调用处理的 token 数，每个 token 对应输入矩阵的一行。这些 token 可以来自 prefill 的一段输入，也可以来自同一批中的多个请求；单请求逐 token decode 时，M 为 1。[^model]
 
@@ -3905,6 +4061,8 @@ $$
 | 投影 C | $[1024,12288]$ | 24 MiB | 随后做激活等处理 |
 
 本章围绕三个问题展开：哪些工作在重复执行，哪些数据能够复用，哪些计算或等待决定了总时间。回答这些问题时，程序在加速器上的执行单位是 kernel。分析读写量、缓冲容量和 kernel 数，可以了解程序做了多少工作；再结合这些工作的执行顺序，才能计算程序需要多长时间。
+
+CPU 通常依靠硬件缓存自动发现局部性；加速器 kernel 则经常显式选择 tile、缓冲槽和循环顺序。二者解决的是同一类问题，但责任边界不同：缓存由硬件动态决定保留内容，片上缓冲由程序决定放什么、放多久以及由谁使用。本章既分析算子内部的 tile 搬移和中间结果，也分析主机提交、设备复制和同步事件；前者决定数据复用，后者决定控制路径和结果何时可用。
 
 #### 5.1 加速器执行过程中的提交、搬移与同步
 
@@ -3938,7 +4096,7 @@ CPU 能够提前提交下一项任务，加速器却只有在输入到达后才�
 
 图 5-1 画出这些数据在两侧内存中的位置和复制方向。
 
-![图 5-1 主机内存与显存之间的复制路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-copy-paths.svg)
+![图 5-1 主机内存与显存之间的复制路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-copy-paths.svg)
 
 *图 5-1：H2D 把输入从主机的锁页缓冲搬进显存，D2H 把结果搬回主机；权重加载一次后留在显存，kernel 直接读取显存中的输入并写出输出。普通内存中的数据要先复制到锁页缓冲，才能由复制引擎直接搬移。*
 
@@ -3962,7 +4120,7 @@ $$
 
 图 5-2 把两条流和两个事件画在同一条时间线上。
 
-![图 5-2 两条流之间用事件规定先后顺序](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-stream-event.svg)
+![图 5-2 两条流之间用事件规定先后顺序](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-stream-event.svg)
 
 *图 5-2：复制流依次传入各批输入，计算流读取它们。计算批 0 要等“批 0 已传完”事件；批 2 要重新写入槽 A，必须等“批 0 已用完”事件。虚线箭头表示等待事件，不搬移数据。两个槽的交替使用在第 5.3.2 节展开。*
 
@@ -3987,7 +4145,7 @@ $$
 
 **例 5-2：为什么提交耗时、加速器耗时与完整调用耗时不同？** 输入已在主机准备好。CPU 在 0–3 μs 内提交全部任务，第一项加速器工作从 3 μs 开始；H2D、kernel、D2H 分别用 8、20、4 μs，加速器按依赖连续执行。
 
-![图 5-3 提交、执行与结果可用的时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-1-execution.svg)
+![图 5-3 提交、执行与结果可用的时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-1-execution.svg)
 
 *图 5-3：CPU 提交、H2D 输入复制、kernel 执行与 D2H 结果返回依次发生。上方 kernel 执行 20 μs，结果在第 35 μs 可用；下方 kernel 执行 5 μs，结果在第 20 μs 可用。*
 
@@ -4014,7 +4172,7 @@ CPU 提交任务用时 3 μs，kernel 执行用时 20 μs，CPU 到第 35 μs �
 
 寄存器与共享内存都只允许 2 块，因此 SM 上驻留 2 个线程块，即 16 个 warp。**占用率（occupancy）**指驻留 warp 数占 SM 最大驻留 warp 数的比例，这里为 16/64 = 25%。图 5-4 把三类资源画成三根横条：两个线程块把寄存器恰好填满，把共享内存填到只剩 34 KiB，线程槽却只用了四分之一。
 
-![图 5-4 两个线程块占用 SM 的三类资源](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-sm-residency.svg)
+![图 5-4 两个线程块占用 SM 的三类资源](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-sm-residency.svg)
 
 *图 5-4：三条分别表示 SM 的寄存器、共享内存与线程槽总量，蓝、绿为两个驻留线程块的占用。寄存器恰好填满，共享内存剩余 34 KiB 放不下第三块的 97 KiB，两者同时限制驻留；线程槽只用了 512 个。每块 256 线程、每线程 128 个寄存器、96 KiB 共享内存，另加每块 1 KiB 预留。*
 
@@ -4024,7 +4182,7 @@ CPU 提交任务用时 3 μs，kernel 执行用时 20 μs，CPU 到第 35 μs �
 
 $$
 B_{\mathrm{need}}=\frac{3.35\ \mathrm{TB/s}\times600\ \mathrm{ns}}{132}\approx15.2\ \mathrm{KB},\qquad
-B_{\mathrm{have}}=16\times4\times512\ \mathrm{bytes}=32\ \mathrm{KiB}.
+B_{\mathrm{have}}=16\times4\times512\ \text{字节}=32\ \mathrm{KiB}.
 $$
 
 可用在途字节是需求的 2.15 倍，只驻留 8 个 warp（一个线程块）也已足够。第 5.2.2 节会遇到“大块少读数据却可能变慢”的现象，这里给出它的定量形式：工作集越大，驻留块越少，可用的在途字节越少；一旦低于需求，有效带宽就降为可用在途字节除以延迟，接口带宽再高也用不上。
@@ -4033,13 +4191,13 @@ $$
 
 MMA 有两种发出方式。warp 级指令由一个 warp 单独发出，操作数要先装进该 warp 的寄存器；Hopper 的 warpgroup 级指令由 4 个相邻 warp（合称一个 warpgroup）联合发出，可以直接从共享内存取操作数，并且异步执行：发出指令的 warp 在等待结果的同时可以做其他工作。FlashAttention-3 正是利用这种指令安排计算重叠。[^fa]
 
-**同步：异步复制与栅栏。** 第 4.4.2 节用两个输入槽让加载与计算重叠，前提是知道“槽已填满”和“槽已用完”两个时刻。在 SM 上，这两个时刻由**栅栏（barrier）**给出。栅栏是共享内存中的一个计数器：参与者完成自己的一步后到达栅栏，计数达到预定值时，等在栅栏上的线程被放行。异步复制（发出后由硬件在后台完成、发出者不必等待的复制）完成时同样到达栅栏，并按搬入的字节数计数。每个槽配一对栅栏：“满”栅栏由复制完成触发，计算等它；“空”栅栏由计算结束触发，下一次复制等它。
+**同步：异步复制与栅栏。** 第 4.4.2 节用两个输入槽让加载与计算重叠，前提是知道“槽已填满”和“槽已用完”两个时刻。在 SM 上，这两个时刻由**栅栏（barrier）**给出。栅栏是共享内存中的一个计数器：参与者完成自己的一步后到达栅栏，计数达到预定值时，等在栅栏上的线程被放行。异步复制（发出后由硬件在后台完成、发出者不必等待的复制）完成时同样到达栅栏，并按搬入的字节数计数。每个槽配一对栅栏：“满”栅栏由复制完成触发，计算等它；“空”栅栏由计算结束触发，下一次复制等它。这种栅栏只在单个 SM 内有效，放行一次仅需几十个周期；SM 之间的交接须经由 L2，代价高出一到两个数量级，见第 4.4.4 节。
 
 有了栅栏，warp 可以分工：一个 warp 只发复制（生产者），其余 warp 只做计算（消费者），这种安排称为 **warp specialization**。生产者 warp 发出块 j+1 的复制后不必等它完成，转而等“空”栅栏，准备写入块 j+2；消费者 warp 每等到一次“满”栅栏，就接着计算下一块。
 
 先计算复制和计算各自的耗时。把 H100 的显存带宽 3.35 TB/s 与 BF16 稠密矩阵峰值 989.4 TFLOP/s 平分到 132 个 SM，每个 SM 约得 25.4 GB/s 和 7.50 TFLOP/s，下面按该线程块独占该 SM 的份额计算。一个 K 块的 A、W 共 32 KiB，复制约需 1.29 μs；块乘为 2,097,152 FLOPs，计算约需 0.28 μs。复制比计算慢约 4.6 倍，原因是该块每搬 1 byte 只做 64 次浮点运算，而 H100 的矩阵峰值与显存带宽之比约为 295 FLOP/byte。图 5-5 按这两个时间画出两个槽上的四个 K 块。
 
-![图 5-5 生产者 warp 与消费者 warp 在两个槽上交替](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-warp-pipeline.svg)
+![图 5-5 生产者 warp 与消费者 warp 在两个槽上交替](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-warp-pipeline.svg)
 
 *图 5-5：上行是生产者 warp 发出的异步复制，下行是消费者 warp 的计算；蓝、绿分别为槽 A、B。实线箭头为“满”栅栏，复制完成后计算才能开始；虚线箭头为“空”栅栏：块 0 在 1.57 μs 用完槽 A，块 2 的复制到 2.58 μs 才开始，生产者不必等槽。H100 一个 SM 上每块复制 1.29 μs、计算 0.28 μs；复制首尾相接，消费者每算完一块就等下一次“满”栅栏。*
 
@@ -4073,7 +4231,7 @@ MMA 有两种发出方式。warp 级指令由一个 warp 单独发出，操作�
 
 计算 C[i,j] 时，取 A 的第 i 行和 W 的第 j 列，将对应元素相乘，再沿 K 维求和。接着计算右边的 C[i,j+1]，W 换成相邻一列，A 却仍是同一行。图中两次计算的蓝色部分完全相同。
 
-![图 5-6 相邻输出怎样复用同一行输入](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-reuse-steps.svg)
+![图 5-6 相邻输出怎样复用同一行输入](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-reuse-steps.svg)
 
 *图 5-6：先算一个输出，再算相邻输出。蓝色表示所用的 A 行，橙色表示所用的 W 列，绿色表示本次得到的输出元素。图中矩阵缩小为示意尺寸，实际算例的 K 为 4096。*
 
@@ -4114,7 +4272,7 @@ $$
 
 先选 C 的一小块作为当前要完成的输出，为该 $m\times n$ 输出块分配累加缓冲区。每次沿 K 维读入一对输入块：A 块为 $m\times k$，W 块为 $k\times n$。两块相乘，更新同一份输出累加器；换入下一对输入块时，已经得到的部分和继续保留。直到沿 K 完成全部累加，才把结果转为 BF16 并写出。这里的块是软件为复用数据而组织的，其内部还可以分解为多次硬件矩阵指令。分块本身不要求先把原矩阵复制成许多独立的小矩阵，具体搬移由执行程序安排。
 
-![图 5-7 输入块更换而输出累加器保留](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-tile-working-set.svg)
+![图 5-7 输入块更换而输出累加器保留](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-tile-working-set.svg)
 
 *图 5-7：固定当前 m×n 输出块，沿 K 依次搬入对应的 A、W 块，反复更新同一份部分和，全部累加结束后才写回。A、W 输入为 BF16，累加器为 FP32。图示为软件分块，一次块乘可包含多次硬件矩阵指令；尺寸符号表示形状，方框面积不按字节数缩放。*
 
@@ -4138,7 +4296,7 @@ $$
 
 改成 128×128 后，行块数从 16 减到 8，列块数从 192 减到 96，两份输入的读取均减半。输出大小不变，总量降至 $768+768+24=1560$ MiB。图 5-8 把这项收益与占用的局部存储放在一起比较。
 
-![图 5-8 局部容量与矩阵重读](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-2-tiles.svg)
+![图 5-8 局部容量与矩阵重读](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-2-tiles.svg)
 
 *图 5-8：每个点标出输出块形状。扩大输出块能减少跨接口的重复读取，但需要更多局部存储。虚线为三份矩阵各经过一次的 128 MiB；比较条件为 k=32、单组输入缓冲、各输出块独立读取输入。*
 
@@ -4154,7 +4312,7 @@ $$
 
 访问量接近减半，时间是否随之减半，还要看加速器能同时安排多少工作。GPU 上，输入缓冲放在共享内存中，累加器可以放在共享内存或寄存器中。这里沿用第 5.1.5 节的做法：每个线程块负责一个输出块，输入缓冲与累加器都放在共享内存中。硬件取 RTX PRO 6000 的一个 SM：该卡属于计算能力 12.x，每个 SM 的共享内存上限为 100 KB（即 102,400 bytes），每个线程块另占 1 KiB 预留。[^cc12]
 
-![图 5-9 同一局部存储预算容纳的工作集](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-tile-residency.svg)
+![图 5-9 同一局部存储预算容纳的工作集](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-tile-residency.svg)
 
 *图 5-9：条形总长均表示 RTX PRO 6000 一个 SM 的 100 KB 共享内存。24 KiB 的工作集连同每块 1 KiB 预留，恰好放下四份；80 KiB 的只能放一份。*
 
@@ -4172,7 +4330,7 @@ $$
 
 上一小节中，大块虽然少读数据，却可能因并行度下降而变慢。并行度不仅取决于驻留多少线程块，也取决于这些线程发出的读取请求能否同时得到服务。先看局部存储的布局。考虑 32×32 的 FP32 暂存块，其所在的局部存储分成 32 个 bank；每个 bank 每轮提供一个 32-bit 字，bank 号就是字地址对 32 取模的结果。第 5.1.5 节已经介绍，一个 warp 的 32 个线程就是 32 个 lane；32 个 lane 各读取同一行中的一个字时，请求分散到 32 个 bank；读一列时，行跨度为 32 个字，所有地址集中到同一 bank，需要 32 轮。
 
-![图 5-10 补齐行跨度如何分散 bank 请求](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-3-banks.svg)
+![图 5-10 补齐行跨度如何分散 bank 请求](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-3-banks.svg)
 
 *图 5-10：同一列的 32 个不同字由 32 个 lane 同时请求。上半图行跨度为 32 个字，请求集中到同一 bank；下半图补齐为 33 个字，请求分散到 32 个 bank。图中画出前四个请求；假设每个 bank 每轮提供一个 32-bit 字，不计广播。*
 
@@ -4188,7 +4346,7 @@ padding 解决的是请求能否同时得到服务。如果程序本来就只安
 
 把每行分成八个 512 元素片段，可以增加第一阶段的并行任务。完整归约随之变成三个阶段：每个片段产生局部平方和，合并八个局部和得到行缩放因子，再用该因子归一化输入。前两阶段只需传递很少的数，但最后一阶段要重新读取原始数据。
 
-![图 5-11 RMSNorm 拆分后的归约与输入重读](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-4-reduction.svg)
+![图 5-11 RMSNorm 拆分后的归约与输入重读](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-4-reduction.svg)
 
 *图 5-11：上行由一组处理完整一行，输入保留到归一化结束；下行把一行分为八段，先求局部和，再合并，最后重读输入并归一化。每行 4096 个 BF16 元素；图中仅画一行，推广到 1024 行时，第一阶段任务数由 1024 增至 8192。橙色框表示增加的原输入读取。*
 
@@ -4198,7 +4356,7 @@ padding 解决的是请求能否同时得到服务。如果程序本来就只安
 
 RMSNorm 的拆分沿的是归约维：一行的平方和分成八个局部和，必须再合并一次。矩阵乘也有同样的选择。对 $C_{M\times N}=A_{M\times K}W_{K\times N}$，可以沿三个维度中的任何一个把工作分给不同的执行者。图 5-12 画出三种切法各自需要什么输入、得到什么结果。
 
-![图 5-12 一次矩阵乘的三种切分方向](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-split-axes.svg)
+![图 5-12 一次矩阵乘的三种切分方向](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-split-axes.svg)
 
 *图 5-12：切输出行 $M$ 或输出列 $N$，各执行者得到不同位置的完整结果，需要时再拼起来；切归约维 $K$，各执行者得到同一输出的部分和，必须相加后才能使用。方框表示数据归属，不按矩阵元素数绘制。*
 
@@ -4210,7 +4368,7 @@ RMSNorm 的拆分沿的是归约维：一行的平方和分成八个局部和，
 
 下半部分固定这八个局部和，只改合并的次序。40,320 种次序只得到三个不同的 FP32 结果，彼此相差一个 ULP。如果用原子加把局部和累加到同一个地址，到达的先后由调度决定；同一份输入、同一个程序，两次运行得到的结果就可能不同。改成先把八个局部和写入缓冲，等它们全部写完，再由一个执行者按固定顺序相加，每次都得到同一个结果。代价有两项：多一次写出与读回；合并要等最慢的那一段算完才能开始，而原子加按到达顺序累加，不必等待全部就绪。
 
-![图 5-13 段数与合并次序如何改变平方和](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-reduction-order.svg)
+![图 5-13 段数与合并次序如何改变平方和](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-reduction-order.svg)
 
 *图 5-13：同一行 4096 个 BF16 元素的平方和与精确值的距离，横轴单位为 FP32 的 ULP。上半图比较 1 到 32 段的六种切分；下半图固定八个局部和，列出全部合并次序得到的结果。精确值用有理数算得，只作比较基准。*
 
@@ -4236,7 +4394,7 @@ SiLU 和 $\odot$ 都是逐元素运算。Z[i,j] 只依赖 G[i,j] 与 U[i,j]，�
 
 先比较中间结果 $T=\operatorname{SiLU}(G)$ 的去向。分开执行时，完整 T 要写到下一级存储，再由乘法读回；融合后，一小块 SiLU 结果可以直接交给同一个 kernel 中的乘法，用完就释放局部空间。这就像把工作台上刚处理好的材料直接交给下一道工序，省去送回远处再取出的往返。对应到这里，省去的是中间结果的写回与重读，两步运算仍然都要完成。
 
-![图 5-14 融合前后中间结果经过的路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-fusion-path.svg)
+![图 5-14 融合前后中间结果经过的路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-fusion-path.svg)
 
 *图 5-14：上半图的完整 T 经过一次写出与一次读回；下半图中局部片段 t 直接传给乘法。两种方式仍读取 G、U 并写出 Z，图中省略这些共同的输入输出边。融合后仍保留原有的中间结果舍入规则。*
 
@@ -4246,7 +4404,7 @@ SiLU 和 $\odot$ 都是逐元素运算。Z[i,j] 只依赖 G[i,j] 与 U[i,j]，�
 
 接下来将 Z 按固定 scale 量化，使每个元素只占 1 byte。独立转换需读取 24 MiB 的 Z，写出 12 MiB 量化结果，增加 36 MiB。三步完全分开的总量为 156 MiB；融合前两步为 108 MiB；三步全部融合为 $24+24+12=60$ MiB。图 5-15 将必需的输入输出读写画在每条柱形的左侧，再依次加上两个中间量的读写。
 
-![图 5-15 融合边界与中间读写](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-5-boundaries.svg)
+![图 5-15 融合边界与中间读写](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-5-boundaries.svg)
 
 *图 5-15：每少保存一个 24 MiB 中间量，就少一次写出和一次读入，共 48 MiB。G、U 为 BF16，最终输出占 1 byte/元素，量化 scale 预先给定。各方案采用相同的运算与舍入顺序。*
 
@@ -4262,7 +4420,7 @@ SiLU 和 $\odot$ 都是逐元素运算。Z[i,j] 只依赖 G[i,j] 与 U[i,j]，�
 
 注意，槽 A 的“数据已经搬完”与“数据已经用完”是两个时刻。搬移结束后，计算才开始读取；只有最后一次读取结束，才能将下一块数据写入槽 A，覆盖原有内容。沿用第 5.1.5 节 H100 一个 SM 上的数值：每块搬移 1.29 μs、计算 0.28 μs，搬移器和计算单元独立工作。图 5-16 展示三个时段中各槽位的状态，图 5-17 据此画出完整的搬移与计算时间线。
 
-![图 5-16 两个缓冲槽的交替使用](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-buffer-slots.svg)
+![图 5-16 两个缓冲槽的交替使用](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-buffer-slots.svg)
 
 *图 5-16：块 0 在 1.29–1.57 μs 使用槽 A，此后槽 A 已经空出；块 2 要等搬移器在 2.58 μs 搬完块 1，才开始写入 A。图中抽取三个时段；1.57–2.58 μs 两个槽里都没有可算的数据，计算单元空等。颜色固定表示槽 A、B，文字说明当前读写的是哪个块。*
 
@@ -4270,7 +4428,7 @@ SiLU 和 $\odot$ 都是逐元素运算。Z[i,j] 只依赖 G[i,j] 与 U[i,j]，�
 
 采用两个槽后，0–1.29 μs 搬入块 0，1.29–1.57 μs 计算块 0；块 1 同时在 1.29–2.58 μs 搬入。块 0 在 1.57 μs 就已算完，槽 A 随即空出，但搬移器要到 2.58 μs 才搬完块 1、开始写块 2。此后搬移器连续工作，每 1.29 μs 送来一块，计算单元每次只忙 0.28 μs。第四块于 5.44 μs 完成，时间只减少约 13%。
 
-![图 5-17 同样四块数据的串行与双缓冲执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-6-fusion-buffer.svg)
+![图 5-17 同样四块数据的串行与双缓冲执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-6-fusion-buffer.svg)
 
 *图 5-17：两个输入槽交替复用，让搬移与计算重叠。H100 一个 SM 上每块搬移 1.29 μs、计算 0.28 μs，资源独立，忽略同步开销；同一颜色表示同一槽。重叠只藏住了计算，完成时间由首尾相接的搬移决定。*
 
@@ -4288,6 +4446,8 @@ $$
 
 ##### 5.3.3 FlashAttention：分块与在线 Softmax
 
+FlashAttention 代表了一种典型的架构—算法协同：它不改变注意力的数学结果，却改变中间结果的存放位置和生命周期，把原本的“计算—写回—再读取”改成片上分块和在线更新。
+
 第 5.3.1 节融合的逐元素运算，每个输出只依赖对应位置的输入；注意力中的 Softmax 却要用到整行分数。计算一行注意力输出时，可以先把各位置的分数变成尚未归一化的权重，用这些权重对值求加权和，最后除以权重总和。可以先处理一块，记下它对加权和与权重总和的贡献，再处理下一块；只要能正确合并贡献，就不必一直保留已处理过的全部分数。困难在于 Softmax 要根据分数求指数，后面出现更大的分数时，还要调整前面累计结果所用的数值基准。
 
 FlashAttention 围绕这一逐块计算过程安排存储，减少长序列注意力中间矩阵的显存读写。该方法由斯坦福大学的 Tri Dao 等研究者与纽约州立大学布法罗分校的合作者于 2022 年提出。[^fa]
@@ -4300,7 +4460,7 @@ FlashAttention 围绕这一逐块计算过程安排存储，减少长序列注�
 
 取一个头，序列长度 $L=8192$，头维度 $d=128$，对全部 token 计算注意力。Q、K、V、O 使用 BF16，各占 2 MiB；完整 S、P 使用 FP32，各占 256 MiB。Q、K、V 各读一次，O 写一次，共 8 MiB；S、P 各写一次、读一次，却要传输 1 GiB 数据。中间矩阵的大小随序列长度的平方增长，因而造成了大量读写。[^attention]
 
-![图 5-18 完整中间矩阵与逐块统计量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-attention-storage.svg)
+![图 5-18 完整中间矩阵与逐块统计量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-attention-storage.svg)
 
 *图 5-18：上半图保存完整 S、P，两份 FP32 矩阵各占 256 MiB，写出与读回合计 1 GiB。下半图只传递已处理部分的最大值 m、指数和 ℓ、加权值 u；每处理完一个块，其分数缓冲即可复用。箭头概括处理顺序，完整计算还需读入 Q、K、V。*
 
@@ -4310,7 +4470,7 @@ FlashAttention 围绕这一逐块计算过程安排存储，减少长序列注�
 
 **例 5-6：在线 Softmax 如何合并分块结果并保持归一化？** 分数为 $[0,\ln2]$，对应值为 $[1,3]$，每块只含一个元素。第一块得到 $m=0,\ell=1,u=1$。处理第二块后，最大值增至 $\ln2$，将原来的 $\ell$ 和 u 都乘以 $r=1/2$；新元素的指数为 1，于是 $\ell'=1/2+1=1.5$，$u'=1/2+3=3.5$，结果为 $7/3$。一次处理整行时，两个权重正比于 1 和 2，结果同样为 $(1+2\times3)/3=7/3$。
 
-![图 5-19 在线 Softmax 如何合并两个块](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-7-online-softmax.svg)
+![图 5-19 在线 Softmax 如何合并两个块](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-7-online-softmax.svg)
 
 *图 5-19：两个块的分数分别为 0、ln 2，值分别为 1、3。最大值增大后，将旧指数和与旧加权值同时乘以 1/2，再加上新块的贡献，最后才做除法。箭头传递的是统计量，旧分数无需保留。m 是已处理分数的最大值，ℓ 是以 m 为基准的指数和，u 是对应的值向量加权和，r 是更换最大值基准时的缩放系数。*
 
@@ -4346,7 +4506,7 @@ K/V 块越小，其自身和分数块占用越少，就能容纳更多 Q 行。�
 | 64 | 82 | 100 | 404 MiB | 12800 |
 | 128 | 53 | 155 | 624 MiB | 9920 |
 
-![图 5-20 注意力块大小在访问量与更新次数之间的取舍](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-8-attention-tradeoff.svg)
+![图 5-20 注意力块大小在访问量与更新次数之间的取舍](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-8-attention-tradeoff.svg)
 
 *图 5-20：快速缓冲为 RTX PRO 6000 一个线程块的 99 KB 共享内存，序列长 8192、头维度 128，无掩码；每个点对应正文表格的一种 K/V 块大小。横轴为缓冲与下一级存储之间的访问量，纵轴为在线更新次数，采用对数刻度。从 b=64 的点移到 b=1 的点，读取减少，更新次数却约增至 41 倍。b 表示一个 K/V 块中包含的 token 数。*
 
@@ -4417,7 +4577,7 @@ for io in range(ceil_div(M, BM)):
 
 这里 `load_tile` 和 `matmul_accumulate` 分别表示成块读取和矩阵累加；最后一个不足整块的 tile 用掩码标出有效位置。伪代码的缩进清楚地标出了这些先后关系：输入块在 ko 循环内更新，累加器在整个 ko 循环期间始终保留，激活计算在 ko 循环结束后执行。
 
-![图 5-21 循环层级决定临时数据的生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-9-polyhedral.svg)
+![图 5-21 循环层级决定临时数据的生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-9-polyhedral.svg)
 
 *图 5-21：循环层次决定临时数据需要保存多久。外层选输出块，创建 16 KiB 累加器；内层 ko 反复读取 A、W 块，全部归约结束后再舍入并计算激活函数。*
 
@@ -4431,7 +4591,7 @@ for io in range(ceil_div(M, BM)):
 
 上一小节把激活移入输出 tile，但仍安排在 ko 循环结束后执行，原因可以用两个数说明。设一个输出的两个部分和为 1 与 −1，完整和为 0，SiLU(0)=0。若在每个部分和之后先做 SiLU，再相加，结果为 $\operatorname{SiLU}(1)+\operatorname{SiLU}(-1)\approx0.4621$。把激活计算移到完整求和之前，已经改变了运算。
 
-![图 5-22 激活与归约的顺序](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-activation-order.svg)
+![图 5-22 激活与归约的顺序](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-activation-order.svg)
 
 *图 5-22：同样两个部分和，先相加得到零，再做 SiLU 仍为零；先对各部分做 SiLU 再相加，得到约 0.4621。两个数说明把激活计算移到求和之前会改变结果。*
 
@@ -4443,7 +4603,7 @@ for io in range(ceil_div(M, BM)):
 
 **例 5-7：整行量化 scale 如何约束分块计算顺序？** 一行包含 256 个元素，分成两个块，每块各含 128 个元素，两个块的首个元素分别为 1 和 10，其余为零。量化使用 E4M3FN 格式：一种含符号位、四位指数和三位尾数的八位浮点表示，最大有限值为 448。scale 由整行最大绝对值决定；随后做点积，权重仅第一个元素为 1。因此结果完全取决于第一个元素如何量化。
 
-![图 5-23 整行 scale 与第一次舍入](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-quantization-scale.svg)
+![图 5-23 整行 scale 与第一次舍入](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-quantization-scale.svg)
 
 *图 5-23：一行分成两个块，后一块中的 10 决定整行 scale。第一项要先按这一 scale 映射，再舍入到格式允许的值，最后反量化。*
 
@@ -4453,33 +4613,169 @@ for io in range(ceil_div(M, BM)):
 
 这些例子说明了哪些变换可以做，哪些运算顺序必须保留。输出之间可以交换执行顺序，输入可以分块缓存，算好的结果可以直接供后续运算使用；归约的合并方式和量化的舍入位置则属于运算定义，需要在变换中保留。
 
-##### 5.4.4 AKG：用多面体编译组织循环与存储
+##### 5.4.4 AKG：用 isl schedule 安排计算与搬移
 
-AKG 是面向张量算子的自动代码生成与优化系统，其核心技术是**多面体编译（Polyhedral Compilation）**。该方法把规则循环表示为三类信息：有哪些迭代要执行，每次迭代读写哪些数组元素，以及哪些读写必须保持先后顺序。循环边界和规则下标可以用线性约束描述，这就是“多面体”名称的来源。借助这种表示，编译器能够推导迭代之间的依赖，并据此调整执行顺序。[^akg]
+AKG 是华为开发并已开源的神经网络算子自动生成编译器，面向昇腾等 NPU 的算子优化和代码生成。本书作者曾参与其中。前一小节的分块循环已经说明了要做什么；AKG 把张量程序交给多面体编译器，自动安排循环顺序、分块、片上缓冲区、数据搬移和目标代码。先用一组固定数字看清楚这项安排带来的变化，再解释 isl 的表示。
 
-以矩阵乘为例，编译器可以确定不同 i、j 对应不同输出，沿 k 的更新则指向同一个累加结果。选定 64×64×32 的 tile 后，还可以由数组访问推导当前需要的 A、W 区域：A 为 64×32，W 为 32×64。这样既能确定循环的执行顺序，也能确定需要读入哪些数据，以及这些数据要保存多久。
+令 $C=A B$，三个矩阵的形状都是 $4096\times4096$。A、B 使用 BF16，每个元素 2 bytes；C 使用 FP32，每个元素 4 bytes。一次矩阵乘法需要
 
-AKG 从张量表达式生成多面体表示，将分块与分层融合结合起来：在外层安排完整算子的执行顺序，在内层安排各块的连续计算和局部缓存。存储管理根据这些区域分配片上空间、插入搬移，代码生成再将计算映射到硬件执行方式，调优阶段选择块形状等参数。前文手工完成的“拆分循环—确定读取区域—保留累加结果—完成归约后激活”，在这里成为相互联系的编译步骤。
+$$
+F=2\times4096^3\approx137.4\ \mathrm{GFLOPs}.
+$$
 
-将计算和存储一起分析，也能解释融合为什么会增加访存。前面的逐元素链通过融合少读了中间值；若中间结果采用位数更少的表示，又要供后续计算反复读取，保留它反而可以减少读取。
+最直接的循环是：
 
-**例 5-8：量化单独执行还是融合进矩阵乘，哪种方式读写更少？** 取 $[4096,4096]$ 的 FP16 输入 A，占 32 MiB，量化为 FP8 后占 16 MiB；FP8 权重为 $[4096,1536]$，占 6 MiB，FP16 输出占 12 MiB。输出按 128×128 分块，共有 32 个行块、12 个列块。各输出块独立读取所需数据，量化 scale 来自整行最大值。
+```python
+for i in range(4096):
+    for j in range(4096):
+        acc = 0
+        for k in range(4096):
+            acc += A[i, k] * B[k, j]
+        C[i, j] = acc
+```
 
-先看单独执行量化的做法。每处理一行，就用 8 KiB 局部空间保存该行输入，求出 scale 后再量化。全部输入共读入 32 MiB，量化结果共写出 16 MiB。随后，12 个输出列块各读取一遍 FP8 输入，共 192 MiB。因此，与输入有关的读写量为 $32+16+192=240$ MiB。
+如果每个输出元素都从片外读取 A、B 的操作数，那么输入读取量为
 
-把量化合并到矩阵乘中后，先读取 32 MiB 原输入求出每行的 scale；12 个列块随后各读一次原来的 32 MiB 输入，并在本地量化。输入相关访问为 $32+12\times32=416$ MiB。虽然省去了 16 MiB 量化结果的写出，但每个列块读取的输入从 16 MiB 增至 32 MiB，12 次读取增加了 192 MiB。
+$$
+4096^2\times4096\times(2+2)\ \text{字节}=256\ \mathrm{GiB}.
+$$
 
-两种方案都由 32 个行块各读取 6 MiB 权重，再写出 12 MiB 输出，共 $32\times6+12=204$ MiB。因此总访问量分别为 $240+204=444$ MiB 与 $416+204=620$ MiB，融合后增加约 40%。
+这段循环只表达了数学计算，没有表达数据复用。取输出 tile 为 $B_M=B_N=64$，归约 tile 为 $B_K=32$，则输出 分块数为 $64\times64=4096$，每个输出 tile 需要 $4096/32=128$ 个归约 tile。一个 A 分块和一个 B 分块 各占
 
-![图 5-24 保留量化结果如何减少后续读取](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-10-quantization.svg)
+$$
+64\times32\times2=4096\ \text{字节}=4\ \mathrm{KiB}.
+$$
 
-*图 5-24：两种方案都先读完整输入以确定每行的 scale。保存 FP8 结果后 12 个列块合计重读 192 MiB；融合方案重读 FP16 输入 384 MiB。权重与输出另有相同的 204 MiB。*
+若每个输出 tile 沿 K 维读取一组 A/B tile，它的输入工作集为 $128\times(4+4)=1024\ \mathrm{KiB}$，全部输出 tile 的输入读取量为 $4096\times1024\ \mathrm{KiB}=4\ \mathrm{GiB}$。C 最后写回 $4096^2\times4=64\ \mathrm{MiB}$。这个输出驻留的分块调度 把输入读取从 256 GiB 降到约 4 GiB，减少 64 倍；代价是每个 tile 需要保留 $64\times64\times4=16$ KiB 的 FP32 累加器。
 
-图 5-24 中，决定差距的是通向 12 个列块的重复读取：每次读取的数据量相差一倍。输出列块数因而直接决定两种做法的访存量差异。每增加一个列块，保留量化结果的方案多读 16 MiB，融合方案多读 32 MiB。将 1536 个输出列放入同一块，可消除这种跨列块重复；相应输出累加器也从 128 列扩大为 1536 列，需要 12 倍空间。因此，选择是否融合量化时，仍要比较第 5.2 节讨论过的局部存储占用与数据复用。[^numerics]
+对应的分块程序是：
 
-AKG 将融合与分块共同考虑，正是为了处理这样的相互作用。中间结果的计算位置改变后，各输出块读取哪些数据、读取多少次都会改变；缓冲需求随之变化，又影响能够采用的块大小。
+```python
+for io in range(64):
+    for jo in range(64):
+        acc = zeros_fp32(64, 64)
+        for ko in range(128):
+            a = load_tile(A, io*64, ko*32, 64, 32)
+            b = load_tile(B, ko*32, jo*64, 32, 64)
+            acc += a @ b
+        store_tile(C, io*64, jo*64, acc)
+```
 
-##### 5.4.5 成本估计与实测选择
+这段程序的访问关系已经足够计算 分块工作集：A 的区域由 `(io,ko)` 决定，B 的区域由 `(ko,jo)` 决定，`acc` 在 128 次 `ko` 更新期间保持不变。AKG 接下来要把这组关系变成可执行的调度和存储安排。
+
+###### isl schedule 是什么
+
+一次循环执行不是一个整体，而是许多**语句实例**。上面的乘加语句可以记作 $S(i,j,k)$；例如 $S(17,29,4)$ 表示计算 $A[17,4]\times B[4,29]$ 的那一次实例。所有合法实例组成迭代域：
+
+$$
+D=\{S(i,j,k)\mid 0\le i<4096,\;0\le j<4096,\;0\le k<4096\}.
+$$
+
+isl schedule 做的事情，是给每个实例分配一个或多个整数坐标，把坐标按字典序排列后，就得到新的执行顺序。原始循环可以写成：
+
+$$
+S(i,j,k)\mapsto(i,j,k).
+$$
+
+分块后的 schedule 写成：
+
+$$
+S(i,j,k)\mapsto
+(\lfloor i/64\rfloor,\lfloor j/64\rfloor,\lfloor k/32\rfloor,
+ i\bmod64,j\bmod64,k\bmod32).
+$$
+
+前 3 个坐标分别是 `io`、`jo`、`ko`，后 3 个坐标是 分块内的 `ii`、`jj`、`kk`。按这个坐标的字典序执行，就会先选一个 64×64 输出 tile，再完成它的 128 个 K tile，最后遍历 分块内元素。这个映射保持每个实例和数组下标不变，只改变实例的执行时间坐标；归约依赖要求同一个 `(i,j)` 的 K 维更新按合法顺序合并。
+
+“仿射”指调度坐标可以写成循环变量的线性组合，例如 `2*i+j`；分块中的商和余数属于准仿射表达。isl 使用这些整数集合和映射表示边界、访问和依赖，再搜索满足依赖约束的 schedule。它不是一张性能表，而是一个给每次计算编号的数学映射。
+
+调度树 是这个映射的树形组织方式。对当前 GEMM，可以把它读成：
+
+```text
+Domain {S(i,j,k)}
+└── Band {io, jo, ko}
+    └── Band {ii, jj, kk}
+```
+
+`Domain` 列出哪些实例存在；`Band` 表示一组共同变换和排序的循环维度。AKG 的多算子子图还会使用 `Sequence` 表示先后，`Filter` 选择某个语句集合，`Extension` 把生产者实例接入消费者 tile。读者可以把 调度树 看成“循环嵌套和语句先后的结构化表示”，把 仿射映射 看成“每个实例在这棵树中取得的坐标”。
+
+###### 从 schedule 到片上数据
+
+同一个 schedule 可以直接写成数据搬移映射：
+
+$$
+\begin{aligned}
+A_{L1}[io,ko,ii,kk] &\leftarrow A[64\,io+ii,\;32\,ko+kk],\\
+B_{L1}[ko,jo,kk,jj] &\leftarrow B[32\,ko+kk,\;64\,jo+jj],\\
+C_{L0}[ii,jj] &\leftarrow \sum_{kk} A_{L0}[ii,kk]B_{L0}[kk,jj].
+\end{aligned}
+$$
+
+左侧是片上 tile 的逻辑坐标，右侧是全局矩阵的地址。A_L1 和 B_L1 各需要 4 KiB，C_L0 需要 16 KiB；如果使用双缓冲，输入槽位各需要 8 KiB。编译器可以据此判断 buffer 容量、插入搬移并安排复用点。
+
+用 Halide/TVM 风格的 schedule，可以把同一组决定写成：
+
+```python
+# compute：数学关系
+C[i, j] = sum(k, A[i, k] * B[k, j])
+
+# schedule：循环坐标和存储位置
+io, ii = split(i, factor=64)
+jo, jj = split(j, factor=64)
+ko, kk = split(k, factor=32)
+reorder(io, jo, ko, ii, jj, kk)
+
+A_L1 = cache_read(A, "L1")
+B_L1 = cache_read(B, "L1")
+C_L0 = cache_write(C, "L0C")
+compute_at(A_L1, ko)
+compute_at(B_L1, ko)
+compute_at(C_L0, jo)
+```
+
+`split` 产生商和余数坐标，`reorder` 使 tile 循环位于块内循环之前，`compute_at` 指定生产者在哪一级消费者循环内生成，`cache_read/cache_write` 指定片上存储位置。AKG 系统的 polyhedral 调度、硬件规格和存储管理 会完成这些关系的自动变换，并继续生成 MTE、Cube、Vector 和同步代码。
+
+##### 5.4.5 TileLang-Ascend：把同一份 schedule 写成 tile 程序
+
+TileLang 主要由北京大学和微软研究院研究人员联合完成。它把数据流和调度空间分开：`T.copy`、`T.gemm`、`T.reduce` 表达分块级数据流，`T.Pipelined`、布局标注、线程绑定和 数据重排表达调度。DeepSeek 的 TileKernels 基于 TileLang 实现了训练和推理算子，并于 2026 年 9 月 30 日加入华为昇腾后端，使同一组 Python 接口可以在 NVIDIA GPU 和华为昇腾 NPU 上运行；`tilelang-ascend` 则提供独立的 Ascend C/PTO 与 AscendNPU IR 适配路线。[^tilelang-paper][^tilekernels][^tilelang-ascend]
+
+沿用上面的 $C=A B$，可以用下面的 Ascend 风格伪代码写出同一份数据流：
+
+```python
+with T.Kernel(core_num, is_npu=True) as (cid, _):
+    A_L1 = T.alloc_L1((stages, BM, K_L1), "float16")
+    B_L1 = T.alloc_L1((stages, K_L1, BN), "float16")
+    A_L0 = T.alloc_L0A((stages, BM, BK), "float16")
+    B_L0 = T.alloc_L0B((stages, BK, BN), "float16")
+    C_L0 = T.alloc_L0C((BM, BN), "float32")
+
+    for ko1 in T.Pipelined(ceil_div(K, K_L1), num_stages=stages):
+        T.copy(A[...], A_L1[ko1 % stages, :, :])
+        T.copy(B[...], B_L1[ko1 % stages, :, :])
+        for ko0 in T.serial(ceil_div(K_L1, BK)):
+            T.copy(A_L1[ko1 % stages, ...], A_L0[ko0 % stages, ...])
+            T.copy(B_L1[ko1 % stages, ...], B_L0[ko0 % stages, ...])
+            T.mma(A_L0[ko0 % stages, ...],
+                  B_L0[ko0 % stages, ...], C_L0,
+                  init=(ko1 == 0 and ko0 == 0))
+
+    T.copy(C_L0, C[...])
+```
+
+这段伪代码与上面的 isl schedule 是同一项计算的两种表达。`ko1` 和 `ko0` 对应 K 维的两级分块；`A_L1/B_L1` 对应外层输入分块，`A_L0/B_L0` 对应 Cube 的输入分块，`C_L0` 跨越归约循环保存部分和；`stages` 槽位让下一次搬移可以和当前 `mma` 重叠。核号到 `(io,jo)` 的映射、尾块、布局、swizzle 和 flag 共同完成这份 tile schedule。
+
+AKG 和 TileLang 都表达硬件数据流。AKG 主要依靠 isl、硬件规格和存储管理自动产生调度与搬移；TileLang 则让程序员在分块程序中直接写出更多调度决定。下面的表把同一 GEMM 在两种系统中的表示逐项对齐。
+
+| 同一件事 | isl/AKG 的表达 | TileLang-Ascend 的表达 |
+| --- | --- | --- |
+| 输出分块 | affine schedule 中的 `floor(i/BM), floor(j/BN)` | `T.Kernel` 中的 tile 坐标和循环 |
+| K 维分块 | `floor(k/BK)` 与 分块内坐标 | `ko1`、`ko0` 两层循环 |
+| 输入区域 | 由数组访问关系推导 | `T.copy` 的源切片和目标 buffer |
+| 片上存储 | 存储管理提升到 UB/L1/L0 | `alloc_L1/L0A/L0B/L0C` 声明 |
+| 矩阵计算 | 代码生成映射到 Cube 指令 | `T.mma` 表达 Cube 操作 |
+| 流水和同步 | 由依赖、容量和后端生成 | `T.Pipelined`、flag 或自动同步模式 |
+
+##### 5.4.6 成本估计与实测选择
 
 例 5-8 已经能够按读写量比较两种实现。面对更多分块与融合组合，编译器也按同样的思路逐步缩小范围：先检查依赖和数值规则，再排除局部存储不足以容纳的实现，最后估计执行开销，决定优先测试哪些实现。第 5.2 节已给出一种估计：用访问量和有效带宽比较两个 tile。编译器还可以加入矩阵指令利用率、寄存器需求和启动成本，确定各实现的测试顺序。
 
@@ -4509,7 +4805,7 @@ $$
 
 要使新实现平均时间更短，需满足 $20-15p<10$，即 $p>2/3$。图 5-25 的交点说明，只有当 A 占全部调用的比例超过 2/3 时，新实现才更快。
 
-![图 5-25 调用比例与平均执行时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-11-feedback.svg)
+![图 5-25 调用比例与平均执行时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-11-feedback.svg)
 
 *图 5-25：形状 A 占比超过 2/3 时，新实现的总执行时间更短。A、B 原耗时均为 10 μs，新实现分别为 5、20 μs；调用串行，图中比较稳态执行。交点由两种实现的平均时间相等确定。*
 
@@ -4529,7 +4825,7 @@ $$
 
 图 5-26 画出前四段在三种情况下的时间线。
 
-![图 5-26 主机准备与加速器计算的三种时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-host-pipeline.svg)
+![图 5-26 主机准备与加速器计算的三种时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-host-pipeline.svg)
 
 *图 5-26：每段主机准备 20 μs。串行执行时两种资源轮流工作；流水后主机准备下一段时加速器计算当前段，每 20 μs 完成一段；加速器提速到 5 μs 后，每段仍要等主机准备好，加速器大部分时间空闲。图中只画前四段，正文算例为 100 段。*
 
@@ -4547,31 +4843,31 @@ vLLM 在 2024 年 9 月发布的 v0.6.0 就是主机开销占据步间隔的实�
 
 上一小节中，GPU 提速后仍在等待主机。模型反复执行相似的任务序列时，其中许多提交工作可以复用：先把加速器任务及其依赖记录成图，再重复提交。使用 CUDA Graph 时，主机每次只需发起一次图重放，不必重新逐个准备和提交 kernel。加速器仍然执行图中的各个节点，减少的是主机的重复工作。图 5-27 用一次 FFN 的六个 kernel 说明两种提交方式的区别。
 
-![图 5-27 普通提交与图重放](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-launch-vs-graph.svg)
+![图 5-27 普通提交与图重放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-launch-vs-graph.svg)
 
 *图 5-27：普通提交时，主机为每个 kernel 发起一次 launch；图重放时，主机只发起一次 graph launch，加速器仍然执行图中记录的六个 kernel。要减少 kernel 的数量，靠的是融合，不是图重放。*
 
 图 5-28 取 3 次 FFN 执行作对照。普通提交产生 18 次主机 kernel launch 和 18 个加速器 kernel；图重放改为 3 次 graph launch，加速器仍执行 18 个 kernel。将激活链融合后，加速器 kernel 减至 15 个；再使用图重放，主机仍只需 3 次 graph launch。融合将多个算子的计算合并到同一个 kernel 中，图重放减少了主机逐个准备和提交任务的工作。[^exp8]
 
-![图 5-28 主机提交与加速器执行的对应关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-12-runtime.svg)
+![图 5-28 主机提交与加速器执行的对应关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-12-runtime.svg)
 
 *图 5-28：普通提交的 3 次 FFN 实测。上行为主机 kernel launch API，下行为加速器 kernel；横轴从本段标记起点计时。18 次 kernel launch 对应 18 个加速器 kernel。*
 
-![图 5-29 融合后的实际提交轨迹](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-runtime-1.svg)
+![图 5-29 融合后的实际提交轨迹](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-runtime-1.svg)
 
 *图 5-29：3 次 FFN 融合激活链后，主机 kernel launch 15 次，加速器相应执行 15 个 kernel。数据来自与前图相同的实验中单独标记的采集区间。*
 
-![图 5-30 图重放的实际提交轨迹](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-runtime-2.svg)
+![图 5-30 图重放的实际提交轨迹](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-runtime-2.svg)
 
 *图 5-30：3 次 graph launch 对应 18 个加速器 kernel。图重放减少主机提交次数，加速器仍执行原图各节点；本图按自身采集范围标出真实时间。*
 
-![图 5-31 融合再图重放的实际轨迹](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-runtime-3.svg)
+![图 5-31 融合再图重放的实际轨迹](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-runtime-3.svg)
 
 *图 5-31：先融合再重放，主机发起 3 次图执行，加速器执行 15 个 kernel。融合减少加速器 kernel 数，图重放减少主机提交次数。*
 
 图重放前，还要把新输入放到图所记录的地址。典型实现为图预留固定缓冲区，上游每次将新数据写到这里，图按已记录的地址读取。若上游输出位于另一份张量中，就在图执行前增加一次复制；若上游直接写固定缓冲，这次复制便可省去。
 
-![图 5-32 新输入与固定图地址](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-graph-address.svg)
+![图 5-32 新输入与固定图地址](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-graph-address.svg)
 
 *图 5-32：图执行时读取记录的地址 G。新输入位于 X 时先复制到 G；上游直接写 G 时沿用同一缓冲，省去中间复制。*
 
@@ -4581,14 +4877,14 @@ vLLM 在 2024 年 9 月发布的 v0.6.0 就是主机开销占据步间隔的实�
 
 保持计算与准备时间不变，把输入扩大至 2048 行，数据量增为 16 MiB。复制读写增为 32 MiB，用时约 18.7 μs，图执行的总时间约为 43.7 μs。这次复制已超过原本节省的 15 μs。
 
-![图 5-33 图重放的固定收益与输入复制时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-13-graph-copy.svg)
+![图 5-33 图重放的固定收益与输入复制时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-13-graph-copy.svg)
 
 *图 5-33：橙色为准备，蓝色为额外输入复制，绿色为加速器计算。普通方式 40 μs；图的 2 MiB 输入约 27 μs，16 MiB 输入约 44 μs。复制按 RTX PRO 6000 的显存带宽 1792 GB/s 计。*
 
 图 5-33 中，图重放节省的准备时间是一段固定长度；表示复制时间的条形却随输入增大而变长。两者长度相等时，图重放恰好不再节省时间。令输入数据量为 X，复制带宽为 B，图执行更快的条件为 $2X/B<15\ \mathrm{\mu s}$。代入 B=1792 GB/s 得：
 
 $$
-X<\frac{15\times10^{-6}\times1.792\times10^{12}}{2}\ \mathrm{bytes}\approx12.8\ \mathrm{MiB}.
+X<\frac{15\times10^{-6}\times1.792\times10^{12}}{2}\ \text{字节}\approx12.8\ \mathrm{MiB}.
 $$
 
 2 MiB 低于这一临界值，16 MiB 则超过。让前一个算子直接将结果写入图缓冲，或者从输入张量较小的位置开始捕获，都能减少复制开销。因此，选择哪些操作组成一张图时，需要同时比较节省的主机提交时间与增加的输入复制时间。[^graph]
@@ -4601,7 +4897,7 @@ $$
 
 **例 5-12：重复执行多少次，特化才值得？** 取 10 次 FFN 为一组：8 次为 256 行，1 次为 1536 行，1 次为 2048 行，共 $8\times256+1536+2048=5632$ 行。采用 512、2048 两个桶时，实际处理 $8\times512+2048+2048=8192$ 行，多算约 45%。图 5-34 画出每种形状被补齐到哪个桶。
 
-![图 5-34 实际行数补齐到形状桶](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-shape-buckets.svg)
+![图 5-34 实际行数补齐到形状桶](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-shape-buckets.svg)
 
 *图 5-34：256 行的调用补齐到 512 行的桶，1536 行的调用补齐到 2048 行的桶，2048 行恰好落在桶的边界上。灰色部分是补齐后多算的行；10 次调用合计实际 5632 行，执行 8192 行。*
 
@@ -4615,7 +4911,7 @@ $$
 
 运行 r 组的总时间为 $T_{\mathrm{total}}=P+rT$。图 5-35 中，每条线的截距表示准备时间，斜率表示每组执行时间。本例中，每组执行越快的方案，直线越平缓，但起点也越高，因为它需要更长的准备时间。
 
-![图 5-35 准备成本与累计执行时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-14-specialization.svg)
+![图 5-35 准备成本与累计执行时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-14-specialization.svg)
 
 *图 5-35：同一组调用反复执行时，最省时的策略随复用次数变化。曲线采用例 5-12 的形状、处理率和准备时间，不同策略适用的整数调用次数范围使用未经四舍五入的数值计算。“通用”使用同一执行方案处理所有形状；“分桶”将相近形状归组；“特化”为具体形状选择专用方案。*
 
@@ -4631,23 +4927,27 @@ $$
 
 图重放和程序缓存减少了主机的重复准备，加速器上还有另一类等待：对于有依赖关系的两个 kernel，后一个通常仍要等前一个全部完成后才能开始。如果后一个算子只需要前一个算子的一块结果，就可以把等待条件缩小到数据块：第一块算好后，立即开始后续运算，同时继续计算其余数据块。
 
-**persistent kernel** 一直驻留在加速器上运行，从队列中取出任务，通过事件确认所需数据是否准备好。这样既减少主机反复 kernel launch 的工作，也让相邻算子能按块重叠执行。Mirage Persistent Kernel／MPK 是采用这种任务调度方式的研究系统。[^persistent]
+**persistent kernel** 一直驻留在加速器上运行，从队列中取出任务，通过完成标志确认所需数据是否准备好。这样既减少主机反复 kernel launch 的工作，也让相邻算子能按块重叠执行。Mirage Persistent Kernel／MPK 是采用这种任务调度方式的研究系统。[^persistent]
 
-仍以 Qwen3-8B 的 up 投影后接 SiLU 激活为例，取 512 个 token 的特征向量，每 64 个 token 的向量组成一个数据块，共八块。每块投影为 $2\times64\times4096\times12288\approx6.44$ GFLOPs，按 RTX PRO 6000 的 BF16 稠密峰值 503.8 TFLOP/s 约需 12.8 μs；每块激活处理 $64\times12288$ 个 BF16 元素，每个元素读 2 bytes、写 2 bytes，按 1792 GB/s 的显存带宽约需 1.76 μs。设矩阵与向量资源独立、缓冲充足，每次 kernel launch 需要 5 μs。等全部投影完成再开始激活，共需 $2\times5+8\times(12.8+1.76)\approx126$ μs。
+仍以 Qwen3-8B 的 up 投影后接 SiLU 激活为例，取 512 个 token 的特征向量，每 64 个 token 的向量组成一个数据块，共八块。每块投影为 $2\times64\times4096\times12288\approx6.44$ GFLOPs，按 RTX PRO 6000 的 BF16 稠密峰值 503.8 TFLOP/s 约需 12.8 μs；每块激活处理 $64\times12288$ 个 BF16 元素，每个元素读 2 bytes、写 2 bytes，按 1792 GB/s 的显存带宽约需 1.76 μs。设矩阵与向量资源独立、缓冲充足，主机逐个提交时每次 kernel launch 需要 5 μs。等全部投影完成再开始激活，共需 $2\times5+8\times(12.8+1.76)\approx126$ μs。
 
-现在将计算分为八个投影任务和八个激活任务，每个任务增加 0.5 μs 调度时间、0.2 μs 完成通知时间。每块投影变为 13.5 μs，激活变为 2.46 μs。一次 kernel launch 后，八块投影首尾相接，每块投影完成后立即激活，最后一块激活在投影全部结束后收尾，完成时间为 $5+8\times13.5+2.46\approx115$ μs，加速比约为 1.1。
+现在将计算拆为八个投影任务和八个激活任务。每个任务开始前从共享队列领取：对队列计数器做一次带返回值的原子加，约需一次 L2 往返，取 0.15 μs；完成后发布完成标志，即第 4.4.4 节的一对一跨 SM 交接，取 0.37 μs。于是每块投影约 13.3 μs，激活约 2.28 μs。只需一次 kernel launch，八块投影首尾相接，每块投影完成后立即激活，最后一块激活在投影全部结束后完成，总时间为 $5+8\times13.3+2.28\approx114$ μs，加速比约为 1.1。
 
-这里较慢的阶段是投影。节省的约 11.0 μs 有两个来源：少了一次 5 μs 的 kernel launch，七块激活约 12.3 μs 隐藏在投影时间内；任务开销又在关键路径上加回 6.3 μs。激活每块只需 1.76 μs，按块提前开始，能隐藏的时间也仅限于此。两个阶段的耗时越接近，按块重叠节省的时间越多；一个阶段远长于另一个时，收益基本只剩少一次 kernel launch。
+这里较慢的阶段是投影。节省的约 12.6 μs 有两个来源：少了一次 5 μs 的 kernel launch，七块激活约 12.3 μs 隐藏在投影时间内；任务开销又在关键路径上加回 4.7 μs。激活每块只需 1.76 μs，按块提前开始，能隐藏的时间也仅限于此。两个阶段的耗时越接近，按块重叠节省的时间越多；一个阶段远长于另一个时，收益基本只剩少一次 kernel launch。
 
-![图 5-36 从等待全部投影到逐块开始激活](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-15-persistent.svg)
+![图 5-36 从等待全部投影到逐块开始激活](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-15-persistent.svg)
 
 *图 5-36：粗粒度执行先完成八块投影，再启动八块激活。按 RTX PRO 6000 的矩阵峰值与显存带宽，每块投影约 12.8 μs、激活约 1.76 μs，两次 kernel launch 各 5 μs；竖线为激活开始。*
 
-![图 5-37 按块启动激活后的时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-persistent-blocks.svg)
+![图 5-37 按块启动激活后的时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-persistent-blocks.svg)
 
-*图 5-37：矩阵与向量资源独立、缓冲充足。每个任务另计 0.7 μs 调度与通知，首块投影完成后即可激活；投影首尾相接，激活只在每块投影之后短暂工作，八块流水约 115 μs 结束。*
+*图 5-37：矩阵与向量资源独立、缓冲充足。每个任务另计 0.52 μs 领取与通知，首块投影完成后即可激活；投影首尾相接，激活只在每块投影之后短暂工作，八块流水约 114 μs 结束。*
 
 沿着图 5-37 的投影时间线看，八块投影首尾相接，中间没有空隙。这与双缓冲是同一个规律：第一块先完成前一阶段，之后每隔较慢阶段所需的时间完成一块；这里较慢的是投影，正如第 5.3.2 节较慢的是搬移，流水的节拍由它决定。每个缓冲槽从投影开始一直被占用到激活结束；没有空槽时，投影任务就要等待。因此，任务队列、完成事件和空闲缓冲共同决定下一块何时能够开始。
+
+上例的 5 μs 是主机逐个提交 kernel 的代价。在加速器一侧，kernel 边界本身要短得多：RTX PRO 6000 上，CUDA Graph 中两个空 kernel 的间隔约 430 ns，使用 PDL 时约 370 ns，与第 4.4.4 节的一对一跨 SM 交接相当。persistent kernel 省去的是启动开销，依赖所需的 L2 往返依然存在。
+
+decode 时这一点更为突出。batch 为 1 时，每个矩阵—向量乘都分布在全部 SM 上，下一个乘法须等待全部 SM 的结果，因此每个边界都是一次全 SM 交接。以 Qwen3-8B 的 $4096\times4096$ BF16 投影为例，将 64 个乘法串成依赖链，权重全部从显存读取，并提前把下一个乘法的权重读入共享内存。无依赖时每个乘法约 21 μs，受显存带宽限制；加入依赖后，每个边界多出 1.2–2.3 μs。多出的时间主要花在等待最慢的 SM 上，而非交接本身：每个 SM 固定负责 21 或 22 行，显存对各 SM 的服务并不均匀，预取只能掩盖其中一部分。改为各 SM 在缓冲槽空出时从计数器领取下一批行，快者多做、慢者少做，每个边界多出的时间降至 0.74–1.06 μs，接近第 4.4.4 节全 SM 交接的约 1 μs。这部分是依赖本身的代价，改变提交方式无法消除。[^boundary]
 
 #### 5.6 从局部优化到完整请求
 
@@ -4675,7 +4975,7 @@ $$
 
 将 A 加快四倍至 15 μs，B 仍需 40 μs，新时间为 $10+\max(15,40)+10=60$ μs。A 节省 45 μs，请求却只节省 20 μs，因为 B 接替 A 成为关键路径。
 
-![图 5-38 局部加速引起关键路径切换](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-16-critical-path.svg)
+![图 5-38 局部加速引起关键路径切换](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-16-critical-path.svg)
 
 *图 5-38：收尾等待 A、B 两条分支。A 从 60 μs 缩短至 15 μs 后，较慢分支由 A 切换为 B，请求从 80 μs 降至 60 μs。准备和收尾各为 10 μs，两条分支使用独立资源。*
 
@@ -4689,7 +4989,7 @@ A 缩至 40 μs 时，恰好与 B 同时结束；继续只优化 A，完成时�
 
 改变开销的不只是数据从哪里取得，程序是否真正省去了计算也有影响。候选池把后续索引的搜索范围缩小，工作量随之减少。公开参考实现先对完整索引缓存执行点积，再屏蔽候选池之外的位置；论文中的生产实现直接减少后续索引扫描的条目。前者已经完成了池外点积，后者在发起计算时就省去这部分工作。同一选择规则由此对应两种执行成本。
 
-![图 5-39 全局驻留与逐层逻辑读取](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-v41-traffic.svg)
+![图 5-39 全局驻留与逐层逻辑读取](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-v41-traffic.svg)
 
 *图 5-39：全局驻留与逐层逻辑读取分开比较。上方仅计全局 KV 容量，下方读取包含全局条目、局部窗口和索引；两栏各自采用相同横轴尺度。数值按生产布局计算。*
 
@@ -4710,7 +5010,7 @@ A 缩至 40 μs 时，恰好与 B 同时结束；继续只优化 A，完成时�
 
 在客户端交错测量替换前后的请求，共得到 11 对结果。替换前后的首 token 时间均约 436 ms，完整请求中位数分别约为 817 ms、815 ms。对每轮计算“替换前用时减去替换后用时”，配对时间差的中位数约为 1.3 ms，约占原请求耗时的 0.16%，与约 1.4 ms 的预期相符。图 5-40 列出每轮差值，其中 9 对在替换后耗时缩短，2 对在替换后耗时增加。
 
-![图 5-40 完整请求的逐轮配对时间差](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch05/figure-5-17-request.svg)
+![图 5-40 完整请求的逐轮配对时间差](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch05/figure-5-17-request.svg)
 
 *图 5-40：同轮替换前的请求时间减去替换后的请求时间，正值表示替换后更快。RTX PRO 6000 上的 Qwen3-8B，7239 个 token 的输入、强制 32 个 token 的输出，并发 1，BF16、eager，关闭前缀缓存；11 对交错计时，轮内顺序随机，期间有其他驻留服务。虚线为配对时间差的中位数约 1.3 ms。阶段表来自单独采集的性能分析记录。*
 
@@ -4776,72 +5076,80 @@ FPGA 是可配置逻辑器件，高层次综合（HLS）将较高层程序转换
 
 算子编排优化系统 Korch 提供了另一个有启发性的例子：其中一个历史案例里，子图原本由三个 kernel 执行，合计耗时约 91 μs；调整为四个 kernel 后，合计耗时约 69 μs。重新拆分和组合算子缩短了加速器执行时间，足以抵消额外的 kernel launch 和数据传递开销。[^korch] 这一方向与本章的融合反例一起，说明了优化应比较整个计算过程的开销。
 
-[^model]: [固定 Qwen3-8B 配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/models/qwen3-8b/config.json)；[模型算子与实现](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/model-operator-examples.md)。
+[^model]: [固定 Qwen3-8B 配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/models/qwen3-8b/config.json)；[模型算子与实现](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/model-operator-examples.md)。
 
-[^tiles]: [分块容量与数据复用](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/buffer-capacity-and-data-movement.md)，含循环计数、Orojenesis 选读与 bank 映射。
+[^tiles]: [分块容量与数据复用](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/buffer-capacity-and-data-movement.md)，含循环计数、Orojenesis 选读与 bank 映射。
 
-[^order]: [切成几段与合并次序的浮点复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/reduction-order.md)。教学用的这一行由给定公式生成后舍入到 BF16，不是采集到的激活；每个平方在 FP32 中都精确，各条路径的差别只来自加法次序。精确值用有理数算得，只作比较基准；枚举合并次序覆盖原子加可能出现的先后，不代表某个后端的实际分布。
+[^order]: [切成几段与合并次序的浮点复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/reduction-order.md)。教学用的这一行由给定公式生成后舍入到 BF16，不是采集到的激活；每个平方在 FP32 中都精确，各条路径的差别只来自加法次序。精确值用有理数算得，只作比较基准；枚举合并次序覆盖原子加可能出现的先后，不代表某个后端的实际分布。
 
-[^reduction]: [RMSNorm 三阶段拆分计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/rmsnorm-row1024-split8.md)。输入和 gamma 为 BF16，gamma 每行读取；一组一行保留输入，三阶段方案在应用阶段重读输入。
+[^reduction]: [RMSNorm 三阶段拆分计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/rmsnorm-row1024-split8.md)。输入和 gamma 为 BF16，gamma 每行读取；一组一行保留输入，三阶段方案在应用阶段重读输入。
 
-[^exp1]: [实验 5-1](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-01/README.md)、[GPU 分块](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-01/gpu-tiles/README.md)、[归约拆分](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-01/rmsnorm-split/README.md)。
+[^exp1]: [实验 5-1](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-01/README.md)、[GPU 分块](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-01/gpu-tiles/README.md)、[归约拆分](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-01/rmsnorm-split/README.md)。
 
-[^fusion]: [固定 scale 融合与张量生命周期](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/fusion-qwen8-pointwise.md)。
+[^fusion]: [固定 scale 融合与张量生命周期](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/fusion-qwen8-pointwise.md)。
 
-[^exp2]: [实验 5-2 的原始条件、数据与分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-02/README.md)。RTX PRO 6000、共享 GPU、热缓存与图重放；原始中位数为 14.20／7.68 μs，仅测激活子链。
+[^exp2]: [实验 5-2 的原始条件、数据与分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-02/README.md)。RTX PRO 6000、共享 GPU、热缓存与图重放；原始中位数为 14.20／7.68 μs，仅测激活子链。
 
-[^buffer]: [流式顺序与缓冲预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/stream-order-and-buffer.md)；[主机搬移与缓冲区占用时间](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/host-transfer-and-buffer-lifetime.md)。
+[^buffer]: [流式顺序与缓冲预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/stream-order-and-buffer.md)；[主机搬移与缓冲区占用时间](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/host-transfer-and-buffer-lifetime.md)。
 
-[^attention]: [注意力分块与在线状态](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/attention-tiles-and-io.md)；[99 KB 缓冲下的块大小与访问量](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/attention-tiles-rtxpro6000.md)。容量模型采用单头、无掩码、K/V 复用输入槽和 S/P 复用临时槽；每个线程块 99 KB 的共享内存上限取自 [CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/cuda-compute-capabilities.md)（计算能力 12.x 列）。
+[^attention]: [注意力分块与在线状态](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/attention-tiles-and-io.md)；[99 KB 缓冲下的块大小与访问量](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/attention-tiles-rtxpro6000.md)。容量模型采用单头、无掩码、K/V 复用输入槽和 S/P 复用临时槽；每个线程块 99 KB 的共享内存上限取自 [CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/cuda-compute-capabilities.md)（计算能力 12.x 列）。
 
-[^fa]: [FlashAttention](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/flashattention.pdf)、[FlashAttention-2](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/flashattention2.pdf)、[FlashAttention-3](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/flashattention3.pdf)。
+[^fa]: [FlashAttention](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/flashattention.pdf)、[FlashAttention-2](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/flashattention2.pdf)、[FlashAttention-3](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/flashattention3.pdf)。
 
-[^exp3]: [实验 5-3](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-03/README.md)。RTX PRO 6000 热缓存单头对照：2.64 ms／79.5 μs；新增分配峰值约 848／22.2 MiB，包括各后端分配的临时量。
+[^exp3]: [实验 5-3](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-03/README.md)。RTX PRO 6000 热缓存单头对照：2.64 ms／79.5 μs；新增分配峰值约 848／22.2 MiB，包括各后端分配的临时量。
 
-[^akg]: Zhao 等，2021，[AKG: Automatic Kernel Generation for Neural Processing Units using Polyhedral Transformations](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/akg-pldi21.pdf)。
+[^tilelang-paper]: Wang 等，2025，[TileLang: A Composable Tiled Programming Model for AI Systems](https://arxiv.org/abs/2504.17577)。论文第 3 节介绍分块算子、显式内存分配和编译流程，第 4 节介绍布局、线程绑定和软件定义流水。
 
-[^korch]: [Korch 的编排案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/kernel-orchestration-and-quantization.md)：论文 V100／FP32 子图，三 kernel 为 38.7、24.2、28.2 μs，四 kernel 为 7.6、18.4、7.5、35.7 μs。
+[^tilekernels]: [DeepSeek TileKernels](https://github.com/deepseek-ai/TileKernels) 的 README（读取于 2026 年 9 月 30 日）说明，该项目基于 TileLang，并加入华为昇腾后端。
 
-[^schedule]: [TVM](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tvm.pdf)、[TensorIR](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tensorir.pdf)。
+[^tilelang-ascend]: [TileLang-Ascend](https://github.com/tile-ai/tilelang-ascend) 的 Ascend C/PTO 与 AscendNPU IR 适配器及 GEMM 示例；README 读取于 2026 年 9 月 30 日。
+
+[^akg]: Zhao 等，2021，[AKG: Automatic Kernel Generation for Neural Processing Units using Polyhedral Transformations](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/akg-pldi21.pdf)。AKG 源码已在 [MindSpore AKG 仓库](https://gitee.com/mindspore/akg) 开源。
+
+[^korch]: [Korch 的编排案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/kernel-orchestration-and-quantization.md)：论文 V100／FP32 子图，三 kernel 为 38.7、24.2、28.2 μs，四 kernel 为 7.6、18.4、7.5、35.7 μs。
+
+[^schedule]: [TVM](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tvm.pdf)、[TensorIR](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tensorir.pdf)。
 
 
-[^numerics]: [融合合法性、FP8 舍入和量化投影](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/fusion-legality-and-precision.md)；[RedFuser 后端阅读](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-04/redfuser/README.md)。444／620 MiB 计数包括 A、W 与输出；行 scale 的辅助读写另见配套计算。
+[^numerics]: [融合合法性、FP8 舍入和量化投影](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/fusion-legality-and-precision.md)；[RedFuser 后端阅读](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-04/redfuser/README.md)。444／620 MiB 计数包括 A、W 与输出；行 scale 的辅助读写另见配套计算。
 
-[^exp4]: [实验 5-4 的编译、舍入与执行差异](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-04/README.md)、[DeepSeek V4-Flash 专家子链](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-04/v4/README.md)。
+[^exp4]: [实验 5-4 的编译、舍入与执行差异](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-04/README.md)、[DeepSeek V4-Flash 专家子链](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-04/v4/README.md)。
 
-[^exp5]: [实验 5-5 的生成代码与转置对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-05/README.md)。
+[^exp5]: [实验 5-5 的生成代码与转置对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-05/README.md)。
 
-[^exp6]: [实验 5-6 的搜索与测量记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-06/README.md)；[评测与部署计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/optimization-evaluation-and-deployment.md)。已记录两轮共 12 次 Agent 调用，未产生新的更快实现。
+[^exp6]: [实验 5-6 的搜索与测量记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-06/README.md)；[评测与部署计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/optimization-evaluation-and-deployment.md)。已记录两轮共 12 次 Agent 调用，未产生新的更快实现。
 
-[^host]: [主机时间线调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/parallel-host-timeline/NOTES.md)；[配置流水与图执行](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/graph-execution-tradeoffs.md)。
+[^host]: [主机时间线调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/parallel-host-timeline/NOTES.md)；[配置流水与图执行](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/graph-execution-tradeoffs.md)。
 
-[^vllm060]: [vLLM v0.6.0 发布公告归档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/parallel-host-timeline/vllm-2024-blog.md)；收益归因的辨析见 [token 成本调研 第 8.2 节](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/token-cost-2023-2026/report.md#runtime)。公告的吞吐在请求同时到达、`--num-scheduler-steps 10` 的条件下测得，2.7 倍是三项改动的合计收益，不能全部归于 GIL；多步调度在低负载下可能延长首个 token 的等待。
+[^vllm060]: [vLLM v0.6.0 发布公告归档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/parallel-host-timeline/vllm-2024-blog.md)；收益归因的辨析见 [token 成本调研 第 8.2 节](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/token-cost-2023-2026/report.md#runtime)。公告的吞吐在请求同时到达、`--num-scheduler-steps 10` 的条件下测得，2.7 倍是三项改动的合计收益，不能全部归于 GIL；多步调度在低负载下可能延长首个 token 的等待。
 
-[^runtime]: [运行方式与反馈](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/execution-feedback.md)、[框架演进](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/framework-evolution.md)及[token 成本调研 第 7—8 节](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/token-cost-2023-2026/report.md#runtime)。
+[^runtime]: [运行方式与反馈](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/execution-feedback.md)、[框架演进](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/framework-evolution.md)及[token 成本调研 第 7—8 节](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/token-cost-2023-2026/report.md#runtime)。
 
-[^graph]: [图重放的小输入复制](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/graph-small-input-rtxpro6000.md)、[大输入复制](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/graph-large-input-rtxpro6000.md)与[图执行取舍](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/graph-execution-tradeoffs.md)。复制带宽按源读加目标写的接口流量定义。
+[^graph]: [图重放的小输入复制](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/graph-small-input-rtxpro6000.md)、[大输入复制](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/graph-large-input-rtxpro6000.md)与[图执行取舍](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/graph-execution-tradeoffs.md)。复制带宽按源读加目标写的接口流量定义。
 
-[^plan]: [FlashInfer 计划复用实测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-08/flashinfer-plan/README.md)。
+[^plan]: [FlashInfer 计划复用实测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-08/flashinfer-plan/README.md)。
 
-[^specialization]: [形状特化的完整输入与交点](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/specialization-medium.md)。
+[^specialization]: [形状特化的完整输入与交点](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/specialization-medium.md)。
 
-[^exp8]: [实验 5-8](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-08/README.md)与[轨迹分析 JSON](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-08/results/trace-analysis.json)。
+[^exp8]: [实验 5-8](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-08/README.md)与[轨迹分析 JSON](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-08/results/trace-analysis.json)。
 
-[^persistent]: [设备任务组织与 MPK](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/execution-feedback.md)；[八块任务计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/persistent-tiles-rtxpro6000.md)。投影按 RTX PRO 6000 的 BF16 稠密峰值 503.8 TFLOP/s 推得，激活按 1792 GB/s 显存带宽与每元素 4 bytes 读写（448 G 元素/s）推得，两项取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)；独立资源、任务开销和缓冲条件采用例中设定。
+[^boundary]: 笔者在 RTX PRO 6000 Blackwell Workstation 上的测量，[测量说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/opentallas/blackwell-sync-latency-notes.md)中“Under a real weight stream”一节及[数值摘录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/opentallas/blackwell-sync-latency.json)。16 个 $4096\times4096$ 矩阵轮换使用，共 512 MiB，为 L2 容量的 4 倍；每个边界多出的时间为依赖链每个乘法的中位耗时减去同结构无依赖 kernel 的耗时。CUDA Graph 与 PDL 的边界用空 kernel 测得，实际 kernel 还要加上收尾与准备时间。
 
-[^dag]: [请求关键路径教学计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/request-dag-path-switch.md)、[争用情景](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/request-dag-contention.md)。
+[^persistent]: [设备任务组织与 MPK](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/execution-feedback.md)；[八块任务计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/persistent-tiles-rtxpro6000.md)。投影按 RTX PRO 6000 的 BF16 稠密峰值 503.8 TFLOP/s 推得，激活按 1792 GB/s 显存带宽与每元素 4 bytes 读写（448 G 元素/s）推得，两项取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)；独立资源、任务开销和缓冲条件采用例中设定。
 
-[^exp9]: [实验 5-9 的 kernel 实现、执行记录与 11 对请求](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-09/README.md)。vLLM 0.23，替换后的 kernel 采用 block256／4-warps 调度，11 对输出 token 一致。客户端中位数为 816.640／815.406 ms，配对时间差的中位数 1.343 ms，首 token 中位数 435.674／436.353 ms。单独采集的性能分析记录中，prefill 为 11.218659／11.244366 ms，decode 为 2.369803／0.920376 ms。原 kernel 耗时 13.588462 ms，替换后 12.164742 ms，采集区间 850.848989 ms；各热点与其他观测 GPU 工作的时间交集为零。
+[^dag]: [请求关键路径教学计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/request-dag-path-switch.md)、[争用情景](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/request-dag-contention.md)。
 
-[^sm]: [SM 驻留、延迟隐藏与 MMA 指令数](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/sm-occupancy-book-tile.md)、[累加器放入寄存器](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/sm-occupancy-register-accumulator.md)、[延迟 1000 ns 与每 warp 2 条加载](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/sm-occupancy-latency-1000ns.md)。SM 限制取自 [CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/cuda-compute-capabilities.md)（计算能力 9.0 列）与 [Hopper 调优指南](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-hopper-tuning.md)，占用率定义取自[编程指南的 kernel 编写一节](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/cuda-writing-kernels.md)，异步复制、栅栏、warp 分工与 swizzle 取自[异步数据复制一节](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-async-copies.md)，3.35 TB/s 取自 [H100 产品页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)，132 个 SM 与 BF16 稠密矩阵峰值 989.4 TFLOP/s 取自 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)（表 3）。每线程寄存器数、显存延迟、每 warp 未完成加载数与加载宽度、MMA 指令形状是本节选定的取值。
+[^exp9]: [实验 5-9 的 kernel 实现、执行记录与 11 对请求](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-09/README.md)。vLLM 0.23，替换后的 kernel 采用 block256／4-warps 调度，11 对输出 token 一致。客户端中位数为 816.640／815.406 ms，配对时间差的中位数 1.343 ms，首 token 中位数 435.674／436.353 ms。单独采集的性能分析记录中，prefill 为 11.218659／11.244366 ms，decode 为 2.369803／0.920376 ms。原 kernel 耗时 13.588462 ms，替换后 12.164742 ms，采集区间 850.848989 ms；各热点与其他观测 GPU 工作的时间交集为零。
+
+[^sm]: [SM 驻留、延迟隐藏与 MMA 指令数](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/sm-occupancy-book-tile.md)、[累加器放入寄存器](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/sm-occupancy-register-accumulator.md)、[延迟 1000 ns 与每 warp 2 条加载](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/sm-occupancy-latency-1000ns.md)。SM 限制取自 [CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/cuda-compute-capabilities.md)（计算能力 9.0 列）与 [Hopper 调优指南](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-hopper-tuning.md)，占用率定义取自[编程指南的 kernel 编写一节](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/cuda-writing-kernels.md)，异步复制、栅栏、warp 分工与 swizzle 取自[异步数据复制一节](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-async-copies.md)，3.35 TB/s 取自 [H100 产品页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)，132 个 SM 与 BF16 稠密矩阵峰值 989.4 TFLOP/s 取自 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)（表 3）。每线程寄存器数、显存延迟、每 warp 未完成加载数与加载宽度、MMA 指令形状是本节选定的取值。
 
 [^execution]: [CUDA 执行模型](https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/intro-to-cuda.html)；[CUDA Runtime API 的同步语义](https://docs.nvidia.com/cuda/cuda-runtime-api/api-sync-behavior.html)；[CUDA stream 管理](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__STREAM.html)与[event 管理](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__EVENT.html)；[PyTorch 锁页内存与异步复制教程](https://docs.pytorch.org/tutorials/intermediate/pinmem_nonblock.html)。主机复制与缓冲复用另见本章引用的本地计算材料。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
-[^pcie]: [RTX PRO 6000 Blackwell 工作站版规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rtx-pro6000-spec.pdf)列出系统接口为 PCIe 5.0 x16；[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)给出 PCIe Gen5 x16 为 128 GB/s，是收发两个方向的合计，每个方向 64 GB/s。
+[^pcie]: [RTX PRO 6000 Blackwell 工作站版规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rtx-pro6000-spec.pdf)列出系统接口为 PCIe 5.0 x16；[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)给出 PCIe Gen5 x16 为 128 GB/s，是收发两个方向的合计，每个方向 64 GB/s。
 
-[^cc12]: RTX PRO 6000 Blackwell 为 SM120 架构（见[实验 5-2 的运行环境](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch05/05-02/README.md)），即计算能力 12.0；[CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/cuda-compute-capabilities.md)给出该列每个 SM 的共享内存上限 100 KB、每个线程块上限 99 KB，两者之差即每块的 1 KiB 预留。
+[^cc12]: RTX PRO 6000 Blackwell 为 SM120 架构（见[实验 5-2 的运行环境](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch05/05-02/README.md)），即计算能力 12.0；[CUDA 编程指南的计算能力表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/cuda-compute-capabilities.md)给出该列每个 SM 的共享内存上限 100 KB、每个线程块上限 99 KB，两者之差即每块的 1 KiB 预留。
 
 #### 本章小结
 
@@ -4859,7 +5167,7 @@ FPGA 是可配置逻辑器件，高层次综合（HLS）将较高层程序转换
 
 上一章把矩阵分成小块，让输入在计算单元附近多用几次。现在把其中一块交给另一张加速卡：这张卡需要哪些输入，算完得到的是完整输出还是部分和，结果又由谁接着使用？数学没有变，但原来经过共享内存的数据，现在可能要穿过加速器互联甚至机房网络。同一种分块方式，由此变成了多卡并行方案。
 
-给定八张卡，可以让各卡分别处理请求，也可以合力加速一个请求；切分方式既要容纳模型，又要达到延迟与成本目标。本章从算子的维度与依赖出发，逐步推导各种并行方式产生的通信，最后用给定的模型、八卡硬件和会话期限筛选方案。读完本章，读者应当能够为自己的模型和硬件列出可选的方案，排除不可行的，再根据瓶颈和测量结果做出选择，而不只是记住几个并行方式的缩写。
+模型权重一旦超过单卡显存，一张卡运行一个模型的做法就行不通了：Qwen3-235B-A22B 的 BF16 权重约 470 GB，接近单张 H100 显存的六倍。给定八张卡，可以让各卡分别处理请求，也可以合力加速一个请求；切分方式既要容纳模型，又要达到延迟与成本目标。本章从算子的维度与依赖出发，逐步推导各种并行方式产生的通信，最后用给定的模型、八卡硬件和会话期限筛选方案。读完本章，读者应当能够为自己的模型和硬件列出可选的方案，排除不可行的，再根据瓶颈和测量结果做出选择，而不只是记住几个并行方式的缩写。
 
 上一章研究单个加速器内的计算、数据复用与任务执行。多卡并行面对的仍是同一组问题：沿哪些维度切分，每一块放在哪里，各块需要哪些输入、结果在哪里汇合，以及按什么顺序执行。本章把单卡算子的分块与调度扩展到多张卡：先把矩阵和状态分到多张卡，推导由此产生的通信，再把通信放到实际连接上，最后决定一个实例使用多少张卡、同时部署多少个实例。本章的硬件是常见的 HGX H100 八卡服务器，贯穿推导的模型有两个：Qwen3-235B-A22B 的权重要占满整台服务器，用来说明容量、专家分工和 MoE 通信；Qwen3-32B 的权重可以放入一张卡，长上下文的 KV 却迫使模型跨卡，用来比较张量并行的卡数与实例数。其他模型和系统则用来说明结构变化对设计的影响。
 
@@ -4871,7 +5179,7 @@ FPGA 是可配置逻辑器件，高层次综合（HLS）将较高层程序转换
 
 推理实例描述模型如何部署和执行，超节点描述加速器如何互联。八卡超节点可以放八个单卡实例，也可以放两个四卡实例。前者的八个请求彼此独立；后者每个请求要在四张卡之间交换中间结果。服务器和机柜是安装与供电的单位；同一实例的各张卡可以都在同一台服务器内，也可以分布在多台服务器上。
 
-![八张卡上的实例分组](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-1-placement.svg)
+![八张卡上的实例分组](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-1-placement.svg)
 
 *图 6-1：相同八张卡上的三种实例分组。每个外框表示一个独立推理实例，内部连线表示完成请求所需的协作。各实例一次处理一个请求时，三种部署方式分别能同时处理八个、两个和一个请求。*
 
@@ -4908,7 +5216,7 @@ $$
 
 每卡约需 61.50 GB，低于 H100 的 80 GB；整台服务器合计约 492.0 GB，640 GB 中还剩约 148 GB。每卡权重比 470.2 GB 的八分之一略多，因为归一化参数和路由器在每张卡上都有一份副本。每卡剩下的约 18.5 GB 可以保存更多会话：按这种分法，一个 8192 token 的会话在每卡占 0.39 GB，整台服务器最多同时保存 47 个这样的会话。分散存储降低了每卡的内存需求；实例的总内存占用则是各卡占用量之和。[^dense]
 
-![模型分片与每卡内存占用](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-2-capacity.svg)
+![模型分片与每卡内存占用](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-2-capacity.svg)
 
 *图 6-2：单卡实例与分到八张卡后的每卡内存需求。单卡需要约 473.9 GB，远超 H100 的 80 GB（虚线）；分到八张卡后每卡约 61.50 GB。2 GiB 工作区在每张卡分别预留。*
 
@@ -4936,7 +5244,7 @@ Decode 还有时间上的依赖：当前输出 token 决定下一步输入。单
 
 第 6.1.1 节的三种需求都要把工作分给多张卡，分法却各不相同。分法取决于模型处理的数据和模型本身的结构。一层的输入激活有三个维度：一次处理的样本数 $B$，推理时就是同时处理的请求数；每个样本的序列位置数 $S$；每个位置的隐藏特征数 $H$。第 5 章的矩阵乘把 $B$ 和 $S$ 合成了行数 $M$，注意力却要区分同一序列内的不同位置，所以这里把两者分开。模型本身还有两个可以切分的结构：层 $L$，以及 MoE 模型中每层的专家集合 $E$。图 6-3 把这五个维度画在一起，并标出六种常用并行方式各自切在哪里。
 
-![六种并行方式各自切分的维度](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-parallel-map.svg)
+![六种并行方式各自切分的维度](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-parallel-map.svg)
 
 *图 6-3：左侧是一层的输入激活，三个维度分别对应数据并行、序列并行与上下文并行、张量并行的切分位置；右侧是模型结构，流水线并行切在层与层之间，专家并行切在同一层的专家之间。粗虚线表示切分位置，不表示数据流向。*
 
@@ -4951,9 +5259,23 @@ Decode 还有时间上的依赖：当前输出 token 决定下一步输入。单
 | 流水线并行（PP） | 层 $L$ | 一段连续的层 | 相邻阶段之间交接激活；训练时再反向交接梯度 |
 | 专家并行（EP） | 专家 $E$ | 一部分专家 | 把 token 送到所选专家所在的卡，再把结果送回 |
 
-表中隐含着一项贯穿全章的区别。切样本、序列位置、层或专家时，每张卡得到的是不同数据或不同层的完整结果，需要时收集或交接即可；切特征时，各卡往往只得到同一个输出的一部分贡献，必须把这些部分和相加，结果才能使用。第 5.2.4 节在单卡内区分过输出维与归约维的切分，跨卡时区别相同，只是相加部分和要经过卡间互联。
+**为什么需要六种并行方式：从瓶颈到组合。**
 
-这些方式不是互斥的。序列并行通常和张量并行使用同一组卡，专家并行可以和注意力部分的数据并行共用同一批卡；流水线并行划分的是有先后依赖的计算图，不是把某个矩阵再切出一个维度。第 6.3 节将说明如何组合这些方式并给每张卡编号。
+这张表先说明切分的位置，再说明每种切分所针对的瓶颈。可以用俄罗斯套娃来理解这些分工：最外层管理样本或请求，数据并行（DP）决定同时推进多少份独立工作；一份工作沿模型的层逐步推进，流水线并行（PP）把连续的层交给不同阶段；进入某一层后，专家并行（EP）按专家分布 MoE 计算，张量并行（TP）按特征拆分矩阵，序列并行（SP）和上下文并行（CP）按序列位置分摊激活与注意力。每一层都有自己的数据依赖、同步点和通信边界。华为半导体首席科学家廖恒博士于 2026 年 9 月提出的 Nested BSP（嵌套批量同步并行）把“并行计算—同步—交换—聚合”递归安排在多个层级，论文图 1 也用软件套娃展示了这种组织方式。[^nested-bsp]
+
+套娃关系呈现的是组合结构。DP 可以复制一个完整的 TP×PP×EP 实例，SP 常在 TP 组内使用同一批卡，CP 随长上下文的状态容量和注意力计算加入，EP 服务于含有专家集合的模型。它们沿着不同坐标切分同一个执行空间，分别承担不同任务：
+
+* DP 面向大量样本或请求，提升整体吞吐；
+* TP 面向层内矩阵和单次请求，分摊计算、权重与中间结果；
+* SP 面向 TP 组中的逐 token 算子，分摊激活的保存和处理；
+* CP 面向长序列，分摊上下文状态和注意力计算，并交换远端上下文；
+* PP 面向层数和模型权重规模，把有先后关系的计算组织成流水；
+* EP 面向 MoE 的专家集合，分布专家权重和 token 路由。
+
+一种并行方式对应一个主要瓶颈。DP 提高独立工作数，TP 缩小层内矩阵，SP 降低逐 token 激活开销，CP 扩展上下文容量，PP 承载更多层，EP 利用 MoE 稀疏性。它们组合后形成具体的设备布局。例如 16 张卡可以组织为 DP2×PP2×TP4：两个模型副本分别处理不同样本，每个副本分成两个流水阶段，每个阶段由四张卡协作执行层内矩阵；四卡 TP 组还可以使用 SP，设备总数保持 16。设计组合时，应让主要瓶颈在合适的层级得到切分，并让通信落在匹配的物理互联上。
+表中还体现出两类结果组织方式。沿样本、序列位置、层或专家切分时，各卡负责不同数据或不同层，结果通过收集或阶段交接继续流动；沿特征切分时，各卡贡献同一个输出的一部分，后续算子需要先把部分和相加。第 5.2.4 节在单卡内区分过输出维与归约维，跨卡后的归约同样遵循这一规律。
+
+这些方式可以组合在同一部署中。序列并行通常和张量并行使用同一组卡，专家并行可以和注意力部分的数据并行共用一批卡，流水线并行负责划分有先后依赖的计算图。第 6.3 节将说明组合方式并给每张卡编号。
 
 > **实验 6-1 · 延伸：上下文长度与输入行数如何影响容量和执行瓶颈**
 >
@@ -4973,7 +5295,7 @@ Decode 还有时间上的依赖：当前输出 token 决定下一步输入。单
 
 **数据并行**（data parallelism，DP）让每张卡保存一份完整模型，各自处理不同的样本。图 6-4 中，两张卡分别处理 batch 的前四个和后四个样本，各自得到自己那部分输出。
 
-![数据并行：复制模型，切分样本](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-dp.svg)
+![数据并行：复制模型，切分样本](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-dp.svg)
 
 *图 6-4：两张卡各保存一份完整模型，分别处理不同样本。推理时两张卡互不等待；训练时两张卡的梯度要先汇合，再各自更新参数副本。*
 
@@ -4987,7 +5309,7 @@ Decode 还有时间上的依赖：当前输出 token 决定下一步输入。单
 
 多实例能同时处理更多请求，却不会缩短某个请求在单张卡上的执行时间，也无助于单卡无法容纳的会话。要让两张卡共同承担一个请求，就要把一层内部的计算和状态分开。**张量并行**（tensor parallelism，TP）把同一层内的矩阵分给多张卡，每卡各算一部分，再交换结果。图 6-5 标出一层里的两处切分位置。
 
-![张量并行在一层内的切分位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-tp-layer.svg)
+![张量并行在一层内的切分位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-tp-layer.svg)
 
 *图 6-5：注意力按头分给两张卡，前馈网络按中间维分给两张卡；两处的最后一个投影都只得到部分和，各需要一次 AllReduce 把两卡的部分和相加。m 为一次处理的 token 数，h 为隐藏维。*
 
@@ -5010,7 +5332,7 @@ Decode 还有时间上的依赖：当前输出 token 决定下一步输入。单
 
 这张表说明了三点。第一，batch 为 1 时，两个 MoE 模型每步只读约十分之一的权重；batch 为 64 时，64 个 token 选中的专家几乎覆盖全部专家，权重读取回到 60～68 GB，与稠密模型的 64 GB 相当。第二，矩阵运算量始终只有稠密模型的 1/12～1/4，这是 MoE 一直保留的优势。第三，上下文长、batch 大时，状态读取成为每步的主要部分：按 3350 GB/s，batch 64、32K 上下文时三个模型读取状态分别约需 164、62 和 14 ms，读取权重只需 18～20 ms。这一项的差距来自注意力设计，而不是 MoE：Qwen3-30B-A3B 同样是 MoE，每 token 仍要保存 96 KiB 的 KV。
 
-![三种模型的每请求状态与 batch 64 的每步读取时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-dense-moe.svg)
+![三种模型的每请求状态与 batch 64 的每步读取时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-dense-moe.svg)
 
 *图 6-6：左图为单个请求在 32K、128K 与 256K 上下文下的状态，Qwen3-32B 与 Qwen3-30B-A3B 的上下文上限为 128K。右图为 batch 64、32K 上下文时一次 decode 读取权重和状态的时间，按 H100 的 3350 GB/s 计。三种模型的权重读取相近，状态读取相差十倍以上。*
 
@@ -5020,13 +5342,13 @@ Decode 还有时间上的依赖：当前输出 token 决定下一步输入。单
 
 下面用完整的例子说明这两种切法。输入为 $x=[2,3]$，权重矩阵为 $W=\begin{bmatrix}1&4\\2&5\end{bmatrix}$，输出是 $xW=[8,23]$。按权重矩阵的列切分，也就是把输出特征分给不同的卡：卡 0 保存第一列，得到输出的第一个元素 8；卡 1 保存第二列，得到第二个元素 23。两个元素并排拼接，就得到完整输出。
 
-![按输出列分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-tp-columns.svg)
+![按输出列分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-tp-columns.svg)
 
 *图 6-7：按权重矩阵的列切分时，每张卡使用完整输入，计算不同的输出元素。格内的转置符号 T 表示把方括号中横排的数当作列向量。*
 
 改为按权重矩阵的行切分，也就是把同一个 token 的输入特征分给不同的卡：卡 0 用输入 2 乘第一行，得到 $[2,8]$；卡 1 用输入 3 乘第二行，得到 $[6,15]$。两张卡各得到一个含两个元素的向量，但每个向量只包含一行权重的贡献；对应位置相加后，才得到完整输出 $[8,23]$。
 
-![按权重矩阵的行分工，对应切分输入特征](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-tp-rows.svg)
+![按权重矩阵的行分工，对应切分输入特征](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-tp-rows.svg)
 
 *图 6-8：按权重矩阵的行切分时，两卡产生形状相同的输出部分和。对应位置相加，恢复完整乘法的结果。*
 
@@ -5047,7 +5369,7 @@ $$
 
 右侧两个乘积的形状都是 $m\times h$，各自只包含中间维一半分量的贡献，相加后才是下一层要用的输入。
 
-![TP 的切分方向与输出部分和](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-3-tp.svg)
+![TP 的切分方向与输出部分和](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-3-tp.svg)
 
 *图 6-9：SwiGLU 的两卡切分。上投影按权重矩阵的列划分输出特征，逐元素运算留在本地；下投影按权重矩阵的行划分输入特征。两步均保留全部 $m$ 个 token，切分的是每个 token 的特征维度。每卡中间激活为 $m\times(f/2)$，输出部分和仍为 $m\times h$，最后逐元素求和。*
 
@@ -5099,7 +5421,7 @@ $p$ 越大，右侧越小。即使每次归约只增加同样一小段时间，�
 
 张量并行让每张卡只保存矩阵的一部分，但层内还有一些算子不做矩阵乘，例如 LayerNorm（层归一化）、Dropout 和残差相加。这些算子逐 token 工作：每个 token 的结果只依赖自身的隐藏向量。**序列并行**（sequence parallelism，SP）让这些算子沿序列位置分片：TP 组内的每张卡只处理一段位置，不再各自保存一份完整激活。本书采用大模型训练框架 Megatron 的这一常见定义。[^sequence-context]
 
-![序列并行：逐 token 算子沿序列位置分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-sp.svg)
+![序列并行：逐 token 算子沿序列位置分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-sp.svg)
 
 *图 6-10：LayerNorm 和残差只用到本 token 的数据，两张卡各处理一半位置；进入列并行线性层前用 AllGather 收集全部位置，行并行线性层的部分和用 ReduceScatter 求和并重新按位置分片。*
 
@@ -5111,7 +5433,7 @@ $p$ 越大，右侧越小。即使每次归约只增加同样一小段时间，�
 
 序列并行只处理逐 token 的算子，注意力却要让每个位置看到序列中的其他位置。**上下文并行**（context parallelism，CP）把同一个长序列的位置分给多张卡，每张卡保存自己那段位置的 Q、K、V，并计算这段位置的注意力输出。图 6-11 用八个位置说明两张卡的分工。
 
-![上下文并行：把同一序列的位置分给两张卡](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-cp.svg)
+![上下文并行：把同一序列的位置分给两张卡](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-cp.svg)
 
 *图 6-11：每张卡保存自己那段位置的 Q、K、V。因果注意力下，卡 1 的查询还要用到卡 0 的 K、V，所以 K、V 必须跨卡传递；非因果注意力时两个方向都要传。*
 
@@ -5119,7 +5441,7 @@ $p$ 越大，右侧越小。即使每次归约只增加同样一小段时间，�
 
 图 6-12 把这种依赖画成八个位置之间的可见关系。
 
-![序列切分之后仍然存在的注意力依赖](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-context-dependency.svg)
+![序列切分之后仍然存在的注意力依赖](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-context-dependency.svg)
 
 *图 6-12：八个 token 的因果注意力，横轴为键的位置、纵轴为查询的位置。实色格是必须计算的查询—键配对；前四行归卡 0，后四行归卡 1。虚线只是设备边界，左下区域的远端依赖并不因此消失。*
 
@@ -5139,7 +5461,7 @@ $o$ 即新 token 在全部历史位置上的注意力输出。这与第 5 章 ti
 
 上述几种方式都在一层内部分工。**流水线并行**（pipeline parallelism，PP）改为按层分工：把模型的层按顺序分成若干阶段，每个阶段由一张或一组卡负责。图 6-13 把 Qwen3-32B 的 64 层分成两个阶段。
 
-![流水线并行：按层划分阶段](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-pp.svg)
+![流水线并行：按层划分阶段](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-pp.svg)
 
 *图 6-13：两个阶段各保存自己那些层的权重。相邻阶段之间只交接激活；训练时梯度沿同一边界反向传递。*
 
@@ -5147,7 +5469,7 @@ $o$ 即新 token 在全部历史位置上的注意力输出。这与第 5 章 ti
 
 送入流水线的输入按 micro-batch 组织：一个 batch 拆成多个 micro-batch，不同阶段就能同时处理不同的 micro-batch。设模型分成 $q$ 个阶段，每个阶段的执行时间（含传递激活）为 $t$，输入是 $b$ 个已经就绪、互不依赖的 micro-batch。考虑四个阶段、每阶段 1 ms 的情形。micro-batch 0 在 0 ms 进入阶段 0，经过四个阶段，在 4 ms 完成；阶段 0 在 1 ms 就能接收 micro-batch 1，后者在 5 ms 完成。其余 micro-batch 依次跟进，每隔 1 ms 完成一个。
 
-![四阶段流水的填充与排空](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-4-pipeline.svg)
+![四阶段流水的填充与排空](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-4-pipeline.svg)
 
 *图 6-14：四个等时阶段处理四个独立 micro-batch。每格为 1 ms，同色表示同一 micro-batch。第一项结果在 4 ms 产生，最后一项在 7 ms 产生；左上到右下的空白来自流水填充与排空。*
 
@@ -5168,7 +5490,7 @@ $$
 
 最后一种方式切分的是 MoE 特有的专家集合。稠密模型的每个 token 使用同一组 FFN 权重；MoE 模型准备多个前馈网络作为专家，由路由器计算选择分数，为每个 token 选出要执行的专家。每个 token 只用到被选中的专家，但整个专家集合都要保存在加速器上，供后续 token 选择。MoE 由此增加了一种分工方式：**专家并行**（expert parallelism，EP）把不同专家放到不同的卡上，由各卡处理发给自己的输入。图 6-15 把八个专家分给两张卡。
 
-![专家并行：把专家集合分给不同的卡](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ep.svg)
+![专家并行：把专家集合分给不同的卡](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ep.svg)
 
 *图 6-15：注意力和路由器在 token 所在的卡完成；输入按所选专家的所在卡发送，专家算完后结果送回原卡，按路由权重合并。两次交换都是 All-to-All（全交换），即每张卡向其他各卡分别发送不同的数据。*
 
@@ -5178,7 +5500,7 @@ $$
 
 把专家输入送往专家所在卡的过程称为 **dispatch（派发）**，把输出送回原卡并合并的过程称为 **combine（合并）**。继续看 token A：若两个专家的输出分别为 $y_1,y_6$，路由权重为 $a_1,a_6$，完整的 MoE 输出为 $a_1y_1+a_6y_6$。发送方的卡保存 token 的编号和路由信息，接收方的卡执行专家，返回的结果再归到同一个 token 名下。
 
-![token 的 dispatch 与专家结果的 combine](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-5-dispatch.svg)
+![token 的 dispatch 与专家结果的 combine](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-5-dispatch.svg)
 
 *图 6-16：卡 0 持有 token A，选择本地专家 1 与卡 3 上的专家 6。dispatch 沿上方路径发送输入，combine 沿下方送回专家输出并加权合并。每个 token 选中几个专家，就要算几次；专家在哪张卡，决定输入要送到哪里。*
 
@@ -5221,13 +5543,13 @@ Qwen3-235B-A22B 将这一例子扩大为每层 128 个路由专家，每 token �
 | 2 | 4、5 | 64—95 | 768 | 同上 |
 | 3 | 6、7 | 96—127 | 768 | 同上 |
 
-![TP 与 EP 的分组及归约方向](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-6-ep-layout.svg)
+![TP 与 EP 的分组及归约方向](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-6-ep-layout.svg)
 
 *图 6-17：八张卡排成四个专家分组，每组两卡沿专家中间维分工。同一列的注意力头与 KV 重复四份；每组因此都能在本地得到相同的专家输入。*
 
 数据位置确定后，再跟踪输出如何汇合。组内两张卡各算专家中间维的一半，先在组内相加，得到本组专家的完整贡献；再把四个组的贡献相加。
 
-![分两步汇合专家输出](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ep-reduction.svg)
+![分两步汇合专家输出](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ep-reduction.svg)
 
 *图 6-18：横向箭头表示组内两卡求和，纵向箭头表示四个组求和。格内数字是某个输出元素经组内求和后的值，两列各自都得到相同的完整结果 10。*
 
@@ -5249,7 +5571,7 @@ $$
 
 若这些分派恰好均匀覆盖 128 个专家，每个专家处理四个 token 的特征向量；若所有 token 选择同样的八个专家，每个专家处理 64 个 token 的特征向量。两种分派的有效矩阵运算量相同。假定在一个 batch 内，每个被选中专家的权重只从 HBM 读取一次，前者需要 $128\times36$ MiB，即 4.5 GiB；后者需要 $8\times36$ MiB，即 288 MiB，读取量相差 16 倍。
 
-![批内专家复用与权重读取](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-7-reuse.svg)
+![批内专家复用与权重读取](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-7-reuse.svg)
 
 *图 6-19：64 个 token、每 token 八个专家，共 512 次分派。均匀覆盖与集中选择的有效计算量相同，被选中专家的权重读取相差 16 倍。每个专家 BF16 权重为 36 MiB，批内读取一次。*
 
@@ -5257,15 +5579,15 @@ $$
 
 因此，分析执行时间需要同时计算整批的权重读取量，以及负载最重的专家组的计算量。Decode 的小矩阵运算容易受权重读取速度限制，prefill 的大矩阵运算则更容易受负载最重的专家组的计算时间限制。把热点专家分散到不同的 EP 组，既保留了批内复用，又减轻了单个专家组的计算负担。
 
-![专家复用与各卡负载分布](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-8-expert-load.svg)
+![专家复用与各卡负载分布](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-8-expert-load.svg)
 
 *图 6-20：均匀使用 128 个专家时，四个 EP 组各处理 128 次 token—专家计算，合计读取 4.5 GiB 权重。*
 
-![八个专家集中在一组](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-expert-load-1.svg)
+![八个专家集中在一组](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-expert-load-1.svg)
 
 *图 6-21：所选八个专家都在组 0：权重读取降到 288 MiB，512 次计算却全部压在同一组。*
 
-![八个专家分散到四组](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-expert-load-2.svg)
+![八个专家分散到四组](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-expert-load-2.svg)
 
 *图 6-22：把同样的八个专家分散到四组，将读取量维持在 288 MiB，同时让四组各承担 128 次计算。三图纵轴范围相同。*
 
@@ -5333,11 +5655,11 @@ Broadcast（广播）把某一张指定卡的数据发给全组，Reduce（归�
 
 跟踪块 0：该块从卡 0 发出，经卡 1、卡 2，最后到卡 3。如果四卡对块 0 某元素的贡献为 1、10、100、1000，沿途数值依次为 1、11、111、1111。第三轮结束时，卡 3 拥有块 0 的完整和；同时，卡 0、1、2 分别拥有块 1、2、3 的完整和。
 
-![环形归约的逐轮状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-9-ring-rounds.svg)
+![环形归约的逐轮状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-9-ring-rounds.svg)
 
 *图 6-23：仅跟踪块 0 的一个元素：每经过一张卡，就加入该卡的贡献。三轮后得到 1111，保存在卡 3。其他三个块同时沿环推进。*
 
-![交换已经归约好的块](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ring-gather.svg)
+![交换已经归约好的块](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ring-gather.svg)
 
 *图 6-24：ReduceScatter 结束时，卡 0、1、2、3 分别持有块 1、2、3、0。接下来每轮转发一块，三轮后每卡都拥有四块完整结果。*
 
@@ -5362,7 +5684,7 @@ $$
 | 4 | 7.34 ms | 0.64 ms | 7.97 ms |
 | 8 | 3.67 ms | 1.48 ms | 5.15 ms |
 
-![增加 TP 卡数时各项时间的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-10-tp-time.svg)
+![增加 TP 卡数时各项时间的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-10-tp-time.svg)
 
 *图 6-25：根据式（6-5）和环形归约模型绘制的单步时间。本地内存访问随卡数增加而减少，归约时间则增加；条形总长度为单步执行时间。本地项包括权重与 KV 读取，归约项是卡间集合通信。*
 
@@ -5378,7 +5700,7 @@ $$
 
 八卡、10 KiB 时约为 5.07 μs，比环形算法的 11.55 μs 短。数据量增大到 8192 个 token 的 80 MiB，环形算法约需 0.34 ms，树形约需 1.12 ms：减少轮次节省的时间，抵不过在关键路径上反复传递完整大张量增加的时间。令两式相等，交点约在 680 KiB；数据量越过该值，更快的算法就换成另一个。
 
-![数据量与环树算法的选择](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-11-collectives.svg)
+![数据量与环树算法的选择](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-11-collectives.svg)
 
 *图 6-26：八卡环形算法与未分段二项树的时间模型，每轮 0.822 μs、每方向 450 GB/s。交点约为 680 KiB；10 KiB 的 decode 输入位于主要受启动开销影响的一侧，80 MiB 的 prefill 输入位于主要受数据传输时间影响的一侧。*
 
@@ -5411,11 +5733,11 @@ $$
 
 4 MiB 时，通信与矩阵乘同时运行后慢了一倍多，却仍在矩阵乘结束前完成，整组用时 11.58 ms，与只做矩阵乘几乎相同，通信被计算掩盖了。64 MiB 时，通信从 36.92 ms 增至 45.21 ms，矩阵乘也从 11.03 ms 增至 12.89 ms；两者分开执行共需约 48.0 ms，同时运行只节省约 2.7 ms，而不是矩阵乘的全部 11 ms。评价重叠执行，要比较两者同时运行时的时间，不能把各自单独测得的时间直接相减。[^comm-experiment]
 
-![通信与计算各自单独运行](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-12-resources.svg)
+![通信与计算各自单独运行](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-12-resources.svg)
 
 *图 6-27：实验 6-5 中通信与矩阵乘单独运行的时间，四个 CPU 进程，五组中位数。4 MiB 通信约 2.67 ms，64 MiB 通信约 36.92 ms，矩阵乘约 11 ms。*
 
-![通信与计算同时运行](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-resources-concurrent.svg)
+![通信与计算同时运行](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-resources-concurrent.svg)
 
 *图 6-28：同一实验中两者同时开始。橙色为通信，蓝色为计算；后续工作等待两者都完成。4 MiB 的通信增至 6.14 ms，仍藏在计算之内；64 MiB 的通信增至 45.21 ms，计算也增至 12.89 ms。*
 
@@ -5433,7 +5755,7 @@ GPU 上的道理相同。增加通信线程数和通道数能够加快单独运�
 
 通信请求由谁发起，决定控制路径要穿越几次 PCIe，也决定占用谁的核。图 6-29 比较三种位置。**CPU 代理线程**：GPU 算完数据后在主机内存里写一个就绪标志，CPU 线程轮询到它，构造请求描述符（描述一次传输的记录）、敲响网卡的门铃（写网卡的一个寄存器，通知它有新请求），网卡再从主机内存读取请求描述符；完成记录也写回主机，由 CPU 转告 GPU。控制路径要穿越 PCIe 三次，每次都是几百纳秒；一个 CPU 线程每秒能处理的请求也有限，大批小请求会在这里排队。**GPU 的 SM**：GPU 直接在自己的内存里构造请求描述符并敲门铃，网卡从 GPU 内存读取请求描述符，完成记录写回 GPU 内存供 SM 轮询。CPU 退出了关键路径，控制路径仍要穿越 PCIe 两次；代价是要分出一部分 SM 来构造请求和轮询完成，这些 SM 不能同时做矩阵计算。NVIDIA 的 GPUDirect Async 和专家并行通信库 DeepEP 的低延迟 kernel 采用的是这条路径。**网卡上的处理器**：BlueField 这类网卡内置多核多线程的数据通路处理器，构造请求描述符、敲门铃、取请求描述符都可以留在网卡内部，主机只需为一批操作发一次触发；控制路径不再穿越 PCIe，也不占用 SM 和 CPU 核。三种位置下，发起端的载荷从 GPU 内存搬出、完成记录写回 GPU 内存，各穿越 PCIe 一次，这两项不随发起位置改变；对端网卡读写它所在主机的内存，还要在对端再穿越一次 PCIe。取舍因此是：由谁提供核、控制路径多长、每秒能发起多少请求。第 7.3.3 节将累加每次穿越的时间，第 7.3.4 节再把发起速率纳入吞吐模型。[^initiator]
 
-![通信请求由谁发起](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-initiator.svg)
+![通信请求由谁发起](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-initiator.svg)
 
 *图 6-29：三种发起位置。橙色是构造请求描述符的部件；虚线是 PCIe 边界。CPU 代理线程的控制路径穿越 PCIe 三次，GPU 发起两次，网卡上的处理器零次；发起端的载荷与完成记录在三种方式下都各穿越一次。*
 
@@ -5469,7 +5791,7 @@ $$
 
 以 HGX H100 使用的第三代 NVSwitch 为例，一颗芯片有 64 个 NVLink 4 端口，每个端口每方向 25 GB/s。把这颗芯片用作一台**叶交换机**（leaf）：32 个端口向下接 GPU，另外 32 个端口向上接**脊交换机**（spine），GPU 一侧的总带宽和上联总带宽都是 800 GB/s。若改成 48 个下联、16 个上联，接入的 GPU 链路多了，但它们一起向上最多只能送出 400 GB/s，只有下联总带宽的三分之一。端口总数不变时，多接 GPU 就少了上联端口和上联带宽。DGX H100（NVIDIA 以 HGX H100 为基础的整机）的 NVLink Switch System 把多台服务器接入同一个 NVLink 交换网络，正是这样的取舍：每个节点只把全部 NVLink 带宽的一半引出节点，即 2:1 收敛。[^nvswitch]
 
-![下联与上联端口分配](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-13-ports.svg)
+![下联与上联端口分配](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-13-ports.svg)
 
 *图 6-30：同一颗 64 端口 NVSwitch 的两种分配，每个端口每方向 25 GB/s。上联链路是所有跨交换机流量的共同出口；32／32 分配提供 800 GB/s 上联带宽，48／16 分配只提供 400 GB/s。颜色条的格数与端口数一致。*
 
@@ -5485,15 +5807,15 @@ $$
 
 第三轮，递归算法的数据要走四跳，最忙的链路同时承载四份 1 MiB 数据；Swing 的数据走三跳，最忙的链路只承载两份。按 TPU v4 每条 ICI（芯片间互联）链路每方向 50 GB/s 计，前三轮由瓶颈链路决定的传输时间分别约为 252 与 168 μs。传输时间少了三分之一，是因为共享链路上的数据少了。[^swing]
 
-![相同发送量与不同物理路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-14-topology.svg)
+![相同发送量与不同物理路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-14-topology.svg)
 
 *图 6-31：递归算法第三轮，卡 0 发往卡 4。细线为 16 张卡组成的物理环，箭头标出经过的四条链路。*
 
-![Swing 的第三轮路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-topology-swing.svg)
+![Swing 的第三轮路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-topology-swing.svg)
 
 *图 6-32：同一物理环上，Swing 第三轮卡 0 发往卡 3，经过三条链路。每张卡这一轮的发送量仍为 1 MiB。*
 
-![各轮最忙链路的传输量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-topology-load.svg)
+![各轮最忙链路的传输量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-topology-load.svg)
 
 *图 6-33：把所有发送方的数据累加到各条有向链路上，取每轮的最大值。递归前三轮均为 4 MiB，Swing 为 4、2、2 MiB。*
 
@@ -5501,7 +5823,7 @@ $$
 
 **设计案例：直连环面还是交换网络？** 上述例子中，数据要么直接走一条链路，要么经过一台交换机。把 64 张卡连成一个超节点时，有两条常见的路线。一条是让每张卡直接和邻居相连：把 64 张卡排成 $4\times4\times4$ 的立方体，每张卡沿三个维度各接两个邻居，每一维首尾相连，这就是**三维环面**（torus）。环面是超级计算机长期使用的一类拓扑，TPU 沿用了它。另一条是让每张卡只接交换芯片，由交换层转发到目的地，NVL72 和 CloudMatrix384 采用这一路线。两条路线给每张卡同样的六个端口，每端口每方向 50 GB/s，这正是 TPU v4 每颗芯片的 ICI 配置；差别在端口的另一端接的是邻居还是交换芯片。图 6-34 画出在这两种连接方式下，一次传输经过的路径。
 
-![环面与交换网络中一次传输经过的路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-topology-hops.svg)
+![环面与交换网络中一次传输经过的路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-topology-hops.svg)
 
 *图 6-34：左侧是三维环面的一层，每张卡与四个邻居直连，虚线表示每一维首尾相连；从角上的卡到中心的卡要经过四跳，加上第三个维度最多六跳。右侧是交换网络，任意两张卡之间都是两条链路加一次交换。橙色是相距最远的一对卡，粗线是它们之间传输经过的路径。*
 
@@ -5509,7 +5831,7 @@ $$
 
 再比较**流量模式**。第一种是沿维度的归约：把 AllReduce 拆成沿 x、y、z 三个方向的环形 ReduceScatter 与 AllGather，每一步只在相邻卡之间传输，六条链路同时工作。这时环面把每张卡的全部端口带宽都用上了，和交换网络一样快。TPU 的编译器正是把数据并行和模型并行的分组对应到环面的维度上。第二种是均匀的 All-to-All：每张卡向其他 63 张卡各发一份，MoE 的 dispatch 就是这种模式。环面上每份数据平均要走三跳（每个维度平均一跳）；64 张卡各发 $M$ 字节，全部链路一共要承载 $3\times64M$，分摊到 384 条有向链路，每条 $M/2$。交换网络里每张卡的六个端口各分 $M/6$。取 $M=32$ MiB，环面至少需要约 336 μs，交换网络约 112 μs，相差三倍；512 卡的环面平均六跳，差距变成六倍。图 6-35 把两种模式放在一起。
 
-![两种流量模式在两种拓扑上的传输时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-topology-patterns.svg)
+![两种流量模式在两种拓扑上的传输时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-topology-patterns.svg)
 
 *图 6-35：每张卡六个 50 GB/s 端口、每卡发送 32 MiB。沿维度归约时两种拓扑都用满端口带宽；均匀 All-to-All 时环面上的数据平均要走三跳，共享链路承载的数据随之增加，512 卡时增至六跳。图中是链路负载给出的下界，不含启动开销与排队；交换网络按无阻塞计，即交换层不限制各端口同时满速收发。*
 
@@ -5575,11 +5897,11 @@ TPU v4 以 $4\times4\times4$ 的 64 芯片电互联单元为基础，再用光�
 
 用割集带宽可以分析这种规则拓扑扩展后的通信能力。将一个 $k\times k\times k$ 的三维环面沿某一维等分，穿过两个切面的物理链路（即该割集，称为二分链路）共 $2k^2$ 条。$k$ 从 4 增到 8，芯片数由 64 增到 512，增加到原来的八倍，割集链路却只由 32 增到 128，增加到原来的四倍。若每颗芯片都要向另一半发送同样多的数据，平均每颗芯片分到的割集带宽就减半。芯片数与割集带宽增长速度的差别，决定了哪些并行布局适合这种形状。
 
-![三维环面网络的二分链路](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-15-torus.svg)
+![三维环面网络的二分链路](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-15-torus.svg)
 
 *图 6-36：沿一个维度把三维环面网络分成两半，需要切断中间连接和首尾连接。每处包含 k² 条链路，合计 2k² 条。*
 
-![芯片数与二分链路的增长](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-torus-growth.svg)
+![芯片数与二分链路的增长](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-torus-growth.svg)
 
 *图 6-37：k 从 4 增到 8 时，芯片数从 64 增到 512，二分链路从 32 增到 128。两种增长均以 k = 4 时为基准。k 表示三维环面每个维度的节点数，总节点数为 k³。*
 
@@ -5597,7 +5919,7 @@ NVIDIA 与 TPU 两种系统主要从加速器互联出发。华为的 UB 进一�
 
 事务层的 Jetty 为应用提供提交、接收和完成通知的端点抽象，保留应用身份与操作所需的上下文；传输层的传输通道（UB 中称为 TP Channel，其中 TP 是 Transport Protocol 的缩写，与张量并行无关）维护报文序号、确认、重传和拥塞控制状态。多个应用端点访问同一远端时，可以共用底层的传输通道，不必让每条应用关系都各带一份完整的可靠传输状态。图 6-38 展示了这一分离。传统远程直接内存访问（RDMA，让网卡直接读写已授权的远端内存）的可靠连接 QP（queue pair，队列对，由发送队列和接收队列组成的通信端点）把应用端点关系与传输状态绑定得较紧；UB 则允许分别安排两类状态的数量、寿命与共享范围。[^ub-design]
 
-![UB 事务层与传输层分离](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ub-layers.svg)
+![UB 事务层与传输层分离](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ub-layers.svg)
 
 *图 6-38：两个本地应用保留各自的 Jetty，经共享传输通道访问远端端点。事务层区分操作及其完成归属，传输层处理报文的可靠交付；共享通道不取消权限检查，也不自动建立跨应用的全局顺序。*
 
@@ -5605,7 +5927,7 @@ NVIDIA 与 TPU 两种系统主要从加速器互联出发。华为的 UB 进一�
 
 **控制器的位置。** 传统网卡是一个 PCIe 外设，第 6.4.4 节已经跟踪过这条发起路径。处理器发起一次远程读取时，门铃、读描述符、目标端读数据、写回数据、写完成记录一共五次穿越 PCIe，每次都要几百纳秒。UB 把控制器接在处理器的片上总线上：处理器执行一条 Load 指令，请求经片上总线直接到达控制器，返回的数据直接写入寄存器。图 6-39 对比了这两条发起路径。第 7.3.3 节把两条路径逐阶段相加：线路单程时延为 100 ns 时，经 PCIe 外设网卡的一次 64 B 读取约需 2.2 μs，其中五次 PCIe 穿越占约 1.65 μs；经片上总线控制器的读取约需 0.42 μs。节省的时间不是把原有阶段压缩得到的，而是因为处理器与控制器共用一个地址空间，那些阶段不复存在。去掉抽象层，让处理器像访问本地内存一样访问远端内存，正是 UB 收益的来源；剩下的 0.42 μs 主要由线路时延和远端访存决定，已经接近硬件允许的下限。
 
-![一次远程读取的发起路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ub-controller.svg)
+![一次远程读取的发起路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ub-controller.svg)
 
 *图 6-39：左图的网卡接在 PCIe 之后，门铃、请求描述符、返回数据和完成记录在发起端的处理器与网卡之间各穿越 PCIe 一次，目标端网卡读取数据时再穿越一次；右图的控制器接在片上总线上，处理器的指令直接到达控制器。两条路径从控制器到网络的部分相同。*
 
@@ -5620,19 +5942,19 @@ $$
 
 第三种组织方式是缓存一致的互联，NVLink 属于这一类：加速器可以把对端内存中的数据放进自己的缓存。为了让各个副本保持一致，需要一个目录记录每个缓存行被哪些对端持有，每行至少要为每个对端留 1 bit。设目录跟踪 $W=2^{20}$ 个缓存行（64 MiB 数据），每行另有 8 B 标签，则目录占用 $W\,((H-1)/8+8)$ B：两台主机时约 8 MiB，1024 台时约 136 MiB。每次写入还要向所有持有副本的对端发送失效消息，消息数随 $H$ 线性增长。这两项开销把缓存一致互联的规模限制在几十个对端，NVL72 的 72 张 GPU 正处在这一范围。UB 不维护跨主机的缓存一致，数据何时对其他设备可见由应用自己安排（第 7.4.1 节），所以三条状态曲线中只有它能延伸到上千台主机。图 6-40 画出了这三条曲线。
 
-![互联内主机数与每个网卡的状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ub-hosts.svg)
+![互联内主机数与每个网卡的状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ub-hosts.svg)
 
 *图 6-40：每台主机 8 个端点时，三种组织方式下每个网卡的状态随互联内主机数的变化。虚线是 256 KiB 的片上缓存。逐对连接在 8 台主机时超出缓存，目录式缓存一致互联从两台主机起就远超缓存，端点加通道到上千台主机仍在缓存之内。*
 
 **连接建立时间。** 状态的数量也决定了作业启动时要执行多少控制操作。逐对连接的每条连接要经过创建和三次状态迁移，共 4 次系统调用，还要与对端交换一次连接编号，需要一次带外往返（经数据通路以外的通道往返一次）。取一次系统调用 5 μs、一次带外往返 500 μs，建立一条连接约需 0.52 ms。$N$ 个本地端点访问 $M$ 个远端端点，需要建立 $NM$ 条连接。端点加通道只需为 $N$ 个端点各执行 1 次系统调用，为 $M$ 台远端主机各执行 1 次系统调用和 1 次往返。$N=M=1024$ 时，逐对连接要建立 1,048,576 条连接，串行约需 545 s，32 个核并行也要约 17 s；端点加通道只需创建 2048 个对象，并行后约 16 ms。图 6-41 画出了 $N$ 从 1 到 1024 的全过程。作业每次重启或扩缩容都要重复这一过程，所以它直接影响第 6.7.2 节讨论的故障恢复时间。
 
-![建立全部通信关系的时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-ub-setup.svg)
+![建立全部通信关系的时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-ub-setup.svg)
 
 *图 6-41：在 N 个本地端点与 N 个远端端点之间建立全部连接所需的时间，32 个核并行执行。逐对连接的时间随 N² 增长，端点加通道随 N 增长；N = 1024 时二者相差约一千倍。*
 
 这些 UB 机制在具体系统上的体现是华为的 CloudMatrix384：该系统将 384 个昇腾 910C NPU 与 192 个鲲鹏（Kunpeng）CPU 通过 UB 交换结构组织起来，超节点外使用 RDMA 网络；业务接入由虚拟私有云（VPC）网络承担，用于隔离和连接租户资源。若 384 个 NPU 两两各铺一条直连，需要 $384\times383/2=73\,536$ 条连接；交换层通过端口连接和路由转发实现设备间通信。[^cloudmatrix]
 
-![三种系统的连接组织](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-16-systems.svg)
+![三种系统的连接组织](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-16-systems.svg)
 
 *图 6-42：三个公开系统的连接层次。NVIDIA 用 NVLink 连接设备，TPU v4 用 OCS 连接电互联单元，Unified Bus 将主机侧计算和内存资源接入统一互联。*
 
@@ -5664,11 +5986,11 @@ UB 把资源访问扩展到主机之间后，就有了具体用途：让内存�
 
 把任务 0 整体搬到另一节点，其需求仍超过单节点的 80 GB 容量。若将它的 20 GB 数据放到节点 1 的空闲区，则物理占用变为 80、80、40、40 GB。任务 0 的工作集仍是 100 GB，其中 80 GB 本地、20 GB 远端。这样，任务 0 就能利用其他节点原本空闲的内存。
 
-![借用前后的物理内存位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-17-pool-placement.svg)
+![借用前后的物理内存位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-17-pool-placement.svg)
 
 *图 6-43：借用前的物理占用。每节点容量为 80 GB，任务 0 的需求为 100 GB，其中 20 GB 尚未找到存储位置。颜色表示数据所属任务。*
 
-![借用后的物理占用](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-pool-after.svg)
+![借用后的物理占用](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-pool-after.svg)
 
 *图 6-44：把任务 0 的额外 20 GB 放在节点 1。节点 1 的绿色 60 GB 属于任务 1，蓝色 20 GB 属于任务 0；每个节点都没有超过 80 GB。*
 
@@ -5680,7 +6002,7 @@ UB 把资源访问扩展到主机之间后，就有了具体用途：让内存�
 
 例如节点 1 把一段内存借给节点 0，节点 0 要先写入新 KV，再开始注意力计算。只有确认写入完成、能够读到新的 KV，才能开始计算；节点 1 重新分配这段区域，则要等待借用结束。地址回答“访问哪里”，权限回答“谁能访问”，操作完成与内存释放的顺序回答“什么时候可以使用”。地址、权限和访问顺序三者合在一起，远端内存才能用得正确。
 
-![远端读取中的在途事务](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-18-read-window.svg)
+![远端读取中的在途事务](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-18-read-window.svg)
 
 *图 6-45：一批读取请求发出后，要经过往返时间 L 才能收到结果。最多有 u 个请求在途、每个返回 q 字节时，在一个往返时间内最多返回 uq 字节。图中四个请求仅用于展示过程；正文算例采用 128 个请求，每个 256 字节，往返时间为 7.52 μs。*
 
@@ -5703,7 +6025,7 @@ $$
 
 能否用远端内存替代本地内存，还要把第 6.6.2 节求出的读取带宽与应用的读取需求比较。同样是 20 GB 远端数据，读取频率决定所需的平均带宽。每分钟完整读取一次，平均约需 0.33 GB/s；每秒一次需要 20 GB/s；每秒二十次需要 400 GB/s。容量相同，所需的平均读取带宽相差上千倍。
 
-![访问频率与带宽需求](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-19-memory-pool.svg)
+![访问频率与带宽需求](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-19-memory-pool.svg)
 
 *图 6-46：完整读取 20 GB 的频率与平均带宽需求。路径带宽为 50 GB/s；每事务返回 256 bytes、往返 7.52 μs 时，128 个在途事务将有效带宽限制到约 4.36 GB/s。*
 
@@ -5738,19 +6060,19 @@ KV 的使用方式决定其适合放在哪里。会话等待用户下一轮输�
 | 两个四卡实例 | 63.8 ms | 63.8、63.8、127.6、127.6 ms | 127.6 ms |
 | 一个八卡实例 | 41.2 ms | 41.2、82.4、123.5、164.7 ms | 164.7 ms |
 
-![四种部署的每卡内存需求](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-session-capacity.svg)
+![四种部署的每卡内存需求](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-session-capacity.svg)
 
 *图 6-47：四种部署在 128K 会话下的每卡内存需求，包括权重、实例内全部排队会话的 KV 和 2 GiB 工作区。单卡实例每卡要 102.03 GB，超过 H100 的 80 GB（虚线）；两卡、四卡、八卡实例分别约为 52.09、35.71、27.52 GB。*
 
-![四个两卡实例](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-session-tp2.svg)
+![四个两卡实例](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-session-tp2.svg)
 
 *图 6-48：四会话同时推进，每个约 119.1 ms 完成。颜色与相邻配置图中的会话一致。本图使用四个 TP2 实例，每实例两张卡，每个会话续写八个 token；虚线为 130 ms 期限。*
 
-![两个四卡实例](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-session-tp4.svg)
+![两个四卡实例](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-session-tp4.svg)
 
 *图 6-49：每个实例顺序处理两个会话，分别在约 63.8 ms 和 127.6 ms 完成。本图使用两个 TP4 实例，每实例四张卡，每个会话续写八个 token；虚线为 130 ms 期限。*
 
-![一个八卡实例](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-session-tp8.svg)
+![一个八卡实例](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-session-tp8.svg)
 
 *图 6-50：单会话缩短到约 41.2 ms，四会话依次执行，最后一个约 164.7 ms 完成。三图横轴使用同一尺度。本图使用一个 TP8 实例，共八张卡，每个会话续写八个 token；虚线为 130 ms 期限。*
 
@@ -5788,11 +6110,11 @@ $$
 
 四个两卡实例继续满足最低比例，成本增为 $8\times0.1791\approx1.433$ GPU·s，平均每个按时完成的会话约 $1.433/3\approx0.478$ GPU·s，是无故障时的 2.0 倍；两个四卡实例约为 0.500 GPU·s。故障被隔离在一个实例内，另外三个会话仍能按时完成；但占用时间延长、按时完成的会话减少，每个会话的成本仍翻了一倍。
 
-![期限、故障与按时完成会话的平均成本](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-21-scale-cost.svg)
+![期限、故障与按时完成会话的平均成本](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-21-scale-cost.svg)
 
 *图 6-51：无故障时，按时完成会话的平均成本随期限变化。八卡计费至所有会话结束；曲线从至少三个会话按时完成处开始。TP 数值为每实例使用的卡数；成本以 H100 的 GPU·s 计。TP1 放不下 128K 会话，没有曲线。*
 
-![一次卡故障后的会话成本](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-scale-cost-fault.svg)
+![一次卡故障后的会话成本](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-scale-cost-fault.svg)
 
 *图 6-52：20 ms 时卡 0 故障，受影响实例在 60 ms 从当前会话起点重新执行。采用与无故障图相同的计费方法和纵轴范围。TP 数值为每实例使用的卡数；成本以 H100 的 GPU·s 计。*
 
@@ -5880,13 +6202,13 @@ $$
 
 单个用户的速度则与超节点大小无关。batch 为 1 时，一个 token 的关键路径是所在卡读一遍 8.2 GB 每卡各存一份的权重，再逐层读取一个专家，共 2.76 ms，即 362 token/s，8 卡与 256 卡完全相同。放大超节点得到的是容量和总吞吐，不是单个会话的速度；要缩短单个会话的时间，只能像第 6.7.1 节那样把注意力也做张量并行。反过来，同样 64 张卡若分散在八台 HGX H100 上，dispatch 和 combine 有八分之七的字节要经过网卡，通信时间从 3.7 ms 增至 29.2 ms，每卡吞吐降到 7,828 token/s。超节点省下的正是这一段。
 
-![超节点大小与每卡 decode 吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-supernode-inference.svg)
+![超节点大小与每卡 decode 吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-supernode-inference.svg)
 
 *图 6-53：V4.1 Flash 在 256 张 H100 上的每卡 decode 吞吐随超节点大小的变化，服务目标为每 token 50 ms。蓝线：实例都在一个超节点内，8 卡到 64 卡提高约 7.4 倍，此后不再增长；橙点：同样 64 张卡分散在八台服务器上组成专家并行组。*
 
 **把权重固定进 ROM。** 图 6-54 画出权重与 KV 的三种放置方式。GPU 把两者都放在 HBM，每一步都要重新读一遍权重；第 4.7.3 节的架构把部署期间不再变化的权重写进掩模 ROM，HBM 只保存 KV；KV 还可以进一步放进片上 SRAM。
 
-![权重与 KV 的三种放置方式](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-weight-placement.svg)
+![权重与 KV 的三种放置方式](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-weight-placement.svg)
 
 *图 6-54：权重与 KV 的三种放置方式。左：GPU 的权重与 KV 共用 HBM；中：权重在制造时写入 ROM，KV 放 HBM；右：权重在 ROM，KV 放片上 SRAM，容量小得多。箭头是每步都要读取的数据，方框高度示意容量。*
 
@@ -5906,13 +6228,13 @@ $$
 
 权重离开 HBM 之后，权重读取从 2.7 ms 缩短到 69 μs，但 80 次片上 AllReduce 仍需 159 μs，占每个 token 时间的 65%。换成 58 张 B200 做张量并行，权重读取也能压到 148 μs，通信却增至 562 μs。权重读取一旦不再是最长的一项，单用户速度就由集合通信决定，第 6.5.1 节按跳数和每跳延迟估算通信的方法在这里成了关键。
 
-![权重离开 HBM 后，单用户每 token 时间的构成](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-rom-token-time.svg)
+![权重离开 HBM 后，单用户每 token 时间的构成](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-rom-token-time.svg)
 
 *图 6-55：三种机器上 V4.1 Flash 单用户每 token 时间的构成，200K 上下文，batch 为 1。权重在 HBM 时存储读取占绝大部分，权重进 ROM 之后集合通信成为最长的一项。*
 
 **Engram 表放在哪里。** V4.1 Flash 有两个 Engram 模块，各带一张 3.84 亿行的表，每行 256 个 FP8 值加 8 字节 scale，两张表共 203.1 GB。每生成一个 token，两个模块各查 24 行，共 12.7 KB。这两张表同样是权重，部署后不再改变；要查哪些行只取决于 token 序列，与激活无关，因此每一步开始时就能预取。只要在第一个 Transformer 块算完之前把这些行取回，查表就不占用时间；可用于取回的时间在 H100 上是 69 μs，在 ROM 晶圆上只有 6.1 μs。图 6-56 画出三种放法，代价如下。
 
-![Engram 表的三种放置方式](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/figure-6-engram-placement.svg)
+![Engram 表的三种放置方式](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/figure-6-engram-placement.svg)
 
 *图 6-56：Engram 表的三种放置方式。要查哪些行在第一个 Transformer 块计算之前就已确定，三种放法的差别在于取回这 48 行要走什么路径，以及表占用哪一种存储。*
 
@@ -5946,81 +6268,83 @@ $$
 
 权重、状态或服务需求继续扩大时，单个超节点可能不足以支撑一个实例的运行。下一章沿着本章分析的数据传输路径和依赖关系，加入网卡、数据中心交换网络、远程操作的完成通知与网络拥塞，继续计算扩大协作范围所带来的收益和代价。
 
-[^dense]: 单卡完整 BF16 权重为 470,187,269,120 bytes，8192 个 token 的 KV 为 1,577,058,304 bytes；八卡 TP 时每卡权重为 58,959,617,024 bytes（含每卡各存一份的归一化参数与路由器），每卡 KV 为 394,264,576 bytes，每卡最多保存 47 个 8192 token 的会话。表中 GB 为十进制，GiB／MiB 为二进制，合计先用精确值求和再取近似；2 GiB 包含激活与其余工作区预留。详见[Qwen3-235B-A22B 八卡放置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen235-placement-tp8-kv-replica.md)及其 JSON，读取固定官方配置与权重索引。单步读取量与运算量见[单请求 8K decode](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-235b-a22b-decode-b1-s8192.md)与[8192 token prefill](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-235b-a22b-prefill-8192.md)。
+[^dense]: 单卡完整 BF16 权重为 470,187,269,120 bytes，8192 个 token 的 KV 为 1,577,058,304 bytes；八卡 TP 时每卡权重为 58,959,617,024 bytes（含每卡各存一份的归一化参数与路由器），每卡 KV 为 394,264,576 bytes，每卡最多保存 47 个 8192 token 的会话。表中 GB 为十进制，GiB／MiB 为二进制，合计先用精确值求和再取近似；2 GiB 包含激活与其余工作区预留。详见[Qwen3-235B-A22B 八卡放置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen235-placement-tp8-kv-replica.md)及其 JSON，读取固定官方配置与权重索引。单步读取量与运算量见[单请求 8K decode](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-235b-a22b-decode-b1-s8192.md)与[8192 token prefill](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-235b-a22b-prefill-8192.md)。
 
-[^models]: [具体模型的并行推算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/model-parallelism.md)，[Qwen3-235B-A22B 配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/scaling-history/qwen3-235b-config.json)，[DeepSeek V4 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v4.pdf)，[Kimi K3 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/kimi-k3.pdf)表 1 与 §2.3。DeepSeek-V3 的 671B 为历史对照模型。
+[^models]: [具体模型的并行推算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/model-parallelism.md)，[Qwen3-235B-A22B 配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/scaling-history/qwen3-235b-config.json)，[DeepSeek V4 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v4.pdf)，[Kimi K3 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/kimi-k3.pdf)表 1 与 §2.3。DeepSeek-V3 的 671B 为历史对照模型。
 
-[^tp-experiment]: 八个正式配置通过 FP64 参考检查，配对 TP/SP 输出逐位相同；完整形状与验收见[实验 6-2：JAX TP/SP 实际 FFN 路径](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch06/06-02/jax-tp-sp/README.md)。实验在 CPU 逻辑设备上执行。
+[^tp-experiment]: 八个正式配置通过 FP64 参考检查，配对 TP/SP 输出逐位相同；完整形状与验收见[实验 6-2：JAX TP/SP 实际 FFN 路径](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch06/06-02/jax-tp-sp/README.md)。实验在 CPU 逻辑设备上执行。
 
-[^variants]: [MeshSlice 的矩阵形状与流水推算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/mesh-shape-and-slicing.md)、[Shift Parallelism 的状态与额外驻留](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/parallel-switching-and-state.md)。MeshSlice 的部分重叠为预测，Arctic 的 SP 定义及动态切换边界按固定实现说明。
+[^variants]: [MeshSlice 的矩阵形状与流水推算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/mesh-shape-and-slicing.md)、[Shift Parallelism 的状态与额外驻留](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/parallel-switching-and-state.md)。MeshSlice 的部分重叠为预测，Arctic 的 SP 定义及动态切换边界按固定实现说明。
 
-[^pipeline]: [有限槽位与背压计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pipeline-finite-1-slots.md)、[基础 TP／PP 通信路径](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/dense-comm-qwen8-tp8-pp1-t1.md)。
+[^pipeline]: [有限槽位与背压计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pipeline-finite-1-slots.md)、[基础 TP／PP 通信路径](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/dense-comm-qwen8-tp8-pp1-t1.md)。
 
-[^ownership]: [Qwen235 所有权连接练习](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/parallel-moe-ownership/NOTES.md)及[独立核对结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/parallel-moe-ownership/results.json)。本例采用正文给定的 TP2×EP4 布局。
+[^ownership]: [Qwen235 所有权连接练习](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/parallel-moe-ownership/NOTES.md)及[独立核对结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/parallel-moe-ownership/results.json)。本例采用正文给定的 TP2×EP4 布局。
 
-[^moe-tax]: [专家复用与 MoE Serving Tax 阅读](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/moe-and-startup.md)。式（6-8）假设各 token 独立、均匀地选择专家；原论文分别以激活 FLOPs 和总参数匹配稠密对照模型。
+[^moe-tax]: [专家复用与 MoE Serving Tax 阅读](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/moe-and-startup.md)。式（6-8）假设各 token 独立、均匀地选择专家；原论文分别以激活 FLOPs 和总参数匹配稠密对照模型。
 
-[^routes]: 图形与样本说明见[路由热图](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/route-observation.png)和[配套图说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/README.md)。记录覆盖 43 层，每题四个实际 decode 输入，包含调度器提前执行的 EOS forward。来源：[DeepSeek V4-Flash 路由观测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch06/06-03/README.md)及[原始计数分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch06/06-03/runs/routes-001/route-analysis.json)。
+[^routes]: 图形与样本说明见[路由热图](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/route-observation.png)和[配套图说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/README.md)。记录覆盖 43 层，每题四个实际 decode 输入，包含调度器提前执行的 EOS forward。来源：[DeepSeek V4-Flash 路由观测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch06/06-03/README.md)及[原始计数分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch06/06-03/runs/routes-001/route-analysis.json)。
 
-[^ring]: [Ring 逐轮结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ring-qwen3-32b-t1-p8-h100.md)、[未分段二项树结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/tree-qwen3-32b-t1-p8-h100.md)，按无争用计算。带宽为 H100 的 18 条 NVLink 4 每方向合计 450 GB/s，见 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)第 47 页；每轮开销取 C. Hwang 等，[MSCCL++: Rethinking GPU Communication Abstractions for AI Inference](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/ASPLOS/2026/paper-034.pdf)，ASPLOS 2026，表 1 与表 2：在每节点 8 张 H100、NVLink 4、每卡一张 400 Gbit/s ConnectX-7 的平台上，nvbandwidth 测得 NVLink 延迟 822 ns、吞吐 397.5 GB/s，RDMA perftest 测得 InfiniBand 延迟 3.76 μs、吞吐 48.94 GB/s。
+[^ring]: [Ring 逐轮结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ring-qwen3-32b-t1-p8-h100.md)、[未分段二项树结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/tree-qwen3-32b-t1-p8-h100.md)，按无争用计算。带宽为 H100 的 18 条 NVLink 4 每方向合计 450 GB/s，见 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)第 47 页；每轮开销取 C. Hwang 等，[MSCCL++: Rethinking GPU Communication Abstractions for AI Inference](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/ASPLOS/2026/paper-034.pdf)，ASPLOS 2026，表 1 与表 2：在每节点 8 张 H100、NVLink 4、每卡一张 400 Gbit/s ConnectX-7 的平台上，nvbandwidth 测得 NVLink 延迟 822 ns、吞吐 397.5 GB/s，RDMA perftest 测得 InfiniBand 延迟 3.76 μs、吞吐 48.94 GB/s。
 
-[^collective-path]: [集合通信路径与诊断](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/collective-paths-and-diagnosis.md)，涵盖固定框架源码、custom AllReduce 分派、就绪偏差和测量范围。
+[^collective-path]: [集合通信路径与诊断](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/collective-paths-and-diagnosis.md)，涵盖固定框架源码、custom AllReduce 分派、就绪偏差和测量范围。
 
-[^tuning]: AutoCCL 采用 16／32 张 A40 与 NCCL 2.18.3，八卡 NVLink 为四对连接；其直接搜索目标仍是通信性能，18.26→32.44 GB/s 为论文表 6 的 AllGather 在重计算干扰下的测量。NCCL 2.31.2 跨网络零 CTA 的 AllGather／AlltoAll 路径涉及对称注册窗口、节点内 CE 和节点间 CPU proxy。详见[通信调优、计算争用与卸载](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/communication-tuning.md)。
+[^tuning]: AutoCCL 采用 16／32 张 A40 与 NCCL 2.18.3，八卡 NVLink 为四对连接；其直接搜索目标仍是通信性能，18.26→32.44 GB/s 为论文表 6 的 AllGather 在重计算干扰下的测量。NCCL 2.31.2 跨网络零 CTA 的 AllGather／AlltoAll 路径涉及对称注册窗口、节点内 CE 和节点间 CPU proxy。详见[通信调优、计算争用与卸载](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/communication-tuning.md)。
 
-[^comm-experiment]: [实验 6-5：四进程实际通信与计算并行](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch06/06-05/README.md)。实验在一台 M2 Max 上用 PyTorch CPU 版运行，四个进程经本机 TCP 通信。正式测量分五组，每组把单独通信、单独计算、同时运行三种方式各跑一次，组内顺序随机；表中每项先取组内最慢进程的时间，再取五组的中位数。通信时间从提交异步 AllReduce 算起，到主机收到完成回调为止，可能略晚于数据实际传完。
+[^comm-experiment]: [实验 6-5：四进程实际通信与计算并行](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch06/06-05/README.md)。实验在一台 M2 Max 上用 PyTorch CPU 版运行，四个进程经本机 TCP 通信。正式测量分五组，每组把单独通信、单独计算、同时运行三种方式各跑一次，组内顺序随机；表中每项先取组内最慢进程的时间，再取五组的中位数。通信时间从提交异步 AllReduce 算起，到主机收到完成回调为止，可能略晚于数据实际传完。
 
-[^swing]: [集合通信的物理路径与作业错峰](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/network-planning-and-collectives.md)、[96 条消息的物理路径计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/collective-paths-book.md)、[NSDI 2024 选读](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/reading-nsdi-2024.md)、[Morphlux 版本与阅读记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/reading-asplos-2026.md)。TPU v4 的 OCS 基于 MEMS 反射镜，切换需要毫秒级时间，见 [TPU v4 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tpu-v4.pdf) §2。
+[^swing]: [集合通信的物理路径与作业错峰](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/network-planning-and-collectives.md)、[96 条消息的物理路径计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/collective-paths-book.md)、[NSDI 2024 选读](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/reading-nsdi-2024.md)、[Morphlux 版本与阅读记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/reading-asplos-2026.md)。TPU v4 的 OCS 基于 MEMS 反射镜，切换需要毫秒级时间，见 [TPU v4 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tpu-v4.pdf) §2。
 
-[^numa]: [PCIe 中转与 NUMA 放置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/pcie-staging-and-numa.md)、[发送端附近缓冲的计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/staging-local-grouped.md)（本章只用其中的字节计数）。HGX H100 主机的 CPU 型号见 [DGX H100 用户指南](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-dgx-h100-user-guide.md)；Xeon 8480C 是 Xeon Platinum 8480+ 的定制版本，后者最多 4 条 UPI 链路、每条 16 GT/s，见 [Intel 产品规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/intel-xeon-8480plus-ark.md)与 [第四代至强技术概览](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/intel-xeon-4th-gen-overview.md)表 1。Intel 未公开 UPI 每方向的 GB/s，这里不换算传输时间；PCIe Gen5 x16 每方向 64 GB/s 见 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)第 48 页。
+[^numa]: [PCIe 中转与 NUMA 放置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/pcie-staging-and-numa.md)、[发送端附近缓冲的计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/staging-local-grouped.md)（本章只用其中的字节计数）。HGX H100 主机的 CPU 型号见 [DGX H100 用户指南](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-dgx-h100-user-guide.md)；Xeon 8480C 是 Xeon Platinum 8480+ 的定制版本，后者最多 4 条 UPI 链路、每条 16 GT/s，见 [Intel 产品规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/intel-xeon-8480plus-ark.md)与 [第四代至强技术概览](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/intel-xeon-4th-gen-overview.md)表 1。Intel 未公开 UPI 每方向的 GB/s，这里不换算传输时间；PCIe Gen5 x16 每方向 64 GB/s 见 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)第 48 页。
 
-[^physical]: [端口数量与互联介质分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/draft11-outline-audit/report.md#radix)。端口与功率算例采用题设输入。
+[^physical]: [端口数量与互联介质分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/draft11-outline-audit/report.md#radix)。端口与功率算例采用题设输入。
 
-[^ashrae]: ASHRAE TC 9.9，[Emergence and Expansion of Liquid Cooling in Mainstream Data Centers](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/ashrae-liquid-cooling.pdf)，2021，第 14、28 页：白皮书没有给出单一的风冷上限，40 kW 是本例按其风量对比选取的阈值；[DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/dgx-superpod-h100-ra.pdf)第 10 页的示例机柜布置中每机柜功率超过 40 kW。按服务器计的功率上限见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)的 `rack` 字段。
+[^ashrae]: ASHRAE TC 9.9，[Emergence and Expansion of Liquid Cooling in Mainstream Data Centers](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/ashrae-liquid-cooling.pdf)，2021，第 14、28 页：白皮书没有给出单一的风冷上限，40 kW 是本例按其风量对比选取的阈值；[DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/dgx-superpod-h100-ra.pdf)第 10 页的示例机柜布置中每机柜功率超过 40 kW。按服务器计的功率上限见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)的 `rack` 字段。
 
-[^nvidia]: [V100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-v100.pdf)，NVLink 拓扑与 DGX-1 附录；[A100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100.pdf)，NVLink／NVSwitch 与 DGX A100 附录；DGX-2 的 16 卡历史配置亦见[ZeRO 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/zero.pdf)平台说明。
+[^nvidia]: [V100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-v100.pdf)，NVLink 拓扑与 DGX-1 附录；[A100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100.pdf)，NVLink／NVSwitch 与 DGX A100 附录；DGX-2 的 16 卡历史配置亦见[ZeRO 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/zero.pdf)平台说明。
 
-[^topology-choice]: 设计案例每芯片 6 个端口、每端口每方向 50 GB/s 取自 TPU v4：[TPU 多代综述](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/google-tpu-generations.pdf)表 1 列出 TPU v4 每芯片 6 条 ICI 链路、每条 50 GB/s，脚注 4 说明按每方向计（TPU v5p 与 Ironwood 为每条 100 GB/s）；[TPU v4 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tpu-v4.pdf)表 4 同为 6 条 50 GB/s 链路。每次转发 200 ns 取 [UALink 2.0 规范](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ualink-common.pdf) §9.9.2 为 128 lane 交换芯片设定的空载延迟目标，把它同时用于环面芯片内的路由器。32 MiB 为题设的每卡发送量；均匀 All-to-All 的链路负载按维序路由的平均跳数计算。其余系统数据来自 TPU v4 论文 §2（光链路成本、OCS 占比、3D 环面的割集）、[NVLink 官方规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/nvidia-nvlink-spec.txt)（每 GPU 18 条链路、72 GPU 无阻塞）、[CloudMatrix384 论文 v2](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/cloudmatrix384-v2.pdf) §3.3.2–3.3.3（一级、二级交换芯片数量与无阻塞设计）。
+[^topology-choice]: 设计案例每芯片 6 个端口、每端口每方向 50 GB/s 取自 TPU v4：[TPU 多代综述](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/google-tpu-generations.pdf)表 1 列出 TPU v4 每芯片 6 条 ICI 链路、每条 50 GB/s，脚注 4 说明按每方向计（TPU v5p 与 Ironwood 为每条 100 GB/s）；[TPU v4 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tpu-v4.pdf)表 4 同为 6 条 50 GB/s 链路。每次转发 200 ns 取 [UALink 2.0 规范](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ualink-common.pdf) §9.9.2 为 128 lane 交换芯片设定的空载延迟目标，把它同时用于环面芯片内的路由器。32 MiB 为题设的每卡发送量；均匀 All-to-All 的链路负载按维序路由的平均跳数计算。其余系统数据来自 TPU v4 论文 §2（光链路成本、OCS 占比、3D 环面的割集）、[NVLink 官方规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/nvidia-nvlink-spec.txt)（每 GPU 18 条链路、72 GPU 无阻塞）、[CloudMatrix384 论文 v2](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/cloudmatrix384-v2.pdf) §3.3.2–3.3.3（一级、二级交换芯片数量与无阻塞设计）。
 
-[^nvl]: [GB200 NVL72 官方归档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-gb200.md)，固定快照中 72 GPU／36 CPU 与机柜级 NVLink 组织；NVLink Switch System 最多连接 256 张 H100，见 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)第 48 页。16 卡环形归约的时间见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)的 `two_servers.nvlink_domain_tp16` 字段。
+[^nvl]: [GB200 NVL72 官方归档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-gb200.md)，固定快照中 72 GPU／36 CPU 与机柜级 NVLink 组织；NVLink Switch System 最多连接 256 张 H100，见 [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)第 48 页。16 卡环形归约的时间见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)的 `two_servers.nvlink_domain_tp16` 字段。
 
-[^tpu]: [TPU v4 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/tpu-v4.pdf)、[TPU 多代系统综述](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/google-tpu-generations.pdf)，电互联 cube、OCS、切片与故障隔离的设计。
+[^tpu]: [TPU v4 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/tpu-v4.pdf)、[TPU 多代系统综述](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/google-tpu-generations.pdf)，电互联 cube、OCS、切片与故障隔离的设计。
 
-[^ub]: [UB 与昇腾 950 资料核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/UB-ASCEND-NOTES.md)、[UB OS 参考设计](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/UB-Software-Reference-Design-for-OS-2.0-zh.pdf)§4、[950 官方白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-950-official.pdf)§4.6。
+[^ub]: [UB 与昇腾 950 资料核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/UB-ASCEND-NOTES.md)、[UB OS 参考设计](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/UB-Software-Reference-Design-for-OS-2.0-zh.pdf)§4、[950 官方白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-950-official.pdf)§4.6。
 
 
-[^cloudmatrix]: [CloudMatrix384 论文 v2](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/cloudmatrix384-v2.pdf)§3.2、图 2、表 1；论文表中的部分 NPU 测量按 die 计，系统 384 则按 NPU 计。
+[^cloudmatrix]: [CloudMatrix384 论文 v2](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/cloudmatrix384-v2.pdf)§3.2、图 2、表 1；论文表中的部分 NPU 测量按 die 计，系统 384 则按 NPU 计。
 
-[^pool]: [第 6 章内存池计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)的 `memory_pool` 字段：四个 80 GB 节点的借用前后占用、窗口带宽 $uq/L$、读取时间与重复读取的比较。路径带宽取 ConnectX-7 的 400 Gbit/s，往返时间取 MSCCL++ 表 1 的 InfiniBand 单向延迟 3.76 μs 的两倍，本地带宽取 H100 的 3350 GB/s。
+[^pool]: [第 6 章内存池计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)的 `memory_pool` 字段：四个 80 GB 节点的借用前后占用、窗口带宽 $uq/L$、读取时间与重复读取的比较。路径带宽取 ConnectX-7 的 400 Gbit/s，往返时间取 MSCCL++ 表 1 的 InfiniBand 单向延迟 3.76 μs 的两倍，本地带宽取 H100 的 3350 GB/s。
 
-[^cost]: [逐会话时间线、故障与 GPU·s](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)的 `candidates` 与 `candidates_32k` 字段，由[计算脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity_model.py)生成；四组部署条件的筛选见[切分选择结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/parallel-choice-book.md)。能耗按 DGX H100 系统功率上限 10.2 kW 计，见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)。
+[^cost]: [逐会话时间线、故障与 GPU·s](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)的 `candidates` 与 `candidates_32k` 字段，由[计算脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity_model.py)生成；四组部署条件的筛选见[切分选择结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/parallel-choice-book.md)。能耗按 DGX H100 系统功率上限 10.2 kW 计，见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)。
 
-[^continuous]: 贯穿模型与逐步计算见[模型说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuous-example.md)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity_model.py)和[完整结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)。Qwen3-32B 形状取自已锁定配置，H100 的 HBM 容量、带宽与矩阵峰值取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)。矩阵算子的时间取内存访问与计算时间的较大值，均按峰值计；通信按层串行，上下文 KV 每步增长。
+[^continuous]: 贯穿模型与逐步计算见[模型说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuous-example.md)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity_model.py)和[完整结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)。Qwen3-32B 形状取自已锁定配置，H100 的 HBM 容量、带宽与矩阵峰值取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)。矩阵算子的时间取内存访问与计算时间的较大值，均按峰值计；通信按层串行，上下文 KV 每步增长。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
-[^ub-design]: 李博杰，〈[Unified Bus 背后的思考](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/ub-reflection.md)〉，Jetty、事务序与 Load/Store 各节；[OpenURMA 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/openurma.pdf)，2026-06-02 修订版（arXiv:2605.28717），§3 设计、§7–§9 状态与延迟、§11 全系统验证、§13 结果汇总。[本次整合的来源与适用范围](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/README.md)。
-[^ub-fabric]: 主机数与连接建立时间的参数和结果见[UB 互联计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ub-fabric-book.md)，运行 `python3 calculations/calc.py ub-fabric --format md` 可以复算；记录尺寸、阶段延迟和缓存条目数取自 OpenURMA 论文表 3、表 7 与 §7.2。目录式缓存一致互联按每个缓存行为每个对端保留 1 bit 的公式计算；NVL72 的 72 张 GPU 是该代产品的公开配置，不是本书推导的结果。
+[^ub-design]: 李博杰，〈[Unified Bus 背后的思考](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/ub-reflection.md)〉，Jetty、事务序与 Load/Store 各节；[OpenURMA 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/openurma.pdf)，2026-06-02 修订版（arXiv:2605.28717），§3 设计、§7–§9 状态与延迟、§11 全系统验证、§13 结果汇总。[本次整合的来源与适用范围](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/README.md)。
+[^ub-fabric]: 主机数与连接建立时间的参数和结果见[UB 互联计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ub-fabric-book.md)，运行 `python3 calculations/calc.py ub-fabric --format md` 可以复算；记录尺寸、阶段延迟和缓存条目数取自 OpenURMA 论文表 3、表 7 与 §7.2。目录式缓存一致互联按每个缓存行为每个对端保留 1 bit 的公式计算；NVL72 的 72 张 GPU 是该代产品的公开配置，不是本书推导的结果。
 
-[^initiator]: NVIDIA 技术博客 [Improving Network Performance of HPC Systems Using NVIDIA Magnum IO NVSHMEM and GPUDirect Async](https://developer.nvidia.com/blog/improving-network-performance-of-hpc-systems-using-nvidia-magnum-io-nvshmem-and-gpudirect-async/)（CPU 代理线程与 GPU 发起两条路径的步骤）；[NVIDIA DOCA DPA 文档](https://docs.nvidia.com/doca/sdk/doca-dpa/index.html)（把通信代码卸载到 BlueField-3 网卡内处理器的编程模型）；[DeepEP README 快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/sources/deepep.md)。三种位置的穿越次数按各自的控制路径计，具体实现可能合并或增加步骤；抓取快照见[来源记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/sources.json)。
+[^initiator]: NVIDIA 技术博客 [Improving Network Performance of HPC Systems Using NVIDIA Magnum IO NVSHMEM and GPUDirect Async](https://developer.nvidia.com/blog/improving-network-performance-of-hpc-systems-using-nvidia-magnum-io-nvshmem-and-gpudirect-async/)（CPU 代理线程与 GPU 发起两条路径的步骤）；[NVIDIA DOCA DPA 文档](https://docs.nvidia.com/doca/sdk/doca-dpa/index.html)（把通信代码卸载到 BlueField-3 网卡内处理器的编程模型）；[DeepEP README 快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/sources/deepep.md)。三种位置的穿越次数按各自的控制路径计，具体实现可能合并或增加步骤；抓取快照见[来源记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/sources.json)。
 
-[^nccl-basics]: NVIDIA，[NCCL 集合通信语义](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html)、[点对点与不等长交换](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/p2p.html)、[nccl-tests 带宽口径](https://github.com/NVIDIA/nccl-tests/blob/master/doc/PERFORMANCE.md)；阅读快照与哈希见[来源记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/sources.json)。
+[^nccl-basics]: NVIDIA，[NCCL 集合通信语义](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/collectives.html)、[点对点与不等长交换](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/usage/p2p.html)、[nccl-tests 带宽口径](https://github.com/NVIDIA/nccl-tests/blob/master/doc/PERFORMANCE.md)；阅读快照与哈希见[来源记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/sources.json)。
 
-[^sequence-context]: Korthikanti 等，[Reducing Activation Recomputation in Large Transformer Models](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/activation-recompute.pdf)，§3 的 tensor 与 sequence parallelism；[Megatron Core 的 Context Parallelism 文档](https://github.com/NVIDIA/Megatron-LM/blob/main/docs/user-guide/features/context_parallel.md)；Liu 等，[Ring Attention with Blockwise Transformers for Near-Infinite Context](https://arxiv.org/abs/2310.01889)。本节 SP 采用 Megatron 的特定含义，CP 的八位置例子为本书推导。
+[^sequence-context]: Korthikanti 等，[Reducing Activation Recomputation in Large Transformer Models](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/activation-recompute.pdf)，§3 的 tensor 与 sequence parallelism；[Megatron Core 的 Context Parallelism 文档](https://github.com/NVIDIA/Megatron-LM/blob/main/docs/user-guide/features/context_parallel.md)；Liu 等，[Ring Attention with Blockwise Transformers for Near-Infinite Context](https://arxiv.org/abs/2310.01889)。本节 SP 采用 Megatron 的特定含义，CP 的八位置例子为本书推导。
 
-[^parallel-choice]: [切分选择输入](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/scenarios/parallel-choice-example.json)、[方案筛选脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/parallel_choice.py)、[完整结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/parallel-choice-book.md)。使用本章的执行时间模型，按实例内全部排队会话的峰值上下文计算 KV 容量；只在明示的 TP 与实例数组合内排序。
+[^nested-bsp]: 华为半导体首席科学家廖恒博士，[Nested Parallel von Neumann Architecture and Nested BSP](https://arxiv.org/abs/2609.16787)，arXiv:2609.16787，2026-09-15。§2 与图 1 提出软件并行的递归嵌套，图中由外向内为 DP、PP、EP、FSDP、CP、TP。第 6 章借用论文的层级化视角解释组合关系，第 10 章说明 FSDP 与 SP 的分工；16 卡例子为本书教学示例。
 
-[^supernode-inference]: [固定场景](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/scenarios/supernode-inference-example.json)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/supernode_inference.py)与[完整结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/supernode-inference-book.md)。权重按锁定的 V4.1 Flash checkpoint 分片头逐张量累加；KV 与矩阵运算量分别由 `kv-comparison` 与 `v41-forward` 在 200,000 上下文下算出；H100 参数取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)；NVLink 与网卡的每轮启动开销与第 7.6.3、7.6.4 节相同。ROM 晶圆与 58 张 B200 两行取自作者的 [OpenTallas](https://github.com/bojieli/OpenTallas) 仓库 commit c7093ba 中 DeepSeek-V4.1-Flash 的 roofline 分析，所用分析点保存在[摘录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/opentallas/v41-flash-roofline-n5-vs-b200.json)中。这些是等硅面积下的分析结果：OpenTallas 尚无流片的芯片，其 ROM 密度与读取带宽在 N5 工艺上也未经测量。Engram 表的行数、每行字节与两个模块的查表行数取自同一 checkpoint 与配置；DeepSeek 的部署把表放在主机内存并用 RDMA 预取，见 [V4.1 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)§2.4.2 与 §3.1.3；主机内存一次往返与在途标签限制的读取率取第 7.3.4 节 KV-Direct 的测量；ROM 面积按 OpenTallas 的 N5 掩模 ROM 密度换算，表移出 ROM 后的一片晶圆设计取自同一 commit 的 engram-host 分析。WSE-3 的 44 GB 片上 SRAM 见第 4.7.2 节。
+[^parallel-choice]: [切分选择输入](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/scenarios/parallel-choice-example.json)、[方案筛选脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/parallel_choice.py)、[完整结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/parallel-choice-book.md)。使用本章的执行时间模型，按实例内全部排队会话的峰值上下文计算 KV 容量；只在明示的 TP 与实例数组合内排序。
 
-[^hgx]: [HGX H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-hgx-h100-datasheet.pdf)：八张 GPU 经 NVSwitch 互联，GPU 间 NVLink 900 GB/s，网络速率至 400 Gbit/s；[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)列出 H100 SXM 的 80 GB、3.35 TB/s、NVLink 900 GB/s 与 PCIe Gen5 128 GB/s，后两项为收发两个方向的合计；[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)第 47 页：18 条第四代 NVLink，每条每方向 25 GB/s；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)：单端口至 400 Gbit/s；[DGX H100 用户指南](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-dgx-h100-user-guide.md)：8 张 H100、640 GB GPU 内存。每卡一张 400 Gbit/s 网卡的配置也见[实验 7-3 的公开运行记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-03/README.md)。HBM 带宽与 989.4 TFLOP/s 取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)的 `h100-sxm` 行。
+[^supernode-inference]: [固定场景](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/scenarios/supernode-inference-example.json)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/supernode_inference.py)与[完整结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/supernode-inference-book.md)。权重按锁定的 V4.1 Flash checkpoint 分片头逐张量累加；KV 与矩阵运算量分别由 `kv-comparison` 与 `v41-forward` 在 200,000 上下文下算出；H100 参数取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)；NVLink 与网卡的每轮启动开销与第 7.6.3、7.6.4 节相同。ROM 晶圆与 58 张 B200 两行取自作者的 [OpenTallas](https://github.com/bojieli/OpenTallas) 仓库 commit c7093ba 中 DeepSeek-V4.1-Flash 的 roofline 分析，所用分析点保存在[摘录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/opentallas/v41-flash-roofline-n5-vs-b200.json)中。这些是等硅面积下的分析结果：OpenTallas 尚无流片的芯片，其 ROM 密度与读取带宽在 N5 工艺上也未经测量。Engram 表的行数、每行字节与两个模块的查表行数取自同一 checkpoint 与配置；DeepSeek 的部署把表放在主机内存并用 RDMA 预取，见 [V4.1 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)§2.4.2 与 §3.1.3；主机内存一次往返与在途标签限制的读取率取第 7.3.4 节 KV-Direct 的测量；ROM 面积按 OpenTallas 的 N5 掩模 ROM 密度换算，表移出 ROM 后的一片晶圆设计取自同一 commit 的 engram-host 分析。WSE-3 的 44 GB 片上 SRAM 见第 4.7.2 节。
 
-[^qwen3-context]: [Qwen3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/qwen3.pdf)表 1 列出 Qwen3-32B 为 64 层、64／8 个查询／KV 头、上下文 128K；§3.2 说明预训练序列长 32,768，推理时用 YaRN 与 DCA 把可处理的序列长度提高到四倍。
+[^hgx]: [HGX H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-hgx-h100-datasheet.pdf)：八张 GPU 经 NVSwitch 互联，GPU 间 NVLink 900 GB/s，网络速率至 400 Gbit/s；[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)列出 H100 SXM 的 80 GB、3.35 TB/s、NVLink 900 GB/s 与 PCIe Gen5 128 GB/s，后两项为收发两个方向的合计；[H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)第 47 页：18 条第四代 NVLink，每条每方向 25 GB/s；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)：单端口至 400 Gbit/s；[DGX H100 用户指南](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-dgx-h100-user-guide.md)：8 张 H100、640 GB GPU 内存。每卡一张 400 Gbit/s 网卡的配置也见[实验 7-3 的公开运行记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-03/README.md)。HBM 带宽与 989.4 TFLOP/s 取自[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)的 `h100-sxm` 行。
 
-[^dense-moe]: [Qwen3-32B batch 1](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-32b-decode-b1-s32768.md)与[batch 64](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-32b-decode-b64-s32768.md)、[Qwen3-30B-A3B batch 1](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-30b-a3b-decode-b1-s32768.md)与[batch 64 均匀路由](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-30b-a3b-decode-b64-s32768-balanced.md)、[Qwen3.6-35B-A3B batch 1](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-decode-b1-s32768.md)与[batch 64](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-decode-b64-s32768.md)、[Qwen3.6 的 128K 状态](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-capacity-b1-n131072.md)与[256K 状态](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen36-capacity-b1-n262144.md)。能放下的请求数按 $\lfloor(n\times(80\ \mathrm{GB}-2\ \mathrm{GiB})-W)/S\rfloor$ 计，$n$ 为卡数，$W$ 为常驻权重，$S$ 为每请求状态，汇总见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)的 `dense_moe` 字段。Qwen3.6 的状态读取包括完整注意力层的 KV、线性注意力层的递推状态与卷积状态。
+[^qwen3-context]: [Qwen3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/qwen3.pdf)表 1 列出 Qwen3-32B 为 64 层、64／8 个查询／KV 头、上下文 128K；§3.2 说明预训练序列长 32,768，推理时用 YaRN 与 DCA 把可处理的序列长度提高到四倍。
 
-[^nvswitch]: [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100.pdf)第 47–48 页：第三代 NVSwitch 每颗提供 64 个第四代 NVLink 端口，每条 NVLink 每方向 25 GB/s；NVLink Switch System 中每个节点以 2:1 收敛引出节点内全部 NVLink 带宽。
+[^dense-moe]: [Qwen3-32B batch 1](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-32b-decode-b1-s32768.md)与[batch 64](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-32b-decode-b64-s32768.md)、[Qwen3-30B-A3B batch 1](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-30b-a3b-decode-b1-s32768.md)与[batch 64 均匀路由](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-30b-a3b-decode-b64-s32768-balanced.md)、[Qwen3.6-35B-A3B batch 1](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-decode-b1-s32768.md)与[batch 64](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-decode-b64-s32768.md)、[Qwen3.6 的 128K 状态](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-capacity-b1-n131072.md)与[256K 状态](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen36-capacity-b1-n262144.md)。能放下的请求数按 $\lfloor(n\times(80\ \mathrm{GB}-2\ \mathrm{GiB})-W)/S\rfloor$ 计，$n$ 为卡数，$W$ 为常驻权重，$S$ 为每请求状态，汇总见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)的 `dense_moe` 字段。Qwen3.6 的状态读取包括完整注意力层的 KV、线性注意力层的递推状态与卷积状态。
 
-[^dgx-power]: [DGX H100 用户指南](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-dgx-h100-user-guide.md)表 3：系统功率 10.2 kW max；H100 SXM 的 700 W 见[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)。按服务器计的功率上限见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch06/continuity-model.json)的 `rack` 字段。
+[^nvswitch]: [H100 架构白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100.pdf)第 47–48 页：第三代 NVSwitch 每颗提供 64 个第四代 NVLink 端口，每条 NVLink 每方向 25 GB/s；NVLink Switch System 中每个节点以 2:1 收敛引出节点内全部 NVLink 带宽。
+
+[^dgx-power]: [DGX H100 用户指南](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-dgx-h100-user-guide.md)表 3：系统功率 10.2 kW max；H100 SXM 的 700 W 见[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)。按服务器计的功率上限见[第 6 章计算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch06/continuity-model.json)的 `rack` 字段。
 
 #### 本章小结
 
@@ -6034,7 +6358,7 @@ $$
 
 上一章把矩阵、层和专家分给不同的卡，并按通信代价选择实例规模。现在模型和总卡数都不变，只把一部分卡移到另一个超节点：原来的切分还合适吗？原本走节点内高速互联的部分和，可能要改走 InfiniBand 或 RoCE；同一次同步因此占用不同的带宽、队列和故障域。要重新算的是切分的放置和执行代价，不是重新学一套并行概念。
 
-模型分到多台服务器之后，训练要继续推进，第一项共同工作就是汇合各副本的梯度。多个数据并行副本处理不同样本后，要汇合梯度，再按同一批样本更新参数。先在超节点内合并各副本的梯度，再跨节点交换，与第 5 章先在局部累加部分和、减少外部搬移的做法相同。局部合并本身也需要时间，只有节省的远端传输和等待多于这些时间，这样安排才划算。
+模型分到多台服务器之后，训练要继续推进，第一项共同工作就是汇合各副本的梯度。多个数据并行副本处理不同样本后，要汇合梯度，再按同一批样本更新参数。先在超节点内合并各副本的梯度，再跨节点交换，与第 5 章先在局部累加部分和、减少外部搬移的做法相同。局部合并本身也需要时间，只有节省的远端传输和等待多于这些时间，这样安排才划算。通用数据中心网络承载大量相互独立的数据流，拥塞带来的延迟分摊在各条流上；同步归约却要所有卡等待同一批数据，每一轮何时结束取决于最慢的那次传输（第 7.2.1 节）。
 
 本章沿着数据离开一台服务器的路径，研究分到多台服务器上的卡如何共同完成工作。全章围绕两台服务器、每台八张卡展开：先决定梯度如何跨服务器归约，再讨论如何连续提交和处理通信请求，随后说明数据何时可读、缓冲区何时可复用，以及如何处理共享网络中的拥塞，最后把这套分析推广到固定 1024 卡的训练任务，比较不同超节点大小下的通信分层、吞吐与恢复成本。本章还会比较低并发推理中的小数据量传输，说明同一个网络在不同负载下应当优先优化什么。
 
@@ -6054,7 +6378,7 @@ $$
 
 为了比较这些通信方式，本章用两台 HGX 规格的 H100 服务器组成十六张卡的通信组，每张卡上运行一个通信进程。这些进程共同执行集合通信，下文称为参与者，用 rank 区分。参与者 0 到 7 在服务器 A，8 到 15 在服务器 B。服务器内的八张卡经 NVSwitch 用 NVLink 全连接。每张 H100 的 NVLink 总带宽为 900 GB/s，这是收发两个方向的合计，即每个方向 450 GB/s。每张卡配一张 400 Gbit/s 的网卡（network interface card，NIC），每个方向 50 GB/s，经 PCIe 交换芯片与这张卡相连，不与其他卡共用。两台服务器上编号相同的网卡接到同一台交换机，这样一条从网卡到网卡的路径称为一条 **rail**。交换网络能承载两台服务器之间的双向流量。集合通信每轮的启动时间取 0.83 μs：公开的 nccl-tests 记录显示，在两台这样的服务器上，十六张卡对 16 B 到 128 B 的数据做一次 AllReduce 约需 25 μs；数据量如此之小，传输时间可以忽略，把 25 μs 平均到下一节环形 AllReduce 的 30 轮上，每轮约 0.83 μs。[^hgx]
 
-![十六个参与者的分布与服务器边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-1-boundaries.svg)
+![十六个参与者的分布与服务器边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-1-boundaries.svg)
 
 *图 7-1：固定两台服务器，每台八张卡。服务器内的卡经 NVLink 与 NVSwitch 互联，每张卡各有一张网卡；跨服务器的数据从发送方的网卡经交换网络到达接收方的网卡，每张网卡每个方向提供 50 GB/s。*
 
@@ -6093,7 +6417,7 @@ $$
 
 令卡数相对原来的倍数为 $x$，计算时间变为 $20/x$ ms。串行安排需要 $20/x+7.5$ ms；计算与通信完全重叠时，总时间等于两者中的较大值。卡数翻倍，两个结果分别从约 27.5、20.0 ms 降至 17.5、10.0 ms。增加到四倍，串行安排约为 12.5 ms，完全重叠安排约为 7.5 ms。图 7-2 画出两种安排随卡数变化的曲线。
 
-![加速器扩展与固定通信需求](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-2-cut.svg)
+![加速器扩展与固定通信需求](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-2-cut.svg)
 
 *图 7-2：跨服务器传输量固定时增加卡数的效果。每方向发送 360 MiB，经一张 50 GB/s 网卡；计算时间从 20 ms 开始，随卡数增加按反比缩短。曲线分别按计算与通信串行、完全重叠计算，通信项取割集传输时间。*
 
@@ -6109,7 +6433,7 @@ $$
 
 把集群分成端点数相等的两半，连接两半的链路带宽合计称为**半分带宽**（bisection bandwidth）。无阻塞网络的半分带宽等于一半端点的带宽合计：两层 2048 个端点为 $1024\times50=51.2$ TB/s，三层为 1638.4 TB/s。超售比为 3 时，叶交换机 48 下行、16 上联，两层能接 3072 个端点，只用 80 台交换机；64 台叶交换机共 1024 条上联，半分带宽为其中一半的合计 25.6 TB/s，只有无阻塞网络中同样 3072 个端点所得 76.8 TB/s 的三分之一，每个端点穿过半分割集的份额从 50 GB/s 降到 16.7 GB/s。图 7-3 画出两层 Clos 网络及其半分割集。
 
-![两层 Clos 网络与穿过它的割集](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-clos-cut.svg)
+![两层 Clos 网络与穿过它的割集](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-clos-cut.svg)
 
 *图 7-3：两层 Clos 网络。每台叶交换机一半端口接服务器、一半接脊交换机，任意两台叶交换机之间经任一脊交换机相通；虚线把端点分成两半，穿过它的叶—脊链路就是半分割集。图中画出四台叶交换机和两台脊交换机作代表，64 端口时实际为 64 台叶交换机、32 台脊交换机。*
 
@@ -6169,19 +6493,19 @@ $$
 
 分层归约先在各服务器内由八个参与者执行 ReduceScatter。七轮之后，每个参与者保存本服务器归约结果的八分之一，即 24 MiB。两台服务器上负责同一分片的两个参与者，再执行一次 AllReduce：各自把 24 MiB 分成两份，用一轮交换并归约其中一份，再用一轮交换得到另一份。每一对在两个方向合计发送 48 MiB，八对共发送 384 MiB；每一对各走自己的一条 rail，八张网卡同时工作。最后各服务器内用七轮 AllGather 得到完整结果。图 7-4 至图 7-6 分别画出三种方案的路径，图 7-7 比较三者跨服务器的字节数。
 
-![归约路径与跨服务器流量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-3-hierarchy.svg)
+![归约路径与跨服务器流量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-3-hierarchy.svg)
 
 *图 7-4：连续环将同一服务器内的参与者排在一起。十六条有向边中只有 7→8 与 15→0 跨服务器，跨服务器流量集中在两张网卡上。颜色表示参与者所在服务器。*
 
-![交错环的服务器边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ring-interleaved.svg)
+![交错环的服务器边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ring-interleaved.svg)
 
 *图 7-5：按 A、B 两服务器交替排列参与者，十六条有向边都跨服务器，十六张网卡都在工作。每个参与者的总发送量保持不变。*
 
-![分层归约的三个阶段](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-hierarchy-stages.svg)
+![分层归约的三个阶段](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-hierarchy-stages.svg)
 
 *图 7-6：每台服务器先把本机八份贡献归约成分片，再和另一台服务器交换对应的分片，最后在本机收集完整结果。每列从上向下执行，横向箭头表示跨服务器交换，每对参与者各用一条 rail。*
 
-![相同总量在不同路径上的分布](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-hierarchy-bytes.svg)
+![相同总量在不同路径上的分布](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-hierarchy-bytes.svg)
 
 *图 7-7：三方案的逻辑发送总量均为 5760 MiB；橙色跨服务器部分分别为 720、5760、384 MiB。两个方向合计。*
 
@@ -6225,7 +6549,7 @@ $$
 | 16 | 45 MiB | 30 | 0.969 ms | 24 MiB | 0.504 ms |
 | 32 | 46.5 MiB | 62 | 1.027 ms | 24 MiB | 0.504 ms |
 
-![环形与在网归约的跨服务器阶段随服务器数的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-in-network-sweep.svg)
+![环形与在网归约的跨服务器阶段随服务器数的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-in-network-sweep.svg)
 
 *图 7-8：持有同一分片的服务器从 2 台增至 32 台时，跨服务器阶段的时间。环的每网卡发送量趋近两个分片、轮数按 $2(S-1)$ 增长；在网归约保持一个分片、一轮。两台服务器时两者只差一次启动。*
 
@@ -6251,7 +6575,7 @@ $$
 
 沿图 7-9 中相同的编号看，一个 micro-batch 必须走完四个阶段；沿同一行看，一个阶段可以连续处理八个 micro-batch。左下和右上的空白，就是流水线启动和结束时的空闲。
 
-![四阶段流水线中的计算与空闲](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-4-pipeline.svg)
+![四阶段流水线中的计算与空闲](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-4-pipeline.svg)
 
 *图 7-9：四个前向阶段如何处理八个 micro-batch。每格为 1 ms，数字表示 micro-batch 编号；同一编号沿右下方移动，表示该 micro-batch 依次通过各阶段。每个阶段计算 8 ms，在 11 ms 的总时间中各空闲 3 ms。阶段耗时相同，图中忽略额外交接开销。*
 
@@ -6274,17 +6598,17 @@ $$
 
 这 32 MiB 如何分配到接收方，同样影响传输时间。全部发给一张 50 GB/s 的网卡，接收至少需约 0.67 ms（图 7-10）；平均分给接收服务器的八张网卡，每张接收 4 MiB，接收时间降至约 0.08 ms（图 7-11）。对照配置的双端口网卡两个端口共用一个 32 GB/s 的 PCIe 插槽，无论如何分到两个端口，接收 32 MiB 都至少需要约 1.05 ms。将流量均匀分给网卡，消除了单张网卡的瓶颈；端口共用插槽时，共享的插槽随后成为新的瓶颈。
 
-![专家 dispatch 在独立入口与共享入口上的传输](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-5-expert.svg)
+![专家 dispatch 在独立入口与共享入口上的传输](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-5-expert.svg)
 
 *图 7-10：将全部 32 MiB 送入一张 50 GB/s 网卡，接收至少需要约 0.67 ms。*
 
-![八个独立入口](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-expert-path-1.svg)
+![八个独立入口](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-expert-path-1.svg)
 
 *图 7-11：八张独立网卡各接收 4 MiB，接收阶段缩短到约 0.08 ms。*
 
 把接收目标分散到多个网卡之后，还要继续向前追踪共同经过的接口。图 7-12 把对照配置的共享插槽单独画出：无论后面如何分到两个端口，这 32 MiB 都必须先通过同一个插槽。
 
-![两张网卡共享入口](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-expert-path-2.svg)
+![两张网卡共享入口](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-expert-path-2.svg)
 
 *图 7-12：对照配置中，32 MiB 都需要先经过网卡 32 GB/s 的 PCIe 插槽，接收阶段受限于约 1.05 ms。这里各图均只计算接收载荷的传输。*
 
@@ -6306,7 +6630,7 @@ $$
 
 下面比较直接发送和经相邻 GPU 中继两种方式。直连网卡每方向 50 GB/s，两张可借用的相邻网卡也各为 50 GB/s；通往相邻 GPU 的 NVLink 每方向 450 GB/s。
 
-![直接网卡与相邻网卡中继的带宽限制](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-6-relay.svg)
+![直接网卡与相邻网卡中继的带宽限制](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-6-relay.svg)
 
 *图 7-13：借用相邻网卡的路径。直接路径最多传输 50 GB/s；两张中继网卡合计 100 GB/s，数据要先经过 450 GB/s 的 NVLink 到达相邻 GPU。两路在下游汇合，最后还受外部网络和接收方可用带宽限制。箭头表示传输方向。*
 
@@ -6332,7 +6656,7 @@ $$
 
 分层归约的跨服务器阶段让 rank $i$ 与 rank $i+8$ 配对：rank $i$ 用服务器 A 的第 $i$ 张网卡，rank $i+8$ 用服务器 B 的第 $i$ 张网卡，两张网卡都接在第 $i$ 台叶交换机上。因此八对参与者的流量各自留在一条 rail 内，都只经过一台叶交换机，没有一个字节经过脊交换机。每条 rail 每个方向承载 24 MiB，两轮共 0.505 ms；这 192 MiB 若集中在一张网卡上需要 4.03 ms，八条 rail 同时工作将其缩短到约八分之一。[^rail] 图 7-14 的上半图画出这种对齐配对，下半图是下文讨论的错位配对。
 
-![对齐与错位配对在多轨拓扑上的路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-rail-pairing.svg)
+![对齐与错位配对在多轨拓扑上的路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-rail-pairing.svg)
 
 *图 7-14：八条 rail 画成八条竖直车道，每条车道里是一台叶交换机和两台服务器上编号相同的网卡。上半图按 rank $i$ 与 rank $i+8$ 配对，每一对的字节留在自己的车道里，只经过一台叶交换机；下半图按 rank $i$ 与 rank $i+9$ 配对，每一对都要从第 $i$ 条 rail 经脊交换机换到第 $i+1$ 条 rail，每个方向 192 MiB 全部经过脊层。*
 
@@ -6368,23 +6692,23 @@ $$
 
 RDMA 网卡已经能访问授权的远端内存；NVIDIA 的 **GPUDirect RDMA** 进一步让网卡直接访问已注册、已授权的 GPU 内存，载荷不必经主机内存中转。由 CPU 发起通信时，提交请求和处理完成通知仍由 CPU 负责；由加速器发起通信，则让 GPU 自己构造或触发请求并读取完成状态，数据一算完就能发出。URMA 是 UB 提供的统一远程内存访问接口。GPU 经 NVLink 访问对端内存、设备经 UB 发起异步访问，都是这种直接协作在各自路径上的实现。图 7-15 到图 7-18 依次画出主机 RPC、CPU 提交的 GPUDirect RDMA、GPU 经 NVLink 访问和设备发起的 URMA 访问。
 
-![通信发起位置与数据通路](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-7-access.svg)
+![通信发起位置与数据通路](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-7-access.svg)
 
 *图 7-15：主机 RPC 的参数从 CPU A 所在主机出发，经网卡和网络到达 CPU B 所在主机，由远端执行请求。箭头表示参数数据路径，返回结果沿反方向传送。*
 
-![CPU 提交的 GPUDirect RDMA](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-access-1.svg)
+![CPU 提交的 GPUDirect RDMA](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-access-1.svg)
 
 *图 7-16：数据从 GPU 内存直接经过网卡到达远端 GPU 内存；虚线表示 CPU 提交请求，数据载荷无需经过 CPU 内存。映射和访问权限预先建立。*
 
 数据绕过主机内存之后，还可以进一步改变由谁发起。图 7-17 中 GPU 自己发起对端内存访问，省去了每次都由 CPU 提交的交接。
 
-![GPU 经 NVLink 访问](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-access-2.svg)
+![GPU 经 NVLink 访问](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-access-2.svg)
 
 *图 7-17：GPU 通过 NVLink 访问对端 GPU 内存，由发起的 GPU 执行已授权的访问。*
 
 图 7-18 把同样的发起与完成关系放到 UB 的异步访问接口上。沿实线追踪载荷，沿提交与完成关系追踪控制，便能区分数据传输和请求管理各自的开销。
 
-![设备发起的 URMA 访问](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-access-3.svg)
+![设备发起的 URMA 访问](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-access-3.svg)
 
 *图 7-18：设备通过 URMA 提交异步读写，载荷经过 UB 互联到达目标设备；请求完成后按接口规定检查完成状态和结果。*
 
@@ -6439,7 +6763,7 @@ Load 的结果可以直接成为后续指令的输入。处理器记录这条依
 
 表中网卡流水线的时间已经取整，合计按取整前的值相加。经 PCIe 外设网卡的路径合计 2222 ns，其中五次 PCIe 穿越占 1650 ns；UB 异步路径没有 PCIe 阶段，合计 746 ns；Load 路径连软件提交和轮询也省去了，合计 419 ns。图 7-19 把三条路径按阶段类别画成堆叠条形。笔者的 OpenURMA 实现在两节点周期级仿真中、相同条件下测得 2236、757 和 500 ns，与推导值相差 14、11 和 81 ns。差值来自仿真器在模块之间传递数据的固定开销；Load 路径的阶段最少、总时间最短，这项开销所占的比例也就最大。[^ub-fabric]
 
-![一次 64 B 远程读取的关键路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ub-round-trip.svg)
+![一次 64 B 远程读取的关键路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ub-round-trip.svg)
 
 *图 7-19：三条路径的关键路径按阶段类别堆叠。经 PCIe 外设网卡的路径中，浅灰色一段是五次 PCIe 穿越；两条片上总线路径没有这一段，Load 路径还省去了软件提交和完成轮询。条形右侧标出推导值和仿真值。*
 
@@ -6449,7 +6773,7 @@ PCIe 外设网卡多出的阶段，不是九处各自可以优化的低效环节
 
 线路时延变化时，三条路径的差距也随之变化。每条路径的总时间都等于固定开销加上两倍的线路单程时延 $L$：PCIe 外设网卡为 2022 ns 加 $2L$，UB 异步路径为 546 ns 加 $2L$，Load 路径为 219 ns 加 $2L$。图 7-20 画出 $L$ 从 50 ns 到 500 ns 的情形：三条直线斜率相同、截距不同，绝对差距始终约为 1.8 μs，相对差距则从 $L=100$ ns 时的 5.3 倍缩小到 $L=500$ ns 时的 2.5 倍。线路越短，控制器位置带来的相对收益越大，所以这项收益在超节点内部最明显；在跨越数据中心的长链路上，线路时延本身成为总时间的主要部分。这两部分性质不同。$2L$ 由信号传播速度决定，任何路径都省不掉，是一次远程读取的物理下限；截距中高出 Load 路径的部分是抽象层的代价，其中五次 PCIe 穿越就占 1650 ns。推导值与仿真值相差的 14、11 和 81 ns，则属于第 1.3.4 节所说的第一类差距：模型漏计了仿真器模块之间的固定开销，补上这一项差距就消失了，不必再去找实现开销。
 
-![线路时延与一次读取的总时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ub-link-delay.svg)
+![线路时延与一次读取的总时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ub-link-delay.svg)
 
 *图 7-20：一次 64 B 读取的总时间随线路单程时延的变化。三条直线的斜率都是 2，截距是各自的固定开销；路径之间的差距来自固定开销，不随线路时延变化。*
 
@@ -6468,17 +6792,17 @@ $$
 
 搬回后读取更快的条件是 $r>3.07/(3.02-0.046)\approx1.03$，即从第二次完整读取开始获益。只读取一次时，直接远程读取略快（3.02 ms 对 3.12 ms）；读取四次时，先搬回本地可将总时间从约 12.1 ms 缩短至 3.3 ms，网络只需传一次快照，传输量从 576 MiB 降至 144 MiB。图 7-21 画出两种使用路径，图 7-22 画出累计耗时的交点。
 
-![快照的两种使用路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-snapshot-paths.svg)
+![快照的两种使用路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-snapshot-paths.svg)
 
 *图 7-21：每次使用都访问远端，会重复传送同一份数据；下半图先搬回本地，再多次复用。两种路径处理同一份不变快照。*
 
-![按需远程读取与搬回本地的复用交点](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-8-snapshot.svg)
+![按需远程读取与搬回本地的复用交点](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-8-snapshot.svg)
 
 *图 7-22：每次读取完整 144 MiB 快照时，两种方法的累计耗时。先搬回本地需要一次固定成本，从第二次读取开始节省时间。*
 
 两条曲线的差别来自“先付一次搬移成本，还是每次都跨网络读取”。接下来改变每次读取的范围。若一次调用只访问快照的少量位置，就可以按引用传递，让远端函数按需读取数据。设每次仅访问快照的 10%，而搬回方案仍复制全部快照。此时，按需远程读取的成本变为约 $0.302r$ ms，搬回后每次本地访问约为 0.0046 ms，交点约在 10.3 次，因而从第 11 次读取开始，先搬回本地的方案才会节省总读取时间（图 7-23）。
 
-![每次仅读取十分之一快照](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-snapshot-partial.svg)
+![每次仅读取十分之一快照](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-snapshot-partial.svg)
 
 *图 7-23：每次远程读取和本地读取都只访问 10%，但搬回时仍复制全部快照；因此需要更多复用才能抵消固定成本。*
 
@@ -6488,7 +6812,7 @@ $$
 
 第 7.3.3 节用复用减少远端读取的次数；仍要经过网络的请求，则要让链路始终有数据可传。本节分析本章算例中一张网卡每方向 50 GB/s 的路径需要多少个并发请求。**请求槽位**是保存一项未完成请求的地址、长度和状态的记录：提交时分配，完成状态处理完后释放，释放前不能供新请求使用。假设每次远程访问传输 256 B，从发起请求到释放请求槽位需要 2 μs。链路在这 2 μs 内可以传送 100,000 B，相当于 390.6 次访问的数据量。为了让等待期间始终有数据可传，至少要维持 391 个在途事务，即已发出但尚未处理完的请求。图 7-24 画出一个槽位从分配到释放的过程。
 
-![请求槽位的生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-slot-lifetime.svg)
+![请求槽位的生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-slot-lifetime.svg)
 
 *图 7-24：一项请求从分配记录开始占用槽位，经历传输与等待，完成状态被处理后归还记录。这里的 2 μs 覆盖完整占用区间。*
 
@@ -6504,7 +6828,7 @@ $$
 
 解答：128 个槽位每 2 μs 周转一次，提供的载荷为 $128\times256$ B，因此最多约为 16.4 GB/s。若只让一个事务在途，则为 0.128 GB/s。分配了多少槽位与实际同时使用多少槽位，是两个不同的数量。
 
-![请求槽位不足造成的链路空闲](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-9-window.svg)
+![请求槽位不足造成的链路空闲](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-9-window.svg)
 
 *图 7-25：128 个槽位在约 0.66 μs 内全部用完，要等最早的槽位在 2 μs 释放后继续提交。391 个槽位足以覆盖等待。蓝色表示载荷发送，灰色表示链路空闲。*
 
@@ -6515,7 +6839,7 @@ B_{\mathrm{eff}}\le
 \min\left(B_{\mathrm{path}},\frac{Nm}{T},\frac{m}{\delta}\right),
 $$
 
-![槽位与请求发起速率分别限制吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-window-rate.svg)
+![槽位与请求发起速率分别限制吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-window-rate.svg)
 
 *图 7-26：蓝线只考虑链路和槽位，橙线再加入每 18.6 ns 发起一次请求的约束。增加槽位使蓝线升高，橙线仍受约 13.7 GB/s 的提交速率限制。*
 
@@ -6527,19 +6851,19 @@ $$
 
 **读与写为什么受不同限制。** 式中的 $N$ 和 $\delta$ 在 PCIe 上有明确的来源。PCIe 是分组交换的总线，每次 DMA 读或写都是一个事务层报文（TLP）。写是 posted 事务：报文带着地址和数据发出，发出即完成，不等回应。读是 non-posted 事务：请求报文带一个标签发出，数据由一个或多个完成报文带回，靠标签对应到原来的请求。发起方同时在途的读请求数受两项限制：接收方为每类事务预先发放的信用，以及发起方能分配的标签数。图 7-27 画出两种事务。
 
-![PCIe 的写事务与读事务](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-pcie-transactions.svg)
+![PCIe 的写事务与读事务](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-pcie-transactions.svg)
 
 *图 7-27：写是 posted 事务，一个报文发出即完成；读要先发带标签的请求报文，再等带同一标签的完成报文把数据送回，在途的读不能超过标签数和信用数。*
 
 信用与标签的限制在实际平台上就能观察到。笔者在 KV-Direct 中测量过这两项限制。所用的可编程网卡经 PCIe Gen3 x8 访问主机内存，理论带宽 7.87 GB/s；每个 64 B 的 DMA 读写都要带 26 B 的报文头和填充，按报文开销算的上限是 5.6 GB/s，即每秒 8700 万次操作。随机 DMA 读的往返约 1050 ns，要用满链路需要 92 个读同时在途；但主机端为 DMA 读发放的信用只有 84 个，FPGA 的 DMA 引擎又只支持 64 个标签，于是在途读最多 64 个，除以 1050 ns 的往返，上限约为每秒 6100 万次；实测 64 B 随机读每秒 6000 万次，与这个上限基本一致。写不需要回应、不占标签，实测接近报文开销给出的上限。图 7-28 把这几道上限画在一起：读受在途数限制，写受报文处理速率限制，正是式中 $Nm/T$ 与 $m/\delta$ 两项分别起作用的例子。让网卡自己流水式地完成地址计算、访存和结果处理，就是为了在等待一个读结果时继续发出其他请求。这组数字也体现了第 1.3.4 节的检查顺序：先后用链路带宽、报文开销、在途标签三道上限修正模型，直到与实测只差约 1.6%；到这一步，模型已无漏项，余下的差距不必再追究。[^kv-direct]
 
-![64 B 随机 DMA 读的几道上限](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-pcie-limits.svg)
+![64 B 随机 DMA 读的几道上限](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-pcie-limits.svg)
 
 *图 7-28：KV-Direct 平台上 64 B 随机 DMA 读的上限与实测。链路带宽换算为每秒 1.23 亿次，报文头开销把上限压到 8700 万次，64 个标签除以 1050 ns 往返只允许 6100 万次；实测 6000 万次，说明在途标签数是这个平台上读的瓶颈。*
 
 同一条 PCIe 链路被两类流量共用时，这一差别会变成不对称的争用。设 GPU 的 PCIe 链路在进入 GPU 的方向上同时有两路流量：网卡把远端数据以 posted 写直接送进 GPU 内存；GPU 的复制引擎正在把主机内存的数据复制到 GPU，它发出的是读请求，数据以完成报文回到 GPU。链路一旦饱和，posted 写按协议必须持续推进，而读这一方的在途标签用完后就发不出新请求，只能等完成报文回来，分到的带宽远小于一半。离开 GPU 的方向则不同：GPU 向主机的复制是 GPU 发出的 posted 写，远端读 GPU 内存则要 GPU 回复完成报文，两路都要先从 HBM 取出数据、再经 GPU 的发送通路送上链路，瓶颈在 GPU 内部而不在链路，两路的退化更接近。图 7-29 画出两个方向。判断这类争用时，先分清每一路是 posted 写还是带完成的读，再看它们在链路的哪一侧、经过哪个共用部件汇合。后来的 PCIe 性能测试工具 rPCIeBench 对共享 PCIe 路径的研究也显示，在途工作量与入口竞争会改变带宽分配。[^pcie] 可以用上式判断瓶颈：是链路带宽已用尽，是请求槽位尚未释放，还是请求发起速率太低。
 
-![共享 PCIe 链路上两个方向的争用](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-pcie-asymmetry.svg)
+![共享 PCIe 链路上两个方向的争用](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-pcie-asymmetry.svg)
 
 *图 7-29：进入 GPU 的方向上，网卡的 posted 写与主机内存返回给复制引擎的完成报文争用链路，前者不等回应，后者受在途标签限制。离开 GPU 的方向上，D2H 复制的 posted 写与远端读取的完成报文都要先从 HBM 取数，共用 GPU 内部的发送通路。*
 
@@ -6561,7 +6885,7 @@ $$
 
 例如，发送在 5 μs 完成，消费者在 8 μs 开始读取、12 μs 结束。发送方在发送完成后就可以复用源缓冲，目的缓冲则要到 12 μs 才能覆盖。如果下一次写入在 6 μs 覆盖目的地址，消费者读到的就是下一份数据；网络传输的每个字节都正确，接收程序却使用了错误的数据。
 
-![源缓冲和目的缓冲的不同复用时刻](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-10-lifetime.svg)
+![源缓冲和目的缓冲的不同复用时刻](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-10-lifetime.svg)
 
 *图 7-30：源缓冲占用到 5 μs 发送完成；目的缓冲持续占用到 12 μs 消费者用完。绿色为 8–12 μs 的读取区间。虚线标出 6 μs 提前覆盖目的地址的错误操作。*
 
@@ -6590,11 +6914,11 @@ OpenURMA 论文用另一种口径描述这种分离：一个本地接口上有 $
 
 两个式子直接给出了共享节省的空间：$LPt$ 变成 $Pt$，应用关系的 $LPr$ 仍在。UB 把 Jetty 与传输通道分开（第 6.5.5 节），采用的就是这种设计：同一份传输状态可以服务多条应用关系。[^ub]
 
-![应用关系与共享传输状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-11-state.svg)
+![应用关系与共享传输状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-11-state.svg)
 
 *图 7-31：两个应用端点分别保存身份与绑定记录，关系绑定指向同一目标的共享传输状态。共享部分维护传输进度，端点仍能区分各自请求。*
 
-![不同共享策略的状态容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-state-capacity.svg)
+![不同共享策略的状态容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-state-capacity.svg)
 
 *图 7-32：64 个端点访问 128 个目标。蓝色为端点记录，橙色为关系绑定，绿色为传输状态。虚线为 1 MiB 容量；划分八个隔离组时，为各目标保存八份独立的传输状态。*
 
@@ -6617,13 +6941,13 @@ $$
 
 与前面的公式对照，这里 $e=52$、$t=56$，而 $r=0$：该实现把关系绑定放在软件映射里，网卡不为每条关系保存硬件状态。$N=M=1024$ 时，逐对连接需要约 512 MiB，端点加通道只需 108 KiB，相差约 4855 倍；即使把 Jetty 记录补齐规范中的全部字段（48 B），比值仍在三千倍以上。图 7-33 用对数坐标画出两条曲线：一条斜率为 2，一条斜率为 1，二者的比值随 $N$ 线性增长。
 
-![端点数与每个网卡的状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ub-state-growth.svg)
+![端点数与每个网卡的状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ub-state-growth.svg)
 
 *图 7-33：N 个本地端点访问 M = N 个远端端点时，两种组织方式下网卡保存的状态。逐对连接在 N 略大于 20 时就超过 256 KiB 的片上缓存，端点加通道到 N = 1024 时仍不到缓存的一半。*
 
 **状态总量与片上缓存溢出。** 网卡把上下文缓存在片上，容纳不下的部分留在主机内存。取缓存容量 256 KiB，逐对连接在 $512N^2+32N>262144$、即 $N\ge23$ 时溢出；端点加通道在 $108N>262144$、即 $N\ge2428$ 时溢出。溢出以后每次操作都要重新读取上下文，代价取决于上下文放在哪里：PCIe 外设网卡从主机内存读取，发起端和目标端各做一次 PCIe DMA 读，每次操作增加约 1000 ns；片上总线控制器从本地内存读取，两端各做一次片上总线穿越和一次内存访问，增加约 200 ns。图 7-34 把第 7.3.3 节推导的两条路径的延迟画成活跃端点数的函数。训练中的全交换通信通常涉及几十到几千个端点，正好落在这一区间；在这一区间里，逐对连接的每次读取都要付出重新读取上下文的代价。笔者的仿真器按条目数而不是字节数判断溢出（RoCE 512 条，UB 2048 条），因此把 UB 的溢出点放在 1024 个端点；两种口径下结论相同：端点加通道的溢出点晚一个数量级以上，溢出后的代价也小一个数量级。[^ub-fabric]
 
-![活跃端点数与一次读取的延迟](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ub-cache-cliff.svg)
+![活跃端点数与一次读取的延迟](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ub-cache-cliff.svg)
 
 *图 7-34：一次 64 B 读取的延迟随活跃端点数的变化，片上缓存 256 KiB。逐对连接在 23 个端点处上升 1000 ns，端点加通道在 2428 个端点处上升 200 ns。横轴为对数坐标。*
 
@@ -6639,11 +6963,11 @@ $$
 
 解答：写入、恢复和通知这一依赖链的耗时是 $20+80+2=102$ μs。串行安排让 C 等到 102 μs 才开始，全组在 112 μs 完成。保留必要依赖时，C 从起点开始，10 μs 完成；发布链仍到 102 μs 才结束。全组提前 10 μs，C 却提前 102 μs。图 7-35 和图 7-36 分别画出这两种安排。
 
-![必要依赖与独立操作的完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-12-ordering.svg)
+![必要依赖与独立操作的完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-12-ordering.svg)
 
 *图 7-35：将独立传输也排在发布之后：先写入 20 μs，恢复并使数据可见 80 μs，通知 2 μs，再执行独立传输 10 μs。*
 
-![仅保留必要依赖](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ordering-independent.svg)
+![仅保留必要依赖](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ordering-independent.svg)
 
 *图 7-36：写入、恢复、通知仍依次进行；使用独立资源的传输从 0 μs 开始。蓝色为写入，橙色为恢复，绿色为通知，紫色为独立传输。*
 
@@ -6661,7 +6985,7 @@ $$
 
 上述例子要求写入完成后才能发出通知。接收方还必须在正确的时刻读取数据，否则即使通知顺序正确，也可能使用旧值。设 D 初值为 0，在 2 μs 更新为 1；就绪标志在 3 μs 可见。消费者在 1 μs 提前读 D，在 4 μs 读标志。此时它保存的是新标志和旧数据。即使到 5 μs 再按“标志、数据”顺序返回读取结果，保存下来的 D 仍是 0。
 
-![实际读取时刻与按序返回的区别](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-13-stale.svg)
+![实际读取时刻与按序返回的区别](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-13-stale.svg)
 
 *图 7-37：按时间依次列出实际读取、数据更新、就绪通知和结果返回。5 μs 返回的仍是 1 μs 读到的旧值；若在 4 μs 发现冲突并重读，6 μs 得到新值。*
 
@@ -6675,11 +6999,11 @@ $$
 
 若只有八个槽位，最初八次提交迅速占满槽位。第九次提交要等到 20 μs 时软件处理完成通知、释放槽位之后，后续请求继续分批提交，全部传输到 48 μs 才结束。把槽位加倍，传输完成时刻从 48 提前到 20 μs，所有槽位释放完毕仍要到 80 μs。[^reclaim]
 
-![传输完成后仍被占用的请求槽位](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-14-reclaim.svg)
+![传输完成后仍被占用的请求槽位](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-14-reclaim.svg)
 
 *图 7-38：蓝色表示提交到传输完成，橙色表示等待软件处理完成通知，橙色结束才释放槽位。所有请求的时刻取自事件记录。*
 
-![增加槽位后的请求提交与槽位释放](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-reclaim-more.svg)
+![增加槽位后的请求提交与槽位释放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-reclaim-more.svg)
 
 *图 7-39：增加槽位后，后续请求更早提交。完成通知仍每 20 μs 批量处理四项，最后一个槽位仍在 80 μs 释放。两图时间轴相同。*
 
@@ -6715,11 +7039,11 @@ $$
 
 高峰结束后，还需 $1\ \mathrm{GB}/50\ \mathrm{GB/s}=20$ ms 排空。两项作业在 20 ms 时停止发送，但出口还要再传输 20 ms 才能发完这些数据。把第二项作业推迟 20 ms，高峰完全错开，任意时刻只有 50 GB/s 到达，队列保持为空。两种安排发送同样多的数据，差别在于两项作业开始发送的相对时刻。图 7-40 画出不同重叠程度下的到达速率，图 7-41 画出对应的积压。[^queue]
 
-![通信高峰与积压](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-15-congestion.svg)
+![通信高峰与积压](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-15-congestion.svg)
 
 *图 7-40：两作业每 100 ms 各发送 20 ms，单作业速率 50 GB/s。不同高峰重叠程度产生不同的总到达速率，共享出口为 50 GB/s。*
 
-![对应的队列积压](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-congestion-queue.svg)
+![对应的队列积压](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-congestion-queue.svg)
 
 *图 7-41：把到达速率与出口速率的差额随时间累积，得到 1000、250、0 MB 三种峰值。此算例按无限缓冲计算积压。*
 
@@ -6751,11 +7075,11 @@ $$
 
 反馈后还要消除积压。只把发送降到 50 GB/s，到达速率恰好等于出口发送速率，已有队列保持不变；降到 40 GB/s 后，每秒有 10 GB 余量用于排空，512 KiB 约需 52 μs。从起点算，队列约在 72 μs 回到零。拥塞控制既要阻止队列继续增长，也要为排空积压留出余量。图 7-42 画出这条反馈回路，图 7-43 画出缓冲的填满与排空。
 
-![反馈改变发送速率](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-feedback-loop.svg)
+![反馈改变发送速率](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-feedback-loop.svg)
 
 *图 7-42：数据沿实线进入队列并由出口发送；虚线表示拥塞反馈返回发送方。反馈到达并生效前，原发送速率继续填充队列。*
 
-![有限缓冲的填满与反馈后的排空](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-16-feedback.svg)
+![有限缓冲的填满与反馈后的排空](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-16-feedback.svg)
 
 *图 7-43：反馈生效之前，缓冲区还会继续填满。到达速率为 100 GB/s，出口为 50 GB/s，512 KiB 缓冲初始占用一半。5.2 μs 时填满，到 20 μs 降速前持续丢弃超额到达的数据；降至 40 GB/s 后，出口以 10 GB/s 的净速率排空积压。反馈时刻与降速幅度为给定条件。*
 
@@ -6771,7 +7095,7 @@ $$
 
 链路流控和端到端拥塞控制这两类机制，在这里对应两段反馈距离。链路流控的一种实现是 IEEE 802.1Qbb 的**基于优先级的流控**（Priority-based Flow Control，PFC）：接收端口的队列超过阈值就向上游相邻端口发暂停帧，按优先级暂停一条链路。它的反馈距离只有一跳：30 m 线缆按 5 ns/m 计，暂停帧上行 150 ns、已在线上的数据下行 150 ns，再加一个 1500 B 报文在 50 GB/s 上串行化的 30 ns，共 0.33 μs。这 0.33 μs 内继续到达的超额数据必须有缓冲容纳，这块预留的空间称为 headroom（缓冲余量）：$N=8$ 时为 $300\ \mathrm{GB/s}\times0.33\ \mu\mathrm{s}=99$ KB，$N=16$ 时 231 KB，$N=64$ 时 1.02 MB，都不超过 1 MiB；DCQCN 论文按 1500 B 的最大传输单元（MTU）给出的一例是每端口每优先级 22.4 KB。端到端拥塞控制（ECN 标记与 DCQCN 降速）的反馈距离是一个 20 μs 的往返，这 20 μs 内涌入的超额数据为 6.0、14、62 MB，即 5.7、13.4、59.1 MiB，没有一个能放进 1 MiB 缓冲。图 7-44 画出三种 $N$ 下的队列增长与这两段反馈距离。
 
-![incast 下队列的增长与两段反馈距离](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-incast-feedback.svg)
+![incast 下队列的增长与两段反馈距离](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-incast-feedback.svg)
 
 *图 7-44：$N=8$、16、64 时队列以 300、700、3100 GB/s 的超额速率增长，圆点标出 1 MiB 剩余缓冲被填满的时刻 3.50、1.50、0.34 μs。竖直虚线是 PFC 的一跳反馈距离 0.33 μs，三条线在这之前都没有填满；端到端反馈的 20 μs 在图的横轴之外。*
 
@@ -6793,11 +7117,11 @@ $$
 
 把第二条路径的传播时延改为 9 μs，这条路径上的最后一个报文在约 9.33 μs 才到达。快路径上提前到达的后续报文要等前面缺失的报文补齐，接收方最多要缓存 12 KiB 乱序数据。总字节数相同，多用一条路径却比单路径慢得多，因为节省的串行发送时间只有约 0.33 μs，远小于新增的 8 μs 路径时延。
 
-![多路径报文到达与等待缺口](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-17-packets.svg)
+![多路径报文到达与等待缺口](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-17-packets.svg)
 
 *图 7-45：两路径传播时延均为 1 μs，八报文约在 1.33 μs 全部到齐。圆点表示到达；到达后因缺口等待的区间用横线表示。*
 
-![两路径时延不同造成的等待](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-packets-1.svg)
+![两路径时延不同造成的等待](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-packets-1.svg)
 
 *图 7-46：第二条路径传播时延增加到 9 μs。快路径后续报文先到，仍需等待前方缺口；约 9.33 μs 全部可交付。圆点表示报文到达，横线表示到达后等待缺口补齐的时间，纵轴是报文序号。*
 
@@ -6805,7 +7129,7 @@ $$
 
 传播慢之外，报文丢失是另一种情形，造成的等待也不同。让序号 0 丢失，在它原来发送结束的 20 μs 后重传，整份数据约在 21.2 μs 才能交付：交付要等缺口补齐，不取决于其余报文多早到达。此时其他七个报文都已到达，接收方缓存了 28 KiB 载荷，只需重传缺失的 4 KiB；若从缺失报文开始重发它及其后的所有报文，则要再传输 32 KiB。**选择性重传**用记录接收进度的状态，换来更少的重复传输，图 7-47 画出了这种只补发序号 0 的情形。OpenURMA 的两节点仿真也给出了同样的对照：UB 传输层采用选择性确认，只补发缺失的报文，吞吐随丢包率上升而平缓下降；回退 N 步重传在同样的丢包率下要把整个窗口重发一遍。[^ub-design]
 
-![首包丢失后的选择性重传](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-packets-2.svg)
+![首包丢失后的选择性重传](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-packets-2.svg)
 
 *图 7-47：序号 0 丢失后按算例等待时间重传，其他七个报文保留在接收方。只补发缺失报文后，约 21.2 μs 全部可交付。圆点表示报文到达，横线表示到达后等待缺口补齐的时间，纵轴是报文序号。*
 
@@ -6823,7 +7147,7 @@ $$
 
 一台叶上只有八条跨组流时，无阻塞叶有 38.6% 的概率完全不冲突；一旦冲突，两条流集中在一条上联上，各得一半带宽，最忙的一条上联平均分到 1.66 条流，整组平均只剩无冲突时 60.1% 的速度。超售叶的上联减半，无冲突概率降到 12.1%，速度降到 48.5%。整组 32 台服务器各出一条跨组流、无阻塞叶恰好 32 条上联时最差：流数与上联数相等，几乎必然有若干条上联空着、另一些挤了三四条，整组只剩 28.3%。流数远多于上联数时，随机分配的波动相对变小：32 条流分到 16 条上联为 41.4%，128 条流分到 16 条上联为 59.9%。图 7-48 画出这几组配置的最忙链路负载。**翻转条件**：流数与上联数接近时冲突代价最大，流数远少于或远多于上联数时代价较小；要避开这一代价，一是用 rail 对齐减少同一台叶上的跨组流，二是不再按流分配，改用下文的逐包喷洒。
 
-![流级哈希的最忙链路负载](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-ecmp-collision.svg)
+![流级哈希的最忙链路负载](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-ecmp-collision.svg)
 
 *图 7-48：同一台叶交换机上的 $n$ 条跨组流哈希到该叶的 $m$ 条上联时，最忙上联的期望流数与无冲突时最忙上联流数之比，比值的倒数就是整组相对无冲突的速度。无阻塞叶有 32 条上联，3:1 超售叶有 16 条；32 条流分到 32 条上联时比值最大，为 3.53；128 条流分到 16 条上联时降到 1.67。*
 
@@ -6845,11 +7169,11 @@ $$
 
 在归约系统里，这种循环可以跨越多个层次：请求占满接收缓冲，完成响应等待发送队列，发送队列又等待远端释放请求所占的空间。把“持有前一项资源、申请后一项资源”画成边，就得到资源依赖图。环上的每项资源都被持有时，所有释放条件就同时停滞。图 7-49 画出这种循环，图 7-50 画出下文为响应预留通路的解法。
 
-![循环资源依赖与响应通路](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-18-deadlock.svg)
+![循环资源依赖与响应通路](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-18-deadlock.svg)
 
 *图 7-49：两项请求分别持有 A、B，各自等待对方持有的资源。箭头表示等待关系，两个请求都无法完成并释放资源。*
 
-![为完成响应预留通路](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-response-reserve.svg)
+![为完成响应预留通路](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-response-reserve.svg)
 
 *图 7-50：请求、执行、响应使用独立资源并按顺序申请。响应有预留缓冲和发送机会，能够返回并释放原请求。*
 
@@ -6867,15 +7191,15 @@ $$
 
 考虑四个要做本地归约的参与者，分别在 0、0、0、2 ms 就绪，全部到齐后执行 0.4 ms 的交换。按第 7.4 节的依赖图，交换的开始时刻等于四个就绪时刻中的最大值，全组在 2.4 ms 完成。将交换耗时减半，完成时间变为 2.2 ms；如果四个参与者都在起点准备好，完成时间就变为 0.4 ms。两个优化分别作用于依赖图上的不同节点，图 7-51 至图 7-53 依次画出这三种情形。[^tail]
 
-![就绪与交换的关键路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-19-progress.svg)
+![就绪与交换的关键路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-19-progress.svg)
 
 *图 7-51：原安排中，前三个参与者等第四个在 2 ms 就绪，再交换 0.4 ms。灰色为尚未就绪，橙色为等待其他参与者，蓝色为交换。*
 
-![只缩短交换](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-progress-1.svg)
+![只缩短交换](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-progress-1.svg)
 
 *图 7-52：就绪时刻相同，交换从 0.4 ms 减到 0.2 ms，全组从 2.4 ms 提前到 2.2 ms 完成。灰色表示尚未就绪，橙色表示等待其他参与者，蓝色表示交换。*
 
-![消除就绪偏差](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-progress-2.svg)
+![消除就绪偏差](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-progress-2.svg)
 
 *图 7-53：四个参与者在起点同时就绪，交换仍需 0.4 ms，全组在 0.4 ms 完成。三图时间轴相同。蓝色表示交换；各行分别对应一个参与者。*
 
@@ -6905,27 +7229,27 @@ $$
 
 图 7-54 至图 7-59 依次画出六种安排，每张图使用相同时间尺度。灰色计算区间保持不变，蓝色通信区间的长度由传输量和吞吐决定，起点则由数据何时就绪决定。
 
-![通信优化如何改变训练步的关键路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-20-step.svg)
+![通信优化如何改变训练步的关键路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-20-step.svg)
 
 *图 7-54：连续环串行安排：计算 20 ms，通信约 7.6 ms，更新 2 ms。灰为计算，蓝为通信，绿为更新；圆点为通信数据就绪。*
 
-![分层归约串行执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-step-1.svg)
+![分层归约串行执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-step-1.svg)
 
 *图 7-55：本图改用分层归约，仍按计算、通信、更新串行执行。通信缩短到约 1.3 ms，整步约 23.3 ms。灰色为计算，蓝色为通信，绿色为更新；圆点为通信数据就绪。*
 
-![分层归约但并发不足](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-step-2.svg)
+![分层归约但并发不足](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-step-2.svg)
 
 *图 7-56：本图采用分层归约，其他计算与更新时间不变。每张网卡 128 个在途事务限制远端吞吐，通信拉长到约 2.3 ms，整步约 24.3 ms。灰色为计算，蓝色为通信，绿色为更新；圆点为通信数据就绪。*
 
-![连续环在 17 毫秒就绪](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-step-3.svg)
+![连续环在 17 毫秒就绪](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-step-3.svg)
 
 *图 7-57：本图把连续环的通信提前到 17 ms 开始，与尚未完成的计算重叠。通信 7.6 ms 超出计算区间，更新等通信结束；整步约 26.6 ms。灰色为计算，蓝色为通信，绿色为更新；圆点为通信数据就绪。*
 
-![分层归约在 17 毫秒就绪](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-step-4.svg)
+![分层归约在 17 毫秒就绪](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-step-4.svg)
 
 *图 7-58：本图把分层归约的通信提前到 17 ms 开始。通信在 18.3 ms 结束，早于计算，更新从 20 ms 开始，整步 22 ms。灰色为计算，蓝色为通信，绿色为更新；圆点为通信数据就绪。*
 
-![只剩一张网卡可用](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-step-5.svg)
+![只剩一张网卡可用](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-step-5.svg)
 
 *图 7-59：本图从提前通信的分层配置出发，只把可用网卡减为一张。跨服务器两轮各要挤过 96 MiB，通信约 4.8 ms，超出计算区间，整步约 23.8 ms。上述时间线采用同一横轴范围。灰色为计算，蓝色为通信，绿色为更新；圆点为通信数据就绪。*
 
@@ -6945,7 +7269,7 @@ $$
 
 十四轮启动共 70 μs。链路取本章网卡的 50 GB/s，令载荷项等于启动项，得到 $M=2$ MB，约为 1.91 MiB。输入大于这一数量级时，数据传输耗时所占的比例增大；8 KiB 远小于它，主要耗时来自启动。
 
-![启动开销与传输开销随数据量的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-21-message.svg)
+![启动开销与传输开销随数据量的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-21-message.svg)
 
 *图 7-60：原配置每轮启动 5 μs、带宽 50 GB/s。绿色将带宽增至三倍的 150 GB/s，橙色将每轮启动减至 2 μs；数据量小时主要受启动影响，数据量大时主要受传输影响。*
 
@@ -6973,7 +7297,7 @@ $$
 
 梯度按 BF16 传输，每张卡持有的分片为 $G=2P/8=8$ GB。设超节点有 $S$ 张卡，则超节点数 $H=1024/S$，每个超节点内同一张量并行坐标上有 $q=S/8$ 个数据并行成员。图 7-61 画出 64 卡超节点内的分组：同一行的八张卡是一个模型副本，同一列的卡属于同一个梯度同步组。
 
-![超节点内部的张量并行与数据并行坐标](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-supernode-groups.svg)
+![超节点内部的张量并行与数据并行坐标](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-supernode-groups.svg)
 
 *图 7-61：64 卡超节点由八个张量并行组组成。同一行的八张卡处理同一 micro-batch 的不同模型分片；同一列的八张卡先在节点内汇合对应的梯度，再与其他超节点交换同一分片。一个训练作业用上全部的卡，不等于全部的卡组成一个张量并行组。*
 
@@ -7015,7 +7339,7 @@ $$
 
 “出口随卡数增长”取 $B_{\mathrm{out}}=S\times50$ GB/s，即每张卡的 400 Gbit/s 网卡都接入交换网络，意味着为更大的节点配置更多可同时工作的外部端口和足够的交换网络；出口不会随节点变大而自动变宽。“出口固定”则让每个超节点只有 8 条 400 Gbit/s 链路接入 QM9700 交换网络，共 400 GB/s，与一台 HGX 服务器相同。后者的 64 卡方案中，分层归约需约 $31.1+300.0=331.1$ ms，反而比连续环约 317.7 ms 慢，因而表中选择连续环。这和第 7.2 节关于本地归约是否合算的判断相同。“出口随卡数增长”一列还隐含交换网络无阻塞：第 7.1.2 节算过，3:1 超售把每超节点出口降到三分之一，128 卡节点的跨域项从约 17.5 ms 增至约 52.5 ms，步时间增加约 35 ms；第 7.2.5 节说明了这些跨域字节在多轨拓扑上均匀落在八条 rail 上。
 
-![固定卡数下超节点与网络供给的影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/figure-7-supernode-scaling.svg)
+![固定卡数下超节点与网络供给的影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/figure-7-supernode-scaling.svg)
 
 *图 7-62：全局 token 数与总卡数固定。蓝线增加每节点外部出口，橙线将出口封顶在 400 GB/s，绿线在出口扩展的基础上将本地带宽从 450 翻倍到 900 GB/s。每点在声明的连续环与分层归约之间选择较快者；纵轴为固定调度估算的正常运行吞吐。*
 
@@ -7060,81 +7384,81 @@ $$
 >
 > 先复算 1024 卡算例，保持全局 token 数不变，将超节点大小、出口上限、本地带宽逐项改变，记录哪种通信算法和张量并行候选更好；再把恢复通道带宽减半，比较有效进度。最后复算例题 7.6，画出连续环、分层归约、在途请求数不足、提前通信与只剩一张网卡的整步时间线。求分层通信恰好被 20 ms 计算覆盖时的数据最晚就绪时刻。再换成 36 层、每层两次 8 KiB 归约，分别考虑将带宽提高到原来的三倍，以及将每次启动开销降至 2 μs，解释两类负载的改进顺序为何不同。
 
-[^capacity]: 模型规模与状态大小的计算方法见[模型资源计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/model-resource-accounting.md)及[第 7 章扩写资料](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/archive/outlines/extensions/07-%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E7%BD%91%E7%BB%9C.md#detail-7.1)。混合精度 Adam 算例按每参数 16 bytes 保存训练状态；万亿参数推理例子按每参数 0.5 byte 计算权重容量。
+[^capacity]: 模型规模与状态大小的计算方法见[模型资源计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/model-resource-accounting.md)及[第 7 章扩写资料](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/archive/outlines/extensions/07-%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E7%BD%91%E7%BB%9C.md#detail-7.1)。混合精度 Adam 算例按每参数 16 bytes 保存训练状态；万亿参数推理例子按每参数 0.5 byte 计算权重容量。
 
-[^ub]: [UB 规范与操作系统参考设计核对记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/UB-ASCEND-NOTES.md)。
+[^ub]: [UB 规范与操作系统参考设计核对记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/UB-ASCEND-NOTES.md)。
 
-[^gradient]: [两级梯度归约计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-hierarchical-nic8.md)、[连续环](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-contiguous-nic8.md)、[交错环](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-interleaved-nic8.md)。固定模型形状；各轮以屏障同步，所列时间为无争用条件下的载荷传输与启动时间之和：NVLink 每方向 450 GB/s、每卡一张 NIC 每方向 50 GB/s、每轮启动 0.833 μs。运行 `python3 calculations/calc.py hierarchical-gradient --inputs calculations/scenarios/hierarchical-gradient-example.json --format md` 可以复算。
+[^gradient]: [两级梯度归约计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-hierarchical-nic8.md)、[连续环](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-contiguous-nic8.md)、[交错环](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-interleaved-nic8.md)。固定模型形状；各轮以屏障同步，所列时间为无争用条件下的载荷传输与启动时间之和：NVLink 每方向 450 GB/s、每卡一张 NIC 每方向 50 GB/s、每轮启动 0.833 μs。运行 `python3 calculations/calc.py hierarchical-gradient --inputs calculations/scenarios/hierarchical-gradient-example.json --format md` 可以复算。
 
-[^two-nic]: [对照配置的分层归约](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-hierarchical-two-nic.md)、[连续环](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-contiguous-two-nic.md)、[交错环](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-interleaved-two-nic.md)：每台四张 A100 80GB PCIe，卡间 PCIe Gen4 x16 点对点每方向 32 GB/s；一张双端口 ConnectX-7，两个 200 Gbit/s 端口各 25 GB/s，共用 PCIe Gen4 x16 插槽的每方向 32 GB/s；每轮启动 0.833 μs。[A100 80GB 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100-80-spec.pdf)列出 PCIe 4.0 为 64 GB/s、两卡 NVLink 桥接器为 600 GB/s，均为收发两个方向的合计；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)列出 1／2／4 端口配置、单卡合计至 400 Gbit/s，主机接口为 PCIe Gen5 x16／x32；对照配置按这张卡装在 PCIe Gen4 x16 插槽上计算。本地带宽为 300 GB/s 的数字把 `local_bytes_per_second` 改为 300 GB/s 重算得到。
+[^two-nic]: [对照配置的分层归约](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-hierarchical-two-nic.md)、[连续环](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-contiguous-two-nic.md)、[交错环](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-interleaved-two-nic.md)：每台四张 A100 80GB PCIe，卡间 PCIe Gen4 x16 点对点每方向 32 GB/s；一张双端口 ConnectX-7，两个 200 Gbit/s 端口各 25 GB/s，共用 PCIe Gen4 x16 插槽的每方向 32 GB/s；每轮启动 0.833 μs。[A100 80GB 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100-80-spec.pdf)列出 PCIe 4.0 为 64 GB/s、两卡 NVLink 桥接器为 600 GB/s，均为收发两个方向的合计；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)列出 1／2／4 端口配置、单卡合计至 400 Gbit/s，主机接口为 PCIe Gen5 x16／x32；对照配置按这张卡装在 PCIe Gen4 x16 插槽上计算。本地带宽为 300 GB/s 的数字把 `local_bytes_per_second` 改为 300 GB/s 重算得到。
 
-[^nic-count]: 对照配置下[一个端口](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-contiguous-one-nic.md)、[两个端口](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-contiguous-two-nic.md)、[三个端口](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-flat-contiguous-three-nic.md)的连续环：跨服务器消息按端口条带化，PCIe Gen4 x16 插槽每方向 32 GB/s 不随端口数增加。第 7.6.2 节只剩一张网卡的分层归约见[单网卡分层归约](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-fp32-hierarchical-nic1.md)。
+[^nic-count]: 对照配置下[一个端口](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-contiguous-one-nic.md)、[两个端口](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-contiguous-two-nic.md)、[三个端口](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-flat-contiguous-three-nic.md)的连续环：跨服务器消息按端口条带化，PCIe Gen4 x16 插槽每方向 32 GB/s 不随端口数增加。第 7.6.2 节只剩一张网卡的分层归约见[单网卡分层归约](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-fp32-hierarchical-nic1.md)。
 
-[^hgx]: [HGX H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-hgx-h100-datasheet.pdf)：八张 GPU 经 NVSwitch 互联，GPU 间 NVLink 900 GB/s，网络速率至 400 Gbit/s；[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)列出 H100 SXM 的 NVLink 900 GB/s 与 PCIe Gen5 128 GB/s，均为收发两个方向的合计；[NVLink 规格页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-nvlink-spec.md)按代给出每 GPU 的 NVLink 带宽；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)：单端口至 400 Gbit/s，主机接口 PCIe Gen5 x16；[DGX H200 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-dgx-h200-datasheet.pdf)：八张 GPU 配八张 400 Gbit/s ConnectX-7。每卡一张 400 Gbit/s 网卡的配置取自 [experiments/ch07/07-03 的公开运行记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-03/README.md)：两台 HGX 服务器各有 8 张 H100 与 8 张 ConnectX-7 400 Gbit/s InfiniBand 网卡。编号相同的网卡接同一台交换机的 rail 组网见 [DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/dgx-superpod-h100-ra.pdf)。PCIe Gen5 x16 每方向 64 GB/s 高于网卡的 50 GB/s，网卡是这条路径的限制。每轮 0.833 μs 的启动时间由同一份公开记录推得：[原始日志](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-03/raw/hgx2.txt)中 16 rank 非原位 AllReduce 在 16 B 到 128 B 为 24.93–25.68 μs，取 25 μs，除以十六个参与者环形 AllReduce 的 30 轮；NCCL 在小消息上实际选用的算法未随日志公开，这里只按本章的环模型折算。
+[^hgx]: [HGX H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-hgx-h100-datasheet.pdf)：八张 GPU 经 NVSwitch 互联，GPU 间 NVLink 900 GB/s，网络速率至 400 Gbit/s；[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)列出 H100 SXM 的 NVLink 900 GB/s 与 PCIe Gen5 128 GB/s，均为收发两个方向的合计；[NVLink 规格页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-nvlink-spec.md)按代给出每 GPU 的 NVLink 带宽；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)：单端口至 400 Gbit/s，主机接口 PCIe Gen5 x16；[DGX H200 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-dgx-h200-datasheet.pdf)：八张 GPU 配八张 400 Gbit/s ConnectX-7。每卡一张 400 Gbit/s 网卡的配置取自 [experiments/ch07/07-03 的公开运行记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-03/README.md)：两台 HGX 服务器各有 8 张 H100 与 8 张 ConnectX-7 400 Gbit/s InfiniBand 网卡。编号相同的网卡接同一台交换机的 rail 组网见 [DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/dgx-superpod-h100-ra.pdf)。PCIe Gen5 x16 每方向 64 GB/s 高于网卡的 50 GB/s，网卡是这条路径的限制。每轮 0.833 μs 的启动时间由同一份公开记录推得：[原始日志](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-03/raw/hgx2.txt)中 16 rank 非原位 AllReduce 在 16 B 到 128 B 为 24.93–25.68 μs，取 25 μs，除以十六个参与者环形 AllReduce 的 30 轮；NCCL 在小消息上实际选用的算法未随日志公开，这里只按本章的环模型折算。
 
-[^parallel]: [模型并行案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/model-parallelism.md)、[第 6 章正文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/06-%E8%B6%85%E8%8A%82%E7%82%B9.md)。本章 EP 算例使用 1024 个 token、每 token 八次 dispatch、每份 8 KiB、跨边界比例二分之一，路由为教学构造。
+[^parallel]: [模型并行案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/model-parallelism.md)、[第 6 章正文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/06-%E8%B6%85%E8%8A%82%E7%82%B9.md)。本章 EP 算例使用 1024 个 token、每 token 八次 dispatch、每份 8 KiB、跨边界比例二分之一，路由为教学构造。
 
-[^fuselink]: Ren 等，*Enabling Efficient GPU Communication over Multiple NICs with FuseLink*，OSDI 2025；[正式会议稿](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/OSDI/2025/selected/osdi25-ren.pdf)、[通信路径推算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/resource-sharing-and-placement.md)。本文中继路径按本章配置取值：网卡每方向 50 GB/s、NVLink 每方向 450 GB/s；插件实现与实验平台见原论文。
+[^fuselink]: Ren 等，*Enabling Efficient GPU Communication over Multiple NICs with FuseLink*，OSDI 2025；[正式会议稿](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/OSDI/2025/selected/osdi25-ren.pdf)、[通信路径推算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/resource-sharing-and-placement.md)。本文中继路径按本章配置取值：网卡每方向 50 GB/s、NVLink 每方向 450 GB/s；插件实现与实验平台见原论文。
 
-[^allreduce]: [experiments/ch07/07-03 的公开运行记录核验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-03/README.md)。数据来自官方项目中的用户提交记录。
+[^allreduce]: [experiments/ch07/07-03 的公开运行记录核验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-03/README.md)。数据来自官方项目中的用户提交记录。
 
-[^rpc]: [RPC 阶段与配对复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/rpc-trace-1048576.md)、[264 次调用原记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-04/README.md)。CPU 阶段与请求字节的变化、配对调用变化分别统计。测量路径为 Mac 经 SSH 转发到 Linux 主机，含加密、转发与网络波动；配对完整调用节省中位数约 10.1 ms。
+[^rpc]: [RPC 阶段与配对复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/rpc-trace-1048576.md)、[264 次调用原记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-04/README.md)。CPU 阶段与请求字节的变化、配对调用变化分别统计。测量路径为 Mac 经 SSH 转发到 Linux 主机，含加密、转发与网络波动；配对完整调用节省中位数约 10.1 ms。
 
-[^window]: [远程读取窗口](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/remote-window-book.md)、[逐次等待](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/remote-window-source-wait.md)：路径 50 GB/s、每事务 256 B、槽位占用 2 μs。启动间隔 18.6 ns 与 6.2 ns 取自[UB 互联计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ub-fabric-book.md)的请求速率一项（OpenURMA 工具链中 RoCE 可靠连接每项请求 6 个周期、UB 每项 2 个周期，时钟 322 MHz）。公式中的请求等待与服务启动间隔分别定义。
+[^window]: [远程读取窗口](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/remote-window-book.md)、[逐次等待](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/remote-window-source-wait.md)：路径 50 GB/s、每事务 256 B、槽位占用 2 μs。启动间隔 18.6 ns 与 6.2 ns 取自[UB 互联计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ub-fabric-book.md)的请求速率一项（OpenURMA 工具链中 RoCE 可靠连接每项请求 6 个周期、UB 每项 2 个周期，时钟 322 MHz）。公式中的请求等待与服务启动间隔分别定义。
 
-[^kv-direct]: 李博杰等，[KV-Direct: High-Performance In-Memory Key-Value Store with Programmable NIC](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/kv-direct-sosp17.pdf)，SOSP 2017，§2.4 与图 3；PCIe 信用与标签的说明另见[笔者博士论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/bojieli-phd-thesis.pdf)第 5 章。数字按原平台（PCIe Gen3 x8、FPGA 网卡）引用，其他平台的信用数、标签数和延迟不同，但读受在途数限制、写受报文速率限制的结构相同。
+[^kv-direct]: 李博杰等，[KV-Direct: High-Performance In-Memory Key-Value Store with Programmable NIC](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/kv-direct-sosp17.pdf)，SOSP 2017，§2.4 与图 3；PCIe 信用与标签的说明另见[笔者博士论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/bojieli-phd-thesis.pdf)第 5 章。数字按原平台（PCIe Gen3 x8、FPGA 网卡）引用，其他平台的信用数、标签数和延迟不同，但读受在途数限制、写受报文速率限制的结构相同。
 
-[^nic-rate]: 报文速率与带宽的交叉点按第 7.3.4 节 RoCE 可靠连接的启动间隔 18.63 ns 和本章网卡的 50 GB/s 推得，约 931 B；FuseLink 的带宽借用见 [^fuselink]，MoE dispatch 的隐藏维 7168、FP8 dispatch 与 BF16 combine 见 [DeepEP README 快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/sources/deepep.md)。
+[^nic-rate]: 报文速率与带宽的交叉点按第 7.3.4 节 RoCE 可靠连接的启动间隔 18.63 ns 和本章网卡的 50 GB/s 推得，约 931 B；FuseLink 的带宽借用见 [^fuselink]，MoE dispatch 的隐藏维 7168、FP8 dispatch 与 BF16 combine 见 [DeepEP README 快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/sources/deepep.md)。
 
-[^ep-buffer]: [DeepEP README 快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/sources/deepep.md)中为 NVLink 与 RDMA 分别预留的缓冲区大小说明；复制与打包的开销按本节的事件模型推断，不是对某一版本的测量。
+[^ep-buffer]: [DeepEP README 快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/sources/deepep.md)中为 NVLink 与 RDMA 分别预留的缓冲区大小说明；复制与打包的开销按本节的事件模型推断，不是对某一版本的测量。
 
-[^pcie]: Hou 等，*Understanding Routable PCIe Performance for Composable Infrastructures*，NSDI 2024，实验使用 PCIe Gen3 平台；[PCIe 路径与诊断](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/collective-paths-and-diagnosis.md)。
+[^pcie]: Hou 等，*Understanding Routable PCIe Performance for Composable Infrastructures*，NSDI 2024，实验使用 PCIe Gen3 平台；[PCIe 路径与诊断](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/collective-paths-and-diagnosis.md)。
 
-[^remote]: [不变 KV 快照的远程读取与取回](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/remote-state-reused.md)。快照为 Qwen3-8B 的 1024 个 token、BF16 全层 KV，共 144 MiB；远程读取与搬回按 ConnectX-7 每方向 50 GB/s、391 个 256 B 事务在途，本地读写按 H100 SXM 的 HBM 3350 GB/s；一次搬回固定成本约 3.075 ms、每次远程读取约 3.025 ms、本地读约 0.046 ms。10% 访问反例按相同比例缩放每次访问成本，仍按整份快照计算搬回成本。
+[^remote]: [不变 KV 快照的远程读取与取回](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/remote-state-reused.md)。快照为 Qwen3-8B 的 1024 个 token、BF16 全层 KV，共 144 MiB；远程读取与搬回按 ConnectX-7 每方向 50 GB/s、391 个 256 B 事务在途，本地读写按 H100 SXM 的 HBM 3350 GB/s；一次搬回固定成本约 3.075 ms、每次远程读取约 3.025 ms、本地读约 0.046 ms。10% 访问反例按相同比例缩放每次访问成本，仍按整份快照计算搬回成本。
 
-[^ordering]: [必要依赖与旧值反例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/operation-ordering-book.md)、[共享资源变体](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/operation-ordering-shared.md)、[远端排序研究与固定 NVSHMEM 实现阅读](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/remote-ordering-and-completion.md)。目标端排序属于需要新增硬件支持的设计；当前网卡的参照实验用于观察请求与完成时序。发布链的 20＋80＋2 μs 与旧值反例的 1–6 μs 是两组独立输入。“全部依次执行”作为串行对照策略。
+[^ordering]: [必要依赖与旧值反例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/operation-ordering-book.md)、[共享资源变体](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/operation-ordering-shared.md)、[远端排序研究与固定 NVSHMEM 实现阅读](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/remote-ordering-and-completion.md)。目标端排序属于需要新增硬件支持的设计；当前网卡的参照实验用于观察请求与完成时序。发布链的 20＋80＋2 μs 与旧值反例的 1–6 μs 是两组独立输入。“全部依次执行”作为串行对照策略。
 
-[^states]: [活跃关系与传输状态](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/connection-states-full.md)、[八类隔离](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/connection-states-isolated.md)。模型分别计入端点、关系绑定和传输状态三类容量。
+[^states]: [活跃关系与传输状态](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/connection-states-full.md)、[八类隔离](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/connection-states-isolated.md)。模型分别计入端点、关系绑定和传输状态三类容量。
 
-[^reclaim]: [完成通知处理与槽位释放](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/completion-reclaim-book.md)、[增加槽位](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/completion-reclaim-more-slots.md)。轮询周期、每次轮询处理的完成通知数量与槽位占用时间为教学条件。
+[^reclaim]: [完成通知处理与槽位释放](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/completion-reclaim-book.md)、[增加槽位](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/completion-reclaim-more-slots.md)。轮询周期、每次轮询处理的完成通知数量与槽位占用时间为教学条件。
 
-[^queue]: [周期需求与队列](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/periodic-queue-aligned.md)、[错峰](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/periodic-queue-staggered.md)、[相位漂移](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/periodic-queue-drift.md)。算例的到达速率按给定周期变化。
+[^queue]: [周期需求与队列](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/periodic-queue-aligned.md)、[错峰](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/periodic-queue-staggered.md)、[相位漂移](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/periodic-queue-drift.md)。算例的到达速率按给定周期变化。
 
-[^cassini]: Rajasekaran 等，*CASSINI: Network-Aware Job Scheduling in Machine Learning Clusters*，NSDI 2024；[作业放置与相位调度](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/network-planning-and-collectives.md)。论文主实验为 24 台单 A100 40 GB 服务器、50 Gbps 网卡及 2:1 超售逻辑网络；各作业独占训练设备、共享网络。
+[^cassini]: Rajasekaran 等，*CASSINI: Network-Aware Job Scheduling in Machine Learning Clusters*，NSDI 2024；[作业放置与相位调度](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/network-planning-and-collectives.md)。论文主实验为 24 台单 A100 40 GB 服务器、50 Gbps 网卡及 2:1 超售逻辑网络；各作业独占训练设备、共享网络。
 
-[^phase]: [experiments/ch07/07-08：真实 CPU 训练与一次性错峰](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-08/README.md)。三轮结果计入初始 50 ms 延迟，模型与优化器状态核验一致；这一对照用于分析 CPU 执行顺序。环境为共享 CPU、Gloo loopback，三轮完成时间增加 2.27%–3.32%。
+[^phase]: [experiments/ch07/07-08：真实 CPU 训练与一次性错峰](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-08/README.md)。三轮结果计入初始 50 ms 延迟，模型与优化器状态核验一致；这一对照用于分析 CPU 执行顺序。环境为共享 CPU、Gloo loopback，三轮完成时间增加 2.27%–3.32%。
 
-[^feedback]: [有限缓冲与反馈延迟](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/feedback-queue-overflow.md)。反馈时刻设为 20 μs，反馈后的发送速率按题设调整。
+[^feedback]: [有限缓冲与反馈延迟](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/feedback-queue-overflow.md)。反馈时刻设为 20 μs，反馈后的发送速率按题设调整。
 
-[^packets]: [两路径均延迟](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/packet-reorder-balanced.md)、[路径时延不等](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/packet-reorder-skewed.md)、[指定丢包恢复](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/packet-reorder-loss.md)。字节数按应用载荷统计。两条路径各 50 GB/s，报文 4 KiB，采用固定载荷与轮转分配，恢复时刻由题设给定；从缺失报文起重发的 32 KiB 数据用于计算额外载荷。
+[^packets]: [两路径均延迟](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/packet-reorder-balanced.md)、[路径时延不等](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/packet-reorder-skewed.md)、[指定丢包恢复](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/packet-reorder-loss.md)。字节数按应用载荷统计。两条路径各 50 GB/s，报文 4 KiB，采用固定载荷与轮转分配，恢复时刻由题设给定；从缺失报文起重发的 32 KiB 数据用于计算额外载荷。
 
-[^megascale]: Jiang 等，*MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs*，NSDI 2024；[正式论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/NSDI/2024/selected/nsdi24-jiang-ziheng.pdf)、[集合通信诊断](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/collective-paths-and-diagnosis.md)。
+[^megascale]: Jiang 等，*MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs*，NSDI 2024；[正式论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/NSDI/2024/selected/nsdi24-jiang-ziheng.pdf)、[集合通信诊断](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/collective-paths-and-diagnosis.md)。
 
-[^tail]: [就绪偏差教学记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/collective-tail-book.md)、[100 条混合记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/collective-tail-mixed.md)、[两条恢复记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/collective-tail-fault-heavy.md)。p99 取排序后第 $\lceil0.99N\rceil$ 项。
+[^tail]: [就绪偏差教学记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/collective-tail-book.md)、[100 条混合记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/collective-tail-mixed.md)、[两条恢复记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/collective-tail-fault-heavy.md)。p99 取排序后第 $\lceil0.99N\rceil$ 项。
 
-[^readiness]: [experiments/ch07/07-10/rank-readiness：四进程 Gloo 就绪偏差](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch07/07-10/rank-readiness/README.md)。Apple M2 Max、本机 CPU，180 组正式记录；全组完成从最早屏障返回到最晚调用返回，最后到达后尾段仍包含归约、调度与唤醒。正文采用不同样本统计的中位数，逐样本时间线见原记录。
+[^readiness]: [experiments/ch07/07-10/rank-readiness：四进程 Gloo 就绪偏差](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch07/07-10/rank-readiness/README.md)。Apple M2 Max、本机 CPU，180 组正式记录；全组完成从最早屏障返回到最晚调用返回，最后到达后尾段仍包含归约、调度与唤醒。正文采用不同样本统计的中位数，逐样本时间线见原记录。
 
-[^planning]: [网络规划与集合通信案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/network-planning-and-collectives.md)。小消息算例设每轮启动 5 μs、每个参与者有效带宽为本章网卡的 50 GB/s 及其三倍 150 GB/s，环形模型计载荷传输与启动，数值见[本章教学算例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch07/teaching-data.json)的 `small_messages` 项；前述大块归约用由 nccl-tests 记录推得的每轮 0.833 μs。
+[^planning]: [网络规划与集合通信案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/network-planning-and-collectives.md)。小消息算例设每轮启动 5 μs、每个参与者有效带宽为本章网卡的 50 GB/s 及其三倍 150 GB/s，环形模型计载荷传输与启动，数值见[本章教学算例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch07/teaching-data.json)的 `small_messages` 项；前述大块归约用由 nccl-tests 记录推得的每轮 0.833 μs。
 
-[^ubspec]: [UB 与昇腾 950 原件核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/UB-ASCEND-NOTES.md)，包含 UB 基础规范 2.0.1、操作系统参考设计 2.0 及[昇腾 950 官方白皮书](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/ascend-950-official.pdf)。域、传输模式、双向带宽与 SerDes 复用分别核算。
+[^ubspec]: [UB 与昇腾 950 原件核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/UB-ASCEND-NOTES.md)，包含 UB 基础规范 2.0.1、操作系统参考设计 2.0 及[昇腾 950 官方白皮书](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/ascend-950-official.pdf)。域、传输模式、双向带宽与 SerDes 复用分别核算。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
-[^ub-design]: 李博杰，〈[Unified Bus 背后的思考](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/ub-reflection.md)〉，Jetty、事务序与 Load/Store 各节；[OpenURMA 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/openurma.pdf)，2026-06-02 修订版（arXiv:2605.28717），§3 设计、§7–§9 状态与延迟、§10 顺序、§12 传输、§13 结果汇总。[本次整合的来源与适用范围](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/README.md)。
+[^ub-design]: 李博杰，〈[Unified Bus 背后的思考](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/ub-reflection.md)〉，Jetty、事务序与 Load/Store 各节；[OpenURMA 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/openurma.pdf)，2026-06-02 修订版（arXiv:2605.28717），§3 设计、§7–§9 状态与延迟、§10 顺序、§12 传输、§13 结果汇总。[本次整合的来源与适用范围](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/README.md)。
 
-[^ub-fabric]: 阶段延迟、请求速率和状态增长的参数与结果见[UB 互联计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ub-fabric-book.md)，运行 `python3 calculations/calc.py ub-fabric --format md` 可以复算。各阶段延迟取自 OpenURMA 论文表 7 给定的值，记录尺寸取自表 3，仿真对照值取自 §8.1 与 §8.3。推导把所有阶段串行相加，不考虑并发请求之间的重叠。
+[^ub-fabric]: 阶段延迟、请求速率和状态增长的参数与结果见[UB 互联计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ub-fabric-book.md)，运行 `python3 calculations/calc.py ub-fabric --format md` 可以复算。各阶段延迟取自 OpenURMA 论文表 7 给定的值，记录尺寸取自表 3，仿真对照值取自 §8.1 与 §8.3。推导把所有阶段串行相加，不考虑并发请求之间的重叠。
 
-[^supernode-scaling]: [1024 卡固定场景](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/scenarios/supernode-scaling-example.json)、[完整计算与候选比较](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/supernode-scaling-book.md)、[脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/supernode_scaling.py)。形状来自 [Qwen3-32B 配置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/configs/models/qwen3-32b/config.json)，参数总量用 32B 近似。H100 SXM 的 BF16 稠密峰值见[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)；41% MFU 取自 [Llama 3 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/llama3.txt)表 4；NVLink Switch System 最多连接 256 张 GPU、全交换带宽 115.2 TB/s 见 [Grace Hopper 架构文章快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-grace-hopper-blog.md)；第五代 NVLink 每 GPU 1800 GB/s（双向合计）见 [NVLink 规格页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-nvlink-spec.md)；1024 卡作业平均 7.9 小时中断一次、中断率与卡数成正比见 [Meta 集群可靠性论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/meta-cluster-reliability.txt)图 7。checkpoint 间隔与暂停、固定恢复时间为给定输入。
+[^supernode-scaling]: [1024 卡固定场景](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/scenarios/supernode-scaling-example.json)、[完整计算与候选比较](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/supernode-scaling-book.md)、[脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/supernode_scaling.py)。形状来自 [Qwen3-32B 配置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/configs/models/qwen3-32b/config.json)，参数总量用 32B 近似。H100 SXM 的 BF16 稠密峰值见[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)；41% MFU 取自 [Llama 3 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/llama3.txt)表 4；NVLink Switch System 最多连接 256 张 GPU、全交换带宽 115.2 TB/s 见 [Grace Hopper 架构文章快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-grace-hopper-blog.md)；第五代 NVLink 每 GPU 1800 GB/s（双向合计）见 [NVLink 规格页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-nvlink-spec.md)；1024 卡作业平均 7.9 小时中断一次、中断率与卡数成正比见 [Meta 集群可靠性论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/meta-cluster-reliability.txt)图 7。checkpoint 间隔与暂停、固定恢复时间为给定输入。
 
-[^clos-cut]: [64 端口无阻塞 Clos](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/clos-cut-k64-nonblocking.md)、[3:1 超售](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/clos-cut-k64-oversub3.md)：叶交换机 $d$ 下行、$u$ 上联，上层对叶上联不阻塞，三层沿 fat-tree 的 pod 结构；半分带宽按顶层链路的一半计；1024 卡分区按占用整数台叶交换机计割集；超节点出口取[1024 卡场景](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/scenarios/supernode-scaling-example.json)的每卡 50 GB/s 乘卡数再除以超售比，跨域字节取自[1024 卡计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/supernode-scaling-book.md)。交换机取 [DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/dgx-superpod-h100-ra.pdf)所用的 NVIDIA Quantum QM9700（NDR 400 Gbit/s），其表 3 中 2048 张 GPU 用 64 台叶交换机、32 台脊交换机，与 64 端口两层 Clos 的数目一致。运行 `python3 calculations/calc.py clos-cut --inputs calculations/scenarios/clos-cut-example.json --format md` 可以复算。
+[^clos-cut]: [64 端口无阻塞 Clos](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/clos-cut-k64-nonblocking.md)、[3:1 超售](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/clos-cut-k64-oversub3.md)：叶交换机 $d$ 下行、$u$ 上联，上层对叶上联不阻塞，三层沿 fat-tree 的 pod 结构；半分带宽按顶层链路的一半计；1024 卡分区按占用整数台叶交换机计割集；超节点出口取[1024 卡场景](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/scenarios/supernode-scaling-example.json)的每卡 50 GB/s 乘卡数再除以超售比，跨域字节取自[1024 卡计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/supernode-scaling-book.md)。交换机取 [DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/dgx-superpod-h100-ra.pdf)所用的 NVIDIA Quantum QM9700（NDR 400 Gbit/s），其表 3 中 2048 张 GPU 用 64 台叶交换机、32 台脊交换机，与 64 端口两层 Clos 的数目一致。运行 `python3 calculations/calc.py clos-cut --inputs calculations/scenarios/clos-cut-example.json --format md` 可以复算。
 
-[^in-network]: [在网归约对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/clos-cut-in-network.md)：本地阶段与分层归约相同，跨服务器阶段每张网卡发送分片一次、接收结果一次；$S$ 台服务器的环按每网卡 $2(S-1)/S$ 个分片、$2(S-1)$ 轮计，每轮启动 0.833 μs；交换机归约引擎的吞吐不在模型内。SHARP 的定义取自 [NVIDIA SHARP 文档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/sharp-docs-intro.md)，测量值取自 [SHArP 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/sharp-paper.pdf)摘要。
+[^in-network]: [在网归约对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/clos-cut-in-network.md)：本地阶段与分层归约相同，跨服务器阶段每张网卡发送分片一次、接收结果一次；$S$ 台服务器的环按每网卡 $2(S-1)/S$ 个分片、$2(S-1)$ 轮计，每轮启动 0.833 μs；交换机归约引擎的吞吐不在模型内。SHARP 的定义取自 [NVIDIA SHARP 文档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/sharp-docs-intro.md)，测量值取自 [SHArP 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/sharp-paper.pdf)摘要。
 
-[^rail]: [对齐配对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/clos-cut-rail-aligned.md)、[错位配对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/clos-cut-rail-shifted.md)：两台服务器各八张网卡，第 $i$ 张网卡接第 $i$ 条 rail 的叶交换机，跨服务器阶段为两 rank 的 ReduceScatter 加 AllGather，只计网卡串行发送与每轮 0.833 μs 启动。多轨拓扑、32 台服务器一组内同一 rail 一跳到达、跨 rail 经脊层，取自 [DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/dgx-superpod-h100-ra.pdf) PDF 第 8、14 页。
+[^rail]: [对齐配对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/clos-cut-rail-aligned.md)、[错位配对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/clos-cut-rail-shifted.md)：两台服务器各八张网卡，第 $i$ 张网卡接第 $i$ 条 rail 的叶交换机，跨服务器阶段为两 rank 的 ReduceScatter 加 AllGather，只计网卡串行发送与每轮 0.833 μs 启动。多轨拓扑、32 台服务器一组内同一 rail 一跳到达、跨 rail 经脊层，取自 [DGX SuperPOD H100 参考架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/dgx-superpod-h100-ra.pdf) PDF 第 8、14 页。
 
-[^incast]: [incast 反馈](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/incast-feedback-book.md)、[4 MiB 缓冲](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/incast-feedback-4mib.md)：$N-1$ 个发送方各 50 GB/s 向 50 GB/s 出口发送，流体模型；一跳反馈距离为 30 m 线缆的往返传播加一个 1500 B 报文的串行化，端到端反馈距离取 20 μs 往返。PFC 按流量类别暂停全双工链路的定义取自 [IEEE 802.1Qbb 条目](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/standards/ieee-802-1qbb-entry.md)；1500 B MTU 与每端口每优先级 22.4 KB 的 headroom 取自 [DCQCN 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/dcqcn.pdf)§4。
+[^incast]: [incast 反馈](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/incast-feedback-book.md)、[4 MiB 缓冲](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/incast-feedback-4mib.md)：$N-1$ 个发送方各 50 GB/s 向 50 GB/s 出口发送，流体模型；一跳反馈距离为 30 m 线缆的往返传播加一个 1500 B 报文的串行化，端到端反馈距离取 20 μs 往返。PFC 按流量类别暂停全双工链路的定义取自 [IEEE 802.1Qbb 条目](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/standards/ieee-802-1qbb-entry.md)；1500 B MTU 与每端口每优先级 22.4 KB 的 headroom 取自 [DCQCN 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/dcqcn.pdf)§4。
 
-[^ecmp]: [8 流 32 上联](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hash-collision-8-on-32.md)、[8 流 16 上联](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hash-collision-8-on-16.md)、[32 流 32 上联](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hash-collision-32-on-32.md)、[32 流 16 上联](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hash-collision-32-on-16.md)、[128 流 16 上联](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hash-collision-128-on-16.md)：同一台叶交换机上的每条流独立均匀地哈希到该叶的上联，最大负载的分布按截断指数多项式精确计算，相对无冲突的速度为 $\lceil n/m\rceil$ 除以最大负载的期望（$n\ge m$ 时即结果文件中的有效割集）。逐包喷洒沿用本节的报文乱序模型：8 MiB 拆成 4 KiB 报文轮转到八条 50 GB/s 路径，路径时延 1 到 8 μs 为给定输入。喷洒与熵值取自 [Ultra Ethernet 规范 v1.0.1](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/standards/uec-spec-10.pdf)§3.6.5.2，回退 N 步的代价取自 [UEC 概述](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/standards/uec-overview.pdf)第 5 页。
+[^ecmp]: [8 流 32 上联](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hash-collision-8-on-32.md)、[8 流 16 上联](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hash-collision-8-on-16.md)、[32 流 32 上联](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hash-collision-32-on-32.md)、[32 流 16 上联](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hash-collision-32-on-16.md)、[128 流 16 上联](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hash-collision-128-on-16.md)：同一台叶交换机上的每条流独立均匀地哈希到该叶的上联，最大负载的分布按截断指数多项式精确计算，相对无冲突的速度为 $\lceil n/m\rceil$ 除以最大负载的期望（$n\ge m$ 时即结果文件中的有效割集）。逐包喷洒沿用本节的报文乱序模型：8 MiB 拆成 4 KiB 报文轮转到八条 50 GB/s 路径，路径时延 1 到 8 μs 为给定输入。喷洒与熵值取自 [Ultra Ethernet 规范 v1.0.1](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/standards/uec-spec-10.pdf)§3.6.5.2，回退 N 步的代价取自 [UEC 概述](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/standards/uec-overview.pdf)第 5 页。
 
 #### 本章小结
 
@@ -7150,7 +7474,7 @@ $$
 
 ### 第八章 推理优化
 
-同一个模型运行在同一台加速器上，单个用户每秒可能只收到几十个 token，所有用户合计每秒却能收到上千个 token。这是因为多个请求可以合并计算，共用一次读取的权重。与此同时，每条请求的上下文长度、排队时间和执行顺序又决定了用户何时能收到答案。本章讨论如何组织这些请求，在给定时间内返回更多正确答案。
+同一个模型运行在同一台加速器上，单个用户每秒可能只收到几十个 token，所有用户合计每秒却能收到上千个 token。decode 每读一遍权重只做很少的计算，速度受限于显存带宽而不是峰值算力；把多个请求合并计算、共用一次读取的权重，总吞吐就能成倍提高。与此同时，每条请求的上下文长度、排队时间和执行顺序又决定了用户何时能收到答案。本章讨论如何组织这些请求，在给定时间内返回更多正确答案。
 
 推理实例可以使用一张卡，也可以由多张卡、多台服务器协同执行。第 6、7 章已经说明模型计算如何切分，以及加速器如何通信。本章以给定加速器组合为基础，研究批处理、请求调度、内存管理、压缩、卸载和推测解码，比较不同运行配置的执行效率。第 9 章再讨论计算和状态应分布在哪里，如何组织完整副本、阶段服务池和算子分工，并据此确定服务规模。
 
@@ -7173,7 +7497,7 @@ $$
 
 **请求**是一条有独立输入、输出和结束条件的推理工作。本章所说的 batch，指在同一次加速器执行中一起计算的一组输入 token；**调度迭代**是调度器选择本轮工作、提交执行并处理结果的一个周期。请求可以跨越许多迭代，每轮与它合批的其他请求可能不同。
 
-![请求身份与每轮 batch](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-request-iterations.svg)
+![请求身份与每轮 batch](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-request-iterations.svg)
 
 *图 8-1：A 跨越两个迭代继续执行。B 在第一轮结束，下一轮由 C 接替其执行位置（每轮为一条活跃请求预留的一行计算）；请求状态仍按各自身份保存。*
 
@@ -7191,7 +7515,7 @@ $$
 
 图 8-2 把这 6.95 秒画成一条时间线。首个 token 的返回时刻将时间线分成两段：此前的排队和输入处理决定用户何时看到响应，此后的 255 个间隔决定用户何时收到完整答案。后续所有调度优化，都可以理解为改变这条时间线上某一段的长度。
 
-![请求从到达到最后一个输出的时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-1-lifecycle.svg)
+![请求从到达到最后一个输出的时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-1-lifecycle.svg)
 
 *图 8-2：一条输出 256 个 token 的请求。排队 0.1 秒、prefill 0.096 秒，后续 255 个输出间隔各为 26.5 ms（实验 8-1 的 batch 1 实测）。横条按实际时间比例绘制，点标出首、末 token；7 秒虚线是完成时限。*
 
@@ -7276,7 +7600,7 @@ $$
 
 图 8-3 展示了这一变化。横轴上相邻的刻度表示 batch 加倍，因此权重项每次减半；KV 项保持不变，两项之和逐渐接近 KV 对应的水平线。上下文为 2K 时，batch 从 1 增至 64，每个输出 token 的读取量从约 14.38 GiB 降至 0.50 GiB，约为原来的 1/29。上下文长度增至 8K 后，KV 容量变为原来的四倍，合批后的每个输出 token 仍需读取更多数据。
 
-![batch 增大时每个输出 token 分摊的权重与上下文读取量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-2-batch.svg)
+![batch 增大时每个输出 token 分摊的权重与上下文读取量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-2-batch.svg)
 
 *图 8-3：批处理怎样减少每生成一个 token 所需的读取量。横轴为同时生成的请求数，纵轴为整批读取字节数除以本轮输出 token 数。蓝、绿实线分别对应每条请求已有 2048、8192 个 token 的上下文，包含权重与 KV 读取；同色水平点线仅表示该长度下的 KV 读取量。灰色虚线表示批内共用的权重读取量除以请求数。模型为 Qwen3-8B，使用 BF16；每份矩阵权重每轮读取一次，各请求的 KV 独立。两轴均为对数刻度。*
 
@@ -7306,7 +7630,7 @@ $$
 
 不过，batch 仍会影响矩阵计算对计算单元的利用率，以及 batch 内的 KV 读取量。将新的读取量代入上述时间模型，就能求出计算与 KV 读取的交点，再按首 token 延迟和输出间隔选择 batch。
 
-![每输出 token 分摊的 HBM 读取量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-batch-counterfactual.svg)
+![每输出 token 分摊的 HBM 读取量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-batch-counterfactual.svg)
 
 *图 8-4：每输出 token 分摊的 HBM 读取量。固定 8K 上下文，传统路径为 W/B+K，独立快速 ROM 路径为 K；纵轴按上述公式计算读取量。W 是整批读取的权重字节数，B 是批内请求数，K 是单请求本步读取的 KV 字节数；W/B+K 为每个输出 token 分摊的读取量。*
 
@@ -7322,17 +7646,17 @@ $$
 
 固定 batch 让 r2、r3 等待 r0、r1 整组结束，总时间约 870 ms。连续批处理在 r1 结束后接纳 r2，总时间降到约 766 ms；但 r0 的下一次输出要等 r2 的 8K prefill，最大输出间隔从约 26 ms 增至 376 ms。总时间节省约 12%，一次输出停顿却增长到原来的 14 倍。
 
-![同一请求流在三种接纳策略下的时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-3-scheduling.svg)
+![同一请求流在三种接纳策略下的时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-3-scheduling.svg)
 
 *图 8-5：固定 batch 等待整组结束，再接纳 r2、r3。蓝色为 prefill，绿色为 decode，三角为到达时刻。各色带宽度为整次调度迭代耗时，时间按 RTX PRO 6000 上的实测拟合计算。*
 
-![连续批处理](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-scheduling-continuous.svg)
+![连续批处理](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-scheduling-continuous.svg)
 
 *图 8-6：连续批处理在 r1 结束后接纳 r2。每行是一条请求；蓝色为处理输入（prefill），绿色为生成输出（decode），三角形为请求到达时刻，色带宽度为所在调度迭代的耗时。r0 等待 r2 的 8K 输入处理，最长输出间隔增至约 376 ms；全部请求约 766 ms 完成。*
 
 进一步把 r2 的 prefill 分成每块 2048 个 token，每轮最多处理 4096 个 token（与实验 8-1 的设置相同），每次先让已有请求继续 decode，再执行一段输入。最大输出间隔降到约 133 ms，所有请求的总完成时间约为 844 ms。分块后，调度器能更频繁地安排已有请求继续生成，使输出间隔更均匀。
 
-![decode 优先的分块执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-scheduling-chunked.svg)
+![decode 优先的分块执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-scheduling-chunked.svg)
 
 *图 8-7：将长输入分块处理，每轮先安排已有请求生成，再处理一块新输入。每行是一条请求；蓝色为输入处理，绿色为输出生成，三角形为到达时刻。分块使最长输出间隔降至约 133 ms，全部请求约 844 ms 完成。横轴与图 8-5、8-6 使用相同时间尺度。*
 
@@ -7351,11 +7675,11 @@ $ch$ 来自新 token 对旧上下文的访问，三角形项来自块内的因�
 
 图 8-8 将配对数画成面积：每个新 token 都要访问全部旧上下文，形成左侧矩形；块内只能关注当前 token 位置及其之前的位置，形成右侧三角形。块长固定时，右侧三角形不变，左侧矩形随上下文增长而变宽。这就是末块需要更多注意力计算的原因。
 
-![同一块新 token 访问旧上下文和块内位置的范围](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-4-attention.svg)
+![同一块新 token 访问旧上下文和块内位置的范围](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-4-attention.svg)
 
 *图 8-8：首次处理 4 个 token 时，没有旧上下文，只有新 token 之间的因果注意力配对，形成 1 + 2 + 3 + 4 = 10 个绿色格。白格表示未来 token，不参与当前查询。*
 
-![同一块访问更长上下文](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-attention-history.svg)
+![同一块访问更长上下文](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-attention-history.svg)
 
 *图 8-9：已有 8 个 token 的上下文时，4 个新 token 与旧上下文形成 4 × 8 = 32 个蓝色格，块内仍为 10 个绿色格。块长相同，总配对从 10 增至 42。*
 
@@ -7385,7 +7709,7 @@ $ch$ 来自新 token 对旧上下文的访问，三角形项来自块内的因�
 
 **分页分配**将序列分成固定大小的块。**逻辑块**按序列中的 token 位置编号，相当于页码；**物理块**是实际保存 KV 的内存区域；每条请求维护的**块表**记录逻辑块对应哪个物理块。序列增长到需要新块时，引擎从空闲池分配一个物理块，并增加映射。注意力计算根据块表找到所需位置的 KV，因此物理块可以分散存放。这里讨论的是 KV 在内存中的分块寻址，多级存储之间的换入换出留到第 8.3.4 节和第 8.4.3 节讨论。
 
-![从逻辑块查到物理块](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-page-map.svg)
+![从逻辑块查到物理块](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-page-map.svg)
 
 *图 8-10：逻辑块 0、1、2 按顺序组成序列，块表分别指向物理块 2、0、3。物理块 1 为空闲，注意力按块表恢复逻辑顺序。*
 
@@ -7399,17 +7723,17 @@ $$
 
 **算例：KV 分页分配能减少多少预留空间？** 设 A、B、C、D 当前长度分别为 9、13、5、15，每条最大允许 16 个 token。整段预留时，四条请求共预留可保存 64 个 token 的 KV 空间；取 $p=4$，分页分别分配 12、16、8、16，共可保存 52 个 token 的 KV 空间。其中实际保存的 KV 仍对应 42 个 token，未用容量从 22 个 token 减到 10 个 token。
 
-![整段预留、分页与前缀共享的 KV 分配容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-5-pages.svg)
+![整段预留、分页与前缀共享的 KV 分配容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-5-pages.svg)
 
 *图 8-11：四条请求分别含 9、13、5、15 个 token，每条预留可保存 16 个 token 的 KV 空间，共分配可保存 64 个 token 的 KV 空间。蓝色已用，灰色预留未用。*
 
-![改用每块 4 个 token 的分页](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-pages-paged.svg)
+![改用每块 4 个 token 的分页](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-pages-paged.svg)
 
 *图 8-12：按每块保存 4 个 token 的 KV 分配空间，四条请求分别获得 12、16、8、16 个 token 的容量，合计 52 个。灰色表示块尾未用容量，由 22 个 token 减到 10 个 token。*
 
 若 A、B 的前八个 token 相同，还可以让它们共用两个完整块，使总分配量进一步降至 44 个 token。分页减少了尚未使用的预留空间，共享消除了重复保存的上下文，两者节省的是不同部分的内存。
 
-![两个请求引用同一前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-pages-shared.svg)
+![两个请求引用同一前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-pages-shared.svg)
 
 *图 8-13：A、B 的两个共同前缀块只保存一次，各自块表都指向它们。A、B 保留各自的私有尾块；四条请求实际分配的 KV 容量进一步降至 44 个 token。*
 
@@ -7417,13 +7741,13 @@ $$
 
 前缀共享图中，B 与 A 引用相同的两个物理块。如果 A 先结束，这两个块仍要留给 B；如果 B 要修改其中的内容，又不能影响 A。要实现共享，就需要确定何时释放共享块，以及如何避免不同请求互相覆盖数据。每张块表中指向某个物理块的记录称为一个**引用**，共享块由多个块表引用；**引用计数**记录还有多少使用者需要它。每当一条请求获得引用，引用数加一；请求结束时释放引用。最后一个引用释放后，该块才能回到空闲池；此时还要确认加速器操作不再访问它。这样，同一份共同上下文既能服务多个分支，也能在其中一条分支结束后继续服务其余分支。
 
-![根据引用计数释放共享块](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-reference-release.svg)
+![根据引用计数释放共享块](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-reference-release.svg)
 
 *图 8-14：A 结束后引用数从 2 降到 1，B 仍可使用；最后一个引用释放且加速器已用完，块才能回到空闲池。*
 
 写入共享尾块需要取得独立副本。例如，可存 4 个 token 的块中已写入三个共同 token 的 KV，两个分支接下来分别写入不同 token。如果写到原块，两条分支会争用块中的第四个 token。**写时复制**是在修改共享内容之前取得私有副本的机制。此时先复制这三个 token，两条分支分别追加；此前已填满的只读块继续共享。随着分支增长，公共前缀保持一份，各分支分别保存自己新增的后缀。
 
-![分支写入前复制共享尾块](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-copy-on-write.svg)
+![分支写入前复制共享尾块](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-copy-on-write.svg)
 
 *图 8-15：每块 4 个 token 的尾块已有共同的 a、b、c。分支分别追加 x、y，需要不同物理尾块；此前已填满的块继续共享。*
 
@@ -7447,7 +7771,7 @@ $$
 
 块用完之后，还要正确释放才能交给后续请求。释放内存需要同时满足两个条件：没有使用者继续持有引用，已提交的加速器操作也不再访问该块。用户取消请求后，调度器停止安排新计算，等待已提交的操作完成，随后释放私有块。一次观察中，取消调用约 1.6 ms 就返回了，而对应的 104 个块直到约 31 ms 才释放。后续请求在释放之后使用这些块，便不会覆盖旧请求仍在读取的数据。[^cancel]
 
-![取消后先停止调度，再等待释放](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-cancel-lifetime.svg)
+![取消后先停止调度，再等待释放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-cancel-lifetime.svg)
 
 *图 8-16：取消接口返回表示已接收取消请求。已提交的加速器操作完成后，再释放私有块和相关引用；观测中的 1.6 ms 与 31 ms 对应不同事件。*
 
@@ -7463,11 +7787,11 @@ $$
 
 前缀树把这种结构直接表达出来：从根到分叉点是共同上下文，从分叉点到叶子是私有后缀。图 8-17 的前四轮输入首先共享 206 个 token，后三轮又沿同一条路径延伸。树上的边按新增 token 数标记，叶子给出完整输入长度。
 
-![多轮输入的压缩前缀树与共同前缀长度](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-6-prefix.svg)
+![多轮输入的压缩前缀树与共同前缀长度](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-6-prefix.svg)
 
 *图 8-17：前四轮代码 Agent 输入的压缩前缀树。根部已有 206 个共同 token，边上是新增数量，叶子是输入轮次。分叉表示后续内容不同。*
 
-![十二轮输入中的共同前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-prefix-lengths.svg)
+![十二轮输入中的共同前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-prefix-lengths.svg)
 
 *图 8-18：蓝色为与上一轮逐 token 相同的前缀，橙色为其余输入。此图描述输入内容的可复用程度，实际缓存命中还取决于状态是否保留。*
 
@@ -7475,13 +7799,13 @@ $$
 
 **扩展：混合注意力模型如何确定可恢复的前缀位置。** 全注意力保留逐 token KV，递推模型通常只保留当前状态。设文本匹配到第 10,752 个 token，递推快照分别保存在第 4096 和第 8192 个 token；系统从 8192 恢复，再计算到 10,752，重算 2560 个 token。增加快照可以减少重算的 token 数，但要保存更多状态。以第 2 章的 KDA 为例，一种实现将层内张量分到八张卡（TP=8），此时每卡每份快照约 53.6 MiB，保存 2 份约 107 MiB，保存 32 份约 1714 MiB。快照保存得越密，恢复时需要重算的 token 就越少，保留的状态也越多。[^hybrid]
 
-![从最近递推快照恢复](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-prefix-restore.svg)
+![从最近递推快照恢复](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-prefix-restore.svg)
 
 *图 8-19：文本匹配到 10752，最近状态快照在 8192。恢复后仍需重算 2560 个 token，才能得到匹配末端的递推状态。图中 10752 和 8192 是从序列起点累计的 token 数。*
 
 **上下文编排还可以主动改变复用机会。** 假设已有 8K token 的上下文，下一轮追加 1K 工具结果，最多可复用原来的 8K 前缀，只需处理新增部分；如果改写最前面的指令，后面的内容即使文字相同也不能继续复用。另一种方案是把历史总结为 2K，再追加 1K。摘要替换原始历史后，后续计算使用更短的上下文，但多出一次总结与重新处理的开销。因此，组织上下文时，需要同时考虑内存占用、重算时间和后续读取量。
 
-![同一历史的三种更新方式](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-context-edits.svg)
+![同一历史的三种更新方式](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-context-edits.svg)
 
 *图 8-20：同一历史的三种更新方式。蓝色表示可复用前缀，橙色表示需要重新处理的输入；总结方案先生成摘要，再重建缓存。长度以 K token 示意。*
 
@@ -7495,7 +7819,7 @@ $$
 
 两类状态的区分最终体现在缓存容量上。在 DeepSeek V4 技术报告采用的工作负载与缓存策略下，SWA 约占长期缓存的一半。V4.1 将这部分移出持久化缓存，再将全局 KV 压到约四分之一，长期存储量因此约为原来的 $1/2\times1/4=1/8$。短期保留的编码器 SWA 放在 DRAM 中，解码器 SWA 则在本轮生成时驻留加速器。缓存按使用时段分层保存，进一步降低了长期容量需求。
 
-![编码器的三条前缀恢复路径与共同的解码器重放](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-v41-recovery.svg)
+![编码器的三条前缀恢复路径与共同的解码器重放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-v41-recovery.svg)
 
 *图 8-21：编码器的三条前缀恢复路径与共同的解码器重放。缓存命中状态中的 SWA 专指编码器；所有路径在 prefill 中仍构建解码器 SWA，再开始生成。箭头表示执行先后，框大小不代表耗时。*
 
@@ -7519,7 +7843,7 @@ $$
 
 这种比较也可以换算成单位容量的收益：A 每 MiB 约节省 0.154 ms，B 约节省 0.140 ms。按该数值排序，可以比较大小不同的前缀。
 
-![相同缓存空间保留一个大前缀或三个小前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-7-cache-choice.svg)
+![相同缓存空间保留一个大前缀或三个小前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-7-cache-choice.svg)
 
 *图 8-22：缓存容量均为 864 MiB。A 占 864 MiB，期望净节省 132.7 ms；三个 B 类前缀各占 288 MiB、各节省 40.3 ms，合计 120.9 ms。图中宽度表示容量；时间按 RTX PRO 6000 上的重算时间和 PCIe Gen5 取回时间计算，命中概率均为 50%。*
 
@@ -7559,7 +7883,7 @@ $$
 
 图 8-23 将这一步还原为字节布局。每行都保存相同的 32 个值：编码部分缩短了，scale 仍要留下。因此，q8_0 和 q4_0 的总长度分别是 34 和 18 bytes，而不是只看编码位宽得到的 32 和 16 bytes。
 
-![同一组 32 个值在三种 KV 格式中的字节布局](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-8-kv-format.svg)
+![同一组 32 个值在三种 KV 格式中的字节布局](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-8-kv-format.svg)
 
 *图 8-23：BF16、q8_0、q4_0 保存同一组 32 个数值所需的空间。横条按字节数成比例绘制；橙色为每组 2 bytes 的 scale。把每组总长度乘以组数，就得到整条上下文的 KV 容量。*
 
@@ -7583,7 +7907,7 @@ $$
 
 Qwen3-8B 一层 FFN 的三个 BF16 矩阵共占 288 MiB。36 层中每四层卸载一层，共卸载九份 FFN 权重，释放 2592 MiB。GPU 上还要为预取（在计算某层之前，提前把它的权重复制到 GPU）预留缓冲区：一组缓冲占 288 MiB，净省 2304 MiB；两组占 576 MiB，净省 2016 MiB。以一条 8K 输入的 1152 MiB KV 为单位，前者能多容纳两条，后者只能多容纳一条。若按生成完毕时所需的 1188 MiB 预留空间，两种方案均只能增加一条完整请求。[^offload]
 
-![预取缓冲如何改变新增 KV 容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-9-offload.svg)
+![预取缓冲如何改变新增 KV 容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-9-offload.svg)
 
 *图 8-24：卸载九份 FFN 共腾出 2592 MiB。橙色为留在加速器上的预取缓冲，绿色为可重新分配的净空间；一组缓冲净省 2304 MiB，两组净省 2016 MiB。*
 
@@ -7599,7 +7923,7 @@ $$
 
 CPU 与 GPU 之间也有快得多的链路。GH200 用 NVLink-C2C 连接 Grace CPU 与 Hopper GPU，每方向 450 GB/s。同样的 2.72 GB 每轮至少约需 6.0 ms，255 轮合计约 1.54 秒。每轮复制短于一轮 decode 的计算，预取就能用计算掩盖复制。
 
-![相同权重在两种带宽下的复制时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-offload-copy.svg)
+![相同权重在两种带宽下的复制时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-offload-copy.svg)
 
 *图 8-25：每轮复制量保持为 2592 MiB（2.72 GB）。经 PCIe Gen5 x16（每方向 64 GB/s）至少需要约 42.5 ms，经 GH200 的 NVLink-C2C（每方向 450 GB/s）至少需要约 6.0 ms。*
 
@@ -7625,17 +7949,17 @@ $$
 
 一组 Qwen3-8B 实验保持 BF16 权重不变，比较了三种注意力计算方式。32 次自然生成中，使用 BF16 KV 时答对 28 次；改用原 FP8 实现后答对 26 次；保留 FP8 KV、将 Q 恢复为 BF16 后，又答对 28 次。最后一种配置只改变 Q 的精度，结果就发生了变化，说明需要分别考察 KV 的存储格式和 Q 的计算精度。[^quality]
 
-![同一模型中 Q 精度与正确答案数](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-10-kv-quality.svg)
+![同一模型中 Q 精度与正确答案数](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-10-kv-quality.svg)
 
 *图 8-26：BF16 KV 基线。每行是一道固定任务，四列为并发 1、4 下各两次自然生成。绿色圆圈正确，橙色叉号错误，共 28/32 正确。*
 
-![原 FP8 执行实现](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-kv-quality-1.svg)
+![原 FP8 执行实现](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-kv-quality-1.svg)
 
 *图 8-27：同一任务与运行顺序，原 FP8 实现共 26/32 正确。这一比较包含实现选择对 Q 精度的影响。圆圈表示回答正确，叉号表示回答错误；每行对应同一道题，列表示并发数与重复运行序号。*
 
 图 8-28 进一步只恢复查询 Q 的 BF16 精度，KV 仍保持 FP8。按同一列比较三幅图，就能看出改变的是哪些题目的结果，而不只是总正确数。
 
-![FP8 KV 与 BF16 Q](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-kv-quality-2.svg)
+![FP8 KV 与 BF16 Q](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-kv-quality-2.svg)
 
 *图 8-28：将查询 Q 保持为 BF16，KV 仍用 FP8，共 28/32 正确；答错的题目与 BF16 基线不同。三幅图使用相同任务和列顺序，模型权重均为 BF16。圆圈表示回答正确，叉号表示回答错误；每行对应同一道题，列表示并发数与重复运行序号。*
 
@@ -7657,7 +7981,7 @@ $$
 
 图 8-29 展示了第三个 token 发生分歧时的处理顺序。目标模型虽然已经计算了后续 token 的验证结果，但第四个 token 依赖错误的第三个草稿 token，不能继续采用。一次验证最终留下两个匹配的草稿 token 和一个修正 token，共三个输出。
 
-![草稿第三个 token 不匹配时的保留、修正和丢弃](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-11-verification.svg)
+![草稿第三个 token 不匹配时的保留、修正和丢弃](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-11-verification.svg)
 
 *图 8-29：贪心验证的过程。a、b、c、d、x 表示 token；目标模型在第三个 token 选出 x，与草稿 c 不同。第四个 token 及其后的验证结果作废，下一轮从 a、b、x 继续生成。方框表示序列中的 token 位置，不表示执行耗时。*
 
@@ -7671,11 +7995,11 @@ $$
 
 用只有 A、B 两个符号的例子说明这一过程。目标分布为 $p(A)=1/4$、$p(B)=3/4$。若草稿总是生成 A，就以 $1/4$ 的概率接受 A，其余 $3/4$ 的情况拒绝 A、改为输出 B。若草稿总是生成 B，则以 $3/4$ 的概率接受 B，其余情况改为输出 A。两种方法最终都得到目标分布，但草稿的接受概率不同，因而执行效率也不同。
 
-![草稿恒为 A 的接受与修正](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-sample-A.svg)
+![草稿恒为 A 的接受与修正](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-sample-A.svg)
 
 *图 8-30：接受 A 的概率为 1/4，拒绝后输出 B 的概率为 3/4。两条路径合起来给出目标分布。*
 
-![草稿恒为 B 的接受与修正](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-sample-B.svg)
+![草稿恒为 B 的接受与修正](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-sample-B.svg)
 
 *图 8-31：接受 B 的概率为 3/4，拒绝后输出 A 的概率为 1/4。目标分布相同，草稿的接受概率更高。*
 
@@ -7701,7 +8025,7 @@ $$
 
 接受更多草稿 token 所节省的时间，也可能被查询开销抵消。要优于普通 decode，一轮总耗时须小于平均输出数乘以 26.26 ms。扣除验证所需的 26.26 ms，AAAA 留给草稿查询的时间约为 8.7 ms，BBBB 约为 53.9 ms。图 8-32 把这两个交点画在查询成本轴上。
 
-![草稿查询时间与平均每个输出 token 的耗时](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-12-speculation.svg)
+![草稿查询时间与平均每个输出 token 的耗时](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-12-speculation.svg)
 
 *图 8-32：两符号目标分布，每轮生成四个草稿 token。每轮验证 26.26 ms，查询时间沿横轴变化；每个输出 token 的耗时用一轮耗时除以平均输出数。普通 decode 为 26.26 ms/token（RTX PRO 6000，batch 1，2K 上下文）。没有提前停止，额外 token 计入输出数。图中的点标出查询耗时为 0.1 ms 的算例；AAAA、BBBB 分别在查询约 8.7、53.9 ms 处与普通执行相交。*
 
@@ -7773,11 +8097,11 @@ $$
 
 一组实测显示了这两项损失的大小。Qwen3-8B 检索实验使用相同的八道题，要求请求在到达后 3 秒内正确完成，比较逐个接收请求、连续批处理和一次提交全部请求三种方式。每次实验提交 16 条请求，全部实验共生成 336 次回答，其中 294 次正确，只有 155 次同时满足时限。其余 139 次正确回答因为太晚返回，仍未满足服务要求。[^service]
 
-![不同到达条件下的完成吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-13-service.svg)
+![不同到达条件下的完成吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-13-service.svg)
 
 *图 8-33：每种接纳与到达条件使用三个 16 请求窗口。柱为全部完成请求的吞吐中位数，圆点为各窗口结果。时间从计划到达起计算。*
 
-![同一组窗口的有效吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-service-goodput.svg)
+![同一组窗口的有效吞吐](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-service-goodput.svg)
 
 *图 8-34：分子仅计正确且在 3 秒内完成的请求。两图采用相同横轴顺序和纵轴范围，差额来自错误或迟到的回答。*
 
@@ -7834,7 +8158,7 @@ $$
 
 图 8-35 将这两项检查画在同一张平面图上。横向越过虚线，表示 KV 和辅助缓冲区超过 12 GiB；纵向越过虚线，表示完成时间超过 7 秒。只有 D 同时落在两个限制以内。
 
-![四种配置相对于内存上限和完成时限的位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-14-design.svg)
+![四种配置相对于内存上限和完成时限的位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-14-design.svg)
 
 *图 8-35：16 条长请求在 RTX PRO 6000 上的配置比较。横轴为 KV 和辅助缓冲区占用，已扣除共同的权重与基本工作区；纵轴为整批请求总耗时，由实验 8-1、8-5 的实测推出。A 内存不足，不能在本实例上执行，图中是它所需的时间。阴影区域同时满足 12 GiB 和 7 秒限制。A 为 BF16 独立上下文，B 为 BF16 共享前缀，C 为 q8_0 独立上下文，D 为 BF16 共享前缀加推测解码。*
 
@@ -7848,7 +8172,7 @@ $$
 S_{\mathrm{task}}=\frac{1}{(1-f)+f/s}.
 $$
 
-![局部 decode 加速对完整任务的影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/figure-8-15-task.svg)
+![局部 decode 加速对完整任务的影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/figure-8-15-task.svg)
 
 *图 8-36：其他阶段时间固定、没有新增准备工作的 Amdahl 加速比曲线。三条曲线分别取 decode 占基线时间 20%、50%、80%。该阶段原有的耗时占比越高，局部加速带来的收益就越大。*
 
@@ -7868,67 +8192,67 @@ $$
 
 推测采样的接受与修正规则为保持目标分布奠定了基础，后续从上下文查找草稿、依据中间特征预测草稿以及并行生成草稿的方法，主要改变每轮开销与接受的草稿长度。完整 Agent 任务还包含工具和外部阶段，公开速度与任务记录可结合第 8.6 节的阶段分解阅读。[^spec][^task]
 
-[^batch]: 固定模型在 RTX PRO 6000 上的[批处理计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/batch-reuse-pro6000-2k.md)及[8K 对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/batch-reuse-pro6000-8k.md)。完整 BF16 权重为 16,381,470,720 bytes，一步理想共享矩阵权重读取为 15,136,811,008 bytes；embedding 按请求查行，内存中仍需保存完整的 embedding 矩阵。读取表先用精确字节计算，再舍入各项。
+[^batch]: 固定模型在 RTX PRO 6000 上的[批处理计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/batch-reuse-pro6000-2k.md)及[8K 对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/batch-reuse-pro6000-8k.md)。完整 BF16 权重为 16,381,470,720 bytes，一步理想共享矩阵权重读取为 15,136,811,008 bytes；embedding 按请求查行，内存中仍需保存完整的 embedding 矩阵。读取表先用精确字节计算，再舍入各项。
 
-[^device]: [NVIDIA RTX Blackwell PRO 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rtx-blackwell-pro.pdf)附录 A 表 4，整理在[硬件参数表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)的 rtx-pro6000-blackwell-ws 一行。
+[^device]: [NVIDIA RTX Blackwell PRO 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rtx-blackwell-pro.pdf)附录 A 表 4，整理在[硬件参数表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)的 rtx-pro6000-blackwell-ws 一行。
 
-[^batch-measure]: [batch 扫描原始记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/README.md)。RTX PRO 6000、vLLM 0.23.0、BF16，三轮；正文报告中位数，吞吐覆盖剩余 prefill 和生成，排除加载与预热；8K 条件先建立共享前缀。
+[^batch-measure]: [batch 扫描原始记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/README.md)。RTX PRO 6000、vLLM 0.23.0、BF16，三轮；正文报告中位数，吞吐覆盖剩余 prefill 和生成，排除加载与预热；8K 条件先建立共享前缀。
 
-[^schedule-survey]: [Orca 原文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/orca.pdf)与[分块计算和版本说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/chunking-and-state-transfer.md)。
+[^schedule-survey]: [Orca 原文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/orca.pdf)与[分块计算和版本说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/chunking-and-state-transfer.md)。
 
-[^schedule]: [固定 batch](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/iteration-batching-pro6000-fixed.md)、[连续批处理](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/iteration-batching-pro6000-continuous.md)、[分块策略](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/iteration-batching-pro6000-chunked.md)。每轮耗时参数由[实验 8-1 的逐轮记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)拟合：batch 1 的 2K decode 一轮 26.26 ms、prefill 94.8 ms；最后一个输出 token 在请求结束时尚未写入 KV。
+[^schedule]: [固定 batch](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/iteration-batching-pro6000-fixed.md)、[连续批处理](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/iteration-batching-pro6000-continuous.md)、[分块策略](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/iteration-batching-pro6000-chunked.md)。每轮耗时参数由[实验 8-1 的逐轮记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)拟合：batch 1 的 2K decode 一轮 26.26 ms、prefill 94.8 ms；最后一个输出 token 在请求结束时尚未写入 KV。
 
-[^chunk]: [逐块计算和封存测量](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/chunk-history-book.md)。11 次请求、每次 16 块，首末块时间中位数 25.30、35.07 ms；CUDA event 区间包括完整模型路径和可能的主机间隙，不含外部 logits／采样。各块按原始顺序执行，输入 token 与内容逐块变化。
+[^chunk]: [逐块计算和封存测量](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/chunk-history-book.md)。11 次请求、每次 16 块，首末块时间中位数 25.30、35.07 ms；CUDA event 区间包括完整模型路径和可能的主机间隙，不含外部 logits／采样。各块按原始顺序执行，输入 token 与内容逐块变化。
 
-[^nanoflow]: [OSDI 2025 调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/reading-osdi-2025.md)、[NanoFlow 正式稿](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/OSDI/2025/selected/osdi25-zhu-kan.pdf)与[资源共享算例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/resource-sharing-and-placement.md)。
+[^nanoflow]: [OSDI 2025 调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/reading-osdi-2025.md)、[NanoFlow 正式稿](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/OSDI/2025/selected/osdi25-zhu-kan.pdf)与[资源共享算例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/resource-sharing-and-placement.md)。
 
-[^replay]: [六请求实测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-02/README.md)及[图执行取舍](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/graph-execution-tradeoffs.md)。实验在共享 GPU 上按固定顺序执行六条合成文本请求。
+[^replay]: [六请求实测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-02/README.md)及[图执行取舍](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/graph-execution-tradeoffs.md)。实验在共享 GPU 上按固定顺序执行六条合成文本请求。
 
-[^pages]: [分页、取消与抢占](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-03/README.md)、[四分支共享](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-03/branch-sharing/README.md)、[冷分支对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-03/cold-branches/README.md)。共享分支的输出相同；冷、热分支具有相同的块峰值，但 prefill 量不同。
+[^pages]: [分页、取消与抢占](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-03/README.md)、[四分支共享](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-03/branch-sharing/README.md)、[冷分支对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-03/cold-branches/README.md)。共享分支的输出相同；冷、热分支具有相同的块峰值，但 prefill 量不同。
 
-[^lora]: [MLSys 2024 调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/reading-mlsys-2024.md)与[多 LoRA 计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/multi-lora-serving.md)。
+[^lora]: [MLSys 2024 调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/reading-mlsys-2024.md)与[多 LoRA 计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/multi-lora-serving.md)。
 
-[^context]: [上下文工程案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/author-context-and-design.md)。
+[^context]: [上下文工程案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/author-context-and-design.md)。
 
-[^hybrid]: [混合状态恢复与 checkpoint 计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/hybrid-prefix-state.md)、[MLSys 2025 调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/reading-mlsys-2025.md)。Kimi K3 的容量按指定存储格式和并行配置计算。
+[^hybrid]: [混合状态恢复与 checkpoint 计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/hybrid-prefix-state.md)、[MLSys 2025 调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/reading-mlsys-2025.md)。Kimi K3 的容量按指定存储格式和并行配置计算。
 
-[^prefix]: [12 轮实际输入的缓存回放](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-04/README.md)。回放采用原任务的输入序列，串行执行请求，每轮生成一个 token。
+[^prefix]: [12 轮实际输入的缓存回放](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-04/README.md)。回放采用原任务的输入序列，串行执行请求，每轮生成一个 token。
 
-[^files]: [固定模型文件与业务预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/inference-training-scenarios.md)及[235B 分片元数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/systems-cases/qwen235-gguf-metadata.json)。精确字节、GB 与 GiB 分别报告。
+[^files]: [固定模型文件与业务预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/inference-training-scenarios.md)及[235B 分片元数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/systems-cases/qwen235-gguf-metadata.json)。精确字节、GB 与 GiB 分别报告。
 
-[^kv-format]: [KV 格式和执行成本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/kv-quantization-and-execution.md)。资料包含 GGML 分组格式、FP8 scale 粒度及 H100 上的拟合结果。
+[^kv-format]: [KV 格式和执行成本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/kv-quantization-and-execution.md)。资料包含 GGML 分组格式、FP8 scale 粒度及 H100 上的拟合结果。
 
-[^offload]: [权重卸载与预取计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/weight-offload-execution.md)；[PCIe Gen5](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/weight-offload-pcie5.md)与[NVLink-C2C](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/weight-offload-gh200-c2c.md)两档链路的复制与预取调度，每层计算时间取 batch 1 一轮 decode 的 26.26 ms 除以 36 层；[GH200 架构说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-grace-hopper-blog.md)：NVLink-C2C 合计 900 GB/s，每方向 450 GB/s。
+[^offload]: [权重卸载与预取计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/weight-offload-execution.md)；[PCIe Gen5](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/weight-offload-pcie5.md)与[NVLink-C2C](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/weight-offload-gh200-c2c.md)两档链路的复制与预取调度，每层计算时间取 batch 1 一轮 decode 的 26.26 ms 除以 36 层；[GH200 架构说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-grace-hopper-blog.md)：NVLink-C2C 合计 900 GB/s，每方向 450 GB/s。
 
-[^codec]: [张量压缩与传输](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/tensor-codec-and-transfer.md)。资料包含 LLM.265 的视频引擎实现、专用硬件设计与性能估计。
+[^codec]: [张量压缩与传输](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/tensor-codec-and-transfer.md)。资料包含 LLM.265 的视频引擎实现、专用硬件设计与性能估计。
 
-[^mac]: [M2 Max 小模型容量记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-07/README.md)及[32K 补测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-07/context32k/README.md)。各槽依次执行 prefill。
+[^mac]: [M2 Max 小模型容量记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-07/README.md)及[32K 补测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-07/context32k/README.md)。各槽依次执行 prefill。
 
-[^quality]: [KV 与 Q 精度对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-08/README.md)、[固定 FP8 权重的 Q 控制](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-08/quantized-q-control/README.md)、[并发容量记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-08/concurrency/README.md)。正文采用 BF16 权重组。另一组固定 FP8 权重时，BF16 Q 与默认路径分别为 32/32、28/32。
+[^quality]: [KV 与 Q 精度对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-08/README.md)、[固定 FP8 权重的 Q 控制](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-08/quantized-q-control/README.md)、[并发容量记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-08/concurrency/README.md)。正文采用 BF16 权重组。另一组固定 FP8 权重时，BF16 Q 与默认路径分别为 32/32、28/32。
 
-[^retry]: [自然输出与重试成本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-08/retry-cost/README.md)。实验使用已知答案校验，重试成本包含错误首答的生成成本。
+[^retry]: [自然输出与重试成本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-08/retry-cost/README.md)。实验使用已知答案校验，重试成本包含错误首答的生成成本。
 
-[^spec]: [推测采样原文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/speculative-sampling.pdf)、[推测解码原文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/speculative-decoding.pdf)、[框架计数与预算笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/speculative-execution.md)、[调研中的框架覆盖](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/framework-coverage.md)。基础概率算法、草稿路线和具体实现分别引用。
+[^spec]: [推测采样原文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/speculative-sampling.pdf)、[推测解码原文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/speculative-decoding.pdf)、[框架计数与预算笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/speculative-execution.md)、[调研中的框架覆盖](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/framework-coverage.md)。基础概率算法、草稿路线和具体实现分别引用。
 
-[^history]: [上下文草稿的分布与成本计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/history-drafts-and-rollout.md)及[有理数穷举结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/history-speculation-arithmetic.json)。算例采用二符号目标分布；RTX PRO 6000 上的每轮时间见 [AAAA](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/speculative-round-pro6000-aaaa.md)、[BBBB](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/speculative-round-pro6000-bbbb.md) 与[含 2 秒索引的 256 token 请求](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/speculative-budget-pro6000-index.md)；普通 decode 一轮 26.26 ms 取自[实验 8-1 的逐轮记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)，DFlash 的每轮耗时取自[实验 8-5](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-05/README.md)的逐步记录。
+[^history]: [上下文草稿的分布与成本计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/history-drafts-and-rollout.md)及[有理数穷举结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/history-speculation-arithmetic.json)。算例采用二符号目标分布；RTX PRO 6000 上的每轮时间见 [AAAA](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/speculative-round-pro6000-aaaa.md)、[BBBB](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/speculative-round-pro6000-bbbb.md) 与[含 2 秒索引的 256 token 请求](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/speculative-budget-pro6000-index.md)；普通 decode 一轮 26.26 ms 取自[实验 8-1 的逐轮记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)，DFlash 的每轮耗时取自[实验 8-5](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-05/README.md)的逐步记录。
 
-[^spec-measure]: [DFlash 同执行器对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-05/README.md)及[逐请求阶段观测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-05/kernel-trace/README.md)。实验在低并发下，按固定顺序执行给定短题集。并发 1 通过短题的普通、K7、K15 时间中位数分别为 90.02、30.58、29.43 ms；配对输出共 32 对。
+[^spec-measure]: [DFlash 同执行器对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-05/README.md)及[逐请求阶段观测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-05/kernel-trace/README.md)。实验在低并发下，按固定顺序执行给定短题集。并发 1 通过短题的普通、K7、K15 时间中位数分别为 90.02、30.58、29.43 ms；配对输出共 32 对。
 
-[^service]: [服务与能量原始记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-09/README.md)。同一设备、八道题、七条件各三个 16 请求窗口；同题跨条件输出一致，42 个错误来自同一道题。吞吐表为各窗口指标中位数。每窗口包含 16 条请求，按排序后向上取整的位置计算 p95，得到的就是最大值。NVML 与 RAPL 组件计数窗口略宽于请求窗口，其他服务仍在运行。
+[^service]: [服务与能量原始记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-09/README.md)。同一设备、八道题、七条件各三个 16 请求窗口；同题跨条件输出一致，42 个错误来自同一道题。吞吐表为各窗口指标中位数。每窗口包含 16 条请求，按排序后向上取整的位置计算 p95，得到的就是最大值。NVML 与 RAPL 组件计数窗口略宽于请求窗口，其他服务仍在运行。
 
-[^service-plan]: [实验 8-1 的效率表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)由[计算脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.py)从[batch 扫描的逐轮记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/README.md)导出，峰值取硬件表中 RTX PRO 6000 的 1792 GB/s 与 503.8 TFLOP/s；DFlash 的显存峰值、首 token 时间与每轮耗时取自[实验 8-5](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-05/README.md)。各方案的内存与时间由[算例检查](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch08/teaching-check.py)复算。
+[^service-plan]: [实验 8-1 的效率表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)由[计算脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.py)从[batch 扫描的逐轮记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/README.md)导出，峰值取硬件表中 RTX PRO 6000 的 1792 GB/s 与 503.8 TFLOP/s；DFlash 的显存峰值、首 token 时间与每轮耗时取自[实验 8-5](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-05/README.md)。各方案的内存与时间由[算例检查](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch08/teaching-check.py)复算。
 
-[^task]: [生成实验与 Agent 运行记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-06/README.md)。Agent 记录采用非流式调用；阶段时间图采用题设参数。
+[^task]: [生成实验与 Agent 运行记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-06/README.md)。Agent 记录采用非流式调用；阶段时间图采用题设参数。
 
-[^gguf]: [Q2_K 的逐张量布局](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gguf-layout-q2k.md)、[8K 文件容量](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gguf-inventory-8k.md)与[32K 对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gguf-inventory-32k.md)。文件总量 85,691,002,112 bytes，码值／浮点载荷 69,178,275,840 bytes，量化元数据 16,506,720,256 bytes，文件头与填充 6,006,016 bytes。上述文件大小按已归档文件头与发布元数据计算。
+[^gguf]: [Q2_K 的逐张量布局](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gguf-layout-q2k.md)、[8K 文件容量](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gguf-inventory-8k.md)与[32K 对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gguf-inventory-32k.md)。文件总量 85,691,002,112 bytes，码值／浮点载荷 69,178,275,840 bytes，量化元数据 16,506,720,256 bytes，文件头与填充 6,006,016 bytes。上述文件大小按已归档文件头与发布元数据计算。
 
-[^pcie]: [RTX PRO 6000 Blackwell 工作站版规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rtx-pro6000-spec.pdf)：系统接口 PCIe 5.0 x16，带宽为 PCIe Gen4 的两倍；[A100 80GB 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100-80-spec.pdf)：PCIe 4.0 为 64 GB/s（收发合计），即 x16 每方向 32 GB/s。由此 PCIe Gen5 x16 每方向 64 GB/s。正文按标称值计算，得到的是传输时间的下界。前缀的重算时间按[实验 8-1 的效率表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)计算。
+[^pcie]: [RTX PRO 6000 Blackwell 工作站版规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rtx-pro6000-spec.pdf)：系统接口 PCIe 5.0 x16，带宽为 PCIe Gen4 的两倍；[A100 80GB 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100-80-spec.pdf)：PCIe 4.0 为 64 GB/s（收发合计），即 x16 每方向 32 GB/s。由此 PCIe Gen5 x16 每方向 64 GB/s。正文按标称值计算，得到的是传输时间的下界。前缀的重算时间按[实验 8-1 的效率表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)计算。
 
-[^cancel]: 取消观察来自[状态实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-03/README.md)。记录值约 1.55 ms 与 31.41 ms，计时包含观察器开销。
+[^cancel]: 取消观察来自[状态实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-03/README.md)。记录值约 1.55 ms 与 31.41 ms，计时包含观察器开销。
 
-[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/core_principles.py)。
+[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/core_principles.py)。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
 #### 本章小结
 
@@ -7944,7 +8268,7 @@ KV 的管理方式决定了实例能同时处理多少请求。分页按需分�
 
 ### 第九章 分布式推理
 
-第 8 章讨论了如何用批处理、请求调度、缓存和推测解码，提高一组给定计算资源的推理效率。这些方法既适用于单卡，也适用于多卡协同执行的实例。本章进一步研究计算与状态放在哪里：不同计算资源分别承担哪些阶段和算子，权重与 KV 如何分布，执行位置之间如何传输数据、分配工作并处理故障。
+第 8 章讨论了如何用批处理、请求调度、缓存和推测解码，提高一组给定计算资源的推理效率。这些方法既适用于单卡，也适用于多卡协同执行的实例。本章进一步研究计算与状态放在哪里：不同计算资源分别承担哪些阶段和算子，权重与 KV 如何分布，执行位置之间如何传输数据、分配工作并处理故障。上下文变长以后，状态可能比权重还大：在第 9.2.3 节的算例中，batch size 为 32 时 KV 共占 43.5 GB，约为 Qwen3-8B 权重的 2.7 倍。因此，状态放在哪里、如何交接，与计算如何分工同样重要。
 
 本章用 **P** 表示 prefill 阶段，用 **D** 表示 decode 阶段。**PD 分离**把这两个阶段交给不同资源。**AF 分离**把每层的注意力与前馈网络（包括专家网络）交给不同资源。
 
@@ -7962,23 +8286,23 @@ KV 的管理方式决定了实例能同时处理多少请求。分页按需分�
 
 图 9-1 至图 9-4 画出四种组织方式。前两种都执行完整模型，区别是八卡协作组共同处理同一批请求，多个完整副本则各自接收请求。后两种进一步改变分工：PD 按生成阶段划分，AF 按层内算子划分。每种组织方式都有自己的调度器管理所负责的计算。
 
-![多卡协作、完整副本和计算分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-1-organization.svg)
+![多卡协作、完整副本和计算分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-1-organization.svg)
 
 *图 9-1：八张卡共同执行一个完整推理实例，接收同一批请求。卡号表示协作组成员。*
 
-![两个完整模型副本](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-organization-1.svg)
+![两个完整模型副本](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-organization-1.svg)
 
 *图 9-2：每个副本都能完成整次推理，可以分别接收独立请求。副本自身也可以由多张卡组成。*
 
 完整副本按请求分工；图 9-3 中，同一请求先后经过两个服务池。沿 P 到 D 的箭头看，交接的是输入处理留下的上下文 KV，两个池仍各自执行相应阶段的完整模型。
 
-![按生成阶段分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-organization-2.svg)
+![按生成阶段分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-organization-2.svg)
 
 *图 9-3：P 处理输入，D 继续生成。两个服务池分别调度，上下文 KV 从 P 交给 D。*
 
 图 9-4 将分界移到模型层内部：注意力一侧产生的激活交给前馈一侧，结果再返回。与一次阶段交接相比，这条数据通路要在每一层、每一步生成中反复走过。
 
-![按层内算子分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-organization-3.svg)
+![按层内算子分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-organization-3.svg)
 
 *图 9-4：注意力与 FFN／专家分别执行，隐状态作为激活在两侧往返。每层都需要这次交接。*
 
@@ -8019,7 +8343,7 @@ $$
 
 确定分工方式之后，再沿一条请求的时间线考察它经过哪些阶段、留下哪些状态。图 9-5 把一次多轮请求的计算阶段与状态驻留时间放在同一时间线上。带视觉输入时，编码阶段 E 将图像转换为模型使用的特征，EC 保存这些编码结果供复用。P 处理这些编码结果与文本，D 逐步生成输出；工具返回后，新一轮 P 处理新增信息。权重通常跨请求保留，激活主要跨相邻算子传递，KV 随已处理的位置增长。工具等待期间计算可以暂停，但上下文状态仍可能占据内存。
 
-![请求阶段、实例分工与状态驻留时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-2-state.svg)
+![请求阶段、实例分工与状态驻留时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-2-state.svg)
 
 *图 9-5：计算暂停期间，状态仍需保留。示意同一请求从 prefill、decode 到工具等待和下一轮的状态驻留时间；横轴按阶段排列，不表示相等时长，EC 仅在有视觉输入时出现。E 为视觉编码，EC 为保存的视觉编码结果，P 为 prefill，D 为 decode。*
 
@@ -8077,17 +8401,17 @@ DeepSeek-V3 的固定配置为 61 层、$d_c=512$、$d_r=64$，BF16 下每个 to
 
 MLA 的状态更小，是因为缓存放在线性变换的另一侧：GQA 为每个 KV 头保存展开后的 $K$、$V$，MLA 只保存上投影之前的潜变量，按结合律，上投影可移到当前查询一侧执行。若把 DeepSeek-V3 的 128 个头也展开保存，每个 token 要占 $61\times128\times(192+128)\times2$ bytes，约 4.77 MiB，是紧凑表示的 71 倍；与 Qwen3-8B 只有 8 个 KV 头的 GQA 相比，紧凑 MLA 仍只有其 0.48 倍。后文凡是 KV 字节进入公式的地方，都并列给出这两种状态的结果。[^mla-handoff]
 
-![交接开始时的两端同时占用内存](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-residency.svg)
+![交接开始时的两端同时占用内存](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-residency.svg)
 
 *图 9-6：源 P 保留完整状态，目的 D 同时分配同样大小的接收空间。GQA 状态两端各 1.125 GiB，传输过程共占 2.25 GiB；紧凑 MLA 状态两端各 549 MiB，共占 1.07 GiB。方框宽度按字节数比例绘制。*
 
 采用整份双缓冲交接时，传输结束前源端保留完整状态，目的端分配完整接收缓冲。图 9-6 至图 9-8 依次画出交接开始、传输完成和释放源端三个时刻。载荷全部写入目的端后，P 发出完成标记，D 看到标记才读取状态（图 9-7）；执行权交给 D 之后，P 才释放源缓冲（图 9-8）。采用分块传输时，目的端确认收到某一块后，源端就可以提前释放这一块，缩短两端重复驻留的时间；目的端靠完成标记确定哪些连续的块已经可用。若经主存中转，状态则依次占用源端、主存和目的端的缓冲，主存到 GPU 的拷贝成为新的依赖边。
 
-![传输完成后发布目的状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-publish.svg)
+![传输完成后发布目的状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-publish.svg)
 
 *图 9-7：完整的 1.125 GiB 载荷已经写入目的端，P 随后发出完成标记。标记本身不再搬移数据，只规定先写完、后使用的顺序：D 看到标记才读取状态。*
 
-![交接完成后归还源空间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-release.svg)
+![交接完成后归还源空间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-release.svg)
 
 *图 9-8：本算例将执行权交给 D 后释放 P 的源缓冲，D 保留上下文并继续生成。源端空间用于后续请求。*
 
@@ -8137,7 +8461,7 @@ $$
 
 其中 $\mu_P$、$\mu_D$ 是 P 池与 D 池的请求率上限，$B_{net}$ 是两池之间交接链路的带宽。
 
-![四张 A100 处理输入，四张 H20 生成](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-pd-layout.svg)
+![四张 A100 处理输入，四张 H20 生成](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-pd-layout.svg)
 
 *图 9-9：每张 A100 在 P 阶段提供约 1.17 请求/s，每张 H20 在 D 阶段提供约 1.14 请求/s。P 池 4.67 请求/s，D 池 4.55 请求/s，均低于网卡约 20.7 请求/s 的交接能力。*
 
@@ -8149,7 +8473,7 @@ $$
 
 紧凑路径节省的是字节，不是全部工作。按第 2.3.2 节的结合律，上投影移到了查询一侧：DeepSeek-V3 每层每个查询 token 要多做一次 $128\times128\times512$ 的查询变换和一次同样大小的值恢复，合计 33.5 MFLOPs，61 层为 2.05 GFLOPs，与表 2-3 中 KV 上投影（kv_b_proj）对单个 token 的展开运算量相同。这部分计算量随批内请求数线性增加：一次 decode 调用服务 $B$ 条请求，就多 $2.05B$ GFLOPs。按 H20 的 74 TFLOP/s 有效算力，每条请求每步多 27.7 μs，1024 步合计 28.3 ms。若这部分计算不能藏进访存时间，D 池每请求的 GPU 秒从 0.878 增至约 0.907，D 池能力从 4.55 降到约 4.41 请求/s，仍高于 3.5 的到达率；每条请求每步的额外计算超过约 258 μs，才需要第五张 D 卡。紧凑路径改变的是 D 实例的瓶颈位置：每 token 读取从展开状态的 4.77 MiB 降到 68.6 KiB，计算项却随 batch size 增长，于是 D 实例在更小的 batch size 上就从读取受限转为计算受限。例 9.2 的 $r_D$ 是在 batch size 32 下推出的，换成紧凑 MLA 后要按新的转折 batch size 重新推算。
 
-![阶段配比与请求率](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-3-pd.svg)
+![阶段配比与请求率](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-3-pd.svg)
 
 *图 9-10：阶段配比如何限制请求率。四张 A100 与四张 H20，阶段能力见例 9.2；横轴为分给 P 的 A100 数，纵轴为分给 P 的 H20 数，其余分给 D。每格取两池能力与 25 GB/s 网卡交接能力的最小值，不含排队；颜色深浅表示可持续的请求率，单位为请求/s，框出的格子为最优配比。*
 
@@ -8165,7 +8489,7 @@ $$
 
 图 9-11 将三次调整画在同一组计算资源上。每个方块都是原来的一张卡，变化的只是它承担的阶段。前缀命中后 P 的工作减少，可以让出两张 A100；输出变短后 D 的工作减少，三张 H20 转去做 P。
 
-![不同请求下八个执行单元的分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-4-allocation.svg)
+![不同请求下八个执行单元的分工](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-4-allocation.svg)
 
 *图 9-11：请求组成改变资源分配。四张 A100 与四张 H20，阶段能力按例 9.2 的方法推出；第一行为 8192 输入、1025 输出的推理请求，第二行只减少 P 的新输入，第三行恢复完整输入并将输出减至 129 个 token。方块表示卡，每行下方为对应的吞吐率上限。P 为 prefill 池，D 为 decode 池。*
 
@@ -8183,11 +8507,11 @@ MoE 特别适合这种分工：总专家权重较大，但每个 token 只选择
 
 上一小节的两条路径交付同一份输出，区别在于跨链路传什么：图 9-12 传权重，图 9-13 传输入和输出。第 8.4.3 节采用第一条路径，将权重暂存主存，使用时搬到 GPU。KTransformers 是采用第二条路径的实际系统：GPU 处理注意力和部分常驻专家，CPU 处理分给自己的专家；把分给 CPU 的工作提交后，GPU 继续执行可以并行的分支，最后同步并合并结果。热点专家、共享专家以及 prefill 阶段可以采用不同的计算资源分工。分支汇合时，下一层必须等两侧都完成后才能开始。[^kt]
 
-![专家权重搬移与 CPU 就地计算](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-5-local.svg)
+![专家权重搬移与 CPU 就地计算](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-5-local.svg)
 
 *图 9-12：把一份 36 MiB 专家权重从主存送到 GPU，再由 GPU 读取本地输入完成计算。*
 
-![权重留在主存，激活往返](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-local-cpu.svg)
+![权重留在主存，激活往返](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-local-cpu.svg)
 
 *图 9-13：输入从 GPU 交给 CPU，CPU 使用主存权重执行专家，结果回到 GPU。每次 token 到专家的分派，传入和传出的特征向量合计 16 KiB；并行的 GPU 常驻专家分支完成后再汇合。*
 
@@ -8199,7 +8523,7 @@ MoE 特别适合这种分工：总专家权重较大，但每个 token 只选择
 
 若这八个专家各处理 128 个 token，权重仍是 288 MiB，计算量却增至原来的 128 倍。用 AVX-512 kernel，CPU 路径增至约 22.2 ms，GPU 路径约 12.5 ms，此时在 GPU 上计算更快。图 9-14 画出了中间过程：每个专家的输入从 71 个 token 增到 72 个时，GPU 开始比 CPU 快。换成 AMX kernel，128 个 token 时 CPU 路径只需约 2.57 ms，约为搬权重路径的五分之一，交点推迟到每专家 689 个 token。同一台机器处理同一批请求，CPU 用哪套指令就决定了专家该放在哪一侧。每个专家每多处理一个 token，CPU 增加的计算时间都多于 GPU，而权重搬移的开销不变，所以过了交点 GPU 就占优。[^locality]
 
-![专家复用与执行位置边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-6-reuse.svg)
+![专家复用与执行位置边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-6-reuse.svg)
 
 *图 9-14：专家复用改变执行位置的选择。八个专家各有 36 MiB BF16 权重。CPU 为单颗 Xeon Platinum 8452Y，AVX-512 与 AMX kernel 分别按论文实测的 1.8 与 21.3 TFLOP/s、同插槽内存 220 GB/s 计；GPU 为 A100 40GB PCIe，按峰值的 50% 计为 156 TFLOP/s、778 GB/s；PCIe 交接 25 GB/s，每次启动 5 μs。横轴为对数刻度，曲线按例 9.3 计算单层专家路径，未含格式转换。*
 
@@ -8219,7 +8543,7 @@ $$
 
 硬件变化可以用同一组公式估计。在 NUMA 结构下，线程读另一颗 CPU 上的内存要经过处理器间互联。论文测得这台机器的跨插槽带宽只有 125 GB/s。CPU 路径的时间取权重读取与矩阵计算中较长的一项，图 9-15 把每专家 128 个 token 时的这两项并排画出。用 AVX-512 kernel 时，计算远长于读取，内存放在哪个插槽几乎无关紧要；换成 AMX kernel，计算缩短到略长于同插槽读取，一旦跨插槽读取，读取反而成了较长的一项。就地计算是否划算，由当前的主要瓶颈决定：读取受限时提高主存带宽有用，计算受限时提高矩阵吞吐有用。量化格式同时改变这两项：权重字节数减少，矩阵 kernel 的有效吞吐也随之改变。[^kt-audit]
 
-![权重读取与矩阵计算哪一项更长](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-cpu-bottleneck.svg)
+![权重读取与矩阵计算哪一项更长](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-cpu-bottleneck.svg)
 
 *图 9-15：八个 Qwen3-235B-A22B 专家各处理 128 个 token 时，单颗 Xeon Platinum 8452Y 上的两项时间：读取八份 BF16 权重共 288 MiB，矩阵计算共 38.7 GFLOPs。粗框标出较长的一项，即这条路径的耗时下界。左右两图横轴刻度不同；AVX-512 与 AMX kernel 的算力、同插槽与跨插槽带宽均为论文实测值。*
 
@@ -8247,7 +8571,7 @@ $$
 
 以第 7 章的两台 HGX H100 服务器为例，考察一层 MoE 在专家分离下如何执行（图 9-16）。服务器 A 的四张卡 A0–A3 执行注意力，保存各自请求的 KV；服务器 B 的四张卡 B0–B3 各持有四分之一的路由专家。一层之内依次发生四步。第一步，A 卡算完注意力，路由器为每个 token 选出 8 个专家。第二步是第 6.2.6 节介绍的 dispatch：A 卡把每个 token 的隐状态按所选专家的所在卡分组，发往对应的 B 卡。四张 A 卡都要向四张 B 卡各发一份数量不等的数据，构成一次 All-to-All。第三步，B 卡收到各来源的输入后，按专家重新排列输入行，执行专家矩阵乘。第四步是 combine：专家输出沿原路送回 token 所在的 A 卡；A 卡收齐一个 token 的 8 份输出，按路由权重加权求和，才能进入下一层的注意力。
 
-![一层 MoE 的 dispatch、专家计算与 combine](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-ep-layer.svg)
+![一层 MoE 的 dispatch、专家计算与 combine](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-ep-layer.svg)
 
 *图 9-16：一层 MoE 在两台服务器间的执行顺序，时间从上到下。A0–A3 执行注意力与路由，B0–B3 执行专家。小方块表示一张 A 卡发往一张 B 卡的一组输入，颜色标出它去往哪张 B 卡；dispatch 把各色方块送到同色的 B 卡，combine 再把结果送回原来的 A 卡。两次交换都是 4×4 的 All-to-All。*
 
@@ -8265,7 +8589,7 @@ MegaScale-Infer 的实验为这种部署提供了实际证据。其 2025 年论�
 
 用具体例子计算这条流水：设注意力与专家阶段每个 micro-batch 分别需要 2 ms、3 ms。四个 micro-batch 依次执行共需 20 ms，任一时刻只有一个节点在工作；理想双阶段流水只需 $2+3+3\times3=14$ ms，节省 6 ms（图 9-17）。若拆小 micro-batch 后每阶段的实际服务时间变长，或者无法与计算重叠的往返通信超过 6 ms，这项收益便消失。因此，通信和计算效率下降带来的额外耗时合计必须小于 6 ms，流水执行才更快。[^af]
 
-![注意力节点与专家节点的交错流水](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-af-pingpong.svg)
+![注意力节点与专家节点的交错流水](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-af-pingpong.svg)
 
 *图 9-17：四个 micro-batch 在注意力节点与专家节点间执行，每个 micro-batch 注意力 2 ms、专家 3 ms，忽略交接。上图依次执行，两个节点轮流空闲；下图交错执行，micro-batch 1 做专家计算时 micro-batch 2 做注意力。流水稳定后，专家节点连续工作，每 3 ms 完成一个 micro-batch。*
 
@@ -8283,7 +8607,7 @@ $$
 
 其中 $V_{AF}$ 是一步 AF 交接的总载荷（576 KiB），$B$ 是链路带宽。启动时间低于 $\alpha^*$ 时，一步 AF 交接比一次 PD 交接快；高于 $\alpha^*$ 时，72 次启动的累计开销已超过整份状态的传输。GQA 状态在 25 GB/s 下 $\alpha^*\approx680$ μs，50 GB/s 下为 340 μs；紧凑 MLA 状态分别为 324 与 162 μs。状态越小、链路越快，留给每次启动的预算越少。5 μs 的启动远低于这四个临界值，单看一步交接，AF 都更快。放到整条请求上比较，结论则不同：1024 步 AF 交接累计约 393 ms，是 GQA 一次 PD 交接 48.3 ms 的 8.1 倍，是紧凑 MLA 一次 PD 交接 23.0 ms 的 17 倍。PD 只交接一次，MLA 把这一次的代价减半；AF 每步都要交接，隐状态宽度不变，没有节省任何字节。输出越长，差距越大。
 
-![PD 一次交接与 AF 一步交接的临界启动时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-mla-handoff.svg)
+![PD 一次交接与 AF 一步交接的临界启动时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-mla-handoff.svg)
 
 *图 9-18：一次 PD 交接与一步 AF 交接的串行时间随每次启动开销的变化，25 GB/s 链路。PD 只启动一次，斜率为 1；AF 一步 72 次启动，斜率为 72。两条 PD 线分别对应 GQA 状态 1.125 GiB 与紧凑 MLA 状态 549 MiB，与 AF 线的交点即临界启动时间 680 与 324 μs；50 GB/s 链路下交点移到 340 与 162 μs。*
 
@@ -8299,11 +8623,11 @@ $$
 
 图 9-19 中，横条的长度表示各卡完成计算所需的时间。所有结果合并后才能进入下一层，因此决定完成时刻的是最长的一条，而不是八条的平均长度。
 
-![八张卡的任务分布与结果合并时刻](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-9-balance.svg)
+![八张卡的任务分布与结果合并时刻](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-9-balance.svg)
 
 *图 9-19：总计 512 次专家分派均分到八张卡，每卡 64 次；虚线表示全部计算结束、可以汇合的时刻。*
 
-![热点集中到一张卡](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-balance-hotspot.svg)
+![热点集中到一张卡](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-balance-hotspot.svg)
 
 *图 9-20：512 次全部落在卡 0，其他卡空闲。相同总计算量，需要等待卡 0 完成；两图使用相同时间尺度。*
 
@@ -8311,7 +8635,7 @@ $$
 
 即使总工作量不变，大 EP 也会放大这种等待。沿用第 9.3.4 节的 $n=1024,k=8,E=256$（DeepSeek-V3 每层也是 256 个路由专家、每 token 选 8 个）：一批共 8192 次分派，平均每个专家 32 行。设其中一个专家较热，收到 128 行，是平均值的 4 倍；其余 8064 行均分给另外 255 个专家，每个约 31.6 行。把 256 个专家按编号均分到 EP 组的各张卡，热点专家所在的卡要处理它自己的 128 行，再加上同卡其他专家的行。EP8 时每卡 32 个专家，热点卡约 1108 行，只比每卡平均的 1024 行多 8%；EP32 时每卡 8 个专家，热点卡约 349 行，比平均的 256 行多 36%；EP256 时每卡只剩这一个专家，热点卡 128 行，是平均 32 行的 4 倍。同一个热点专家，在小 EP 中被同卡的其他专家冲淡，在大 EP 中独占一张卡，专家之间的不均原样变成了卡之间的不均（图 9-21）。
 
-![同一个热点专家在不同 EP 下的卡负载](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-ep-scale-cards.svg)
+![同一个热点专家在不同 EP 下的卡负载](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-ep-scale-cards.svg)
 
 *图 9-21：同一个热点专家在三种 EP 规模下造成的卡间 skew。256 个专家，1024 个 token 各选 8 个，专家 0 收到平均值 4 倍的 128 行。每根柱是一张卡，柱内每一段是这张卡上的一个专家，橙色为热点专家；纵轴为该卡行数除以每卡平均行数。每幅图只画卡 0、1、2 和最后一张卡，其余各卡与卡 1 相同。*
 
@@ -8319,7 +8643,7 @@ $$
 
 没有热点时，EP 增大同样会放大 skew。设每个 token 独立、均匀地随机选择 8 个专家，各专家的行数仍会在 32 附近随机波动。一张卡上的专家越多，这些波动越能相互抵消；卡越多，一批中出现一张特别忙的卡的机会也越大。按固定随机种子模拟 1000 批，EP8 的最忙卡平均只比每卡平均多 4%，EP256 多 52%（图 9-22）。两种效应来自同一个原因：EP 越大，每卡上可以相互抵消的专家越少，要等待的卡却越多。DeepSeek 公开的 decode 部署采用 EP144，每张卡只放 2 个路由专家，位于曲线右端附近；它为此增加 32 个冗余专家，并按负载调整副本，这正是第 9.4.2 节讨论的手段。[^ep-scale]
 
-![最忙卡负载随 EP 规模的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-ep-scale-sweep.svg)
+![最忙卡负载随 EP 规模的变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-ep-scale-sweep.svg)
 
 *图 9-22：最忙卡行数与每卡平均行数之比随 EP 组卡数的变化。橙线为一个 4 倍热点专家，不含随机波动，可以直接手算；蓝线为均匀随机路由，是固定种子模拟 1000 批的平均值。256 个专家按编号均分，不设副本；横轴为对数刻度。*
 
@@ -8359,7 +8683,7 @@ $$
 | 热点组，dispatch 改为 FP8 | 0.419 ms | 0.391 ms | 0.839 ms | 1.649 ms |
 | 热点组，两池同在一台 HGX（NVLink） | 0.093 ms | 0.391 ms | 0.093 ms | 0.577 ms |
 
-![大 EP 的接收与发送热点](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-ep-skew.svg)
+![大 EP 的接收与发送热点](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-ep-skew.svg)
 
 *图 9-23：四个专家组在 dispatch 阶段接收、combine 阶段发送的载荷。均衡与热点分布总计均为每方向 64 MiB；热点组在两个阶段都承担 40 MiB。柱高表示字节需求，不表示测得的瞬时带宽。*
 
@@ -8380,7 +8704,7 @@ $$
 
 在同一台服务器内，副本到第 3 批就收回了复制成本：热点持续 16 批净省约 3.2 ms，持续 64 批净省约 14.8 ms。若热点专家的原副本在另一台服务器上，复制要经 400 Gbit/s 的 ConnectX-7 网卡（每方向 50 GB/s），准备时间增至约 5.32 ms，要到第 23 批才回本：热点只持续 16 批时反而净损失约 1.5 ms，持续 64 批才净省约 10.1 ms。图 9-24 把一次投入与逐批收益画在同一张图上。若接收卡只有 32 MiB 空间，连一份 36 MiB 专家也无法容纳，此时无论热点持续多久，都应先改变放置或释放容量。[^replica]
 
-![专家副本的准备与回本](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-10-experts.svg)
+![专家副本的准备与回本](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-10-experts.svg)
 
 *图 9-24：热点持续多久，专家复制才值得。每批节省约 0.240 ms；同一台 HGX H100 内经 NVLink 复制一次约 0.622 ms，第 3 批开始净获益；跨服务器经 ConnectX-7 网卡复制约 5.32 ms，第 23 批开始净获益。曲线使用例 9.6 中未经四舍五入的时间计算；七张接收卡各需额外 36 MiB，假设热点不变。*
 
@@ -8404,11 +8728,11 @@ CRAFT 的实测进一步表明，复制收益与层有关。该研究基于 SGLa
 
 补齐和争用正是 MFU 达不到峰值的两大来源：补齐让矩阵单元去算没有对应 token 的零行，争用让通信和计算互相拖慢。两者都出在实现层，硬件峰值并没有变；选用更贴合实际行数的 tile，错开 DMA 和 GEMM 对 HBM 的访问，就能收回其中一部分。
 
-![专家分派、计算与结果合并的流水时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-11-overlap.svg)
+![专家分派、计算与结果合并的流水时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-11-overlap.svg)
 
 *图 9-25：整批依次分派 0.336 ms、计算 0.156 ms、合并 0.336 ms，总时间 0.827 ms；数值取自第 9.4.1 节表中跨服务器的均衡分布。*
 
-![拆成两个 micro-batch 后流水执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-overlap-pipeline.svg)
+![拆成两个 micro-batch 后流水执行](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-overlap-pipeline.svg)
 
 *图 9-26：每个 micro-batch 的各阶段时间减半，三条轨道使用独立资源。第一个 micro-batch 计算时可以 dispatch 第二个 micro-batch，总时间降到 0.581 ms。*
 
@@ -8424,7 +8748,7 @@ $$
 
 这里每条路径都包含共享资源上的排队，不能把各阶段单独运行的时间直接代入并假定互不干扰。若某 token 的两条分支分别在 0.5 ms 和 1.4 ms 返回，它要等到 1.4 ms 后才能合并；只把快的那条分支降到 0.3 ms 不会改变它的完成时刻。逐 token 或逐块推进时，没有选中慢专家的 token 可以更早继续；整批屏障则让它们一起等。运行时是否真正支持细粒度推进、后续矩阵是否还要求凑批，决定了等待会传播多远。
 
-![专家分离中的返回就绪 skew](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-ep-tail.svg)
+![专家分离中的返回就绪 skew](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-ep-tail.svg)
 
 *图 9-27：一个 token 选中的两条专家分支，教学时长分别为 0.5 ms 与 1.4 ms。每条都依次经过 dispatch、计算与 combine；同一个 token 要等两份结果，图中忽略本地加权合并的时间。灰色表示快分支的结果到达之后等待的时间。*
 
@@ -8444,7 +8768,7 @@ dispatch 与 combine 这两次通信由通信库实现。NCCL 提供通用的集
 
 状态产生后，需要先保存并发布，其他实例才能查询、取回并使用它。路由器用到的缓存事件通常只有存储位置和缓存标识这类元数据，不带完整的 KV。GPU 上的副本被淘汰时，CPU 上的副本可能还在。**目录**保存缓存标识与位置的映射，**对象**保存实际 KV 字节；恢复时分别确认目录映射和对象数据。事件遗漏、延迟或缓存空间被释放，都可能使原先记录的位置不再可用。
 
-![目录元数据与实际缓存对象](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-cache-directory.svg)
+![目录元数据与实际缓存对象](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-cache-directory.svg)
 
 *图 9-28：虚线表示按标识查找对象位置。目录用于定位，实际 KV 对象用于恢复计算；路由前还需确认对象版本与可用性。*
 
@@ -8452,7 +8776,7 @@ dispatch 与 combine 这两次通信由通信库实现。NCCL 提供通用的集
 
 第 8.3.4 节在一张卡上比较了保留、换出和重算。放大到整台服务器，同一份 KV 可以存放在四个位置：HBM、主机内存、本地 SSD 和远端存储池，越往下容量越大，离 GPU 也越远。以一台 DGX A100 为例：8 张 A100 80GB、2 TB 主机内存、8 块 3.84 TB U.2 NVMe SSD、8 张 200 Gbit/s 网卡，按每张 GPU 分到的一份计算。SSD 选用 Solidigm D7-P5520 3.84 TB，顺序读、写带宽最高分别为 7.1 GB/s 和 4.2 GB/s。存放的对象仍是 Qwen3-8B 的 8192 个 token 前缀，共 1.125 GiB。[^tiers]
 
-![一张 A100 可用的 KV 存储层次](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-tiers.svg)
+![一张 A100 可用的 KV 存储层次](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-tiers.svg)
 
 *图 9-29：DGX A100 中每张 A100 分到的四级存储。方框宽度只表示容量次序；右侧是这一级到 GPU 的路径，以及取回 1.125 GiB 前缀所需的时间。远端取回先经网卡到主机内存，再经 PCIe 到 GPU，两段串行。*
 
@@ -8474,7 +8798,7 @@ $$
 
 阿里云基于线上请求记录（trace）的一项研究统计了两类负载的复用时间：面向个人用户的对话负载中，80% 的复用发生在 10 分钟以内；面向企业的 API 负载中，80% 的复用发生在 10 秒以内。间隔为 10 秒时只需 14.1 GB，HBM 即可容纳；间隔为 10 分钟时需要 846 GB，超过每卡 275 GB 的主机内存，需要加上 SSD 才能覆盖。[^wild]
 
-![不同复用间隔所需的缓存容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-capacity.svg)
+![不同复用间隔所需的缓存容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-capacity.svg)
 
 *图 9-30：所需容量随复用间隔线性增长。斜线为 $C=rT$，其中 $r\approx1.41$ GB/s 是一张 A100 连续执行无命中 8K prefill 时产生 KV 的速率；三条虚线是每张 GPU 在三级存储中的容量；两条竖线标出两类负载 80% 复用所在的时间范围。两轴均为对数刻度。*
 
@@ -8482,7 +8806,7 @@ $C\ge rT$ 也说明了什么时候不需要 SSD。同一研究在它的对话负
 
 **容量越大，命中率提高得越慢。** 容量只能保留将来会被复用的状态，而有些状态不会再被使用。Mooncake 公开了 Kimi 线上服务一小时的采样 trace，每块 512 个 token。按最近最少使用（LRU，先淘汰最久未被访问的块）的规则淘汰时，缓存从 1000 块增加到 50,000 块，命中率从 30% 升到 50%；容量不受限制时也只有 51%。按 Qwen3-8B 换算，50,000 块约 3.77 TB，与一块 3.84 TB 的 SSD 相当。这份 trace 中超过一半的块从未被再次使用，另一些块却被访问上万次；阿里云的 trace 也同样集中，10% 的块贡献了 77% 的复用。[^moontrace]
 
-![Mooncake 采样 trace 上容量与命中率的关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-hit.svg)
+![Mooncake 采样 trace 上容量与命中率的关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-hit.svg)
 
 *图 9-31：命中率随容量增加而趋于饱和。数据为 Mooncake 一小时采样 trace 在 LRU 淘汰下的命中率，每块 512 个 token；横轴按 Qwen3-8B 每 token 144 KiB 换算为字节。这只是采样得到的一段流量，真实服务所需的容量按流量同比例放大。*
 
@@ -8510,15 +8834,15 @@ $$
 
 其中 $B$ 是链路带宽，$T_{read}$ 是读取全部历史 KV 的时间，$T_{new}$ 是计算新 token 的时间。代入 25 GB/s、48.3 ms 与 30.9 ms，得到约 437 MB，略多于 13 层，按整层向上取整为 14 层。$T_{new}\ge T_{read}$ 时不需要缓冲区：新输入达到约 400 个 token，计算就能掩盖从主机内存的读取；远端存储池的串行路径需要约 800 个，本地 SSD 需要约 1400 个。CachedAttention 在 LLaMA-13B 上的测量中，1K 个历史 token、100 个新 token 时，逐层预加载让 prefill 时间缩短 35%，再设置一个 15 层的缓冲区后，缩短 61%。[^cachedattention]
 
-![先读后算](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-load-serial.svg)
+![先读后算](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-load-serial.svg)
 
 *图 9-32：先把 1.125 GiB 历史 KV 整份从主机内存读入，再计算 256 个新 token，共 79.2 ms。橙色为 PCIe 读取，绿色为 GPU 计算，每一小段对应一层。*
 
-![逐层预加载](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-load-layerwise.svg)
+![逐层预加载](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-load-layerwise.svg)
 
 *图 9-33：逐层预加载。GPU 计算某一层时，PCIe 读取后面的层；每层读取 1.34 ms、计算 0.857 ms，每层的计算都要等待读取，总时间 49.2 ms 由读取决定。*
 
-![提前读入 14 层](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-load-preload.svg)
+![提前读入 14 层](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-load-preload.svg)
 
 *图 9-34：在这个请求开始执行之前，利用上一个 batch 的执行时间先读入前 14 层（448 MiB）；其余 22 层的读取被计算完全掩盖，总时间等于计算本身的 30.9 ms。三幅图的横轴相同。*
 
@@ -8526,7 +8850,7 @@ $$
 
 主机内存能容纳多少份会话，决定了调度器最多能为队列中前多少个请求提前读取：256 GiB 可容纳约 227 份 8K 前缀，所以只需为队列最前面的 227 个请求预取。主机内存不足、需要换出时，也按队列判断：这些请求即将使用的状态不能换出；其余状态中，下次使用最晚的先换出。LRU 和 FIFO 只依据过去的访问，无法利用队列中即将到来的请求。CachedAttention 在 4 张 A100、128 GB 主机内存和 10 TB SSD 上回放 ShareGPT（用户分享的 ChatGPT 对话数据集）中的多轮对话：按队列预取和换出时，总命中率为 86%，其中 99.6% 以上的命中来自主机内存；LRU 与 FIFO 的命中率分别只有 58% 和 48%，来自主机内存的命中都不到 1%，几乎每次命中都要从 SSD 读取。[^cachedattention]
 
-![按等待队列预取与换出](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-kv-prefetch.svg)
+![按等待队列预取与换出](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-kv-prefetch.svg)
 
 *图 9-35：主机内存有四个存放位置，其中一个留作空位，用于接收读入的数据，其余三个留给队列中接下来的 J2—J4。J3 的状态仍在 SSD 上，在它排队期间读入空位；J6 排在这三个请求之后，下次使用最晚，先换出到 SSD。*
 
@@ -8542,7 +8866,7 @@ $$
 
 重启后的某个请求读取了 64 页，覆盖 1024 个 token，但可复用的连续前缀只有 1008 个 token，即 63 页。多读的那一页占 2.25 MiB，却没有省掉相应的重算。对该请求，读取量为 144 MiB，有效复用量约为 142 MiB；更能说明问题的说法是“读入 64 页，用上 63 页”。这里的限制发生在读取之后：只有匹配成功、能连续接到已有上下文上的页，才能替代计算。把磁盘读得更快能缩短读取时间，却改变不了该请求要处理的末页。[^restart]
 
-![读取页与可复用连续前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-12-cache.svg)
+![读取页与可复用连续前缀](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-12-cache.svg)
 
 *图 9-36：读入的页不一定全部成为可复用前缀。正常重启后的这一请求读入 64 个各含 16 个 token 的页，只复用前 63 页；末页仍需处理。每页 2.25 MiB，该请求的匹配边界为 1008 个 token。*
 
@@ -8567,19 +8891,19 @@ $$
 | B：经 50 GbE（6.25 GB/s）远端取回 | 约 282 ms |
 | B：经 200 GbE（25 GB/s）远端取回 | 约 137 ms |
 
-![缓存路由中排队、取回与计算的时间关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-13-route.svg)
+![缓存路由中排队、取回与计算的时间关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-13-route.svg)
 
 *图 9-37：A 本地缓存已命中，GPU 排队 250 ms 后再计算 30.9 ms，首 token 在 281 ms 返回。灰为排队，绿为计算。*
 
-![B 直接重算](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-route-1.svg)
+![B 直接重算](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-route-1.svg)
 
 *图 9-38：B 在 20 ms 空闲，随后在 A100 上重算 887 ms，首 token 在 907 ms 返回。*
 
-![B 从慢远端取回](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-route-2.svg)
+![B 从慢远端取回](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-route-2.svg)
 
 *图 9-39：取回先查找 10 ms，再经 50 GbE 以 6.25 GB/s 读取 1.125 GiB 至主存，最后经 PCIe 以 25 GB/s 搬到 GPU。计算要等数据和 GPU 都就绪，首 token 约 282 ms 返回，比 A 慢约 1.6 ms。*
 
-![B 从快远端取回](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-route-3.svg)
+![B 从快远端取回](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-route-3.svg)
 
 *图 9-40：远端链路换成 200 GbE（25 GB/s）后，首 token 约 137 ms 返回。橙为远端读取，蓝为主存到 GPU；四图均从请求到达起计时，横轴相同。*
 
@@ -8605,7 +8929,7 @@ $$
 
 设两边后续的新增输入处理、解码器窗口重放与生成耗时相同，准备工作串行执行。B 的全局状态传输按第 7 章的算例为 4.666 ms，编码器 SWA 状态的恢复假设为 8 ms，共需 12.666 ms。A 保留了这两份状态，准备时间就是排队时间：排队 10 ms 时 A 更早开始处理新增输入；排队增到 20 ms 时 B 更早。12.666 ms 由此成为本例中路由选择翻转的排队阈值。[^v41-case]
 
-![缓存亲和性与空闲执行位置的比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-v41-routing.svg)
+![缓存亲和性与空闲执行位置的比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-v41-routing.svg)
 
 *图 9-41：缓存亲和性与空闲执行位置的比较。A 保留全局 KV 与编码器 SWA；B 需要 4.666 ms 全局传输和假设的 8 ms 编码器恢复。两端共同的解码器重放等后续工作略去，只比较不同的串行准备时间；A 的排队时间从 10 ms 增到 20 ms 时，更快的方案由 A 变为 B。灰色为等待队列，其他色块分别为全局状态传输与编码器局部状态恢复。*
 
@@ -8627,7 +8951,7 @@ $$
 
 以本章的异构集群为例，启动需要 10 秒，期间每秒到达 3.5 个请求，就绪时已有 35 个请求积压。直接 PD 就绪后每秒约能服务 4.55 个，新请求仍占去 3.5 个，每秒实际只能消化约 1.05 个积压请求，还要约 33 秒才能排空，从开始启动算起是第 43 秒。按理想分块捎带的共置上限 4.17 请求/s，每秒只能消化约 0.67 个，要到第 63 秒；不分块的共置只有 3.02 请求/s，积压会一直增长。三条曲线见图 9-42。
 
-![服务能力与启动积压消退](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-17-service.svg)
+![服务能力与启动积压消退](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-17-service.svg)
 
 *图 9-42：服务余量决定启动积压的消退速度。连续流量模型，每秒到达 3.5 个请求，启动 10 秒后积压 35 个。就绪后服务率分别为直接 PD 的 4.55、理想分块共置的 4.17 和不分块共置的 3.02 请求/s；前两者从开始启动算起在第 43 与第 63 秒排空，后者持续积压。例 9.8 的排空期限为第 60 秒。*
 
@@ -8641,7 +8965,7 @@ $$
 
 计划内的迁移可以利用源端仍在运行这一条件：先在后台复制不再改变的上下文，源端继续生成；最后短暂停下，复制完迁移期间新增的状态，再把执行权交给目标。以迁走一张 H20 上的 D worker 为例：批内 32 条请求的平均上下文为 8704 个 token，KV 共约 41.1 GB。源端每秒完成约 1166 次 decode 调用，每次追加一个 token 的 KV（144 KiB），状态每秒只增长约 0.172 GB。目标经本章的 200 Gbit/s 网卡以 25 GB/s 复制，积压以约 24.8 GB/s 减少，约 1.65 秒后完成复制，其间新增的状态约 0.28 GB；只有一个 50 GbE 端口（6.25 GB/s）时要约 6.76 秒。decode 追加 KV 的速率远低于网卡带宽，追赶时间几乎全由初始的 41.1 GB 决定；复制速率一旦降到状态增长速率，积压便不再缩小。最后的交接点同时确定状态版本与执行权，防止目标漏掉源端最后的更新。
 
-![状态生成与后台复制的进度](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-14-migration.svg)
+![状态生成与后台复制的进度](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-14-migration.svg)
 
 *图 9-43：后台复制需要赶上仍在增长的状态。开始时待复制状态为 41.1 GB，源端每秒增长约 0.172 GB；目标经 25 GB/s 的网卡约 1.65 秒赶上，经 6.25 GB/s 的 50 GbE 约 6.76 秒赶上。曲线相交前，垂直距离就是尚未复制的数据量；相交后，目标只需跟随源端的新增状态。*
 
@@ -8661,7 +8985,7 @@ $$
 
 假设原输入有 8192 个 token，已经向用户返回 1025 个输出，但最近保存的 KV 仅覆盖原输入。恢复时，若这些输出已经可靠记录，只需把前 1024 个输出作为一次 prefill 补入模型，重建覆盖 9216 个 token 的 KV，再处理第 1025 个输出继续生成。若已经有覆盖 9216 个 token 的兼容 KV，就可以省去这 1024 个 token 的重放。
 
-![输出记录与 KV checkpoint 的恢复位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-15-recovery.svg)
+![输出记录与 KV checkpoint 的恢复位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-15-recovery.svg)
 
 *图 9-44：输出记录决定继续哪条序列，KV checkpoint 决定从哪里补算。假定 1025 个输出均已可靠记录，但 KV 只保存了原输入。下方按输入、前 1024 个输出和第 1025 个输出分段示意，宽度不按 token 数量比例绘制。*
 
@@ -8677,11 +9001,11 @@ $$
 
 本节把前几节的结果用于章首的八卡服务，先确定状态传输方式，再比较整个服务能否满足到达率和恢复期限。P 产生的 KV 可以直接交给 D，也可以先进入共享池再由 D 取回；D 新生成的状态若要用于下一轮 P，还需确认这些状态已经保存并发布。直接交接与经池中转读取的可能是相同的内容，占用的链路和缓冲却不同。
 
-![直接交接与共享池中转](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-16-composition.svg)
+![直接交接与共享池中转](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-16-composition.svg)
 
 *图 9-45：P 直接向 D 交接 1.125 GiB 上下文 KV 缓存，只经过一次直接传输。P 为 prefill，D 为后续逐 token 的 decode。*
 
-![经共享池中转](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch09/figure-9-composition-pool.svg)
+![经共享池中转](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch09/figure-9-composition-pool.svg)
 
 *图 9-46：P 先向池写入完整 1.125 GiB 并发布，D 再取回同一对象，共经过写入和取回两次传输。后续实例还可以复用池中对象。P 为 prefill，D 为后续逐 token 的 decode。*
 
@@ -8789,79 +9113,79 @@ $$
 
 这里的等时点与图 9-14 的 71／72、688／689 行边界回答的是不同的问题。前者是 CPU 从带宽受限转为计算受限的分界；后者比较的是包含权重搬移的完整 CPU、GPU 两条路径。CPU 过了等时点已经计算受限，但仍能胜过要先搬权重的 GPU 路径，直到累计的计算代价超过这笔搬移成本。
 
-[^ownership]: [同一 MoE 请求的权重、状态与通信归属](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/parallel-moe-ownership/NOTES.md)。其 TP2×EP4、处理同一批请求和 FP32 传输格式是明确教学条件，用于具体展示通信归属。
+[^ownership]: [同一 MoE 请求的权重、状态与通信归属](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/parallel-moe-ownership/NOTES.md)。其 TP2×EP4、处理同一批请求和 FP32 传输格式是明确教学条件，用于具体展示通信归属。
 
-[^pd]: DistServe、Splitwise 与阶段放置的已归档材料见[本章扩写资料](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/archive/outlines/extensions/09-%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%A8%E7%90%86.md#detail-9.2)及[阶段分工与状态交接研究](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/chunking-and-state-transfer.md)。
+[^pd]: DistServe、Splitwise 与阶段放置的已归档材料见[本章扩写资料](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/archive/outlines/extensions/09-%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%A8%E7%90%86.md#detail-9.2)及[阶段分工与状态交接研究](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/chunking-and-state-transfer.md)。
 
-[^handoff]: [Qwen3-8B 的 PD／AF 交接计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-af-handoff-qwen8.md)，固定官方模型形状、字节与启动假设。生成图读取同名 JSON。25 GB/s 使用十进制单位，1.125 GiB 使用二进制单位；精确载荷为 1207959552 bytes，纯传输耗时为 48.31838208 ms，加上 5 μs 后为 48.32338208 ms。一条请求 1024 步 decode 的 AF 累计交接见[对应结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-af-handoff-qwen8-1024.md)。
+[^handoff]: [Qwen3-8B 的 PD／AF 交接计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-af-handoff-qwen8.md)，固定官方模型形状、字节与启动假设。生成图读取同名 JSON。25 GB/s 使用十进制单位，1.125 GiB 使用二进制单位；精确载荷为 1207959552 bytes，纯传输耗时为 48.31838208 ms，加上 5 μs 后为 48.32338208 ms。一条请求 1024 步 decode 的 AF 累计交接见[对应结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-af-handoff-qwen8-1024.md)。
 
-[^pool]: [异构 P、D 整数分配](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-book.md)、[八张 A100 同构对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-homogeneous.md)、[八张 H20 同构对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-all-h20.md)、[前缀命中](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-prefix.md)、[129 个输出](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-short-output.md)、[4097 个输出](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-4k-output.md)。每个结果的 `derived_stage_rates` 字段逐卡列出 prefill 与 decode 的计算量、读取量、Roofline 两项时间和受限资源。
+[^pool]: [异构 P、D 整数分配](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-book.md)、[八张 A100 同构对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-homogeneous.md)、[八张 H20 同构对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-all-h20.md)、[前缀命中](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-prefix.md)、[129 个输出](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-short-output.md)、[4097 个输出](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-4k-output.md)。每个结果的 `derived_stage_rates` 字段逐卡列出 prefill 与 decode 的计算量、读取量、Roofline 两项时间和受限资源。
 
-[^rates]: 阶段能力由 [pd-pool 计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/src/infra_calc/topics/stage_rates.py)从[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)与 Qwen3-8B 的逐算子前向账推出。A100 80GB SXM 的峰值取自 [NVIDIA A100 数据表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100-80-spec.pdf)。NVIDIA 没有公开 H20 数据表，型号与容量取自 [AI Enterprise vGPU 文档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h20-vgpu.md)，BF16 算力与显存带宽取自 [MegaScale-Infer](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/execution-feedback/megascale-infer.pdf)第 8 页表 3，同表 A800、H800 两行与 NVIDIA 数据表一致。50% 的校准来自第 8.6.3 节与[实验 8-1 的逐轮效率记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)。
+[^rates]: 阶段能力由 [pd-pool 计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/src/infra_calc/topics/stage_rates.py)从[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)与 Qwen3-8B 的逐算子前向账推出。A100 80GB SXM 的峰值取自 [NVIDIA A100 数据表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100-80-spec.pdf)。NVIDIA 没有公开 H20 数据表，型号与容量取自 [AI Enterprise vGPU 文档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h20-vgpu.md)，BF16 算力与显存带宽取自 [MegaScale-Infer](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/execution-feedback/megascale-infer.pdf)第 8 页表 3，同表 A800、H800 两行与 NVIDIA 数据表一致。50% 的校准来自第 8.6.3 节与[实验 8-1 的逐轮效率记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)。
 
-[^mla-handoff]: [紧凑 MLA 状态的 PD／AF 交接计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-af-handoff-qwen8-mla.md)，以及 50 GB/s 链路下的 [MLA](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-af-handoff-qwen8-mla-50gbps.md) 与 [GQA](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-af-handoff-qwen8-50gbps.md) 对照；每 token 字节数与[跨模型缓存计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/kv-comparison-n8192-b1.md)的 deepseek-v3 行一致。$d_c=512$、$d_r=64$ 取自 [DeepSeek-V2 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v2.pdf)第 12 页，V3 沿用同一注意力配置。精确载荷为 575,668,224 bytes，25 GB/s 下纯传输 23.02672896 ms，临界启动时间为 23003136/71 ns。
+[^mla-handoff]: [紧凑 MLA 状态的 PD／AF 交接计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-af-handoff-qwen8-mla.md)，以及 50 GB/s 链路下的 [MLA](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-af-handoff-qwen8-mla-50gbps.md) 与 [GQA](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-af-handoff-qwen8-50gbps.md) 对照；每 token 字节数与[跨模型缓存计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/kv-comparison-n8192-b1.md)的 deepseek-v3 行一致。$d_c=512$、$d_r=64$ 取自 [DeepSeek-V2 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v2.pdf)第 12 页，V3 沿用同一注意力配置。精确载荷为 575,668,224 bytes，25 GB/s 下纯传输 23.02672896 ms，临界启动时间为 23003136/71 ns。
 
-[^pool-mla]: [紧凑 MLA 状态下的 P、D 整数分配](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-mla.md)、[50 GB/s 链路](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-mla-50gbps.md)与 [GQA 状态 50 GB/s 对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-50gbps.md)。紧凑路径每步额外的 2,046,820,352 FLOPs 由 MLA 交接结果的 `mla_compact_path` 字段给出，与 [V3 单步 decode 算子表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v3-forward-decode.md)的 kv_b_proj 行逐层一致。
+[^pool-mla]: [紧凑 MLA 状态下的 P、D 整数分配](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-mla.md)、[50 GB/s 链路](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-mla-50gbps.md)与 [GQA 状态 50 GB/s 对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-50gbps.md)。紧凑路径每步额外的 2,046,820,352 FLOPs 由 MLA 交接结果的 `mla_compact_path` 字段给出，与 [V3 单步 decode 算子表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v3-forward-decode.md)的 kv_b_proj 行逐层一致。
 
-[^kt]: [权重卸载与执行位置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/weight-offload-execution.md)及[实现版本说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/framework-history/2026-09-08/offload-execution/README.md)。
+[^kt]: [权重卸载与执行位置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/weight-offload-execution.md)及[实现版本说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/framework-history/2026-09-08/offload-execution/README.md)。
 
-[^locality]: [AVX-512 kernel、每专家 1 个 token](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/expert-locality-avx512.md)、[128 个 token](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/expert-locality-avx512-128.md)，[AMX kernel、1 个 token](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/expert-locality-amx.md)、[128 个 token](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/expert-locality-amx-128.md)；各结果的 `locality_reuse_regions` 字段给出 71／72 与 688／689 两个交点。CPU kernel 吞吐见 [KTransformers 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/ktransformers-paper.pdf)第 4 页与第 6 页，内存带宽与 PCIe 配置见第 10 页；A100 40GB PCIe 峰值见[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)。
+[^locality]: [AVX-512 kernel、每专家 1 个 token](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/expert-locality-avx512.md)、[128 个 token](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/expert-locality-avx512-128.md)，[AMX kernel、1 个 token](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/expert-locality-amx.md)、[128 个 token](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/expert-locality-amx-128.md)；各结果的 `locality_reuse_regions` 字段给出 71／72 与 688／689 两个交点。CPU kernel 吞吐见 [KTransformers 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/ktransformers-paper.pdf)第 4 页与第 6 页，内存带宽与 PCIe 配置见第 10 页；A100 40GB PCIe 峰值见[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)。
 
-[^kt-audit]: [KTransformers 公开实验记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-03/README.md)。教程平台为双 6454S＋4090，论文平台为双 8452Y；Expert Deferral 的公开结果包含质量提升与下降两种情况。
+[^kt-audit]: [KTransformers 公开实验记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-03/README.md)。教程平台为双 6454S＋4090，论文平台为双 8452Y；Expert Deferral 的公开结果包含质量提升与下降两种情况。
 
-[^capacity]: [DeepSeek V4-Flash 与 Kimi K2 配置记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-05/README.md)。表中并发上限取自部署配置。
+[^capacity]: [DeepSeek V4-Flash 与 Kimi K2 配置记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-05/README.md)。表中并发上限取自部署配置。
 
-[^af]: [跨机执行与框架演进](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/framework-evolution.md)及[AF 扩写依据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/archive/outlines/extensions/09-%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%A8%E7%90%86.md#detail-9.3.4)。
+[^af]: [跨机执行与框架演进](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/framework-evolution.md)及[AF 扩写依据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/archive/outlines/extensions/09-%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%A8%E7%90%86.md#detail-9.3.4)。
 
-[^moe]: [MoE Serving Tax、CRAFT 与启动研究笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/moe-and-startup.md)。
+[^moe]: [MoE Serving Tax、CRAFT 与启动研究笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/moe-and-startup.md)。
 
-[^replica]: [同一台 HGX 内经 NVLink 复制](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/replica-payback-hgx-h100-nvlink.md)与[跨服务器经 ConnectX-7 复制](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/replica-payback-hgx-h100-cx7.md)的回本计算。算例固定路由与逐卡额外可用空间，按串行复制计算准备时间。H100 SXM 的 989.4 TFLOP/s 与 3350 GB/s 见[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)，均取 50%；NVLink 每方向 450 GB/s 见 [NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)，网卡每方向 50 GB/s 见 [ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)。准备耗时分别为 0.62220256 ms 与 5.31982304 ms，每批节省 402784256/1675 ns（约 0.2404682 ms）；最少 3 批与 23 批使用未经四舍五入的数值计算。
+[^replica]: [同一台 HGX 内经 NVLink 复制](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/replica-payback-hgx-h100-nvlink.md)与[跨服务器经 ConnectX-7 复制](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/replica-payback-hgx-h100-cx7.md)的回本计算。算例固定路由与逐卡额外可用空间，按串行复制计算准备时间。H100 SXM 的 989.4 TFLOP/s 与 3350 GB/s 见[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)，均取 50%；NVLink 每方向 450 GB/s 见 [NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)，网卡每方向 50 GB/s 见 [ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)。准备耗时分别为 0.62220256 ms 与 5.31982304 ms，每批节省 402784256/1675 ns（约 0.2404682 ms）；最少 3 批与 23 批使用未经四舍五入的数值计算。
 
-[^expert-exp]: [专家执行与后端实验记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-06/README.md)。
+[^expert-exp]: [专家执行与后端实验记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-06/README.md)。
 
-[^cache]: [缓存层次、路径与路由研究](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/cache-tiers-and-routing.md)。
+[^cache]: [缓存层次、路径与路由研究](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/cache-tiers-and-routing.md)。
 
-[^tiers]: [DGX A100 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-dgx-a100-datasheet.pdf)（8×A100 80GB、2 TB 主机内存、8×3.84 TB U.2 NVMe、8 张单端口 200 Gbit/s 网卡）与 [Solidigm D7-P5520 产品简介](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/solidigm-d7-p5520-brief.pdf)（128K 顺序读／写最高 7,100／4,200 MB/s，5 年内 1 DWPD）。本节的容量、可存放时长、取回与写入时间、逐层预加载层数和 SSD 写入额度见 [多级 KV 存储计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/kv-tiers-book.md)，运行 `python3 calculations/calc.py kv-tiers` 复算。主机内存按 2 TiB 均分给 8 张 GPU，SSD 读写按规格上限计。
+[^tiers]: [DGX A100 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-dgx-a100-datasheet.pdf)（8×A100 80GB、2 TB 主机内存、8×3.84 TB U.2 NVMe、8 张单端口 200 Gbit/s 网卡）与 [Solidigm D7-P5520 产品简介](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/solidigm-d7-p5520-brief.pdf)（128K 顺序读／写最高 7,100／4,200 MB/s，5 年内 1 DWPD）。本节的容量、可存放时长、取回与写入时间、逐层预加载层数和 SSD 写入额度见 [多级 KV 存储计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/kv-tiers-book.md)，运行 `python3 calculations/calc.py kv-tiers` 复算。主机内存按 2 TiB 均分给 8 张 GPU，SSD 读写按规格上限计。
 
-[^wild]: Wang 等，[KVCache Cache in the Wild](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/kvcache-in-the-wild.pdf)（USENIX ATC 2025），第 3.4 节：Trace A 为面向个人用户的对话负载，Trace B 为 API 负载；所需容量的结论针对 GQA 模型，并按每个实例的最大请求率估计。
+[^wild]: Wang 等，[KVCache Cache in the Wild](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/kvcache-in-the-wild.pdf)（USENIX ATC 2025），第 3.4 节：Trace A 为面向个人用户的对话负载，Trace B 为 API 负载；所需容量的结论针对 GQA 模型，并按每个实例的最大请求率估计。
 
-[^moontrace]: [Mooncake 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/mooncake.pdf)第 4 节与表 1（一小时采样 trace，23,608 条请求，平均输入 7590 个 token）；阿里云 trace 的集中程度见上一条注释所引论文。
+[^moontrace]: [Mooncake 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/mooncake.pdf)第 4 节与表 1（一小时采样 trace，23,608 条请求，平均输入 7590 个 token）；阿里云 trace 的集中程度见上一条注释所引论文。
 
-[^cachedattention]: Gao 等，[Cost-Efficient Large Language Model Serving for Multi-turn Conversations with CachedAttention](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/cachedattention.pdf)（USENIX ATC 2024），第 3.2–3.3 节给出逐层预加载、异步保存和按队列预取与淘汰；第 4.3.2–4.3.3 节给出预加载缓冲区与命中率的测量。
+[^cachedattention]: Gao 等，[Cost-Efficient Large Language Model Serving for Multi-turn Conversations with CachedAttention](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/cachedattention.pdf)（USENIX ATC 2024），第 3.2–3.3 节给出逐层预加载、异步保存和按队列预取与淘汰；第 4.3.2–4.3.3 节给出预加载缓冲区与命中率的测量。
 
-[^shared]: [共享 CPU KV 池容量对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-07/shared-kv/README.md)与[真实上下文保留后的 Agent 回放](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-07/history-preserved/README.md)。容量对照采用受控查找任务；真实 Agent 回放中出现了提前结束及任务质量下降。
+[^shared]: [共享 CPU KV 池容量对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-07/shared-kv/README.md)与[真实上下文保留后的 Agent 回放](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-07/history-preserved/README.md)。容量对照采用受控查找任务；真实 Agent 回放中出现了提前结束及任务质量下降。
 
-[^v4]: [DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v4.pdf)的状态持久化与生成服务内容，以及[本章的阅读笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/archive/outlines/extensions/09-%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%A8%E7%90%86.md#detail-9.6.3)。
+[^v4]: [DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v4.pdf)的状态持久化与生成服务内容，以及[本章的阅读笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/archive/outlines/extensions/09-%E5%88%86%E5%B8%83%E5%BC%8F%E6%8E%A8%E7%90%86.md#detail-9.6.3)。
 
-[^restart]: [重启页读取与实际复用核算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/cache-restart-book.md)，读取量为 144 MiB，有效复用量为 141.75 MiB。读取 64 页、共 1024 个 token，其中 63 页、共 1008 个 token 得到复用。
+[^restart]: [重启页读取与实际复用核算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/cache-restart-book.md)，读取量为 144 MiB，有效复用量为 141.75 MiB。读取 64 页、共 1024 个 token，其中 63 页、共 1008 个 token 得到复用。
 
-[^fault]: [截断页的预取策略对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-08/prefetch-policy/README.md)，实验观察窗口为 60 秒。
+[^fault]: [截断页的预取策略对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-08/prefetch-policy/README.md)，实验观察窗口为 60 秒。
 
-[^route]: [经 50 GbE 取回](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/cache-route-a100-50gbe.md)与[经 200 GbE 取回](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/cache-route-a100-200gbe.md)的缓存路由计算，包含整份远端→主机内存→GPU 的串行路径；重算与命中后的计算时间由矩阵 FLOPs 除以 A100 80GB SXM 312 TFLOP/s 的 50% 得到。A100 的 PCIe 4.0 为收发合计 64 GB/s，见 [A100 80GB 数据表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100-80-spec.pdf)。
+[^route]: [经 50 GbE 取回](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/cache-route-a100-50gbe.md)与[经 200 GbE 取回](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/cache-route-a100-200gbe.md)的缓存路由计算，包含整份远端→主机内存→GPU 的串行路径；重算与命中后的计算时间由矩阵 FLOPs 除以 A100 80GB SXM 312 TFLOP/s 的 50% 得到。A100 的 PCIe 4.0 为收发合计 64 GB/s，见 [A100 80GB 数据表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100-80-spec.pdf)。
 
-[^events]: [缓存事件与路由判断](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/cache-events-and-routing.md)、[缓存失效两点分布](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/cache-route-a100-stale.md)。
+[^events]: [缓存事件与路由判断](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/cache-events-and-routing.md)、[缓存失效两点分布](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/cache-route-a100-stale.md)。
 
-[^pressure]: [真实路由压力的配对核算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/router-pressure-book.md)，区分目标请求和完整任务对的完成时间，原始条件随结果保存。
+[^pressure]: [真实路由压力的配对核算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/router-pressure-book.md)，区分目标请求和完整任务对的完成时间，原始条件随结果保存。
 
-[^startup]: [Breaking the Ice 的研究整理](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/moe-and-startup.md)，研究使用 vLLM v0.10.1.1。
+[^startup]: [Breaking the Ice 的研究整理](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/moe-and-startup.md)，研究使用 vLLM v0.10.1.1。
 
-[^branch]: [HiCache 请求分支观测](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch09/09-10/branch-observation/README.md)，使用同一请求 ID 的事件链解释限额和有效命中。原记录的预取限额为 3289 个 token，已登记占用 4096 个 token；八个请求由客户端同时发出，GPU 最多同时运行一个请求。
+[^branch]: [HiCache 请求分支观测](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch09/09-10/branch-observation/README.md)，使用同一请求 ID 的事件链解释限额和有效命中。原记录的预取限额为 3289 个 token，已登记占用 4096 个 token；八个请求由客户端同时发出，GPU 最多同时运行一个请求。
 
-[^switch]: [动态并行与状态条件](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/parallel-switching-and-state.md)、[专家分派与扩缩容](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/expert-dispatch-and-resizing.md)。
+[^switch]: [动态并行与状态条件](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/parallel-switching-and-state.md)、[专家分派与扩缩容](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/expert-dispatch-and-resizing.md)。
 
-[^migration]: [经 50 GbE](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/reconfiguration-ch09-50gbe.md)、[经 200 Gbit/s 网卡](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/reconfiguration-ch09-200g-nic.md)与[经 A100 NVLink](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/reconfiguration-ch09-a100-nvlink.md)的串行迁移计算，按载荷、链路带宽和九项各 1 秒的串行准备时间给出迁移时间的下界。A100 SXM 的 NVLink 为收发合计 600 GB/s，见 [A100 80GB 数据表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-a100-80-spec.pdf)。后台复制的 KV 字节数与 decode 调用速率取自[异构 P、D 整数分配](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pd-pool-book.md)中 H20 的 `derived_stage_rates`。
+[^migration]: [经 50 GbE](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/reconfiguration-ch09-50gbe.md)、[经 200 Gbit/s 网卡](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/reconfiguration-ch09-200g-nic.md)与[经 A100 NVLink](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/reconfiguration-ch09-a100-nvlink.md)的串行迁移计算，按载荷、链路带宽和九项各 1 秒的串行准备时间给出迁移时间的下界。A100 SXM 的 NVLink 为收发合计 600 GB/s，见 [A100 80GB 数据表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-a100-80-spec.pdf)。后台复制的 KV 字节数与 decode 调用速率取自[异构 P、D 整数分配](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pd-pool-book.md)中 H20 的 `derived_stage_rates`。
 
 [^cost-model]: 例 9.8 的容量、共享通道、启动时间、排空目标和成本，以及服务目标（SLO）的通过比例均为教材假设，用于推导条件变化。单位成本用完整小时成本除以（3600×有效请求率）。迁移算例的串行准备时间设为 9 秒。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
-[^ep-system]: [DeepSeek-V3/R1 推理系统工程报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/deepseek-serving-report.md)，大 EP、三类负载均衡及通信精度；[DeepEP V2 阅读快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/sources/deepep.md)。[来源与版本边界](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/README.md)。
+[^ep-system]: [DeepSeek-V3/R1 推理系统工程报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/deepseek-serving-report.md)，大 EP、三类负载均衡及通信精度；[DeepEP V2 阅读快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/sources/deepep.md)。[来源与版本边界](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/README.md)。
 
-[^ep-calc]: [大 EP 与专家分离 skew 的固定输入](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/scenarios/ep-skew-example.json)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/ep_skew.py)、[复算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ep-skew-book.md)。网卡与 NVLink 带宽见 [HGX H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-hgx-h100-datasheet.pdf)、[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-h100-spec.md)与 [ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)，H100 算力取[硬件表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)峰值的 50%；计算输出为所列执行模型的下界，第 9.4.3 节两个 micro-batch 的流水与打平倍数也由同一结果给出。
+[^ep-calc]: [大 EP 与专家分离 skew 的固定输入](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/scenarios/ep-skew-example.json)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/ep_skew.py)、[复算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ep-skew-book.md)。网卡与 NVLink 带宽见 [HGX H100 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-hgx-h100-datasheet.pdf)、[NVIDIA H100 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-h100-spec.md)与 [ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)，H100 算力取[硬件表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)峰值的 50%；计算输出为所列执行模型的下界，第 9.4.3 节两个 micro-batch 的流水与打平倍数也由同一结果给出。
 
-[^ep-scale]: [EP 规模与最忙卡负载的固定输入](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/scenarios/ep-scale-skew-example.json)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/ep_scale_skew.py)、[复算结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ep-scale-skew-book.md)。热点情形为精确分数，随机情形固定随机种子；只统计有效行数，不含 padding、权重读取与通信。DeepSeek decode 部署的 EP144、32 个冗余专家与每卡 2 个路由专家见 [DeepSeek-V3/R1 推理系统工程报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/deepseek-serving-report.md)。
+[^ep-scale]: [EP 规模与最忙卡负载的固定输入](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/scenarios/ep-scale-skew-example.json)、[计算脚本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/ep_scale_skew.py)、[复算结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ep-scale-skew-book.md)。热点情形为精确分数，随机情形固定随机种子；只统计有效行数，不含 padding、权重读取与通信。DeepSeek decode 部署的 EP144、32 个冗余专家与每卡 2 个路由专家见 [DeepSeek-V3/R1 推理系统工程报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/deepseek-serving-report.md)。
 
-[^ep-papers]: Zhu 等，[MegaScale-Infer](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/execution-feedback/megascale-infer.pdf)，arXiv:2504.02263v1，§6 的 Load balance、§7.1–7.2 的实验条件与吞吐；[CRAFT](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/MLSys/2026/papers/mlsys2026-3a7f9e485845dac27423375c934cb4db.pdf)，MLSys 2026，摘要、§3–5；[Demystifying the Mixture of Experts Serving Tax](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/MLSys/2026/papers/mlsys2026-42a452cbafa9dd64e9ba4aa95cc1ef21.pdf)，MLSys 2026，§3–5。原文摘取、阅读范围与数字适用条件见[本次研究记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/ub-ep-integration-2026-09-10/README.md)。
+[^ep-papers]: Zhu 等，[MegaScale-Infer](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/execution-feedback/megascale-infer.pdf)，arXiv:2504.02263v1，§6 的 Load balance、§7.1–7.2 的实验条件与吞吐；[CRAFT](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/MLSys/2026/papers/mlsys2026-3a7f9e485845dac27423375c934cb4db.pdf)，MLSys 2026，摘要、§3–5；[Demystifying the Mixture of Experts Serving Tax](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/MLSys/2026/papers/mlsys2026-42a452cbafa9dd64e9ba4aa95cc1ef21.pdf)，MLSys 2026，§3–5。原文摘取、阅读范围与数字适用条件见[本次研究记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/ub-ep-integration-2026-09-10/README.md)。
 
 #### 本章小结
 
@@ -8877,7 +9201,7 @@ $$
 
 反向传播求导时要读取前向阶段保留的激活；执行期间还需要参数收集和格式转换用的缓冲区。设计训练系统，首先要确定这些张量和缓冲区存放在哪里，以及需要保留多久。
 
-把训练状态分到更多卡上，可以减轻单卡的显存压力，但计算往往要等其他卡传来的数据。把状态移到主机内存，可以腾出显存，却又增加了主机与 GPU 之间的传输。训练持续数周时，等待输入、保存 checkpoint 和故障后的重复计算也会影响完成时间。理解这些取舍，需要把三个问题连起来：哪些张量和缓冲区需要同时占用显存，哪些操作决定训练步何时结束，故障后能够恢复到哪一步。
+把训练状态分到更多卡上，可以减轻单卡的显存压力，但计算往往要等其他卡传来的数据。把状态移到主机内存，可以腾出显存，却又增加了主机与 GPU 之间的传输。训练持续数周时，等待输入、保存 checkpoint 和故障后的重复计算也会影响完成时间。卡数达到上千张以后，故障就不再是偶发事件：按每卡约 337 天故障一次计，1024 卡的作业平均约 7.9 小时中断一次（第 10.4.4 节）。理解这些取舍，需要把三个问题连起来：哪些张量和缓冲区需要同时占用显存，哪些操作决定训练步何时结束，故障后能够恢复到哪一步。
 
 训练计算图明确了各类数据的产生和使用时机，为这些设计提供了依据。前向产生的激活在反向时使用，梯度在参数更新前汇集，优化器状态跨步保留。利用这些已知关系，运行时可以提前取回即将使用的参数、重新计算开销较小的激活，并让已就绪梯度的通信与后续反向计算重叠。模型求导、内存管理与加速器调度由此共同决定一步训练的执行方式。
 
@@ -8929,7 +9253,7 @@ $B_{\mathrm{noise}}$ 随模型与训练阶段变化。本例取二百万个 toke
 
 67.9 s 给出了每步允许花费的时间，但计算开始前还要满足显存要求。设参数数量为 $N$。一次迭代中，前向由输入算出预测和损失，反向沿计算依赖求出损失对各个中间值和参数的梯度，并读取前向留下的激活；优化器再用参数梯度计算下一步权重。
 
-![从输入和当前权重出发，前向得到损失，反向得到参数梯度，Adam 生成新权重](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-update-cycle.svg)
+![从输入和当前权重出发，前向得到损失，反向得到参数梯度，Adam 生成新权重](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-update-cycle.svg)
 
 *图 10-1：从输入和当前权重出发，前向得到损失，反向得到参数梯度，Adam 生成新权重。前向阶段保留的激活用于反向；更新过程还读取高精度主权重和梯度历史。*
 
@@ -8952,7 +9276,7 @@ $$
 
 梯度格式是另一项选择。将梯度改为 FP32，每参数增加 2 bytes，总量变为 18 bytes。这一变化来自梯度的数据格式，“混合精度”一词本身并不规定梯度格式。MoE 每次由路由器选择部分专家子网络执行；各专家同样拥有待更新参数和优化器历史，所以状态容量由全部可训练参数决定。[^state]
 
-![训练状态与推理权重的容量比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-1-state.svg)
+![训练状态与推理权重的容量比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-1-state.svg)
 
 *图 10-2：五类训练状态合计相当于八份 BF16 权重的容量。模型为 Qwen3-8B，采用表中数据格式；横轴表示各类状态累计占用的容量。*
 
@@ -8999,15 +9323,15 @@ $$
 
 另外六成峰值算力去了哪里，本章各节分别作答：无法与计算重叠的通信（第 10.3.3 节）、流水线气泡（第 10.3.2 节）、受内存带宽限制的参数更新与状态转换（第 10.2.3 节）、重计算（第 10.2.2 节）、掉队者（第 10.4.5 节）和 checkpoint 保存（第 10.4.3 节）。按第 1.3.4 节的判据，前四项是模型必须计入的工作，漏掉任何一项，估出的完成时间都会偏短；后两项和通信中没有重叠的部分则含有可以减少的开销，那才是系统设计的优化空间。
 
-![容量下界与不同效率下的卡数](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-2-budget.svg)
+![容量下界与不同效率下的卡数](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-2-budget.svg)
 
 *图 10-3：矩阵计算效率为 30% 时所需的卡数。任务为 Qwen3-8B 处理 100B token，序列长 8192，全部 30 天用于执行；蓝柱为计算需求，橙色菱形为训练状态容量下限。A100 为 80 GB SXM，H100 为 SXM。*
 
-![矩阵计算效率提高到 40% 时所需的卡数](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-budget-1.svg)
+![矩阵计算效率提高到 40% 时所需的卡数](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-budget-1.svg)
 
 *图 10-4：矩阵计算效率提高到 40%，同一任务所需的卡数下降；橙色菱形仍表示状态容量下限。各下限均以卡数计量；容量项是显存约束要求的最少卡数。*
 
-![矩阵计算效率为 50% 时所需的卡数](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-budget-2.svg)
+![矩阵计算效率为 50% 时所需的卡数](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-budget-2.svg)
 
 *图 10-5：矩阵计算效率为 50% 时所需的卡数。三图使用相同的型号顺序、纵轴范围、任务与 30 天执行期限。各下限均以卡数计量；容量项是显存约束要求的最少卡数。*
 
@@ -9019,25 +9343,29 @@ $$
 
 ##### 10.2.1 数据并行与 ZeRO／FSDP 状态分片
 
+第 6 章按样本、特征、序列、层和专家介绍了六种并行方式。本节进入训练场景，进一步讨论数据并行副本内部的状态分片。FSDP（Fully Sharded Data Parallel，全分片数据并行）切分参数、梯度和优化器状态：这些状态分散到各个 rank，需要计算某一层时临时收集参数，反向完成后分散梯度。它主要解决训练状态的显存占用与副本冗余，通常与 DP、TP、PP 组合使用。
+
+SP（Sequence Parallel，序列并行）切分的是同一批输入的序列位置，主要作用于 TP 组中的 LayerNorm、Dropout 等逐 token 算子。进入需要完整 token 行的矩阵乘时，各卡收集输入，计算完成后再按位置分片。FSDP 管理模型状态的所有权，SP 管理中间激活的工作位置；两者的切分对象、通信时机和适用阶段各有侧重。论文图 1 将 FSDP 列为独立层级，正好说明训练状态分片与执行激活分片属于两条不同的并行轴。[^nested-bsp]
+
 状态如何分配到多张卡上，由并行方式决定。同步数据并行让各卡处理不同样本，再用归约后的梯度更新各自的参数。各卡得到的新参数相同，因此每张卡通常都保存一份相同的权重与优化器状态；卡越多，复制的状态越多。ZeRO 由微软研究者在 2019 年提出、2020 年发表，用跨卡分片来减少大模型训练中重复保存的状态副本。ZeRO 分阶段划分这些状态的归属：每张卡只负责一部分参数的更新，其他卡通过通信取得执行所需的数据。
 
 完全分片数据并行（Fully Sharded Data Parallel，FSDP）按同样的分片思路组织执行，参数、梯度与优化器状态都分片保存。下面用四张卡逐步改变状态的归属，再分析相应的执行方式。图中每列始终对应同一张卡；“完整”表示该卡保存整份状态，“片”表示只保存该卡负责的四分之一。
 
-![普通 DP：每卡保存完整权重、梯度、主权重和两份矩状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-zero-0.svg)
+![普通 DP：每卡保存完整权重、梯度、主权重和两份矩状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-zero-0.svg)
 
 *图 10-6：普通 DP：每卡保存完整权重、梯度、主权重和两份矩状态。*
 
-![ZeRO-1：主权重和两份矩状态按参数分片，权重与梯度仍完整复制](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-zero-1.svg)
+![ZeRO-1：主权重和两份矩状态按参数分片，权重与梯度仍完整复制](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-zero-1.svg)
 
 *图 10-7：ZeRO-1：主权重和两份矩状态按参数分片，权重与梯度仍完整复制。*
 
-![ZeRO-2：进一步划分梯度，每卡只保留归属于自己的梯度分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-zero-2.svg)
+![ZeRO-2：进一步划分梯度，每卡只保留归属于自己的梯度分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-zero-2.svg)
 
 *图 10-8：ZeRO-2：进一步划分梯度，每卡只保留归属于自己的梯度分片。*
 
 前两个阶段仍为每张卡保留完整模型权重。图 10-9 再划分权重的归属，长期驻留的空间进一步下降，代价是执行每个模块前要通过通信取得所需的权重。
 
-![ZeRO-3：权重也分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-zero-3.svg)
+![ZeRO-3：权重也分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-zero-3.svg)
 
 *图 10-9：ZeRO-3：权重也分片。执行模块时，各卡通过通信取得所需的完整权重。*
 
@@ -9063,7 +9391,7 @@ $$
 
 分片以后，每个模块按以下顺序执行：先通过 AllGather 取得所需参数，执行前向或反向，再通过 ReduceScatter 汇总梯度并分配梯度分片，让负责该分片的卡得到全部梯度贡献，最后各自更新所负责的参数。FSDP 的全分片执行也围绕这条路径组织。若前向后释放完整参数，反向前就要再次收集；若保留完整参数，反向可直接使用，但完整参数会与后续激活同时占用显存。
 
-![参数分片与执行时的完整参数缓冲区](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-3-sharding.svg)
+![参数分片与执行时的完整参数缓冲区](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-3-sharding.svg)
 
 *图 10-10：同一模块的权重平时分散在四张卡上；执行时，各卡收集完整权重。图中展开 GPU 0 的收集过程，四种颜色分别表示四份参数分片。完整权重缓冲区用完即可释放，各卡长期保存的原始分片仍然保留。*
 
@@ -9081,7 +9409,7 @@ $$
 dX=dY W^{\mathsf T},\qquad dW=X^{\mathsf T}dY.
 $$
 
-![矩阵反向产生两路梯度：dX 交给前一层继续反向，dW 交给本层的归约和参数更新](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-gradient-branches.svg)
+![矩阵反向产生两路梯度：dX 交给前一层继续反向，dW 交给本层的归约和参数更新](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-gradient-branches.svg)
 
 *图 10-11：矩阵反向产生两路梯度：dX 交给前一层继续反向，dW 交给本层的归约和参数更新。两路计算都读取上游梯度 dY。*
 
@@ -9089,11 +9417,11 @@ $$
 
 **例：反向传播前重算门控乘积能节省多少激活存储？** Qwen3-8B 的多层感知机（MLP，即本例的前馈子网络）先得到门控结果 $a$ 和上投影结果 $u$，再形成 $h=a\odot u$，最后计算 $Y=hW_{\mathrm{down}}$。下投影的参数梯度需要 $h$。如果已为非线性算子的反向计算保留了 $a,u$，可以在下投影反向前重新相乘，就不必一直保留 $h$。
 
-![保留乘积与反向前重建乘积的时间对比](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-4-recompute.svg)
+![保留乘积与反向前重建乘积的时间对比](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-4-recompute.svg)
 
 *图 10-12：保留乘积 h：蓝色条表示一直保留的 a、u，橙色条表示从前向持续到下投影反向的乘积 h。128 个 token 的 micro-batch 采用 FP32，h 的形状为 [128,12288]，占 6 MiB。*
 
-![保留 a、u，反向使用前重新相乘得到 h](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-recompute-rebuild.svg)
+![保留 a、u，反向使用前重新相乘得到 h](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-recompute-rebuild.svg)
 
 *图 10-13：保留 a、u，反向使用前重新相乘得到 h。橙色的 6 MiB 缓冲只在使用前后短暂存在；横轴表示操作顺序。*
 
@@ -9119,11 +9447,11 @@ $$
 T_c=G/B+3G/C_c,\qquad T_g=3G/C_g+2G/B.
 $$
 
-![CPU 与 GPU 转换梯度时的传输路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-5-casting.svg)
+![CPU 与 GPU 转换梯度时的传输路径](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-5-casting.svg)
 
 *图 10-14：先将 96 MiB BF16 梯度传到 CPU，再在 CPU 转为 192 MiB FP32。箭头表示数据流；转换的输入与输出均位于 CPU 一侧。*
 
-![先在 GPU 将 96 MiB BF16 梯度转为 192 MiB FP32，再传到 CPU](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-casting-gpu.svg)
+![先在 GPU 将 96 MiB BF16 梯度转为 192 MiB FP32，再传到 CPU](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-casting-gpu.svg)
 
 *图 10-15：先在 GPU 将 96 MiB BF16 梯度转为 192 MiB FP32，再传到 CPU。转换时输入与输出共存，GPU 峰值为 288 MiB。*
 
@@ -9155,7 +9483,7 @@ $$
 
 **例：显存不足时，应增加分片的卡数还是重计算激活？** RTX 4090 标称 24 GB，约合 22.35 GiB；扣除运行时占用，每卡按 22 GiB 可用显存计。Qwen3-8B ZeRO-3 在八卡上每卡保存约 15.3 GiB，留给其他张量和缓冲区约 6.7 GiB。如果激活与临时缓冲区同时需要 10 GiB，总量约 25.3 GiB，超出约 3.3 GiB。此时可以用重计算节省这 3.3 GiB，也可以增至十六卡，将常驻训练状态降到约 7.6 GiB，总量降至约 17.6 GiB。
 
-![分片参与者数与每卡容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-6-candidates.svg)
+![分片参与者数与每卡容量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-6-candidates.svg)
 
 *图 10-16：给定附加存储需求时，分片数决定哪些方案满足容量要求。曲线为 $16N/d+10$ GiB，水平线为 RTX 4090 每卡 22 GiB 可用显存。曲线低于预算的区域可以容纳这些训练状态和缓冲区；纵向距离给出容量余量。*
 
@@ -9208,19 +9536,19 @@ $$
 
 1F1B 更早开始反向，后续的前向也就要等反向释放计算资源。在阶段 0，前四个 micro-batch 于 40 ms 完成前向，第一份传回的梯度于 106 ms 到达。随后反向执行到 126 ms，第五个 micro-batch 才开始前向。这种交错逐级影响下游的到达时间。阶段 3 在 93 ms 完成第二个 micro-batch 的反向，但第三个前向输入到 95 ms 才到，产生 2 ms 空隙；后续相似的等待继续延长关键路径。按这些依赖关系排定执行顺序后，所有梯度在 346 ms 时计算完毕，加上参数更新共为 347 ms。[^pipeline]
 
-![两种流水的依赖等待与激活生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-7-pipeline.svg)
+![两种流水的依赖等待与激活生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-7-pipeline.svg)
 
 *图 10-17：填满排空先完成八个 micro-batch 的前向，再执行反向，最后更新参数。蓝色为前向，橙色为反向，绿色为参数更新。四个阶段共用同一时间刻度，按正文的计算与传输条件共需 337 ms。*
 
-![1F1B 在预热后交错前向和反向，本例完成时间为 347 ms](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-1f1b.svg)
+![1F1B 在预热后交错前向和反向，本例完成时间为 347 ms](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-1f1b.svg)
 
 *图 10-18：1F1B 在预热后交错前向和反向，本例完成时间为 347 ms。蓝色为前向，橙色为反向，绿色为参数更新；与前图使用相同时间刻度。*
 
-![放大 1F1B 的阶段 3：第二个 micro-batch 在 93 ms 结束反向，下一份前向输入于 95 ms 到达，形成 2 ms 等待](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-gap.svg)
+![放大 1F1B 的阶段 3：第二个 micro-batch 在 93 ms 结束反向，下一份前向输入于 95 ms 到达，形成 2 ms 等待](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-gap.svg)
 
 *图 10-19：放大 1F1B 的阶段 3：第二个 micro-batch 在 93 ms 结束反向，下一份前向输入于 95 ms 到达，形成 2 ms 等待。*
 
-![两种调度中各阶段的激活与收发缓冲峰值](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-memory.svg)
+![两种调度中各阶段的激活与收发缓冲峰值](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-memory.svg)
 
 *图 10-20：两种调度中各阶段的激活与收发缓冲峰值。提前反向使激活更早释放，最大值由约 2.57 GB 降到 0.97 GB。*
 
@@ -9254,21 +9582,21 @@ $$
 
 把表中的数字画到各阶段的时间线上，就能看出气泡在哪里被填掉。下面三幅图与图 10-17、图 10-18 使用相同的时间刻度和颜色。
 
-![交错式 1F1B 的各阶段时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-interleaved.svg)
+![交错式 1F1B 的各阶段时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-interleaved.svg)
 
 *图 10-21：交错式 1F1B（$v=2$）的各阶段时间线，完成时间 298 ms。蓝色为前向，橙色为反向，绿色为参数更新，斜线块为每卡的第二个层块。每个块约为图 10-18 中的一半长，预热与排空阶段的空隙被另一个层块的计算填上，阶段 3 的第一个前向从 33 ms 提前到约 20 ms；每个 micro-batch 要多穿过四条边界。*
 
-![零气泡调度的各阶段时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-zero-bubble.svg)
+![零气泡调度的各阶段时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-zero-bubble.svg)
 
 *图 10-22：零气泡（ZB-H1）的各阶段时间线，完成时间 283 ms。蓝色为前向，橙色为 $dX$，紫色为 $dW$，绿色为参数更新。稳态中每个阶段按前向、$dX$、$dW$ 轮转，图 10-18 里反向之间的依赖空隙和末尾的排空空隙都被延后的 $dW$ 填上，四个阶段几乎同时结束；阶段 3 的 $dW$ 比 $dX$ 晚三个 micro-batch，那里的激活保留得最久。*
 
-![DualPipe 的各阶段时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-dualpipe.svg)
+![DualPipe 的各阶段时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-dualpipe.svg)
 
 *图 10-23：DualPipe 的各阶段时间线，完成时间 306 ms。颜色同图 10-22，斜线块为从阶段 3 进入的另一半 micro-batch（反方向）的计算。每个阶段同时承载两个方向，一个方向的预热和排空空隙由另一个方向的块填上；代价是每卡保存两份参数。*
 
 没有一种调度在两根轴上同时占优。把五种调度分别按两根轴排序，第一名不是同一种调度：完成时间最短的是零气泡，最大单阶段峰值最低的是 1F1B。三种扩展调度压缩气泡换来的时间，都以另一种资源的增加为代价，所以选择调度时要先确定约束在哪一边：时间还是容量。图 10-24 把两根轴并排画出（未画填满排空），可与上表对照。
 
-![四种流水线调度的完成时间与激活峰值](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-pipeline-schedules.svg)
+![四种流水线调度的完成时间与激活峰值](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-pipeline-schedules.svg)
 
 *图 10-24：四种流水线调度在八个与十六个 micro-batch 下的完成时间，以及八个 micro-batch 时各调度最大的单阶段激活与收发缓冲峰值。四种调度使用相同的前向 10 ms、反向 20 ms、边界传输 1 ms、参数更新 1 ms 条件。*
 
@@ -9280,11 +9608,11 @@ micro-batch 翻倍到 16 个时，1F1B、交错式、零气泡与 DualPipe 的�
 
 设归约需要 3 ms，梯度就绪后还有 5 ms 与它无关的计算，归约可以与这段计算同时进行。若共享链路此前已安排 4 ms 的专家交换，归约只能利用余下 1 ms，另有 2 ms 延伸到计算之后。这部分无法与计算重叠、会延长训练步的时间，称为**通信等待时间**。数据依赖给出最早开始时刻，资源争用把它推迟，后续算子的依赖关系决定这段等待是否延长整个训练步。
 
-![链路占用怎样使归约延迟到计算结束之后](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-8-overlap.svg)
+![链路占用怎样使归约延迟到计算结束之后](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-8-overlap.svg)
 
 *图 10-25：链路空闲时，3 ms 归约（橙色）可以在 5 ms 独立计算（蓝色）结束前完成。虚线标出计算结束。*
 
-![链路先被其他通信占用 4 ms（灰色），归约推迟到 4—7 ms](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-overlap-busy.svg)
+![链路先被其他通信占用 4 ms（灰色），归约推迟到 4—7 ms](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-overlap-busy.svg)
 
 *图 10-26：链路先被其他通信占用 4 ms（灰色），归约推迟到 4—7 ms。虚线后多出的 2 ms 延长训练步。*
 
@@ -9331,7 +9659,7 @@ $$
 | 1.5 | 768 | 0 | 33% |
 | 2.0 | 1,024 | 0 | 50% |
 
-![容量因子与丢弃、补零的交换](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-moe-capacity.svg)
+![容量因子与丢弃、补零的交换](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-moe-capacity.svg)
 
 *图 10-27：Qwen3-235B-A22B 的路由形状（E=128、k=8、8,192 个 token、一半专家 1.5 倍热）下，容量因子增大时丢弃的 dispatch 占比下降、补零行占比上升。*
 
@@ -9343,11 +9671,11 @@ $$
 
 **相同 token 总数下，序列长度不均如何增加注意力计算量。** 对长度 $s$ 的因果序列，第一个 token 查看一个 token，第二个查看两个，依次相加，得到 $s(s+1)/2$ 个有效注意力配对。两条长度 4096、4096 的序列合计约 1680 万对；改为 7168、1024，总 token 数仍为 8192，配对数却增至约 2620 万，增加约 56%。注意力配对数随序列长度近似按平方增长，所以较长的序列增加了总计算量。[^length]
 
-![等长与不等长序列的因果注意力面积](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-9-attention-area.svg)
+![等长与不等长序列的因果注意力面积](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-9-attention-area.svg)
 
 *图 10-28：两条 4096 个 token 的序列的因果注意力配对。每个查询 token 读取本序列中不晚于自己的位置，形成两个三角形；两条序列的注意力计算彼此独立，总配对数为 16781312。*
 
-![相同 8192 个 token 改分为 7168 与 1024，总因果配对数增至 26218496](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-attention-unequal.svg)
+![相同 8192 个 token 改分为 7168 与 1024，总因果配对数增至 26218496](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-attention-unequal.svg)
 
 *图 10-29：相同 8192 个 token 改分为 7168 与 1024，总因果配对数增至 26218496。较长序列对应三角形增加的面积，超过了较短序列对应三角形减少的面积。*
 
@@ -9367,7 +9695,7 @@ GPU 最终收到的数据量小，不意味着此前的准备过程同样快。2
 
 预取队列让数据准备与 GPU 计算以不同进度运行。正常训练时，提前准备的数据可以缓解输入速度波动造成的等待；保存 checkpoint 时，则必须分清哪些数据已经用于训练。假设数据加载器已经为前 108 个 batch 分配了准备任务，而训练只完成第 100 个，第 101—108 个仍在处理或排队。若恢复时直接从第 109 个 batch 开始，就会跳过八个 batch。已分配给数据准备进程的 batch 位置反映预取进度，已用于训练的 batch 位置反映训练进度；两者之间的缓冲保存了尚未训练的数据。
 
-![预取进度与已经完成的训练进度](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-10-input-queue.svg)
+![预取进度与已经完成的训练进度](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-10-input-queue.svg)
 
 *图 10-30：训练已完成 batch 100，预取任务已安排到 108。中间八个 batch 仍需训练，其中一部分已经准备好，另一部分还在处理。虚线框示意尚在处理的 batch。恢复时应保留这些数据或重新准备它们，从 batch 101 继续。*
 
@@ -9383,7 +9711,7 @@ GPU 最终收到的数据量小，不意味着此前的准备过程同样快。2
 
 恢复时还可能需要改变并行布局，同一份状态要重新分片。**例：checkpoint 如何从四路张量并行重分片为八路？** 门控投影的权重形状为 $[12288,4096]$，BF16 大小 96 MiB。沿输出维四分，每片 3072 行、24 MiB；八分后，每片 1536 行、12 MiB。rank 为 $r$ 的目标卡读取旧分片 $\lfloor r/2\rfloor$，偶数 rank 取前半，奇数 rank 取后半。全局行坐标将旧布局和新布局联系起来。
 
-![从四份权重分片恢复为八份分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-11-resharding.svg)
+![从四份权重分片恢复为八份分片](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-11-resharding.svg)
 
 *图 10-31：横向位置对应原矩阵的行号，颜色表示旧分片。每份旧分片分成前后两半后，分别存入两个新分片。模型权重的内容和顺序保持相同，改变的是各卡负责的行范围；BF16 权重总量始终为 96 MiB。上方“旧”编号标识原分片，下方编号标识重新分配后的分片。*
 
@@ -9399,7 +9727,7 @@ GPU 最终收到的数据量小，不意味着此前的准备过程同样快。2
 
 同步保存先生成内容固定的快照，写入完成后继续训练。异步保存将快照复制到独立的内存缓冲区，再由后台写入，让训练较早恢复执行。训练恢复执行时，快照可能还没有写完；只有写入并提交完成后，这份快照才能用于故障恢复。
 
-![捕获一致的训练状态，复制到独立缓冲后允许训练继续；后台写完数据并提交完整快照后，恢复程序才使用这份 checkpoint](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-checkpoint-commit.svg)
+![捕获一致的训练状态，复制到独立缓冲后允许训练继续；后台写完数据并提交完整快照后，恢复程序才使用这份 checkpoint](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-checkpoint-commit.svg)
 
 *图 10-32：捕获一致的训练状态，复制到独立缓冲后允许训练继续；后台写完数据并提交完整快照后，恢复程序才使用这份 checkpoint。箭头表示先后依赖。*
 
@@ -9407,11 +9735,11 @@ GPU 最终收到的数据量小，不意味着此前的准备过程同样快。2
 
 在第 20、40 s 捕获两份快照，各花 0.5 s 复制到缓冲区后上传，完成时刻为 36.5、56.5 s。若第 50 s 故障，第二份仍在上传，只能恢复到第 20 s，重做 30 s。换用 Better 档的 20 GB/s 合计写入，每份只需 5.6 s，两份分别在 26.1、46.1 s 完成；同一故障可恢复到第 40 s，只重做 10 s。
 
-![写带宽与故障时可用恢复点](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-12-recovery.svg)
+![写带宽与故障时可用恢复点](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-12-recovery.svg)
 
 *图 10-33：两份 112 GB 快照以 7 GB/s 写入，各先花 0.5 s 复制到缓冲（橙色），随后上传（蓝色）。50 s 故障时第一份已提交，第二份尚未提交；斜线为无故障时剩余上传，空心点为原定提交时刻。*
 
-![相同快照以 20 GB/s 写入，于 26.1、46.1 s 提交](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-recovery-fast.svg)
+![相同快照以 20 GB/s 写入，于 26.1、46.1 s 提交](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-recovery-fast.svg)
 
 *图 10-34：相同快照以 20 GB/s 写入，于 26.1、46.1 s 提交。50 s 故障时可以恢复到 40 s 的训练状态，只需重做 10 s。*
 
@@ -9438,7 +9766,7 @@ $$
 
 **例：卡数与故障率如何决定 checkpoint 保存间隔？** Meta 统计了研究集群上的训练作业：1024 卡作业平均 7.9 小时中断一次，而且中断率与卡数成正比，相当于每卡平均约 337 天出一次故障。任一卡故障均中断作业。约 115 GB 的 checkpoint 以 7 GB/s 保存，$c\approx16.4$ s。设恢复需 120 s，代入得到最优间隔约 965 s，即约 16 分钟。[^interval]
 
-![保存间隔对保存成本与故障重做成本的相反影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-13-save-interval.svg)
+![保存间隔对保存成本与故障重做成本的相反影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-13-save-interval.svg)
 
 *图 10-35：蓝线为保存耗时占比，橙线为故障重做耗时占比，绿线为两者加上恢复耗时后的合计。使用 1024 卡作业平均 7.9 小时中断一次、保存约 16.4 s 和恢复 120 s 的一阶模型。最低点出现在两项随间隔变化的代价相互平衡处。*
 
@@ -9453,6 +9781,18 @@ $$
 将保存间隔从五分钟延长到十五分钟，节省的保存时间多于新增的重做时间；继续延长到三十分钟，新增的重做时间就超过了节省的保存时间。表中合计由未经四舍五入的数值计算。卡数翻倍会使故障率翻倍，最优间隔缩短为原来的 $1/\sqrt2$；保存速度翻倍也使最优间隔按同样比例缩短，因为每次保存耗时更短。
 
 本章设计案例使用的卡数较少，沿用每卡平均约 337 天故障一次（单卡平均故障间隔，MTBF）、恢复耗时 120 s 和保存耗时约 16.4 s 的条件，取有用训练间隔 1800 s。32 卡的保存、重做与恢复合计约增加 1.02% 时间，48 卡约增加 1.08%。48 卡方案被卡故障中断的概率更高，但附加比例只多约 0.06 个百分点，远小于缩短单卡计算时间带来的收益。容量、每步训练时间和长期附加成本至此齐备，第 10.6 节将汇总计算完成时间。
+
+大规模训练中，即使一次中断只耽误两三个小时，整组资源的费用也可能达到数万美元。保存周期决定一次故障需要重做多少工作，系统的可靠性则决定这样的损失会发生多少次。
+
+**例：一次训练中断会浪费多少钱？** 小米的 MiMo-V2.6 是前沿实验室中首次直播 RL 过程的。公开运行看板显示，Pro 与 Flash 两种尺寸的模型 RL 后训练分别花费约 260 万和 90 万美元，即每小时约 2.06 万和 1.03 万美元。
+
+图 10-36 按日志画出两次运行。Pro 共重启 14 次，中断区间累计约 30.1 h（占总运行时间的 23.6%），折合约 61.9 万美元。Pro 第五次重启前，自上一步完成起已过去 2.76 h，对应约 5.67 万美元；第六次和第八次分别为 2.63 h 与 2.95 h，对应约 5.41 万与 6.07 万美元。这些运行的重启主要涉及三方面：显存双比特错误等硬件故障；容器崩溃、评分服务网络不通等服务故障；以及内存不足，例如推理时 KV 缓存耗尽、训练时专家负载不均导致显存溢出，或序列打包时主机内存不足。此外，一次 infra 错误没有及时被检出，直到完成第 17 步后才从第 15 步重新训练。此前第 16、17 步花掉的约 4 h 随之作废。[^rl-interrupt]
+
+![MiMo 两次 RL 运行的中断时间线及按公开费率估算的费用](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-mimo-interruptions.svg)
+
+*图 10-36：两次运行分别从启动时刻计时。蓝色为完成步骤的区间，红色为上一个事件至重启的区间，三角标记重启；斜线为 Flash 回滚后作废的两步。浪费时间按红色与斜线区间合计估算，括号内为其占总运行时间的比例；下方按公开费率换算费用。节省金额假设训练工作不变，减少的中断时间等量缩短运行。*
+
+若能将 Pro 的中断总耗时减少一半，同样的训练工作就能少用约 15 h，按上述费率节省约 31 万美元。这可以来自两方面：一是排除反复触发的故障，例如，MiMo 团队曾调整训练并行方式，降低激活显存，以容纳专家负载峰值。二是更早发现故障、更快恢复，并用较近的 checkpoint 减少重做，缩短恢复时间 $r$ 或丢失的训练间隔。
 
 ##### 10.4.5 掉队者与慢节点
 
@@ -9509,11 +9849,11 @@ $$
 
 **例：RL 生成、验证与学习三个阶段中，应优先扩容哪一个？** 生成每秒提供 12 条等长轨迹，验证处理六条，学习阶段处理八条；验证后四分之一因版本过旧被丢弃。每秒进入学习的只有 $6\times0.75=4.5$ 条。生成翻倍到 24 条/s，验证瓶颈仍将进入学习的样本限制在 4.5 条/s；验证翻倍到 12 条/s，每秒可送往训练端的轨迹达到九条，此时训练端每秒只能处理八条，成为整个流水线的瓶颈。因此，应把新增资源分配给当前最慢的阶段；该阶段加速后，再判断瓶颈转移到了哪里。
 
-![生成、验证与学习的处理瓶颈与权重反馈](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-14-rl-flow.svg)
+![生成、验证与学习的处理瓶颈与权重反馈](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-14-rl-flow.svg)
 
-*图 10-36：三阶段分别最多处理 12、6、8 条等长轨迹/s。验证后保留 75%，所以只有 4.5 条/s 进入学习。返回箭头表示学习产生的新权重影响后续生成；其同步耗时在后面的阶段切换与异步算例中展开。*
+*图 10-37：三阶段分别最多处理 12、6、8 条等长轨迹/s。验证后保留 75%，所以只有 4.5 条/s 进入学习。返回箭头表示学习产生的新权重影响后续生成；其同步耗时在后面的阶段切换与异步算例中展开。*
 
-图 10-36 先把三道工序画在各自独立的资源上。若改用同一组卡轮流执行，就能减少所需的卡数，但生成和学习之间要切换整套显存里的数据。
+图 10-37 先把三道工序画在各自独立的资源上。若改用同一组卡轮流执行，就能减少所需的卡数，但生成和学习之间要切换整套显存里的数据。
 
 **共享加速器**让同一组卡轮流训练和生成，节省重复资源；**独立部署**让两侧独立执行，获得重叠机会，但要在两组卡之间发送权重。共享加速器的关键成本发生在切换：旧状态尚未释放，新状态已经开始加载，两个阶段各自运行时显存都足够，切换时却可能因两套数据同时占用显存而超出容量。
 
@@ -9521,23 +9861,23 @@ $$
 
 改变次序，先加载生成所需的权重，暂不分配 KV，峰值为 $40+15.3+4\approx59.3$ GiB。随后释放 40 GiB 训练状态，显存占用降为约 19.3 GiB，再分配 KV，进入约 43.3 GiB 的生成状态。两条路径最终状态相同，峰值差 24 GiB，恰好是一份 KV 池。[^handoff]
 
-![权重同步次序与显存峰值](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-15-rl.svg)
+![权重同步次序与显存峰值](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-15-rl.svg)
 
-*图 10-37：先加载生成权重并分配 KV 池，再释放训练状态，峰值约为 83.3 GiB，超过 H100 SXM 的 74.5 GiB。横轴按操作顺序排列。*
+*图 10-38：先加载生成权重并分配 KV 池，再释放训练状态，峰值约为 83.3 GiB，超过 H100 SXM 的 74.5 GiB。横轴按操作顺序排列。*
 
-![先加载生成权重，再释放训练状态，最后分配 KV 池](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-rl-staged.svg)
+![先加载生成权重，再释放训练状态，最后分配 KV 池](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-rl-staged.svg)
 
-*图 10-38：先加载生成权重，再释放训练状态，最后分配 KV 池。峰值降为约 59.3 GiB；两图共用 74.5 GiB 容量线和同一纵轴。*
+*图 10-39：先加载生成权重，再释放训练状态，最后分配 KV 池。峰值降为约 59.3 GiB；两图共用 74.5 GiB 容量线和同一纵轴。*
 
 独立部署的代价则由权重发送范围决定。Qwen3-235B-A22B 的 BF16 专家权重为 423 GiB，采用 16 路专家并行（EP16）时，每个接收方只需要约 26.4 GiB。逐一向 16 个接收方发送完整专家集合，共发送 $16\times423=6768$ GiB；按各自的分片发送，合计为 423 GiB。先确定每个接收方需要的参数分片，再组织分发，可以同时减少接收缓冲和发送方的发送量。
 
 这里再次用到了本章的两种分析方法：共享加速器时要分析张量的生命周期，独立部署时要分析数据传输和各阶段的处理时间。阶段独立以后，还会产生策略版本差异，下一小节将分析这种版本差异如何影响可用于训练的样本数量。
 
-权重同步中还有一类生命周期不同的权重：第 4.7.3 节的固定权重加速器可以运行 RL 流程中权重长期不变的模型。例如，算法采用固定参考模型时，其权重能够留在专用存储中反复读取；持续更新的策略模型则使用可写权重存储，并将新版本发布给生成端。图 10-39 按这两种生命周期画出权重路径。
+权重同步中还有一类生命周期不同的权重：第 4.7.3 节的固定权重加速器可以运行 RL 流程中权重长期不变的模型。例如，算法采用固定参考模型时，其权重能够留在专用存储中反复读取；持续更新的策略模型则使用可写权重存储，并将新版本发布给生成端。图 10-40 按这两种生命周期画出权重路径。
 
-![固定版本服务与策略训练的权重生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-weight-update.svg)
+![固定版本服务与策略训练的权重生命周期](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-weight-update.svg)
 
-*图 10-39：固定版本服务与策略训练的权重生命周期。上方 ROM 重复提供同一版本；下方训练产生新版本并发布给生成端。KV 写入与权重更新使用不同的数据通路。*
+*图 10-40：固定版本服务与策略训练的权重生命周期。上方 ROM 重复提供同一版本；下方训练产生新版本并发布给生成端。KV 写入与权重更新使用不同的数据通路。*
 
 ##### 10.5.3 异步训练、策略版本与长轨迹恢复
 
@@ -9545,9 +9885,9 @@ $$
 
 权重更新后，模型给出的策略随之变化。下面沿样本流转顺序区分三个策略版本。
 
-![μ 产生训练样本，πold 标识本轮优化的起点，πθ 随本轮更新变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-policy-versions.svg)
+![μ 产生训练样本，πold 标识本轮优化的起点，πθ 随本轮更新变化](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-policy-versions.svg)
 
-*图 10-40：μ 产生训练样本，πold 标识本轮优化的起点，πθ 随本轮更新变化。虚线表示版本演进顺序。三个概率必须针对同一前缀与同一 token 计算。*
+*图 10-41：μ 产生训练样本，πold 标识本轮优化的起点，πθ 随本轮更新变化。虚线表示版本演进顺序。三个概率必须针对同一前缀与同一 token 计算。*
 
 令实际行为分布为 $\mu$，本轮优化的起点策略为 $\pi_{\mathrm{old}}$，当前优化策略为 $\pi_\theta$。起点策略随优化轮次更新，用 KL 散度做正则时所用的参考模型则保持固定。对同一 token 和前缀，在三个概率有定义且分母非零的位置，概率比满足
 
@@ -9569,15 +9909,15 @@ $$
 
 **例：异步流水能承受多高的过期样本丢弃率？** 每批生成 40 s、学习 16 s、阻塞两侧的权重同步 4 s，同步周期为 60 s。设生成和学习使用独立资源，权重同步仍独占 4 s，则异步稳态周期为 $\max(40,16)+4=44$ s。
 
-![同步等待与跨 batch 异步执行的时间对比](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-16-async-cycle.svg)
+![同步等待与跨 batch 异步执行的时间对比](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-16-async-cycle.svg)
 
-*图 10-41：同步循环依次生成本批样本、学习本批样本、同步权重，分别用时 40、16、4 s，共 60 s。*
+*图 10-42：同步循环依次生成本批样本、学习本批样本、同步权重，分别用时 40、16、4 s，共 60 s。*
 
-![稳态中生成下一批与学习上一批在独立资源上重叠；两者完成后同步权重，周期为 44 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-async-overlap.svg)
+![稳态中生成下一批与学习上一批在独立资源上重叠；两者完成后同步权重，周期为 44 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-async-overlap.svg)
 
-*图 10-42：稳态中生成下一批与学习上一批在独立资源上重叠；两者完成后同步权重，周期为 44 s。橙色同步阶段阻塞两侧。*
+*图 10-43：稳态中生成下一批与学习上一批在独立资源上重叠；两者完成后同步权重，周期为 44 s。橙色同步阶段阻塞两侧。*
 
-从图 10-41 的同步执行改为图 10-42 的异步执行后，减少的是学习端与生成端轮流等待的时间。但生成得更早也意味着样本可能使用较旧的权重，因此还要扣除被丢弃的样本。
+从图 10-42 的同步执行改为图 10-43 的异步执行后，减少的是学习端与生成端轮流等待的时间。但生成得更早也意味着样本可能使用较旧的权重，因此还要扣除被丢弃的样本。
 
 若每批原有 $B$ 条等效轨迹，异步执行后，其中比例为 $q$ 的轨迹保留下来用于训练，则同步和异步执行的有效样本吞吐量分别为 $B/60$、$qB/44$。异步更快要求
 
@@ -9589,7 +9929,7 @@ $$
 
 图中的生成阶段画成了一段连续的工作。轨迹越长，这一段越容易跨过参数更新或遇到中断，于是除了筛选完成的样本，还要考虑尚未完成的轨迹如何继续。长轨迹也会延长生成样本与使用样本训练之间的时间差。KV 是给定权重对前缀执行的结果：使用相同权重恢复时，可继续使用已保存的 KV，换权重后则需重新执行前缀来生成对应 KV。Qwen3-8B 的 8K BF16 KV 占 1.125 GiB，保存和取回 KV 缓存需要存储空间与传输时间，重建 KV 缓存则需要重新执行 prefill 计算。恢复方案据此比较取回时间与重建时间。
 
-若总是丢弃中断轨迹并重新采样，长轨迹因执行时间更长而更容易被丢弃。设生成期间的中断率为 $\lambda$，持续 $t$ 的轨迹能不受中断、完整生成的概率为 $e^{-\lambda t}$；随着 $t$ 增长，进入学习的数据比例下降。逐 token 记录生成进度和策略版本，可以在恢复后继续生成同一条轨迹，减少这种由系统中断引入的长度偏移。跨角色资源恢复在下一章展开。
+若总是丢弃中断轨迹并重新采样，长轨迹因执行时间更长而更容易被丢弃。设生成期间的中断率为 $\lambda$，持续 $t$ 的轨迹能不受中断、完整生成的概率为 $e^{-\lambda t}$；随着 $t$ 增长，进入学习的数据比例下降。逐 token 记录生成进度和策略版本，可以在恢复后继续生成同一条轨迹，减少这种由系统中断引入的长度偏移。轨迹在模型与环境两侧的状态如何跨过中断保留下来，见第 11.3.3 节。
 
 让训练与部署使用同一条路径的做法，在实际模型中已经出现。DeepSeek V4.1 把部署时的稀疏访问与恢复方式纳入训练。稀疏注意力从训练之初就使用 64K 序列，后训练加入层级候选限制，使训练和推理使用相同搜索域；量化感知训练（训练时模拟低精度量化的误差）让模型适应 FP4 的主 KV；只重放有限长度的输入来重建解码器 SWA 状态，这一过程也在后训练中模拟。模型由此学习使用部署路径实际提供的表示与局部状态。[^v41-case]
 
@@ -9599,9 +9939,9 @@ MoE 把第 10.5.3 节的数值差异进一步变成离散的路径差异：即�
 
 **路由重放**（Routing Replay）记录生成时选中的逻辑专家 ID，训练时按这些 ID 选择专家，再用当前权重计算路由分数、专家输出和梯度。样本、token 位置和层号共同定位这一份记录。这样，生成与训练经过相同的离散专家路径，而数值计算继续反映当前参数。
 
-![重放离散选择与重算当前数值](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-17-replay.svg)
+![重放离散选择与重算当前数值](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-17-replay.svg)
 
-*图 10-43：离散专家 ID 连接生成端与训练端，当前权重继续参与数值计算。示意记录为样本 A、token 17、层 3 的 top-2 选择；虚线表示 ID 重放，实线表示当前计算数据流。*
+*图 10-44：离散专家 ID 连接生成端与训练端，当前权重继续参与数值计算。示意记录为样本 A、token 17、层 3 的 top-2 选择；虚线表示 ID 重放，实线表示当前计算数据流。*
 
 先计算这份记录占多大空间。Qwen3-30B-A3B 的 48 层各记录分数最高的八个专家（top-8）的编号。对 8,192 个 token，以每个整数占 2 字节的无符号整数格式 uint16 保存每个专家 ID，大小为
 
@@ -9644,17 +9984,17 @@ $$
 | 基础训练时间 / 天 | 29.0 | 19.4 |
 | 加入保存恢复和 5 天预留 / 天 | 34.3 | 24.6 |
 
-![32 卡与 48 卡方案的完成时间分解](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-18-deadline.svg)
+![32 卡与 48 卡方案的完成时间分解](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-18-deadline.svg)
 
-*图 10-44：每条横条依次累计基础训练时间、保存与故障恢复的附加时间，以及预留的 5 天计划性停顿。基础训练时间已经包括通信和输入等待；橙色小段为 checkpoint 模型得到的额外耗时。两套方案使用相同任务和全局 batch，虚线标出 30 天期限。*
+*图 10-45：每条横条依次累计基础训练时间、保存与故障恢复的附加时间，以及预留的 5 天计划性停顿。基础训练时间已经包括通信和输入等待；橙色小段为 checkpoint 模型得到的额外耗时。两套方案使用相同任务和全局 batch，虚线标出 30 天期限。*
 
-图 10-44 中，两套方案的计划停顿相同，保存与恢复也只占很小一段。主要差别在蓝色的基础训练时间：48 卡把 micro-batch 分给更多的卡并行处理，显著缩短了这一段。
+图 10-45 中，两套方案的计划停顿相同，保存与恢复也只占很小一段。主要差别在蓝色的基础训练时间：48 卡把 micro-batch 分给更多的卡并行处理，显著缩短了这一段。
 
 **在这组设计条件下，选择 48 卡方案。** 两者都满足容量要求；32 卡方案完成时间超过 30 天，予以排除；48 卡约 24.6 天完成，剩余约 5.4 天。增加卡数的主要价值是减少每卡承担的训练工作，额外故障成本只抵消很小一部分收益。
 
 ##### 10.6.2 4090 集群的可行范围
 
-图 10-44 给出了约 5.4 天的剩余时间。将这部分余量分摊回每次迭代，就能知道每步还允许增加多少等待，也就得到了可用于实际调优的性能目标。48 卡的每步训练时间必须满足
+图 10-45 给出了约 5.4 天的剩余时间。将这部分余量分摊回每次迭代，就能知道每步还允许增加多少等待，也就得到了可用于实际调优的性能目标。48 卡的每步训练时间必须满足
 
 $$
 t_s\le\frac{25\times86400}{31\,790\times(1+0.0108)}\approx67.2\ \mathrm{s}.
@@ -9678,9 +10018,9 @@ $$
 
 这就是根据各项耗时的比例应用 Amdahl 定律。原来 100 ms 中只有 5 ms 通信等待，带宽减半后变为 $95+10=105$ ms；若原来通信占 50 ms，同样减半后为 $50+100=150$ ms。前一个任务的耗时增加 5%，后一个增加 50%，因为等待该资源的原有时间占比相差十倍。
 
-![通信带宽变化对每步耗时的影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-19-hardware.svg)
+![通信带宽变化对每步耗时的影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-19-hardware.svg)
 
-*图 10-45：资源能力变化的收益由原有等待时间占比决定。曲线按 $T'/T=1-f+f/r$ 计算，固定单卡计算与依赖，通信时间与有效能力成反比。*
+*图 10-46：资源能力变化的收益由原有等待时间占比决定。曲线按 $T'/T=1-f+f/r$ 计算，固定单卡计算与依赖，通信时间与有效能力成反比。*
 
 在本章的 48 卡方案中，暴露的通信只有约 0.08 s，约占每步的 0.14%。PCIe 带宽减半时，每个 micro-batch 的链路时间升到约 3.0 s，仍短于 6.53 s 的计算，暴露部分翻倍到约 0.15 s，每步从约 52.8 s 增到 52.9 s，几乎不变。若单卡计算效率从 40% 降到 30%，单卡计算时间变为约 69.6 s，加上通信与输入约为 70.2 s，超过 67.2 s 的目标。对这套方案而言，决定能否按期完成的是单卡计算效率；带宽只有在预取失效、通信整段暴露时，才成为式中比例 $f$ 较大的那一项。
 
@@ -9694,11 +10034,11 @@ $$
 p\ge\left\lceil\frac{6ND}{P\eta T}\right\rceil.
 $$
 
-图 10-46 把 90 天期限画成卡数边界。选择某个模型规模后，边界上方的计算资源能够在该效率下完成工作，边界下方需要提高效率或延长期限。
+图 10-47 把 90 天期限画成卡数边界。选择某个模型规模后，边界上方的计算资源能够在该效率下完成工作，边界下方需要提高效率或延长期限。
 
-![给定期限下模型规模与卡数边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/figure-10-20-scale.svg)
+![给定期限下模型规模与卡数边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/figure-10-20-scale.svg)
 
-*图 10-46：固定 90 天执行期限，稠密模型规模增大要求更多的卡。数据量为 20T token，算法工作为 $6ND$，实线的 MFU 为 40%，虚线为 50%，使用 BF16 稠密矩阵峰值。各线为向上取整前的连续计算边界；横线标出 16,384 张卡。*
+*图 10-47：固定 90 天执行期限，稠密模型规模增大要求更多的卡。数据量为 20T token，算法工作为 $6ND$，实线的 MFU 为 40%，虚线为 50%，使用 BF16 稠密矩阵峰值。各线为向上取整前的连续计算边界；横线标出 16,384 张卡。*
 
 对 1T 参数，16,384 张 A100、H100、B200 在 40% MFU 下分别约需 679、214、94 天。90 天执行预算下，三者都落在计算边界下方：B200 也超出约 4 天，需增至约 17,147 张。只有 MFU 达到 50% 时，B200 才降到约 75 天，落进期限，余下约 15 天可分配给计划停顿与恢复。MFU 相差 10 个百分点，就决定了 16,384 张 B200 能否在 90 天内训练完 1T 模型。[^scale]
 
@@ -9706,7 +10046,7 @@ $$
 
 设计完成以后，还要检验长期执行是否达到预期。公开训练日志提供长期执行的观察窗口。若从 checkpoint 继续训练，本次新增 token 等于结束累计值减去恢复起点累计值；用新增工作除以本次时间，得到对应的长期速率。该速率可以直接检验整套系统能否保持设计中的有效训练进度。[^public]
 
-回看全章，图 10-10 至图 10-14 解释了数据如何占用显存和经过链路；图 10-17 至图 10-35 说明这些操作如何形成等待、又如何影响长期训练；图 10-44 则把各项耗时汇成了章首任务的完成时间。状态安排、执行顺序和恢复方式由此连成了同一个设计问题。RL 将工作来源改为反馈循环，仍通过同一方法比较资源和有效训练进度。下一章进一步讨论这些作业与阶段如何共享资源池。
+回看全章，图 10-10 至图 10-14 解释了数据如何占用显存和经过链路；图 10-17 至图 10-36 说明这些操作如何形成等待、又如何影响长期训练；图 10-45 则把各项耗时汇成了章首任务的完成时间。状态安排、执行顺序和恢复方式由此连成了同一个设计问题。RL 将工作来源改为反馈循环，仍通过同一方法比较资源和有效训练进度。下一章进一步讨论这些作业与阶段如何共享资源池。
 
 #### 常见误区
 
@@ -9764,59 +10104,63 @@ $$
 >
 > 对于参数量分别为 1T、5T、10T 的稠密模型，用 $6ND$ 分别计算两种数据规模下的训练运算量：训练数据固定为 20T token；训练 token 数满足 $D=20N$。再按 40% 与 50% 两档 MFU，求各情形下在 90 天和 180 天内完成训练所需的最少 A100、H100、B200 卡数。以累计 GPU·小时比较两个满足期限的方案，并说明准备时间和恢复参数如何改变结论。实验部分选取一份标明恢复起点的公开日志，扣除恢复时已经完成的 token 数，计算观察期间新增训练 token 的平均处理速率。
 
-[^critical-batch]: [临界 batch size 复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/critical-batch-book.md)与[噪声尺度两千万 token 的对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/critical-batch-noise-20m.md)。梯度噪声尺度的定义见[大 batch 训练经验模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/large-batch-empirical.txt)式 (2.8)；步数—样本关系式 (5.1)、临界 batch size 定义式 (5.2) 与收敛时约一到二百万 token 的区间见[缩放定律论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/scaling-laws.txt)。$B_{\mathrm{noise}}$ 为本例取值，未对本章模型实测；弱扩展与强扩展都不含并行效率变化。
+[^critical-batch]: [临界 batch size 复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/critical-batch-book.md)与[噪声尺度两千万 token 的对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/critical-batch-noise-20m.md)。梯度噪声尺度的定义见[大 batch 训练经验模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/large-batch-empirical.txt)式 (2.8)；步数—样本关系式 (5.1)、临界 batch size 定义式 (5.2) 与收敛时约一到二百万 token 的区间见[缩放定律论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/scaling-laws.txt)。$B_{\mathrm{noise}}$ 为本例取值，未对本章模型实测；弱扩展与强扩展都不含并行效率变化。
 
-[^precision]: [混合精度训练论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/mixed-precision.txt)（损失缩放机制、8 至 32K 的缩放因子、FP16 可表示范围）、[FP8 格式论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/fp8-formats.txt)（E4M3/E5M2 编码与最大正规数）、[DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v3.pdf) §3.3（1×128 激活与 128×128 权重分块缩放、每 128 个元素提升为 FP32 累加、相对损失误差低于 0.25%）。FP16 与 BF16 的指数、尾数比较见[第 4.6.1 节](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/04-%E5%8A%A0%E9%80%9F%E5%99%A8%E6%9E%B6%E6%9E%84.md)。
+[^precision]: [混合精度训练论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/mixed-precision.txt)（损失缩放机制、8 至 32K 的缩放因子、FP16 可表示范围）、[FP8 格式论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/fp8-formats.txt)（E4M3/E5M2 编码与最大正规数）、[DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v3.pdf) §3.3（1×128 激活与 128×128 权重分块缩放、每 128 个元素提升为 FP32 累加、相对损失误差低于 0.25%）。FP16 与 BF16 的指数、尾数比较见[第 4.6.1 节](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/04-%E5%8A%A0%E9%80%9F%E5%99%A8%E6%9E%B6%E6%9E%84.md)。
 
-[^schedules]: [交错式事件模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-interleaved-m8.md)、[零气泡事件模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-zero-bubble-m8.md)、[DualPipe 事件模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-dualpipe-m8.md)及十六个 micro-batch 的变体（[交错式](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-interleaved-m16.md)、[零气泡](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-zero-bubble-m16.md)、[DualPipe](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-dualpipe-m16.md)）。气泡公式：1F1B 与交错式见 [Megatron-LM 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/megatron-scale.txt)（$(p-1)/m$ 与 $(1/v)(p-1)/m$），ZB-H1/H2 见[零气泡论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/zero-bubble.txt)表 2，DualPipe 的参数量与激活份数见 [DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v3.pdf)表 2；1F1B 的稳态定义见 [PipeDream](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/pipedream.txt)。零气泡按论文图 3 上半部分的 ZB-H1 槽位顺序排定；交错式与 DualPipe 的归档文本只给出分块与双向馈入的思路，槽位顺序按各结果文件记录的 declared_schedule_rule 排定；$T_B=T_W=10$ ms 的拆分比例为本例取值；完成时间由事件模型按依赖关系推出，不是实测。
+[^schedules]: [交错式事件模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-interleaved-m8.md)、[零气泡事件模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-zero-bubble-m8.md)、[DualPipe 事件模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-dualpipe-m8.md)及十六个 micro-batch 的变体（[交错式](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-interleaved-m16.md)、[零气泡](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-zero-bubble-m16.md)、[DualPipe](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-dualpipe-m16.md)）。气泡公式：1F1B 与交错式见 [Megatron-LM 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/megatron-scale.txt)（$(p-1)/m$ 与 $(1/v)(p-1)/m$），ZB-H1/H2 见[零气泡论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/zero-bubble.txt)表 2，DualPipe 的参数量与激活份数见 [DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v3.pdf)表 2；1F1B 的稳态定义见 [PipeDream](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/pipedream.txt)。零气泡按论文图 3 上半部分的 ZB-H1 槽位顺序排定；交错式与 DualPipe 的归档文本只给出分块与双向馈入的思路，槽位顺序按各结果文件记录的 declared_schedule_rule 排定；$T_B=T_W=10$ ms 的拆分比例为本例取值；完成时间由事件模型按依赖关系推出，不是实测。
 
-[^capacity]: [容量因子与丢弃复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/moe-capacity-book.md)。容量规则见 [Switch Transformer](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/switch-transformer.txt)式 (3)（每专家容量 = 每批 token 数／专家数 × 容量因子）与 [GShard](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/gshard.txt)（容量取 O(N/E)，溢出 token 的表示经残差连接传给下一层）；无辅助损失的偏置均衡见 [DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v3.pdf)。一半专家 1.5 倍热的分布为本例取值，与正文的 96/32 例子同为 3:1。
+[^capacity]: [容量因子与丢弃复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/moe-capacity-book.md)。容量规则见 [Switch Transformer](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/switch-transformer.txt)式 (3)（每专家容量 = 每批 token 数／专家数 × 容量因子）与 [GShard](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/gshard.txt)（容量取 O(N/E)，溢出 token 的表示经残差连接传给下一层）；无辅助损失的偏置均衡见 [DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v3.pdf)。一半专家 1.5 倍热的分布为本例取值，与正文的 96/32 例子同为 3:1。
 
-[^straggler]: [掉队者最大值模型（σ 为均值的 2%）](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/straggler-max-sigma-2pct.md)与[（σ 为均值的 5%）](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/straggler-max-sigma-5pct.md)。约 0.5% 的机器明显变慢见 [MegaScale](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/megascale.txt)；1024 卡作业平均无故障 7.9 小时、8 卡作业 47.7 天见 [Meta 集群可靠性论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/meta-cluster-reliability.txt)，保存周期部分的每卡故障率即由 1024 卡的 7.9 小时折算。每卡计算时间的标准差与损失尖峰回滚间隔为本例取值；最大值期望按阶次统计的数值积分求得，未模拟相关性、周期性抖动或持续性慢卡。
+[^rl-interrupt]: 总成本与故障原因见 [MiMo-V2.6 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/mimo-v26-tech-report.pdf) §4.1、§5.5。逐次时间、费率与回滚公告见[归档日志](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/mimo-v26-rl-run-log/README.md)，计算过程见[案例笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/mimo-v26-rl-interruptions.md)与[复算记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/mimo-v26-rl-run-log/recalculated.json)。金额由日志事件区间乘看板固定费率估算，不是报告单列的故障账单；区间内的重做、检测和等待未单独拆分，也未扣除可能复用的采样结果。
 
-[^state]: [官方参数与 Adam／ZeRO 状态复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-state-book.md)；[FP32 梯度变体](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-state-fp32-gradient.md)。本章使用规定的五项状态表示，其他优化器与低精度状态需另算。
+[^straggler]: [掉队者最大值模型（σ 为均值的 2%）](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/straggler-max-sigma-2pct.md)与[（σ 为均值的 5%）](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/straggler-max-sigma-5pct.md)。约 0.5% 的机器明显变慢见 [MegaScale](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/megascale.txt)；1024 卡作业平均无故障 7.9 小时、8 卡作业 47.7 天见 [Meta 集群可靠性论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/meta-cluster-reliability.txt)，保存周期部分的每卡故障率即由 1024 卡的 7.9 小时折算。每卡计算时间的标准差与损失尖峰回滚间隔为本例取值；最大值期望按阶次统计的数值积分求得，未模拟相关性、周期性抖动或持续性慢卡。
 
-[^deadline]: [训练期限与设备下界](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-deadline-book.md)及[日历时间变体](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-deadline-calendar.md)。精度、稀疏性与硬件来源在 JSON 中逐项记录。38%—43% 的 BF16 MFU 见 [Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/llama3.pdf) §3.3.2 与表 4；RTX 4090 的 PCIe 4.0、无 NVLink 见 [RTX 4090 规格页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rtx4090.md)。
+[^state]: [官方参数与 Adam／ZeRO 状态复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-state-book.md)；[FP32 梯度变体](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-state-fp32-gradient.md)。本章使用规定的五项状态表示，其他优化器与低精度状态需另算。
 
-[^fsdp]: [CPU FSDP2 四配置记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-01/fsdp-cpu/README.md)。CPU 小模型四种配置得到的参数与未分片参考结果一致；训练期间分配的内存峰值为 39.16／30.14 MiB。
+[^deadline]: [训练期限与设备下界](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-deadline-book.md)及[日历时间变体](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-deadline-calendar.md)。精度、稀疏性与硬件来源在 JSON 中逐项记录。38%—43% 的 BF16 MFU 见 [Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/llama3.pdf) §3.3.2 与表 4；RTX 4090 的 PCIe 4.0、无 NVLink 见 [RTX 4090 规格页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rtx4090.md)。
 
-[^pipeline]: [填满排空事件模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-gpipe-m8.md)、[1F1B 事件模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-pipeline-1f1b-m8.md)、[GEMM 输入张量的保留关系](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pipeline-gemm-save-1f1b.md)、[选择性重计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/pipeline-gemm-recompute-products.md)。GEMM 输入采用 FP32 参考表示，九层的可重建乘积为 90 MiB，最大逐层重建工作区 6 MiB。流水图采用 save_nonlinear 策略保存的中间结果及其收发缓冲。
+[^fsdp]: [CPU FSDP2 四配置记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-01/fsdp-cpu/README.md)。CPU 小模型四种配置得到的参数与未分片参考结果一致；训练期间分配的内存峰值为 39.16／30.14 MiB。
 
-[^offload]: [梯度转换复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-cast-book.md)、[快链路变体](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/gradient-cast-fast-link.md)、[SuperOffload 阅读与转换案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/training-offload-and-casting.md)、[CPUAdam 卸载记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-01/deepspeed-offload/README.md)。转换路径从 GPU 梯度就绪开始，到 CPU 可读取 FP32 梯度结束；两条路径均使用页锁定主机内存作为缓冲区。GPU 转换吞吐取 RTX 4090 的 1008 GB/s 显存带宽（calculations/configs/hardware.json）；CPU 转换吞吐取[至强 Platinum 8480+ 规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/intel-xeon-8480plus-ark.md)的八通道 DDR5-4800，$8\times4800\ \mathrm{MT/s}\times8$ B $=307.2$ GB/s；两者都是按内存带宽计的上限。NVLink-C2C 每方向 450 GB/s 见 [GH200 架构说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/nvidia-grace-hopper-blog.md)。
+[^nested-bsp]: 华为半导体首席科学家廖恒博士，[Nested Parallel von Neumann Architecture and Nested BSP](https://arxiv.org/abs/2609.16787)，arXiv:2609.16787，2026-09-15。§2 与图 1 将 FSDP 放在 DP、PP、EP、CP、TP 的嵌套并行层级中；本节据此说明状态分片与激活分片的区别。
 
-[^megascale]: 论文报告的每步耗时为 23.66／6.34 s，扩展效率约 93.3%；对应固定全局 batch 的整套系统扩展实验。[MegaScale 正式论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/proceedings/NSDI/2024/selected/nsdi24-jiang-ziheng.pdf)及[固定任务、历史配置与计量笔记](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/collective-paths-and-diagnosis.md)。
+[^pipeline]: [填满排空事件模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-gpipe-m8.md)、[1F1B 事件模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-pipeline-1f1b-m8.md)、[GEMM 输入张量的保留关系](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pipeline-gemm-save-1f1b.md)、[选择性重计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/pipeline-gemm-recompute-products.md)。GEMM 输入采用 FP32 参考表示，九层的可重建乘积为 90 MiB，最大逐层重建工作区 6 MiB。流水图采用 save_nonlinear 策略保存的中间结果及其收发缓冲。
 
-[^moe]: [DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v3.pdf)、[专家交换与反向分桶案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/expert-dispatch-and-resizing.md)。72 MiB 分三桶、四成员环形 AllReduce、0.02 ms 启动和三个 2 ms 空隙为给定输入；每卡一张 200 Gbit/s 网卡的配置见 [4090 集群配置分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/h100-vs-4090.md)，400 Gbit/s 见 [ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)。专家均衡与路由机制参见 DeepSeek-V3，切块调度参见链接中的案例。
+[^offload]: [梯度转换复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-cast-book.md)、[快链路变体](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/gradient-cast-fast-link.md)、[SuperOffload 阅读与转换案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/training-offload-and-casting.md)、[CPUAdam 卸载记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-01/deepspeed-offload/README.md)。转换路径从 GPU 梯度就绪开始，到 CPU 可读取 FP32 梯度结束；两条路径均使用页锁定主机内存作为缓冲区。GPU 转换吞吐取 RTX 4090 的 1008 GB/s 显存带宽（calculations/configs/hardware.json）；CPU 转换吞吐取[至强 Platinum 8480+ 规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/intel-xeon-8480plus-ark.md)的八通道 DDR5-4800，$8\times4800\ \mathrm{MT/s}\times8$ B $=307.2$ GB/s；两者都是按内存带宽计的上限。NVLink-C2C 每方向 450 GB/s 见 [GH200 架构说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/nvidia-grace-hopper-blog.md)。
 
-[^length]: [训练工作与长度分布推算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/training-compute.md)。
+[^megascale]: 论文报告的每步耗时为 23.66／6.34 s，扩展效率约 93.3%；对应固定全局 batch 的整套系统扩展实验。[MegaScale 正式论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/proceedings/NSDI/2024/selected/nsdi24-jiang-ziheng.pdf)及[固定任务、历史配置与计量笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/collective-paths-and-diagnosis.md)。
 
-[^supply]: [训练数据输入与共享存储模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/training-supply-shared-starvation.md)、[输入与保存共存实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-06/input-io-contention/README.md)。事件模型以小规模参数演示 checkpoint 与输入共用存储时预取队列被取空的过程；本章的设计案例使用四个各准备两条序列/s 的数据准备进程。
+[^moe]: [DeepSeek-V3 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v3.pdf)、[专家交换与反向分桶案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/expert-dispatch-and-resizing.md)。72 MiB 分三桶、四成员环形 AllReduce、0.02 ms 启动和三个 2 ms 空隙为给定输入；每卡一张 200 Gbit/s 网卡的配置见 [4090 集群配置分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/h100-vs-4090.md)，400 Gbit/s 见 [ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)。专家均衡与路由机制参见 DeepSeek-V3，切块调度参见链接中的案例。
 
-[^checkpoint]: [checkpoint 布局、ByteCheckpoint 与后台保存阅读](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/checkpoint-layout-and-loading.md)、[逻辑重分片计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/checkpoint-reshard-book.md)、[112 GB 时间线](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/checkpoint-async-rounded.md)。
+[^length]: [训练工作与长度分布推算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/training-compute.md)。
 
-[^resume]: [DCP 恢复记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-06/README.md)、[真实文本管线恢复](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-06/input-state-recovery/README.md)。2,000＋6,192 是说明打包时剩余 token 的教学例。DCP 小模型将两份行分片恢复为三份列分片与完整状态，参数、Adam、随机状态和下一次参数更新结果与不中断训练一致。
+[^supply]: [训练数据输入与共享存储模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/training-supply-shared-starvation.md)、[输入与保存共存实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-06/input-io-contention/README.md)。事件模型以小规模参数演示 checkpoint 与输入共用存储时预取队列被取空的过程；本章的设计案例使用四个各准备两条序列/s 的数据准备进程。
 
-[^fault]: [异步保存与提交前故障实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-07/README.md)及[无保存／同步／异步对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-07/save-baseline/README.md)。原正常路径 API 为约 7.25 ms、元数据提交约 48.30 ms；故障实验在提交前设置屏障并终止进程。
+[^checkpoint]: [checkpoint 布局、ByteCheckpoint 与后台保存阅读](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/checkpoint-layout-and-loading.md)、[逻辑重分片计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/checkpoint-reshard-book.md)、[112 GB 时间线](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/checkpoint-async-rounded.md)。
 
-[^interval]: [保存周期与 Poisson 重试模型](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/checkpoint-interval-book.md)。精确数据量为 114,670,295,040 bytes，以 7 GB/s 写入的保存成本约 16.381 s；一阶最优约 965.29 s，含保存期故障的 Poisson 重试模型约 954.40 s。7 GB/s 为 [DGX SuperPOD 参考架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/dgx-superpod-h100-ra.pdf)表 6 Good 档的单 SU 合计写入；1024 卡作业平均 7.9 小时中断一次、平均无故障时间与卡数成反比见 [Meta 集群可靠性论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/meta-cluster-reliability.txt)。本章的选择只需要区分五、十五和三十分钟。
+[^resume]: [DCP 恢复记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-06/README.md)、[真实文本管线恢复](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-06/input-state-recovery/README.md)。2,000＋6,192 是说明打包时剩余 token 的教学例。DCP 小模型将两份行分片恢复为三份列分片与完整状态，参数、Adam、随机状态和下一次参数更新结果与不中断训练一致。
 
-[^verl]: [固定 verl 小模型真实闭环](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-08/README.md)、[loss 与更新的源码核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/2026-infra-survey/qa/verl-recipe-loss-closure.md)。固定 Qwen2.5-0.5B-Instruct 训练配置采用单卡 NO_SHARD、no_sync=False；源码和版本锁定见链接中的记录。0.32／0.30／0.04 使用真实长度结构与教学标量损失推导。
+[^fault]: [异步保存与提交前故障实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-07/README.md)及[无保存／同步／异步对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-07/save-baseline/README.md)。原正常路径 API 为约 7.25 ms、元数据提交约 48.30 ms；故障实验在提交前设置屏障并终止进程。
 
-[^handoff]: [Qwen3-8B 共享设备峰值](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/weight-handoff-qwen8.md)、[Qwen3-235B-A22B 分片权重同步](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/weight-handoff-book.md)。40 GiB 为分片／卸载后显存占用的给定输入；两个切换峰值精确约为 83.256／59.256 GiB，与 H100 SXM 标称 80 GB（74.506 GiB）比较。
+[^interval]: [保存周期与 Poisson 重试模型](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/checkpoint-interval-book.md)。精确数据量为 114,670,295,040 bytes，以 7 GB/s 写入的保存成本约 16.381 s；一阶最优约 965.29 s，含保存期故障的 Poisson 重试模型约 954.40 s。7 GB/s 为 [DGX SuperPOD 参考架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/dgx-superpod-h100-ra.pdf)表 6 Good 档的单 SU 合计写入；1024 卡作业平均 7.9 小时中断一次、平均无故障时间与卡数成反比见 [Meta 集群可靠性论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/meta-cluster-reliability.txt)。本章的选择只需要区分五、十五和三十分钟。
 
-[^opd]: [DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v4.pdf)，§5.1 的领域专家与多教师 OPD；阶段工作划分参见[第 3 章](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/03-%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E8%B4%9F%E8%BD%BD.md)。
+[^verl]: [固定 verl 小模型真实闭环](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-08/README.md)、[loss 与更新的源码核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/2026-infra-survey/qa/verl-recipe-loss-closure.md)。固定 Qwen2.5-0.5B-Instruct 训练配置采用单卡 NO_SHARD、no_sync=False；源码和版本锁定见链接中的记录。0.32／0.30／0.04 使用真实长度结构与教学标量损失推导。
 
-[^identity]: [RL 状态、概率比与版本](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/rl-state-and-reproducibility.md)、[DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/deepseek-v4.pdf)。
+[^handoff]: [Qwen3-8B 共享设备峰值](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/weight-handoff-qwen8.md)、[Qwen3-235B-A22B 分片权重同步](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/weight-handoff-book.md)。40 GiB 为分片／卸载后显存占用的给定输入；两个切换峰值精确约为 83.256／59.256 GiB，与 H100 SXM 标称 80 GB（74.506 GiB）比较。
 
-[^replay]: [路由元数据预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/routing-metadata-book.md)、[R3 作者公开的日志与分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-09/source-readiness/README.md)。四对设置共用 seed42；reward 为训练 batch 指标，logprob 为 R3 作者的日志级统计。
+[^opd]: [DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v4.pdf)，§5.1 的领域专家与多教师 OPD；阶段工作划分参见[第 3 章](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/03-%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E8%B4%9F%E8%BD%BD.md)。
 
-[^scale]: [Dense 规模与期限](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/dense-training-scale-book.md)、[数据量随参数增长的变体](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/dense-training-scale-proportional.md)。16,384 张 H100、DP=128、8K 序列时 41% 的 BF16 MFU 见 [Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/llama3.pdf)表 4。
+[^identity]: [RL 状态、概率比与版本](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/rl-state-and-reproducibility.md)、[DeepSeek V4 技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/deepseek-v4.pdf)。
 
-[^public]: [SmolLM3 原始训练记录核验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch10/10-10/public-training/README.md)。SmolLM3 记录含 384、288、192 rank 阶段，最后一次恢复实际运行 14,000 步；终点累计 token 包含此前工作。
+[^replay]: [路由元数据预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/routing-metadata-book.md)、[R3 作者公开的日志与分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-09/source-readiness/README.md)。四对设置共用 seed42；reward 为训练 batch 指标，logprob 为 R3 作者的日志级统计。
 
-[^design]: [本章设计案例的输入、推导与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/design-case.md)。32／48 卡的容量预留、输入等待和计划停顿为给定输入；单卡计算效率取 Llama 3 的 MFU；模型矩阵工作来自既有 training-deadline 计算，ZeRO-3 通信量由同一份参数表推出。RTX 4090 的 PCIe 4.0、无 NVLink 见 [RTX 4090 规格页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-rtx4090.md)，卡间不支持 P2P、八卡主机配八张 200 Gbit/s 网卡见 [4090 集群配置分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/h100-vs-4090.md)；一步中只有第一次 AllGather 与最后一次 ReduceScatter 无法隐藏见 [MegaScale](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/megascale.txt) §3.2。逐项数值与独立复算保存在 [design-case.json](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch10/design-case.json)。
+[^scale]: [Dense 规模与期限](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/dense-training-scale-book.md)、[数据量随参数增长的变体](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/dense-training-scale-proportional.md)。16,384 张 H100、DP=128、8K 序列时 41% 的 BF16 MFU 见 [Llama 3 报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/llama3.pdf)表 4。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^public]: [SmolLM3 原始训练记录核验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch10/10-10/public-training/README.md)。SmolLM3 记录含 384、288、192 rank 阶段，最后一次恢复实际运行 14,000 步；终点累计 token 包含此前工作。
+
+[^design]: [本章设计案例的输入、推导与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/design-case.md)。32／48 卡的容量预留、输入等待和计划停顿为给定输入；单卡计算效率取 Llama 3 的 MFU；模型矩阵工作来自既有 training-deadline 计算，ZeRO-3 通信量由同一份参数表推出。RTX 4090 的 PCIe 4.0、无 NVLink 见 [RTX 4090 规格页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-rtx4090.md)，卡间不支持 P2P、八卡主机配八张 200 Gbit/s 网卡见 [4090 集群配置分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/h100-vs-4090.md)；一步中只有第一次 AllGather 与最后一次 ReduceScatter 无法隐藏见 [MegaScale](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/megascale.txt) §3.2。逐项数值与独立复算保存在 [design-case.json](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch10/design-case.json)。
+
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
 #### 本章小结
 
@@ -9833,6 +10177,8 @@ $$
 **控制器**保存任务记录并决定下一步调用什么，**执行器**实际运行工具，**运行环境**承载工具所需的文件、进程和内存。模型调用使用推理服务，工具执行使用 CPU，环境中的进程和缓存占用内存。沿着每次调用、返回和等待的过程，可以分别算出这些资源何时被占用、占用多久。
 
 前两章讨论了推理和训练服务的构建。本章研究如何把模型服务、工具环境和共享资源组织成任务运行系统，从一道平台设计题出发，逐步讨论何时创建和释放环境、如何安排任务、如何选择模型，以及如何从失败中恢复。
+
+Agent 与 RL 的工具同样在容器和虚拟机中执行，但承载它们的平台不能照搬通用云平台的设计，原因有三。其一，云平台的请求来自大量相互独立的租户，统计复用可以削平峰谷；一个 RL 作业却会同时申请上万个沙箱。其二，通用容器按各自的节奏运行；沙箱大部分时间在等待模型生成，节奏由 GPU 一侧决定，平台首先要避免昂贵的加速器空等。其三，沙箱中的程序由正在训练的模型生成，训练会促使模型寻找环境中的漏洞，隔离设计必须考虑这类行为。这三点依次在第 11.3.2、11.1.2 和 11.2.1 节展开。
 
 **贯穿设计题：代码修复平台的资源容量、完成期限与任务成本。** 本章将围绕以下条件展开讨论。任务均匀到达，每 0.1 秒一项；每项执行三轮，每轮先调用模型，再运行工具。工具使用一个 CPU 核，执行 1 秒，包含读取文件、执行测试、保存结果和清理工作状态。工作目录与工具结果存放在持久存储中，工具进程可以在轮间重建。
 
@@ -9862,11 +10208,11 @@ $$
 
 在这 30 秒里，工具只占用一个 CPU 核执行三次，每次 1 秒，累计 CPU 时间为 3 秒。这里的 CPU 时间是各个核实际执行时间的总和，记作 CPU·秒：一个核执行 3 秒，或三个核各执行 1 秒，都是 3 CPU·秒。环境始终占用 2 GiB 内存，内存占用量与时间的乘积为 $2\times30=60$ GiB·秒。
 
-![模型调用、工具工作和环境驻留的三轮时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-1-timeline.svg)
+![模型调用、工具工作和环境驻留的三轮时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-1-timeline.svg)
 
 *图 11-1：三轮串行任务共需 30 s。蓝色为三次各 9 s 的模型调用，橙色为三次各 1 s 的工具执行；工具累计消耗 3 CPU·秒。*
 
-![同一任务的环境始终占 2 GiB，持续 30 s，矩形面积为 60 GiB·秒](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-memory-area.svg)
+![同一任务的环境始终占 2 GiB，持续 30 s，矩形面积为 60 GiB·秒](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-memory-area.svg)
 
 *图 11-2：同一任务的环境始终占 2 GiB，持续 30 s，矩形面积为 60 GiB·秒。等待模型时仍保留环境，因而内存占用持续时间长于工具的 CPU 执行时间。*
 
@@ -9910,13 +10256,15 @@ $$
 
 图 11-3 和图 11-4 将三种资源换算为各自容量的百分比。每次调用 9 秒时，内存柱已经越过容量线；调用变慢后，CPU 柱长不变，模型并发柱也越过了容量线，内存柱则更长。问题因此从“有多少空闲 CPU”转向“能否减少等待期间占用的内存”。
 
-![模型响应变慢对三类资源需求的不同影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-capacity.svg)
+![模型响应变慢对三类资源需求的不同影响](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-capacity.svg)
 
 *图 11-3：每秒 10 项任务、每次模型调用 9 s 时，三种资源的需求占容量比例。柱末给出需求量／可用容量；虚线为 100%。*
 
-![每次模型调用由 9 s 延长到 12 s，CPU 需求仍为 30 核；并发调用增至 360，环境内存增至 780 GiB](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-capacity-slow.svg)
+![每次模型调用由 9 s 延长到 12 s，CPU 需求仍为 30 核；并发调用增至 360，环境内存增至 780 GiB](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-capacity-slow.svg)
 
 *图 11-4：每次模型调用由 9 s 延长到 12 s，CPU 需求仍为 30 核；并发调用增至 360，环境内存增至 780 GiB。虚线为 100% 容量。*
+
+生产规模的 Agent 训练平台也是这样。DeepSeek 的 DSec 平台为 RL rollout 和评测提供沙箱，按其一周的运行记录，约九成容器和 microVM 平均只用到所申请 CPU 的 5% 以内；agent 修改的文件、安装的依赖和启动的服务，在模型生成期间却一直保留。沙箱存活时间的中位数约一刻钟，长的超过三小时。既然 CPU 大多闲置，平台便实行**超卖**（overcommit）：各沙箱申请的 CPU 加起来远多于物理核数。DSec 的单个节点曾稳定运行 3,200 个容器或 800 个 microVM。密度再往上提，制约因素有两个：等待期间一直占用的内存，以及挤在同一物理核上的任务相互拖慢。[^dsec]
 
 除了缩短环境保留时间，还可以错开工具执行，减少同时占用内存的进程。一组四进程 CPU 工具实验中，同时启动与错开启动的累计 CPU 时间分别约为 0.29 秒和 0.27 秒，工作量接近。**驻留集大小**（resident set size，RSS）是进程当前驻留在物理内存中的页所占的容量；采样得到的 RSS 峰值从约 320 MiB 降到 80 MiB，整组完成时间从约 0.10 秒延长到 0.54 秒。错开启动后，同时运行的进程减少，内存峰值随之下降，但整组任务也需要更长时间才能完成。[^environment]
 
@@ -9946,25 +10294,35 @@ $$
 
 图 11-5 把章首平台分为模型服务和工具环境两条路径。模型服务由 10 个 V4-Flash 副本组成，最多同时处理 320 次调用；环境平台在一台 m5d.metal 的 48 个 CPU 核和约 358 GiB 内存中分配工具资源。控制器协调两者完成任务：先从模型取得参数，再让工具执行并返回结果。
 
-![Agent 控制器、平台、模型服务与工具隔离边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-2-boundary.svg)
+![Agent 控制器、平台、模型服务与工具隔离边界](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-2-boundary.svg)
 
 *图 11-5：代码任务经过模型服务与工具环境两条路径。控制器从模型取得参数，再向环境平台发起工具操作；执行结果成为下一轮输入。虚线框标出工具环境所在的执行节点。*
 
 隔离不同任务有多种实现方式，隔离程度逐级增强。进程通常共享同一个操作系统内核，靠地址空间和权限做基本隔离。容器增加命名空间（让进程看到各自的进程编号、网络等资源视图）、文件系统视图和资源控制，但通常仍共享宿主内核。完整虚拟机运行自己的操作系统内核，并通过虚拟硬件与宿主隔离；microVM 保留虚拟机隔离模型，通过精简虚拟设备和管理功能来降低开销。沙箱是对执行约束的描述，不专指某一种实现。
 
-![进程拥有独立地址空间，通过权限限制访问；同一节点上的进程共享宿主内核](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-isolation-0.svg)
+![进程拥有独立地址空间，通过权限限制访问；同一节点上的进程共享宿主内核](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-isolation-0.svg)
 
 *图 11-6：进程拥有独立地址空间，通过权限限制访问；同一节点上的进程共享宿主内核。*
 
-![容器为任务建立各自的资源视图和配额，底层仍使用同一宿主内核](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-isolation-1.svg)
+![容器为任务建立各自的资源视图和配额，底层仍使用同一宿主内核](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-isolation-1.svg)
 
 *图 11-7：容器为任务建立各自的资源视图和配额，底层仍使用同一宿主内核。*
 
-![microVM 让每个任务环境运行独立虚拟机内核，通过虚拟硬件访问宿主资源](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-isolation-2.svg)
+![microVM 让每个任务环境运行独立虚拟机内核，通过虚拟硬件访问宿主资源](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-isolation-2.svg)
 
 *图 11-8：microVM 让每个任务环境运行独立虚拟机内核，通过虚拟硬件访问宿主资源。*
 
 章首平台选用的正是 microVM 方案。Firecracker 由亚马逊云服务（Amazon Web Services，AWS）为无服务器计算开发，2018 年开源；Firecracker 团队 2020 年在 NSDI 会议上发表的论文讨论了如何在大量短时任务之间兼顾硬件虚拟化隔离、启动速度和内存开销。[^firecracker-history] E2B 使用 Firecracker microVM 运行工具环境，模板可由容器镜像构建。创建时，平台从模板建立环境；运行时，工具通过虚拟机内核读写文件和启动进程。容器镜像决定环境中有哪些文件和依赖，microVM 则决定这些程序运行时如何与宿主系统隔离。[^e2b]
+
+隔离方式要随任务而定：隔离越强、系统功能越完整，启动就越慢，每个环境的资源开销也越大。DSec 为此提供四类后端，由调用方按任务选用。判题、编译等短小的无状态任务，放在预先创建、反复使用的容器里执行，免去每次创建的开销；代码仓库级任务用容器，启动快、密度高；安全相关任务用 microVM；需要完整商用操作系统（如 Android）或图形渲染的任务用完整虚拟机。容器本身也跑在 QEMU 虚拟机里，因为容器共享宿主内核，外面再套一层虚拟机更安全。
+
+隔离还要防范 agent 本身。RL 训练中的 agent 会主动找捷径。DSec 记录到的做法有：向沙箱内平台代理进程的 socket 发送伪造请求，翻查代理日志找残留的答案，改写 `/bin/bash` 以篡改后续命令。也有无意造成的破坏：从根目录递归执行 `grep`，读到 `/proc` 下的某个文件，触发内核缺陷，整台机器随即崩溃；执行 `yes` 命令，平台逐字记录其输出，结果攒下数十 GB。找捷径会让验证结果失真，意外破坏则会殃及同一节点上的其他任务。
+
+![沙箱的三个隔离方向：与其他沙箱、与平台代理、与外部网络](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-sandbox-boundaries.svg)
+
+*图 11-9：沙箱的三个隔离方向：虚拟化与配额把各沙箱隔开，AppArmor 限定 agent 能访问平台代理的哪些文件和 socket，eBPF 白名单过滤发往外部的流量。输出量和写盘量另设上限。*
+
+相应的防护分三个方向（图 11-9）。沙箱与沙箱之间，靠虚拟化和资源配额隔开。沙箱内的 agent 与平台自己的代理进程之间，用 AppArmor（Linux 按程序限制文件与网络访问的安全模块）规定可以读写哪些文件和 socket，agent 即使以 root 身份运行也无法越权。沙箱与外部网络之间，用 eBPF（在内核中运行经过校验的小程序的机制）逐包检查地址、端口和协议，只放行本任务白名单里的软件源。这些手段只能堵住已经发现的捷径；单看最终输出，判断不了 agent 是否按预期完成了任务。[^dsec]
 
 两条路径在同一个任务控制器处汇合：控制器知道模型调用何时开始、工具何时使用环境，以及哪些文件需要跨轮保存。平台据此可以分别安排模型状态与工具状态的保留和释放：模型计算期间可以准备下一轮环境，工具完成后可以保存文件并释放进程。
 
@@ -9974,9 +10332,9 @@ $$
 
 创建环境需要取得模板、建立私有状态并准备首次工作所需的数据。最简单的方式是完整复制模板；另一种方式是共享只读内容，只复制需要写入的页；还可以按访问需求加载数据。创建环境时少加载数据，可以缩短启动时间，但程序首次访问这些数据时仍需等待加载。
 
-![模板包含共享的文件与依赖，私有部分记录各环境的修改；程序运行时还会占用进程内存和缓冲区](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-template-runtime.svg)
+![模板包含共享的文件与依赖，私有部分记录各环境的修改；程序运行时还会占用进程内存和缓冲区](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-template-runtime.svg)
 
-*图 11-9：模板包含共享的文件与依赖，私有部分记录各环境的修改；程序运行时还会占用进程内存和缓冲区。加载模板所需的空间与活跃环境的内存占用分别计算。*
+*图 11-10：模板包含共享的文件与依赖，私有部分记录各环境的修改；程序运行时还会占用进程内存和缓冲区。加载模板所需的空间与活跃环境的内存占用分别计算。*
 
 **例 11-2：按需加载与只读共享能节省多少环境内存？** 为分析创建开销，先取章首 300 个环境中的 100 个，比较将模板内容加载到这 100 个环境中所需的内存。每份模板为 2 GiB，工具访问其中 512 MiB，修改 128 MiB，另有 4 MiB 私有管理开销。逐份完整复制时，每个环境需占用 2,052 MiB 本地内存，100 份约为 200 GiB；只加载访问到的内容时，每份为 516 MiB，总量约为 50 GiB。同一组工具任务需要加载到内存的数据因此减少约 150 GiB。[^lifecycle]
 
@@ -9984,29 +10342,47 @@ $$
 
 四种加载方式依次占用约 200、50、13 和 38 GiB，并另保留一份共享的 2 GiB 模板。章首为每个活跃环境分配的 2 GiB 内存，还包括进程、缓冲区等工具运行所需的空间。共享只读内容可以减少重复存储，将常用数据保留在本地则可以减少远端读取。具体保留多少，要看工具首次访问哪些页，以及此后多久再次访问。
 
-图 11-10 展开每个环境本地保存的内容。少保存这些数据是否会使工具首次读取时等待更久，还需要计算。
+图 11-11 展开每个环境本地保存的内容。少保存这些数据是否会使工具首次读取时等待更久，还需要计算。
 
-![不同环境内容加载方式的本地数据量](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-pages.svg)
+![不同环境内容加载方式的本地数据量](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-pages.svg)
 
-*图 11-10：四种方案采用相同的横轴尺度，比较每个环境本地保存的数据。另有一份共享的 2 GiB 模板，不计入各环境的柱长。数值来自例 11-2；管理开销为每环境 4 MiB。*
+*图 11-11：四种方案采用相同的横轴尺度，比较每个环境本地保存的数据。另有一份共享的 2 GiB 模板，不计入各环境的柱长。数值来自例 11-2；管理开销为每环境 4 MiB。*
 
 设取回与加载都受同一条 25 GbE 链路限制，速率为 3.125 GB/s（约 2.91 GiB/s）。模板尚未缓存在本机时，需要取回 2 GiB，再将 0.5 GiB 数据加载到内存，合计至少需要 0.86 秒；模板已在缓存中时，只需加载 0.5 GiB，降至 0.17 秒。约 0.69 秒的差额来自省去的模板传输。一般地，这条通路取回与加载数据的时间下界为 $(V_{\mathrm{fetch}}+V_{\mathrm{install}})/B$，其中 $V_{\mathrm{fetch}}$ 和 $V_{\mathrm{install}}$ 分别是取回和加载的数据量，$B$ 是链路带宽。
 
 如果工具首次执行时又访问 1 GiB 尚未加载到内存的页，这条链路便再工作约 0.34 秒。按需加载让创建接口更早返回，尚未访问的数据留到真正需要时再取。E2B 的页与文件读取就是这样组织的：启动过程先提供可运行的环境，随后的访问逐步补齐内容。首次工具执行的完成时间包含环境启动，以及首次访问缺失页时的等待。按需加载将一部分准备工作推迟到了工具执行期间。[^e2b]
 
+实际负载中，工具读取的比例往往更低。DSec 抽查了 C++、Go、Java、JavaScript 和 Python 五类任务的容器镜像，每个 4–12 GB，运行时只读到其中 4%–13%，比例 11-2 假定的 25% 还低。整份复制既推迟启动，传输和写盘的大头又都花在根本不会读的数据上。提前拉取镜像也省不掉这部分工作：数据照样要传输、解压、写盘，只是提早做了。数千个容器同时启动时，按需加载完成整批任务的时间与镜像全部预先缓存在本地时差不多，先整份拉取镜像则要慢约 1.7 倍。[^dsec]
+
+到了虚拟机里，只读内容还多一层重复。microVM 经虚拟块设备读取模板时，宿主机的 **page cache**（内核用来缓存文件数据的内存页）存一份，每台虚拟机自己的 page cache 再存一份。同一节点上许多 microVM 读同一个基础镜像，内存里就堆着许多份相同的数据（图 11-12）。
+
+![每台 microVM 在自己的 page cache 中各存一份镜像数据，宿主机还有一份](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-page-cache-copies.svg)
+
+*图 11-12：经虚拟块设备读取时，同一份只读镜像数据在宿主机和每台 microVM 的 page cache 里各存一份。*
+
+![经 virtio-pmem 与 DAX 映射后，各 microVM 直接读取宿主机的同一份缓存页](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-page-cache-shared.svg)
+
+*图 11-13：只读层改走 virtio-pmem 并开启 DAX 后，各 microVM 把文件页直接映射到宿主机缓存，内存中只留一份数据。*
+
+DSec 让只读镜像层改走 virtio-pmem 设备并开启 DAX（direct access，直接访问）：虚拟机把文件页直接映射到宿主机的缓存页上，不再往自己的内存里复制，同一节点的 microVM 共用一份数据（图 11-13），内存峰值因此下降约四成。这样做也有代价。虚拟机仍须为这段地址范围分配页描述结构，约占设备容量的 1/64；首次访问要同步处理缺页，虚拟机内部的预读也用不上，CPU 峰值随之上升。可写的大磁盘仍走普通块设备，内存另用下面的办法回收。
+
+虚拟机内部释放了内存，宿主机未必收得回来。虚拟机里的程序退出后，内存页只是回到虚拟机自己的空闲链表，宿主机仍当作已分配。虚拟机申请的内存又常常多于实际所需，内部没有回收压力，读过一次的冷文件页就一直留在缓存里。DSec 的做法分两步：一是让虚拟机定期把成块的空闲内存报告给宿主机，由宿主机收回（virtio-balloon 的空闲页报告）；二是用 DAMON（Linux 通过采样统计内存访问情况的机制）找出长时间没被访问的文件页，主动回收，使零散的空闲页拼成可以报告的大块。两步合用，峰值几乎不变，整段运行的累计内存占用则减少约五分之一。
+
+这两种机制正好对应第 11.1.2 节的两个量。峰值决定一台机器装不装得下这批环境，占用面积 $\int M(t)dt$ 决定平均要准备多少内存；共享只读页主要降低峰值，回收冷页主要缩小面积。[^dsec]
+
 ##### 11.2.3 暂停、恢复与环境重建
 
 第 11.2.2 节减少了每次创建时复制的数据；另一种节省内存的办法是在两次工具执行之间暂时释放整个环境。在章首的三轮任务中，第一轮工具在第 10 秒完成，第二轮工具要到第 19 秒才开始，中间有 9 秒模型调用。始终驻留要占用 $2\times9=18$ GiB·秒。按 E2B 文档，暂停一个沙箱时每 GiB 内存约需 4 秒，恢复约需 1 秒，保存和恢复期间环境仍占 2 GiB。暂停 2 GiB 环境需要 8 秒：第 10–18 秒保存状态，第 18–19 秒恢复。下一次工具仍能在第 19 秒开始，但整个间隔都被保存和恢复占满，占用仍是 18 GiB·秒，没有任何节省。[^e2b]
 
-图 11-11 和图 11-12 的占用面积相同。要在等待期间释放内存，必须先保存下一轮仍需使用的状态，而保存时间随内存容量增长；因此，暂停能节省多少，取决于要保存什么、如何恢复。
+图 11-14 和图 11-15 的占用面积相同。要在等待期间释放内存，必须先保存下一轮仍需使用的状态，而保存时间随内存容量增长；因此，暂停能节省多少，取决于要保存什么、如何恢复。
 
-![同一段模型等待中的环境驻留与暂停恢复](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-pause.svg)
+![同一段模型等待中的环境驻留与暂停恢复](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-pause.svg)
 
-*图 11-11：第 10–19 s 等待模型时始终保留 2 GiB 环境，占用 18 GiB·秒。横轴与下一图一致。*
+*图 11-14：第 10–19 s 等待模型时始终保留 2 GiB 环境，占用 18 GiB·秒。横轴与下一图一致。*
 
-![第 10–18 s 保存 2 GiB 状态，第 18–19 s 恢复，整个间隔没有释放内存](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-pause-release.svg)
+![第 10–18 s 保存 2 GiB 状态，第 18–19 s 恢复，整个间隔没有释放内存](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-pause-release.svg)
 
-*图 11-12：第 10–18 s 按每 GiB 4 s 保存 2 GiB 状态，第 18–19 s 恢复，整个间隔都没有释放内存。有色区间仍占 18 GiB·秒，下一次工具在第 19 s 开始。*
+*图 11-15：第 10–18 s 按每 GiB 4 s 保存 2 GiB 状态，第 18–19 s 恢复，整个间隔都没有释放内存。有色区间仍占 18 GiB·秒，下一次工具在第 19 s 开始。*
 
 恢复已保存状态的方式不止一种。暂停后恢复，是继续同一个任务的执行；快照派生，是从同一状态建立多个分支；从初始环境重新创建，则不继承先前任务的修改。三者都能重新得到可运行的环境，但继承的状态不同。
 
@@ -10015,6 +10391,14 @@ Agent 从运行快照恢复，会继承先前修改过的文件和进程。RL �
 回到章首任务中那段 9 秒的模型等待。环境内存更小或间隔更长时，暂停才开始有收益：同样 9 秒的间隔，512 MiB 的环境约 2 秒即可保存完毕，可以释放 6 秒；间隔短于保存与恢复之和时，恢复还会推迟下一次工具执行。E2B 另外提供只保存文件系统的暂停，恢复时重新启动系统；第 11.2.4 节的每轮重建环境正是沿这一方向，只保留文件，不保留进程内存。
 
 是否暂停，可以比较成本来决定。设释放的内存为 $M$ GiB，释放后保持空闲的时间为 $G$ 秒，每 GiB·秒价格为 $p_M$，状态保存、存储和恢复的新增成本为 $C_{\mathrm{transition}}$，暂停节省成本的条件是 $p_MMG>C_{\mathrm{transition}}$。左边随释放时间增长，右边是每次保存和恢复需要支付的成本；令两者相等，就能求出暂停开始节省成本所需的空闲时间。
+
+章首任务的间隔只有 9 秒，上式左边几乎为零；RL 训练中还有长得多的间隔。第 10.4.4 节 MiMo 的 RL 运行，从中断到重启通常要一到三小时。GPU 训练作业被抢占或中断时，rollout 用的沙箱不能销毁，里面保存着未完成轨迹的文件和进程；但训练恢复之前，也不会有工具调用进来。DSec 上一个作业最多可以申请 32K 个沙箱，若每个按章首规格占 2 GiB，合计约 70 TB，超过 DSec 一个集群单元内存总量（约 250 TB）的四分之一。2 GiB 的沙箱保存加恢复仍只要 9 秒左右，释放出来的时间却以小时计：暂停两小时，内存空出来的时间约为保存和恢复期间照常占用时间的 800 倍。
+
+![GPU 作业被抢占期间暂停沙箱：保存状态后释放内存，训练恢复前再载回](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-preempt-pause.svg)
+
+*图 11-16：GPU 作业被抢占后，RL 框架暂停相应的沙箱。保存和恢复各占一小段时间，其余时间内存空出；横轴未按比例，抢占通常以小时计，保存和恢复以秒计。*
+
+所以在 DSec 上，作业一被抢占，RL 框架就主动暂停该作业的全部沙箱（图 11-16）。容器的做法是先冻结整个进程树，再放开内存换出到磁盘，并主动触发回收；恢复时先对进程的内存映射发出预取提示，再解冻运行。microVM 则把内存和执行状态写成快照，然后结束虚拟机进程；恢复时另起新进程载入快照。两种做法都是把状态从内存挪到下一级存储，用时再搬回来，所以代价随状态大小增长。任何发往已暂停沙箱的请求都会先把它恢复，控制器无须区分沙箱当前是否暂停。[^dsec]
 
 成本比较决定是否暂停；暂停之后，不同状态要用不同方式恢复。快照保存文件和内存，连接由客户端重新建立，外部存储则继续保留已经提交的写入。控制器恢复后先取回操作结果，再接续下一轮，避免把已经完成的修改重新执行一次。[^e2b]
 
@@ -10026,15 +10410,15 @@ Agent 从运行快照恢复，会继承先前修改过的文件和进程。RL �
 
 每项任务的累计内存占用由 60 降到 $3\times(2+1)\times2=18$ GiB·秒，平台平均内存占用由 600 降到 180 GiB。代价是每秒创建 30 个环境，准备工作平均额外占用 $30\times0.1=3$ 个 CPU 核，CPU 需求从 30 增到 33 核。Firecracker 论文报告单台主机每秒最多可创建 150 个 microVM，每秒 30 个仍在这一范围内。平台增加少量环境创建工作，就节省了原本要在等待期间保留的 420 GiB 状态，内存需求从这台主机无法容纳的 600 GiB 降到约一半容量。
 
-图 11-13 和图 11-14 对照两种环境管理方式下的完整任务时间线，显示内存占用如何变化。工具的三个执行时刻没有改变，消失的是长段模型等待期间的内存占用。这里能准确安排准备时刻，是因为下一轮使用什么工具、模型何时返回都已给定。
+图 11-17 和图 11-18 对照两种环境管理方式下的完整任务时间线，显示内存占用如何变化。工具的三个执行时刻没有改变，消失的是长段模型等待期间的内存占用。这里能准确安排准备时刻，是因为下一轮使用什么工具、模型何时返回都已给定。
 
-![全程保留环境与每轮重建的内存占用时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-residency.svg)
+![全程保留环境与每轮重建的内存占用时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-residency.svg)
 
-*图 11-13：环境从任务开始保留到结束。模型每轮 9 s、工具每轮 1 s，三轮累计占用 60 GiB·秒。与下一图使用相同横轴。*
+*图 11-17：环境从任务开始保留到结束。模型每轮 9 s、工具每轮 1 s，三轮累计占用 60 GiB·秒。与下一图使用相同横轴。*
 
-![每轮只在准备 2 s 和执行 1 s 期间保留环境，三次合计 18 GiB·秒](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-residency-rebuild.svg)
+![每轮只在准备 2 s 和执行 1 s 期间保留环境，三次合计 18 GiB·秒](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-residency-rebuild.svg)
 
-*图 11-14：每轮只在准备 2 s 和执行 1 s 期间保留环境，三次合计 18 GiB·秒。工作目录和结果已持久化，三轮仍在第 30 s 完成。*
+*图 11-18：每轮只在准备 2 s 和执行 1 s 期间保留环境，三次合计 18 GiB·秒。工作目录和结果已持久化，三轮仍在第 30 s 完成。*
 
 这项安排的前提是准备能在工具执行前完成。若下一个工具的类型要从流式输出中预测，那么调用发出后还要等多久，就取决于准备提前了多少，以及预测是否正确。SpecBox 用流式输出中透露的工具类型和工具切换记录提前准备相应环境，下面按一次调用分析其收益。[^platform]
 
@@ -10049,29 +10433,31 @@ $$
 
 取 $P=2$ 秒、$h=0.75$。不提前准备时，每次调用等 2 秒。提前 1 秒时，四次调用平均有三次只等 1 秒，一次因猜错仍等 2 秒，平均等待为 1.25 秒。提前 2 秒时，正确分支不再等待，平均降至 0.5 秒。提前 3 秒仍是 0.5 秒，却让正确分支多保留 1 秒就绪状态。对 2 GiB 环境，每次预测因此增加 $0.75\times2\times1=1.5$ GiB·秒的平均空闲内存占用。
 
-![准备提前量与调用等待的关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-3-lifecycle.svg)
+![准备提前量与调用等待的关系](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-3-lifecycle.svg)
 
-*图 11-15：按需创建：第 4 s 调用到达才开始准备，第 6 s 就绪，等待 2 s。蓝色为准备，虚线为调用时刻；以下四图使用相同横轴。*
+*图 11-19：按需创建：第 4 s 调用到达才开始准备，第 6 s 就绪，等待 2 s。蓝色为准备，虚线为调用时刻；以下四图使用相同横轴。*
 
-![预测正确且提前 1 s：从第 3 s 准备到第 5 s，调用在第 4 s 到达后仍需等 1 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-prewarm-1.svg)
+![预测正确且提前 1 s：从第 3 s 准备到第 5 s，调用在第 4 s 到达后仍需等 1 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-prewarm-1.svg)
 
-*图 11-16：预测正确且提前 1 s：从第 3 s 准备到第 5 s，调用在第 4 s 到达后仍需等 1 s。蓝色为准备环境，虚线标出第 4 s 的调用到达时刻。*
+*图 11-20：预测正确且提前 1 s：从第 3 s 准备到第 5 s，调用在第 4 s 到达后仍需等 1 s。蓝色为准备环境，虚线标出第 4 s 的调用到达时刻。*
 
-![预测正确且提前 2 s：准备恰好在第 4 s 调用到达时完成](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-prewarm-2.svg)
+![预测正确且提前 2 s：准备恰好在第 4 s 调用到达时完成](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-prewarm-2.svg)
 
-*图 11-17：预测正确且提前 2 s：准备恰好在第 4 s 调用到达时完成。蓝色为准备环境，虚线标出第 4 s 的调用到达时刻。*
+*图 11-21：预测正确且提前 2 s：准备恰好在第 4 s 调用到达时完成。蓝色为准备环境，虚线标出第 4 s 的调用到达时刻。*
 
-![预测正确且提前 3 s：准备在第 3 s 完成，橙色部分表示环境已就绪、等待调用的 1 s 空闲时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-prewarm-3.svg)
+![预测正确且提前 3 s：准备在第 3 s 完成，橙色部分表示环境已就绪、等待调用的 1 s 空闲时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-prewarm-3.svg)
 
-*图 11-18：预测正确且提前 3 s：准备在第 3 s 完成，橙色部分表示环境已就绪、等待调用的 1 s 空闲时间。蓝色为准备环境，虚线标出第 4 s 的调用到达时刻。*
+*图 11-22：预测正确且提前 3 s：准备在第 3 s 完成，橙色部分表示环境已就绪、等待调用的 1 s 空闲时间。蓝色为准备环境，虚线标出第 4 s 的调用到达时刻。*
 
-![预测错误：第 2–4 s 准备了不需要的环境（灰色）；第 4 s 取消后，再花 2 s 准备实际所需环境](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-prewarm-wrong.svg)
+![预测错误：第 2–4 s 准备了不需要的环境（灰色）；第 4 s 取消后，再花 2 s 准备实际所需环境](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-prewarm-wrong.svg)
 
-*图 11-19：预测错误：第 2–4 s 准备了不需要的环境（灰色）；第 4 s 取消后，再花 2 s 准备实际所需环境。此图采用立即取消、无资源争用的题设。*
+*图 11-23：预测错误：第 2–4 s 准备了不需要的环境（灰色）；第 4 s 取消后，再花 2 s 准备实际所需环境。此图采用立即取消、无资源争用的题设。*
 
 由此可以比较三种减少等待的办法。缓存模板可以省去重复获取数据的开销；保留已经启动的环境，可以在调用到达后立即执行，但需要持续占用内存；每轮重新建立环境，则可以利用模型调用的时间完成准备。章首任务已经知道下一轮所需的运行时，因此在模型调用期间准备下一轮环境；多种工具交替出现时，还需在计算中计入预测命中率。
 
 本地工具重放展示了过早准备的后果：从提前 50 ms 准备改为在模型等待一开始就准备后，累计工具调用时间仍约为 0.26–0.28 秒，按采样结果计算的累计内存占用却从约 0.0193 增到 0.467 GiB·秒，约为原来的 24 倍。增加的内存占用主要发生在环境已经就绪、调用尚未到达的区间。只要能在工具调用到达前准备好环境，就没有必要更早创建。[^prewarm]
+
+每轮重建能够成立，靠的是章首的题设：下一轮要用的状态已全部写入持久存储。许多 Agent 任务达不到这一点。模型会安装依赖、启动数据库或后台服务，后续调用要用到这些进程及其内存状态；只保存文件，重建出来的环境与原来的并不相同。DSec 的沙箱在整段交互中一直存在，走另一条路：环境保留，但把每个环境的驻留成本压下来，办法包括第 11.2.2 节的按需加载、只读页共享与冷页回收，以及第 11.2.3 节在长间隔中暂停。选哪条路，要看轮间状态能否完整写入持久存储：能写入，就花少量创建工作换回大量内存；写不进去，就只能保留环境，再设法压缩驻留。[^dsec]
 
 #### 11.3 共享资源池的分配与调度
 
@@ -10083,13 +10469,13 @@ $$
 
 **例 11-3：GPU、CPU 与节点约束如何造成资源碎片？** 某作业需要四张 H100 和 16 个 CPU 核，并要求这些资源位于同一节点。节点 1 是一台 DGX H100（8 张 H100 SXM，双路 Xeon Platinum 8480C 共 112 核），已有作业占用了四张 H100 和 104 个核，只剩四张 H100 和 8 个空闲核；节点 2 是一台 DGX A100（8 张 A100，双路 EPYC 7742 共 128 核），空着四张 A100 和 32 个核。整个资源池既有四张空闲 H100，也有足够多的 CPU 核，但没有一个节点满足全部条件。[^nodes]
 
-![资源碎片与迁移整理前后的节点配置](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-4-placement.svg)
+![资源碎片与迁移整理前后的节点配置](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-4-placement.svg)
 
-*图 11-20：整理前：新作业需要同节点四张 H100 与 16 核。节点 1 缺 CPU，节点 2 空着的是 A100。*
+*图 11-24：整理前：新作业需要同节点四张 H100 与 16 核。节点 1 缺 CPU，节点 2 空着的是 A100。*
 
-![将占用 8 核的 CPU 任务从节点 1 迁到节点 2 后，节点 1 同时拥有四张空闲 H100 和 16 个空闲核，可以启动新作业](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-placement-after.svg)
+![将占用 8 核的 CPU 任务从节点 1 迁到节点 2 后，节点 1 同时拥有四张空闲 H100 和 16 个空闲核，可以启动新作业](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-placement-after.svg)
 
-*图 11-21：将占用 8 核的 CPU 任务从节点 1 迁到节点 2 后，节点 1 同时拥有四张空闲 H100 和 16 个空闲核，可以启动新作业。*
+*图 11-25：将占用 8 核的 CPU 任务从节点 1 迁到节点 2 后，节点 1 同时拥有四张空闲 H100 和 16 个空闲核，可以启动新作业。*
 
 假设等待节点 1 的原任务结束需要 12 秒，迁移该任务需要 4 秒，新作业在本地执行需要 20 秒。等待后执行共需 32 秒，迁移后执行共需 24 秒；重新安排资源后，新作业提前 8 秒完成。若另一种兼容的跨节点配置准备需 1 秒、执行需 32 秒，则立即分散启动共需 33 秒，反而更晚。三种方案的完成时间分别为
 
@@ -10109,21 +10495,41 @@ $$
 
 先考虑单个执行进程，每项工具工作需要 1 秒。十项工作在第 0、1、……、9 秒分别到达时，每项到达即可执行，排队时间都是零。若十项都在第 0 秒到达，执行仍需 10 秒，但各项的排队时间依次为 0、1、……、9 秒，平均为 4.5 秒。总工作量决定执行进程要工作多久，到达时刻和执行顺序决定每个任务先等多久。
 
-图 11-22 和图 11-23 对照这两种到达方式，后者用执行块前方的灰色条形表示等待时间。同样 10 秒的执行工作，既可以没有排队，也可以产生大量等待。因此，从平均资源需求推到实际响应时间，还必须知道请求是否集中到达。
+图 11-26 和图 11-27 对照这两种到达方式，后者用执行块前方的灰色条形表示等待时间。同样 10 秒的执行工作，既可以没有排队，也可以产生大量等待。因此，从平均资源需求推到实际响应时间，还必须知道请求是否集中到达。
 
-![均匀到达与同时到达时的排队过程](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-queue.svg)
+![均匀到达与同时到达时的排队过程](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-queue.svg)
 
-*图 11-22：十次调用每隔 1 s 到达，一个执行进程每次处理 1 s。圆点为到达，蓝色为执行，每次均可立即开始。*
+*图 11-26：十次调用每隔 1 s 到达，一个执行进程每次处理 1 s。圆点为到达，蓝色为执行，每次均可立即开始。*
 
-![十次调用同时在第 0 s 到达；灰色为等待、蓝色为执行，各行的等待依次为 0–9 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-queue-burst.svg)
+![十次调用同时在第 0 s 到达；灰色为等待、蓝色为执行，各行的等待依次为 0–9 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-queue-burst.svg)
 
-*图 11-23：十次调用同时在第 0 s 到达；灰色为等待、蓝色为执行，各行的等待依次为 0–9 s。执行进程仍只工作 10 s，平均排队为 4.5 s。*
+*图 11-27：十次调用同时在第 0 s 到达；灰色为等待、蓝色为执行，各行的等待依次为 0–9 s。执行进程仍只工作 10 s，平均排队为 4.5 s。*
 
 以代码修复平台的突发工具调用为例。假设平台的 48 个核全部空闲，此时同时收到 80 次各需 1 秒的工具调用，前 48 项立即执行，其余 32 项等待 1 秒；平均等待 0.4 秒，全部在 2 秒内完成。若增至两台 m5d.metal（96 核），这次突发在 1 秒内完成。增加 CPU 核数提高了处理突发请求的能力；任务均匀到达时，平均仍只需 30 个 CPU 核执行工具。
 
 同一批工具调用还需要足够的环境内存。每个环境占 2 GiB，80 个已准备环境需要 160 GiB。始终驻留的方案需要约 600 GiB，本身就超出了 358 GiB 的内存；第 11.2 节的每轮重建环境方案平均只占 180 GiB，剩下的约 178 GiB 足够容纳这 80 个环境。减少等待期间保留的环境，可以腾出内存给新调用，空闲的 CPU 也就能及时开始执行。
 
+突发请求要分到多台节点上，还得决定每个环境放在哪里。DSec 的峰值创建速率超过每秒 5,000 个沙箱，平均到 160 个节点，每个节点每秒约 31 个，与第 11.2.4 节每秒创建 30 个环境的题设相当。调度器掌握的节点负载是定期汇总的，汇总之后新放的请求还没有反映进来；如果每次都挑当前最空闲的节点，同一时刻到达的一批请求就会一齐挤到同一个节点上。
+
+![调度器从过时视图中随机抽取少数节点，选负载较低者；节点检查本地容量后接受或拒绝](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-placement-sampling.svg)
+
+*图 11-28：调度器在定期汇总的视图上补记自己刚放下的沙箱，每次随机抽几个节点，选负载较低的一个；节点检查本地容量，不够就拒绝，调度器再换一个节点。*
+
+DSec 用三项措施解决这个问题（图 11-28）。第一，每次只随机抽几个节点，从中挑负载最低的，即 power-of-k-choices，同时做出的决定自然就分散了。第二，每个调度实例把自己最近放下、汇总里还没有的沙箱补记到本地视图上。第三，最终是否接收由节点决定，本地资源紧张就拒绝，调度器再换一个节点。全局视图可以有些过时，不超出容量由节点自己的检查来保证；调度器和负载汇总都不需要持久状态，实例可以随时增减或替换。[^dsec]
+
 为突发请求预留容量后，还要决定请求之间的先后顺序。优先级决定谁先使用这份余量。在线任务要求快速开始，离线任务可以等待，平台便可以让离线工作暂借资源，并在在线调用到达时收回。设在线任务最多等 2 秒，而离线作业保存状态需要 30 秒。这组资源即使可以抢占，也要在 30 秒后才交还；因此，平台需要另行预留能在 2 秒内分配给在线任务的资源。
+
+设了优先级，硬件上不一定分得开。超卖使延迟敏感（latency-sensitive，LS）任务与可以等待的尽力而为（best-effort，BE）任务共用 CPU，例如每步都有时限的下棋 agent 与普通代码任务同在一个节点上。把 BE 任务放进 Linux 的 `SCHED_IDLE` 调度类，只要 LS 任务可以运行，BE 任务就让出 CPU。但开启同时多线程（simultaneous multithreading，SMT，即超线程）后，一个物理核有两个硬件线程，共用执行单元和一级缓存。调度器以硬件线程为单位分配，LS 任务和 BE 任务仍可能同时跑在同一物理核的两个硬件线程上（图 11-29）。
+
+![同一物理核的两个硬件线程分别运行 LS 与 BE 任务，二者争用执行单元](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-smt-sibling.svg)
+
+*图 11-29：`SCHED_IDLE` 只管同一个硬件线程上谁先运行。LS 任务运行时，BE 任务仍可占着同一物理核的另一个硬件线程，与它争用执行单元。*
+
+![开启 core scheduling 后，LS 任务运行期间，同一物理核的另一个硬件线程不运行其他任务](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-smt-core-scheduling.svg)
+
+*图 11-30：开启 core scheduling 后，同一物理核的两个硬件线程只运行同一组任务；LS 任务运行期间，另一个硬件线程不再跑 BE 任务。*
+
+按 DSec 的测量，BE 负载占到节点容量一半时，LS 任务每步耗时增加约 45%，单靠 `SCHED_IDLE` 几乎没有改善。再给 LS 任务开启 Linux 的 core scheduling，不让无关任务与它共用一个物理核（图 11-30），增幅降到约 17%。剩下的干扰来自整机高负载时的降频，以及共用的内存带宽和末级缓存，要隔离这些资源还需另外的机制。章首的 m5d.metal 关闭了超线程，每个核只有一个硬件线程，不存在这层干扰，代价是可调度的逻辑 CPU 少了一半。[^dsec]
 
 一次抢占还会丢失未保存的进度。已执行 20 秒、恢复需 2 秒的作业，从最近的 checkpoint 恢复执行与从头重做之间相差多少，取决于 checkpoint 之后积累的工作。调度器既要考虑新任务能提前多久开始，也要计入保存和恢复状态的开销，以及原作业因此增加的延迟。
 
@@ -10141,11 +10547,11 @@ $$
 
 例如生成、验证、更新和发布分别需 40、10、30 和 5 秒，一轮共需 85 秒。若只把生成速率提高一倍，一轮降至 65 秒，整体仅加速约 1.3 倍；即使生成时间降为零，其余阶段仍需 45 秒，整体加速也不超过约 1.9 倍。随着生成时间缩短，验证和更新占总时间的比例逐渐增大，继续增加生成加速器所能节省的时间也越来越少。
 
-图 11-24 中，增加生成加速器只缩短蓝色部分。下一步有两种办法：改变执行顺序，使验证与生成重叠；或者继续增加生成加速器，但先计算新加速器加入前的准备开销。
+图 11-31 中，增加生成加速器只缩短蓝色部分。下一步有两种办法：改变执行顺序，使验证与生成重叠；或者继续增加生成加速器，但先计算新加速器加入前的准备开销。
 
-![生成速度加倍后仍未缩短的其他阶段](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-rl-stages.svg)
+![生成速度加倍后仍未缩短的其他阶段](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-rl-stages.svg)
 
-*图 11-24：四个阶段依次执行。生成时间由 40 秒降至 20 秒，其余三段仍共需 45 秒，因此每轮总时间由 85 秒降至 65 秒。条形长度按时间比例绘制。*
+*图 11-31：四个阶段依次执行。生成时间由 40 秒降至 20 秒，其余三段仍共需 45 秒，因此每轮总时间由 85 秒降至 65 秒。条形长度按时间比例绘制。*
 
 验证与生成重叠的办法见第 11.3.4 节。增加临时生成加速器时，RLBoost 保持训练组不变，让临时实例在完成权重准备后加入生成池。[^rollout]
 
@@ -10163,11 +10569,11 @@ $$
 
 六个实例全部收到权重，至少需要 3.93 秒；第一个实例可以更早收到自己的 16.38 GB。随后接收方把权重加载到 GPU 显存并确认版本，调度器再向它分配请求。PolyRL 利用临时资源扩展 RL 生成池，先把完整权重接收到 CPU 缓冲区，再交给采用 TP（见第 6.2.2 节）的 GPU 组。因此，TP=2 只是把实例内部的计算分到两张卡上，每个实例从外部接收的权重仍是 16.38 GB。
 
-图 11-25 标出六份权重共同经过的出口。接收实例增加时，需要发送的总字节数也增加，发送方的带宽却没有随之增加。权重传完后还要加载到 GPU，这些准备时间都要从临时实例可用的时间中扣除。
+图 11-32 标出六份权重共同经过的出口。接收实例增加时，需要发送的总字节数也增加，发送方的带宽却没有随之增加。权重传完后还要加载到 GPU，这些准备时间都要从临时实例可用的时间中扣除。
 
-![六个接收实例共用一个发送出口](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-weights.svg)
+![六个接收实例共用一个发送出口](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-weights.svg)
 
-*图 11-25：每个接收实例都需要一份完整的 16.38 GB Qwen3-8B 权重，六路传输共用 200 Gbit/s 发送出口。每个接收方为 50 Gbit/s，单份传输至少 2.62 秒，而发送方累计发送 98.3 GB 至少需要 3.93 秒；图中六个接收框各代表一个独立实例。*
+*图 11-32：每个接收实例都需要一份完整的 16.38 GB Qwen3-8B 权重，六路传输共用 200 Gbit/s 发送出口。每个接收方为 50 Gbit/s，单份传输至少 2.62 秒，而发送方累计发送 98.3 GB 至少需要 3.93 秒；图中六个接收框各代表一个独立实例。*
 
 临时实例分配到资源后，需要先完成准备，剩余时间才能用于生成。设实例从获得资源到开始生成共需 8 秒，可用时间为 20 秒，就只剩 12 秒用于生成；若只能使用 5 秒，则在开始工作之前已经被收回。令可用时间为 $L$、准备与恢复时间为 $T_0$，可工作的窗口就是 $\max(L-T_0,0)$。实例可用的时间越长，准备开销所占的比例越小，用于实际生成的时间比例就越大。
 
@@ -10177,9 +10583,21 @@ $$
 
 还可以从成本判断增加临时实例是否值得。按 RLBoost 使用的历史价格，训练实例每小时约 84 美元，六个额外实例各约 5.3 美元，总费率约为每小时 116 美元。全部实例全程计费时，处理同一批训练任务的吞吐量需达到原来的约 $116/84\approx1.38$ 倍，单位工作成本才下降。若吞吐量只达到原来的 1.2 倍，完成时间缩短，但成本约增至原来的 1.15 倍；达到原来的 1.6 倍，成本则约降至 0.86 倍。[^rollout]
 
+上面保存的是轨迹在模型一侧的进度。Agent rollout 在环境一侧也有状态：沙箱里改过的文件、启动的进程，以及 agent 循环（负责调用模型、下发工具调用、收集结果的控制器）记下的对话和工具结果。GPU 作业被抢占时，这两部分状态的下场并不一样。DSec 早期把 agent 循环同模型服务、RL 框架一起放在可抢占的 GPU 容器里（图 11-33）。作业一被抢占，沙箱还在，agent 循环的状态却随容器一起丢了。恢复时，训练框架先还原自己记录的 rollout 进度，再照命令日志重放：执行过的工具调用直接返回记录下来的结果，不再真正执行，免得同一条命令做两遍，例如往文件里多追加一次内容，或者向外部系统重复提交请求。第 11.1.3 节状态表中“工具结果”一行说的就是这种恢复方式。
+
+![agent 循环位于可抢占的 GPU 容器内，抢占后需按命令日志重放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-rollout-owner-before.svg)
+
+*图 11-33：agent 循环与模型服务、RL 框架同在可抢占的 GPU 容器里。一旦抢占，agent 循环的状态随之丢失，沙箱里的文件和进程还在，恢复时靠命令日志把两边重新对上。*
+
+![agent 循环移到不被抢占的 CPU 平台，与沙箱一起保存完整的 rollout 状态](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-rollout-owner-after.svg)
+
+*图 11-34：agent 循环移到 CPU 平台的 worker 容器里，和沙箱一起保存完整的 rollout 状态；GPU 作业恢复后重新连上即可接着做。*
+
+从 DeepSeek V4.1 起，agent 循环改在 DSec 的 worker 容器中运行，不再占用可抢占的 GPU 资源，由它和沙箱一起保存完整的 rollout 状态（图 11-34）。GPU 作业恢复后重新连上即可接着做，训练框架也不必再实现重放。这一改动实际上是换了状态的存放位置：状态放在存活时间最长的资源上，存活时间短的资源失效，状态也不会跟着丢。经常被抢占的 GPU 只做丢了可以重算的计算，要跨过中断保留下来的轨迹状态，交给不会被抢占的 CPU 平台。[^dsec]
+
 ##### 11.3.4 验证 batch、长尾与资源释放
 
-第 11.3.3 节把验证视为生成之后的一整段工作；实际上，样本往往陆续生成，验证可以更早开始；训练更新需要等待的，则是整批验证中的最后一个结果。验证 CUDA 代码时，需要先用 CPU 编译，再用 GPU 执行。安排验证任务时，除了 CPU 容量，还要考虑并发执行对 GPU 性能测量的干扰。
+第 11.3.3 节把验证视为生成之后的一整段工作；实际上，样本往往陆续生成，验证可以更早开始；训练更新需要等待的，则是整批验证中的最后一个结果。验证 CUDA 代码时，需要先用 CPU 编译，再用 GPU 执行。安排验证任务时，除了 CPU 容量，还要考虑并发执行对 GPU 性能测量的干扰。DSec 为这类验证单独设了 GPU 执行后端，做法有三：用 MIG 把一张 GPU 分成相互隔离的几个实例，几项测量同时进行也互不影响；先在 CPU 上编译，再把编译产物交给 GPU 执行，编译时不占 GPU；预备一批已完成初始化、已导入所需库的 Python 进程，请求一到就直接执行算子。这三项都是为了让 GPU 少花时间在测量以外的工作上。[^dsec]
 
 若样本 $i$ 在 $a_i$ 时刻到达，依次需要 $c_i$ 秒编译和 $g_i$ 秒执行，忽略资源竞争时，整批完成下界为
 
@@ -10187,21 +10605,21 @@ $$
 T_{\mathrm{batch}}\geq\max_i(a_i+c_i+g_i).
 $$
 
-执行进程不足会导致排队，启动进程和传输数据也需要时间，这些开销都会进一步推迟整批完成的时刻。尽早提交已经生成的样本，就能让验证与后续生成重叠。图 11-26 和图 11-27 中的两种安排都需要 30 秒的验证处理时间，但完成时刻相差 20 秒；差别只在提交时机。
+执行进程不足会导致排队，启动进程和传输数据也需要时间，这些开销都会进一步推迟整批完成的时刻。尽早提交已经生成的样本，就能让验证与后续生成重叠。图 11-35 和图 11-36 中的两种安排都需要 30 秒的验证处理时间，但完成时刻相差 20 秒；差别只在提交时机。
 
-![逐条提交与整批后提交的验证时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-5-stages.svg)
+![逐条提交与整批后提交的验证时间线](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-5-stages.svg)
 
-*图 11-26：三条样本分别在第 0、10、20 s 到达，立即提交给唯一的验证进程，每条处理 10 s，整批在第 30 s 完成。圆点标到达时刻。*
+*图 11-35：三条样本分别在第 0、10、20 s 到达，立即提交给唯一的验证进程，每条处理 10 s，整批在第 30 s 完成。圆点标到达时刻。*
 
-![先等三条样本全部在第 20 s 就绪，再依次验证，结束于第 50 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-stages-batch.svg)
+![先等三条样本全部在第 20 s 就绪，再依次验证，结束于第 50 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-stages-batch.svg)
 
-*图 11-27：先等三条样本全部在第 20 s 就绪，再依次验证，结束于第 50 s。与前图执行相同的 30 s 验证工作，区别来自提交时机。*
+*图 11-36：先等三条样本全部在第 20 s 就绪，再依次验证，结束于第 50 s。与前图执行相同的 30 s 验证工作，区别来自提交时机。*
 
 逐条提交消除了等待整批生成的空档，但整批完成时间仍可能由最慢的一条验证决定。估计这类长尾任务还要运行多久，需要根据它已经运行的时间更新判断。设已有测量中九条验证各需 1 秒，一条需 100 秒，平均为 10.9 秒。若某条验证已经执行 10 秒仍未结束，用 10.9 减去 10，就会得出只剩 0.9 秒的预测。然而在这一离散分布中，该验证必定是那条 100 秒任务，还需 90 秒。因此，应在已知任务尚未结束的条件下估计剩余时间，即 $E[S-e\mid S>e]$，其中 $S$ 是一项验证的总执行时间，$e$ 是已经执行的时间，$E[\cdot\mid S>e]$ 表示只在尚未结束的样本中取平均。DistRS 的调度算法采用这一类条件剩余时间，而不是始终使用总体平均数。[^reward]
 
-![九条验证各用 1 s，一条用 100 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-remaining-time.svg)
+![九条验证各用 1 s，一条用 100 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-remaining-time.svg)
 
-*图 11-28：九条验证各用 1 s，一条用 100 s。虚线是已经执行的 10 s；到此时仍未结束的样本只可能来自 100 s 那一类，剩余时间为 90 s。*
+*图 11-37：九条验证各用 1 s，一条用 100 s。虚线是已经执行的 10 s；到此时仍未结束的样本只可能来自 100 s 那一类，剩余时间为 90 s。*
 
 估计出各条样本的剩余时间后，便可以据此安排其他验证，尽量不延长整批的等待时间。假设 batch 中有一条样本最早要到第 120 秒才能完成。若要安排一项执行时间不超过 100 秒的工作，该工作最迟在第 20 秒启动，便能利用前面的空隙而不推迟整批；若其环境准备需要 5 秒，准备最迟在第 15 秒启动。由整批的完成时刻可以反推出各项工作的最迟开始时间，调度器据此推迟不紧迫的工作，把资源先交给更早到期的 batch。
 
@@ -10229,11 +10647,11 @@ $$
 
 思考 token 数降为原来的十分之一，总成本却只减少约 28%。原有成本中的 0.020 用于输入，0.002 用于可见输出，这两项保持不变；下降的是从 0.010 变为 0.001 的思考成本。因而，思考占原成本的比例决定了压缩思考能节省多少。[^platform]
 
-图 11-29 将节省发生的位置单独标出。这一比较假定两种设置都能完成任务；如果缩短思考后需要重试，节省的橙色部分就要与重试新增的整次调用成本一起比较。
+图 11-38 将节省发生的位置单独标出。这一比较假定两种设置都能完成任务；如果缩短思考后需要重试，节省的橙色部分就要与重试新增的整次调用成本一起比较。
 
-![思考缩短后单次成本的组成](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-thinking.svg)
+![思考缩短后单次成本的组成](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-thinking.svg)
 
-*图 11-29：两次调用的输入和可见输出相同，只改变思考长度。橙色成本缩短到原来的十分之一，蓝色和绿色成本保持不变，所以总成本由 0.032 美元降到 0.023 美元，减少约 28%。价格和 token 数见例 11-5。*
+*图 11-38：两次调用的输入和可见输出相同，只改变思考长度。橙色成本缩短到原来的十分之一，蓝色和绿色成本保持不变，所以总成本由 0.032 美元降到 0.023 美元，减少约 28%。价格和 token 数见例 11-5。*
 
 假设 100 次调用各省 0.009 美元，共节省 0.9 美元；其中 30 次因预算截断而重试，每次重试花费 0.032 美元，就新增 0.96 美元。总成本反而多出 0.06 美元。缩短思考预算可能增加重试次数。因此，比较任务总成本时，要同时计入单次调用的节省和额外重试的开销。[^thinking]
 
@@ -10241,9 +10659,9 @@ $$
 
 第 11.4.1 节靠减少生成量降低成本；输入一侧的主要节省机会是重复前缀：同一任务的多轮调用通常会重复发送公共提示和此前的对话记录。一项模型请求从控制器进入统一服务入口，再交给选定的模型后端。这里的后端指实际执行模型推理的推理实例或服务提供方。入口负责鉴权、路由和限流，后端负责输入处理与输出生成。章首每秒 30 次调用在这条路径上形成持续需求；每次调用携带的公共提示与任务记录，则决定其中多少输入可以复用。
 
-![模型服务入口、后端选择及计费位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-6-service.svg)
+![模型服务入口、后端选择及计费位置](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-6-service.svg)
 
-*图 11-30：同一任务使用模型服务的两种方式及其计费方法。外部 API 按调用用量收费，自建副本按设备预留及运行支出计价；两条路径都将成本归到任务及尝试。输入拆分为普通处理、缓存创建和缓存读取，生成单独计量。*
+*图 11-39：同一任务使用模型服务的两种方式及其计费方法。外部 API 按调用用量收费，自建副本按设备预留及运行支出计价；两条路径都将成本归到任务及尝试。输入拆分为普通处理、缓存创建和缓存读取，生成单独计量。*
 
 将一次调用的输入拆为互不重叠的普通输入 $I_u$、缓存创建输入 $I_w$ 和缓存读取输入 $I_h$，计费的生成 token 数为 $O$，对应的每百万 token 价格为 $p_u,p_w,p_h,p_o$，则
 
@@ -10291,13 +10709,13 @@ $$
 
 再要求至少 90% 的提交任务在 6 秒内通过验收。设完整请求时长为：A 10 秒，B 命中 4 秒、未命中 12 秒，均已包含排队和生成。A 不满足期限；B 需要 $0.98h\geq0.90$，即 $h\geq91.8\%$。
 
-![成本曲线与按时通过测试的要求的交点](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-7-routing.svg)
+![成本曲线与按时通过测试的要求的交点](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-7-routing.svg)
 
-*图 11-31：B 的成功任务成本随命中率提高而下降，在约 79.5% 处等于 A。两者的总成本先分别除以各自成功完成的任务数；本图只比较成本，下一图单独加入期限。*
+*图 11-40：B 的成功任务成本随命中率提高而下降，在约 79.5% 处等于 A。两者的总成本先分别除以各自成功完成的任务数；本图只比较成本，下一图单独加入期限。*
 
-![只有 B 命中的 4 s 路径满足 6 s 期限；再乘 98% 的验收通过率，按时成功比例为 0.98h](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-routing-deadline.svg)
+![只有 B 命中的 4 s 路径满足 6 s 期限；再乘 98% 的验收通过率，按时成功比例为 0.98h](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-routing-deadline.svg)
 
-*图 11-32：只有 B 命中的 4 s 路径满足 6 s 期限；再乘 98% 的验收通过率，按时成功比例为 0.98h。达到 90% 目标要求 h 至少约 91.8%。*
+*图 11-41：只有 B 命中的 4 s 路径满足 6 s 期限；再乘 98% 的验收通过率，按时成功比例为 0.98h。达到 90% 目标要求 h 至少约 91.8%。*
 
 本例每次前缀都是 19,000 个 token，所以请求命中率 $h$ 也等于前缀内部的 token 命中比例；相对于完整的 20,000 个 token 输入，缓存读取占比为 $0.95h$。成本交点约为 79.5%，业务门槛约为 91.8%。从低命中率向右移动，B 先变得便宜，随后才满足按时完成目标。把服务目标放到成本曲线上，就能直接读出最终可选区域。
 
@@ -10317,11 +10735,11 @@ $$
 
 成本相等时的任务量为 $19{,}555.2/0.0081\approx241$ 万项。每项任务占用一个会话 27 秒，这组 4 张 B200 一个月最多处理 $32\times2{,}592{,}000/27=307.2$ 万项，交点对应约 78.6% 的利用率，恰好是两种单价之比 $6.79/8.64$。100 万项时预留仍要 19,555.2 美元，按量只需 8,100 美元；300 万项时按量需要 24,300 美元，预留更省。固定投入在低使用量下难以摊薄，高使用量下则被较低的新增成本抵消。
 
-图 11-33 中，预留成本是一条水平线，高度来自整月租金，右端止于这组 GPU 的处理上限；按量成本从零开始，斜率由每项任务占用的 GPU 时间决定。执行效率提高后，同样 4 张 B200 每月能处理更多任务，预留线向右延长，按量线的斜率随之降低；交点仍对应同一个利用率，即两种单价之比。
+图 11-42 中，预留成本是一条水平线，高度来自整月租金，右端止于这组 GPU 的处理上限；按量成本从零开始，斜率由每项任务占用的 GPU 时间决定。执行效率提高后，同样 4 张 B200 每月能处理更多任务，预留线向右延长，按量线的斜率随之降低；交点仍对应同一个利用率，即两种单价之比。
 
-![固定支出与每项任务成本决定采购交点](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-purchase.svg)
+![固定支出与每项任务成本决定采购交点](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-purchase.svg)
 
-*图 11-33：4 张 B200 预留一个月共 19,555.2 美元，按量成本为 0.0081N 美元，N 为提交任务数。两条线在约 241 万项相交，对应预留 GPU 约 78.6% 的利用率；预留线止于每月 307.2 万项的处理上限。*
+*图 11-42：4 张 B200 预留一个月共 19,555.2 美元，按量成本为 0.0081N 美元，N 为提交任务数。两条线在约 241 万项相交，对应预留 GPU 约 78.6% 的利用率；预留线止于每月 307.2 万项的处理上限。*
 
 执行效率能提高多少，取决于时间用在哪里。仍以 4 张 B200 运行 DeepSeek V4-Flash、同时服务 32 个会话、每个会话保留 200K token 上下文的部署为例，会话数和 GPU 租价保持不变。每个输出 token 约需 25.3 ms，其中逐 token 的 decode 占 15.9 ms，其余输入处理和上下文重建占 9.4 ms。decode 阶段的实际速度提高到两倍后，每个输出 token 所需时间降为 $15.9/2+9.4\approx17.4$ ms，总加速约 1.46 倍，每百万输出 token 的 GPU 成本由约 6.0 美元降到 4.1 美元。[^purchase]
 
@@ -10337,9 +10755,9 @@ $$
 
 恢复时，控制器先查询已持久化的结果，核对操作标识和输入文件版本。如果结果存在，就可以继续；如果不存在，再判断是否允许重试。幂等操作指以同一操作标识重复调用时，最终业务效果与调用一次相同。只读查询或幂等操作重复执行通常不成问题；外部付款、创建资源或发送消息重复调用，却可能使同一操作实际发生两次，需要目标系统支持操作标识、事务或补偿。
 
-![外部系统已执行并提交操作 K，确认却丢失](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-commit-ack.svg)
+![外部系统已执行并提交操作 K，确认却丢失](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-commit-ack.svg)
 
-*图 11-34：外部系统已执行并提交操作 K，确认却丢失。恢复环境不会撤回外部操作的结果；控制器按同一操作标识查询结果后接续任务。实线表示请求与执行，虚线表示确认及恢复查询。*
+*图 11-43：外部系统已执行并提交操作 K，确认却丢失。恢复环境不会撤回外部操作的结果；控制器按同一操作标识查询结果后接续任务。实线表示请求与执行，虚线表示确认及恢复查询。*
 
 假设执行一次工具需要 3 CPU·秒，结果被发送两次。如果接收方按操作标识去重，累计 CPU 时间仍为 3 秒；如果控制器因确认丢失而再执行一次，累计 CPU 时间就增至 6 秒。两种情况最后都可能只有一条结果，却消耗不同资源。消息去重解决前一种重复；后一种重复要靠持久化的结果和目标系统的幂等协议来避免。环境外已经提交的操作在快照恢复后仍然存在，恢复流程要先查询其提交状态。[^records]
 
@@ -10349,11 +10767,11 @@ Agent 运行时也需要规定清楚：向调用者报告完成时，只保证�
 
 这里按 ReAct 循环的轮次保存：每轮包括一次模型输出、由此发起的工具调用及其返回结果，可能包含多条消息。控制器将这一轮的记录追加到本地 JSONL 文件，确认整轮保存成功后才进入下一轮；保存失败就立即中止。因此，本地不会在某轮保存失败后，还继续执行并保存后续轮次。这里的“保存成功”还要说明能承受哪种故障：写入本地页缓存、完成本地 `fsync()`，或收到云端持久化确认，提供的保证并不相同。本地文件可以支持进程重启后的恢复，却未必能应对整台机器及其磁盘不可用。
 
-为了减少等待，也可以每轮先保存到本地，再在后台上传该轮新增的记录。假设上传失败后暂不重试，也不中止本地执行：第一轮运行测试、取得失败结果，第二轮修改代码、取得工具确认，第三轮再次测试、取得新结果。三轮记录都已写入本地 JSONL，但第二轮上传失败，第三轮上传成功（图 11-35）。此时本地历史完整，云端却缺少第二轮的模型输出和工具结果。如果本机随后不可用，换一台机器仅凭云端记录恢复，就会遇到这个缺口。若每次上传的是包含此前所有轮次的完整快照，或上传程序必须补齐失败记录才继续，则不能套用这一例子。
+为了减少等待，也可以每轮先保存到本地，再在后台上传该轮新增的记录。假设上传失败后暂不重试，也不中止本地执行：第一轮运行测试、取得失败结果，第二轮修改代码、取得工具确认，第三轮再次测试、取得新结果。三轮记录都已写入本地 JSONL，但第二轮上传失败，第三轮上传成功（图 11-44）。此时本地历史完整，云端却缺少第二轮的模型输出和工具结果。如果本机随后不可用，换一台机器仅凭云端记录恢复，就会遇到这个缺口。若每次上传的是包含此前所有轮次的完整快照，或上传程序必须补齐失败记录才继续，则不能套用这一例子。
 
-![本地三轮记录完整，但第二轮异步上传失败，云端历史只完整到第一轮](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-recovery-coverage.svg)
+![本地三轮记录完整，但第二轮异步上传失败，云端历史只完整到第一轮](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-recovery-coverage.svg)
 
-*图 11-35：初始状态已在本地和云端保存，每列代表一个 ReAct 轮次。每轮先保存到本地，再异步上传该轮新增记录；本例允许上传失败后继续执行和上传后续轮次。第二轮上传失败后，即使第三轮上传成功，云端历史仍只完整到第一轮。横向排列表示轮次顺序，不表示耗时。*
+*图 11-44：初始状态已在本地和云端保存，每列代表一个 ReAct 轮次。每轮先保存到本地，再异步上传该轮新增记录；本例允许上传失败后继续执行和上传后续轮次。第二轮上传失败后，即使第三轮上传成功，云端历史仍只完整到第一轮。横向排列表示轮次顺序，不表示耗时。*
 
 采用这类异步保存方式时，控制器必须分别跟踪本地和云端的保存进度。云端不仅要记录收到的最后一轮，还要记下从起点连续保存到了哪一轮。不能因为第三轮上传成功，就把连续保存位置从第一轮改成第三轮；只有补齐第二轮，或用完整的本地副本重建并核对后，才能确认云端历史也完整到第三轮。
 
@@ -10389,15 +10807,15 @@ $$
 
 **例 11-8：局部修复对成功率与超时比例的影响。** 另取首次尝试需 10 秒的小例子，比较以下有限恢复策略。首次尝试用 Claude Sonnet 5，输入 2,500、输出 500 个 token，按标准价格花费 0.010 美元，耗时 10 秒；80% 直接成功，12% 进入局部修复，8% 直接升级，即换用能力更强的模型重试。局部修复仍用 Sonnet 5，输入 1,500、输出 300 个 token，新增 0.006 美元和 4 秒，条件成功率 60%，其余升级。升级换用 Claude Opus 5（每百万 token 输入 5 美元、输出 25 美元），输入 3,000、输出 600 个 token，新增 0.030 美元和 8 秒，条件成功率 98%。20 秒期限只用于评价，不主动终止任务。[^retry]
 
-图 11-36 中，局部修复成功时，任务在第 14 秒结束；修复失败后再升级，就比直接升级多用 4 秒。总成功率提高后仍有一部分成功结果超过期限，原因就在这一额外分支。
+图 11-45 中，局部修复成功时，任务在第 14 秒结束；修复失败后再升级，就比直接升级多用 4 秒。总成功率提高后仍有一部分成功结果超过期限，原因就在这一额外分支。
 
-![重试分支的概率与累计完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-retry-tree.svg)
+![重试分支的概率与累计完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-retry-tree.svg)
 
-*图 11-36：首次尝试在 10 s 后分为成功、局部修复、直接升级三类。框内比例以全部提交为分母；下一图展开修复的条件分支。*
+*图 11-45：首次尝试在 10 s 后分为成功、局部修复、直接升级三类。框内比例以全部提交为分母；下一图展开修复的条件分支。*
 
-![把修复节点放大：进入此处的 12% 中，60% 修复成功，占全部提交 7.2%；40% 转入升级，占全部提交 4.8%](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-retry-conditional.svg)
+![把修复节点放大：进入此处的 12% 中，60% 修复成功，占全部提交 7.2%；40% 转入升级，占全部提交 4.8%](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-retry-conditional.svg)
 
-*图 11-37：把修复节点放大：进入此处的 12% 中，60% 修复成功，占全部提交 7.2%；40% 转入升级，占全部提交 4.8%。升级再用 8 s，因此后一条路径累计 22 s。*
+*图 11-46：把修复节点放大：进入此处的 12% 中，60% 修复成功，占全部提交 7.2%；40% 转入升级，占全部提交 4.8%。升级再用 8 s，因此后一条路径累计 22 s。*
 
 六种执行结果如下。每行列出的成本都是整个执行过程的总成本，包含此前各次尝试的支出。
 
@@ -10414,17 +10832,17 @@ $$
 
 先修复再升级的路径需要 $10+4+8=22$ 秒，超过 20 秒期限。约有 47 项任务通过了测试，但超过了期限，因此按时成功数约为 950。每项通过测试的任务平均花费约 0.0146 美元，每项按时通过测试的任务平均花费约 0.0153 美元；只做首次尝试时，成本为 $10/800=0.0125$ 美元，但成功率只有 80%。恢复提高了完成比例，也提高了单位完成成本。业务若要求至少 95% 的提交按时成功，就需要这项额外投入；若只比较单次成本，则会遗漏它带来的完成量。
 
-![恢复策略的单位成本与完成比例比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-8-retry.svg)
+![恢复策略的单位成本与完成比例比较](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-8-retry.svg)
 
-*图 11-38：同一批提交任务换用恢复策略后的成本与结果。各柱均以相应策略的全部支出为分子，再分别除以通过测试的任务数或按时通过测试的任务数；只做首次尝试的成功率为 80%，有限恢复策略约为 99.7%，其中约 95.0% 的提交在 20 秒内成功。分支概率、成本和时间见例 11-8，期限用于评价而不强制停止执行。*
+*图 11-47：同一批提交任务换用恢复策略后的成本与结果。各柱均以相应策略的全部支出为分子，再分别除以通过测试的任务数或按时通过测试的任务数；只做首次尝试的成功率为 80%，有限恢复策略约为 99.7%，其中约 95.0% 的提交在 20 秒内成功。分支概率、成本和时间见例 11-8，期限用于评价而不强制停止执行。*
 
 采用上述恢复策略后，成功比例从 80% 提高到约 99.7%，但约 4.7% 的提交要到第 22 秒才能完成。按 20 秒期限统计时，这部分任务花费了资源，却不能计入按时完成数。如果只缩短评价所用的期限，执行过程不变，只是更少的任务会被算作按时成功；如果限制重试次数，控制器则会少执行一些步骤，支出和成功率也会随之改变。[^records]
 
 恢复策略之外，还要考虑模型加速带来的影响。模型变快以后，环境准备可能不再能与模型调用完全重叠，开始影响任务完成时间。假设下一次工具调用必然发生，快速服务还需 6 秒生成，而模板不在本机、走冷路径创建环境约需 2.7 秒；在模型开始生成时创建环境，这 2.7 秒准备时间就完全与模型生成重叠。若模型阶段缩短至 1 秒，同样时机开始创建仍要再等约 1.7 秒。[^core-calculation] 先只把模型调用加快，保持准备策略不变；再比较更早准备、保留已就绪环境和按需等待三种做法的成本，并计入提前占用的资源，以及提前准备的环境最终没有用上时的开销。
 
-![模型加速后，环境创建成为工具开始执行前的等待来源。两种情况都在零时刻开始创建环境；工具须同时等待模型决策与环境就绪。横轴为秒。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-environment-overlap.svg)
+![模型加速后，环境创建成为工具开始执行前的等待来源。两种情况都在零时刻开始创建环境；工具须同时等待模型决策与环境就绪。横轴为秒。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-environment-overlap.svg)
 
-*图 11-39：模型加速后，环境创建成为工具开始执行前的等待来源。两种情况都在零时刻开始创建环境；工具须同时等待模型决策与环境就绪。横轴为秒。*
+*图 11-48：模型加速后，环境创建成为工具开始执行前的等待来源。两种情况都在零时刻开始创建环境；工具须同时等待模型决策与环境就绪。横轴为秒。*
 
 恢复时要重建的不只是工具环境，还有模型服务一侧的状态。本章设计题用 V4-Flash 计算时间和成本；模型侧状态的恢复则以全书跟踪的 V4.1 Flash 会话为例，因为其全局 KV 可以取回，局部 SWA 状态则要重放提示末尾的 token 来重建（第 3.2.4 节），两部分的恢复路径不同。这样的会话在等待工具时，同时保留两组状态：操作系统管理进程、文件与环境，模型服务管理全局 KV 和局部 SWA 状态。恢复任务需要分别准备这两组状态，再在工具结果进入下一轮模型调用时汇合；已执行的外部操作通过查询目标系统确认结果。[^v41-case] 环境准备与 KV 取回能够并行时，两者中较晚完成的一项决定恢复所需的等待时间。
 
@@ -10438,11 +10856,11 @@ $$
 
 接着比较环境策略。每轮重建环境的准备工作与模型调用重叠，不改变完成时间：普通服务仍为 30 秒，换快速服务后模型总时间降到 18 秒，加工具 3 秒，共 21 秒。因此在快速服务下，始终驻留与每轮重建环境都满足期限，需要进一步比较资源与成本。
 
-图 11-40 先按期限筛选方案：普通模型的最后一轮结束于期限之后，快速模型的三轮则都能在期限内完成。接下来只需在使用快速模型的两种环境策略之间比较成本，同时检查是否超过平台容量。
+图 11-49 先按期限筛选方案：普通模型的最后一轮结束于期限之后，快速模型的三轮则都能在期限内完成。接下来只需在使用快速模型的两种环境策略之间比较成本，同时检查是否超过平台容量。
 
-![普通模型与快速模型的三轮完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/figure-11-decision.svg)
+![普通模型与快速模型的三轮完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/figure-11-decision.svg)
 
-*图 11-40：两种方案均在模型调用期间准备环境，工具执行均为每轮 1 秒。模型调用从每轮 9 秒降至 6 秒，三轮结束时刻从第 30 秒移到第 21 秒，从 24 秒期限之后提前到期限之内。*
+*图 11-49：两种方案均在模型调用期间准备环境，工具执行均为每轮 1 秒。模型调用从每轮 9 秒降至 6 秒，三轮结束时刻从第 30 秒移到第 21 秒，从 24 秒期限之后提前到期限之内。*
 
 | 方案 | 完成时间 / s | 累计 CPU 时间 / CPU·秒 | 每项累计内存占用 / GiB·秒 | 平均内存 / GiB | 每千项提交成本 / 美元 | 按时通过测试的比例 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -10473,7 +10891,7 @@ $$
 
 #### 练习与实验
 
-以下练习沿用 11-1 至 11-10 的资料编号。核心题 11-1、11-2 和 11-10 构成从需求到设计的完整练习；实验原始记录与选做运行入口见[本章配套](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/README.md)。
+以下练习沿用 11-1 至 11-10 的资料编号。核心题 11-1、11-2 和 11-10 构成从需求到设计的完整练习；实验原始记录与选做运行入口见[本章配套](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/README.md)。
 
 1. **实验 11-1〔核心〕：从多轮任务推算模型并发、CPU 与环境内存。** 平台每秒接收 8 项任务，其中一半执行两轮，另一半执行四轮。每轮模型调用耗时 6 秒，工具占用一个 CPU 核执行 1 秒。求模型调用率、平均并发模型调用数与平均使用的 CPU 核数。若每个环境在任务全程占用 2 GiB，求平台的平均环境内存占用。再假设环境只在每轮 2 秒的准备阶段和 1 秒的工具执行阶段保留，重新计算平均内存占用，以及每秒需要创建的环境数量。
 2. **实验 11-2〔核心〕：重建环境与恢复快照如何影响工具等待和内存占用时长？** 一个环境中有可重新下载的依赖、未保存的编辑缓冲、已持久化的补丁和已提交的外部写入。逐项说明发生故障后能从哪里恢复，以及哪些内容无法直接恢复。
@@ -10490,35 +10908,35 @@ $$
 9. **实验 11-9：任务期限与提前停止如何改变重试成本和成功率。** 沿用例 11-8，将期限改为 14、18、22 秒，分别求按时通过测试的比例。再设计一种在剩余时间不足以完成下一节点时停止的策略，重新计算期望成本，并解释它与仅改变评价期限的差别。
 10. **实验 11-10〔核心〕：到达率提高后如何扩容并选择环境驻留策略。** 沿用例 11-9，将到达率增加到每秒 15 项，每次调用只输出 118 个 token，快速服务调用时间降到约 2.0 秒，每项任务仍执行三轮，每轮工具执行仍需 1 秒。工具主机、每个副本的会话数和各项单价保持原值。比较始终驻留与每轮重建环境，决定应增加哪项资源、至少增加多少，并说明环境策略是否需要改变。最后将到达方式改为每秒有 15 项任务同时到达，画出工具执行的时间线，并标出 CPU 并发占用的峰值。
 
-[^environment]: 本书 [environment-resources 固定计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/environment-resources-book.md)及[工具子进程记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-01/process-resources/README.md)。工具实验包含九组、36 个进程，累计内存占用由采样 RSS 对时间积分得到。
+[^environment]: 本书 [environment-resources 固定计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/environment-resources-book.md)及[工具子进程记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-01/process-resources/README.md)。工具实验包含九组、36 个进程，累计内存占用由采样 RSS 对时间积分得到。
 
-[^lifecycle]: [environment-lifecycle 固定预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/environment-lifecycle-default.md)区分共享／私有容量、串行传输的耗时下界和局部预热实测。本章使用固定容量预算比较四种内容加载方式。
+[^lifecycle]: [environment-lifecycle 固定预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/environment-lifecycle-default.md)区分共享／私有容量、串行传输的耗时下界和局部预热实测。本章使用固定容量预算比较四种内容加载方式。
 
-[^platform]: [调度、模型路由与云端环境研究](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/platform-routing.md)，包含 ASI、RLBoost、DistRS、SpecBox。ASI 研究覆盖六个月、155,410 张 GPU，其分配比例度量设备归属。token 单价取自 [Claude API 计价页快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/platform-routing/claude-api-pricing.md)。
+[^platform]: [调度、模型路由与云端环境研究](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/platform-routing.md)，包含 ASI、RLBoost、DistRS、SpecBox。ASI 研究覆盖六个月、155,410 张 GPU，其分配比例度量设备归属。token 单价取自 [Claude API 计价页快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/platform-routing/claude-api-pricing.md)。
 
-[^e2b]: [E2B 固定架构](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/platform-routing/e2b-architecture.md)、[持久化文档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/platform-routing/e2b-persistence.md)（暂停约每 GiB 内存 4 秒、恢复约 1 秒，以及只保存文件系统的暂停）、[暂停与快照接口行为核对](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-02/README.md)。E2B 使用 Firecracker。
+[^e2b]: [E2B 固定架构](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/platform-routing/e2b-architecture.md)、[持久化文档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/platform-routing/e2b-persistence.md)（暂停约每 GiB 内存 4 秒、恢复约 1 秒，以及只保存文件系统的暂停）、[暂停与快照接口行为核对](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-02/README.md)。E2B 使用 Firecracker。
 
-[^ub]: [UB 操作系统参考设计](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/UB-Software-Reference-Design-for-OS-2.0-zh.pdf)中的设备虚拟化与交付路径，作为 QEMU／VFIO 的实现例证；这里描述支持设备直通的虚拟机配置。
+[^ub]: [UB 操作系统参考设计](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/UB-Software-Reference-Design-for-OS-2.0-zh.pdf)中的设备虚拟化与交付路径，作为 QEMU／VFIO 的实现例证；这里描述支持设备直通的虚拟机配置。
 
-[^prewarm]: [本地工具预热重放](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-06/README.md)。实际调用、预测命中与采样窗口边界在原记录中保存。
+[^prewarm]: [本地工具预热重放](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-06/README.md)。实际调用、预测命中与采样窗口边界在原记录中保存。
 
-[^scheduling]: [DRF](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/drf.pdf)、[Gavel](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/gavel.pdf)、[Pollux](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/pollux.pdf)作为调度机制背景；[资源共享与放置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/resource-sharing-and-placement.md)补充资源可用性和状态交付的区别。
+[^scheduling]: [DRF](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/drf.pdf)、[Gavel](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/gavel.pdf)、[Pollux](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/pollux.pdf)作为调度机制背景；[资源共享与放置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/resource-sharing-and-placement.md)补充资源可用性和状态交付的区别。
 
-[^rollout]: [权重准备与有效产出调研](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/preemptible-rollout-and-weight-readiness.md)，记录 RLBoost 论文条件与 PolyRL 固定源码路径。Qwen3-8B 的权重字节数取自 [safetensors 索引](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/qwen3-8b/model.safetensors.index.json)；200／50 Gbit/s 前端网卡与实例价格取自 RLBoost 论文。
+[^rollout]: [权重准备与有效产出调研](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/preemptible-rollout-and-weight-readiness.md)，记录 RLBoost 论文条件与 PolyRL 固定源码路径。Qwen3-8B 的权重字节数取自 [safetensors 索引](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/qwen3-8b/model.safetensors.index.json)；200／50 Gbit/s 前端网卡与实例价格取自 RLBoost 论文。
 
-[^recovery]: [Qwen3-8B 抢占恢复实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-04/README.md)，分别记录生成、客户端收到和恢复时采用的 token 数量。
+[^recovery]: [Qwen3-8B 抢占恢复实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-04/README.md)，分别记录生成、客户端收到和恢复时采用的 token 数量。
 
-[^reward]: [DistRS 验证调度与 verl 实现分析](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/reward-deadlines-and-feedback.md)。
+[^reward]: [DistRS 验证调度与 verl 实现分析](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/reward-deadlines-and-feedback.md)。
 
-[^validation]: [超时与资源释放实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-05/README.md)、[双 batch 调度记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-05/batch-scheduling/README.md)。实验使用受控 CPU 进程。
+[^validation]: [超时与资源释放实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-05/README.md)、[双 batch 调度记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-05/batch-scheduling/README.md)。实验使用受控 CPU 进程。
 
-[^thinking]: [思考预算与质量记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-08/README.md)、[增加思考预算后的检查](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-08/wide-budget/README.md)。记录分别检查生成是否自然结束，以及输入状态是否满足要求。
+[^thinking]: [思考预算与质量记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-08/README.md)、[增加思考预算后的检查](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-08/wide-budget/README.md)。记录分别检查生成是否自然结束，以及输入状态是否满足要求。
 
-[^routing]: [routing-cost 固定结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/routing-cost-book.md)、[交点结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/routing-cost-crossover.md)及[完整推导](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/routing-cost-and-completion.md)。Haiku 4.5 与 Sonnet 5 的单价取自 [Claude API 计价页快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/platform-routing/claude-api-pricing.md)；计算采用与缓存命中相互独立的验收通过概率，成功任务数按给定概率计算。
+[^routing]: [routing-cost 固定结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/routing-cost-book.md)、[交点结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/routing-cost-crossover.md)及[完整推导](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/routing-cost-and-completion.md)。Haiku 4.5 与 Sonnet 5 的单价取自 [Claude API 计价页快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/platform-routing/claude-api-pricing.md)；计算采用与缓存命中相互独立的验收通过概率，成功任务数按给定概率计算。
 
-[^purchase]: B200 Pod 每卡时 6.79 美元、Serverless 每卡时 8.64 美元取自 [Runpod 价格页快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/comparison-sources/gpu-prices.md)。计算结果为 25.317 ms，其中 decode 为 15.918 ms，其余阶段共 9.399 ms。此处逐层固定开销和周期全量重建为给定输入，详见[持续 Agent 比较基线](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/COMPARISON-RESULTS.md)、[优化审计](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/OPTIMIZATION-AUDIT.md)、[时间归因与敏感性](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/AUDIT-RESULTS.md)。
+[^purchase]: B200 Pod 每卡时 6.79 美元、Serverless 每卡时 8.64 美元取自 [Runpod 价格页快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/comparison-sources/gpu-prices.md)。计算结果为 25.317 ms，其中 decode 为 15.918 ms，其余阶段共 9.399 ms。此处逐层固定开销和周期全量重建为给定输入，详见[持续 Agent 比较基线](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/COMPARISON-RESULTS.md)、[优化审计](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/OPTIMIZATION-AUDIT.md)、[时间归因与敏感性](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/AUDIT-RESULTS.md)。
 
-[^records]: [任务记录与证据范围](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/evaluation-and-agent-records.md)、[文件队列故障注入](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-09/collector-faults/README.md)、[任务退出状态记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch11/11-09/exit-status/README.md)。这些记录分别用于说明结果持久化、故障诊断和成本核算。
+[^records]: [任务记录与证据范围](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/evaluation-and-agent-records.md)、[文件队列故障注入](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-09/collector-faults/README.md)、[任务退出状态记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch11/11-09/exit-status/README.md)。这些记录分别用于说明结果持久化、故障诊断和成本核算。
 
 [^fsync]: Linux 手册 [write(2)](https://man7.org/linux/man-pages/man2/write.2.html) 与 [fsync(2)](https://man7.org/linux/man-pages/man2/fsync.2.html)。`write()` 成功不保证数据已写入持久存储，调用者还须检查实际写入字节数与同步错误。新建或重命名文件时，目录项的持久化还可能需要对目录执行 `fsync()`；文件同步本身不提供多文件事务。
 
@@ -10526,17 +10944,19 @@ $$
 
 [^agent-transaction]: [Agentic Transaction（2026，预印本）](https://arxiv.org/html/2608.13900v1)提出面向 Agent 的语义原子性、一致性、隔离性与持久性；其中 §2.2.4 讨论已提交状态、证据与恢复元数据的持久保存。本节以代码修复说明提交单元的设计，不据此假定任意工具调用都具备 ACID 保证。
 
-[^retry]: 精确结果：成功概率 0.99744，通过测试且按时完成概率 0.9504，每项期望成本 0.01456 美元，累计 CPU 时间 3.376 秒，驻留 23.008 GiB·秒。计算结果分别列出资源用量和成本；各节点的给定成本已经是总价，无需再按资源用量重复计费。见[retry-paths 有限条件图](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/retry-paths-book.md)。各节点成本按 Claude 标准价格与题设 token 数计算，概率按题设给定，重试沿有限执行树展开；超过评价期限的任务仍继续执行到终点。
+[^retry]: 精确结果：成功概率 0.99744，通过测试且按时完成概率 0.9504，每项期望成本 0.01456 美元，累计 CPU 时间 3.376 秒，驻留 23.008 GiB·秒。计算结果分别列出资源用量和成本；各节点的给定成本已经是总价，无需再按资源用量重复计费。见[retry-paths 有限条件图](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/retry-paths-book.md)。各节点成本按 Claude 标准价格与题设 token 数计算，概率按题设给定，重试沿有限执行树展开；超过评价期限的任务仍继续执行到终点。
 
-[^design]: 贯穿平台与例 11-9 的输入、逐阶段时间表、成本、成本相等的条件与复算见[贯穿设计数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/platform-design.json)及[验证程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch11/verify.py)。模型调用时间取自本书对 4 张 B200 运行 DeepSeek V4-Flash、每会话 200K 上下文的估算：每副本 32 个会话时每个输出 token 25.3 ms，16 个会话时 16.9 ms，均含分摊的输入处理与上下文重建（[比较结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/COMPARISON-RESULTS.md)、[完整数据](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/comparison.json)）；355 个 token 的调用分别约 8.99 s 和 6.01 s，设计取 9 s 和 6 s。B200 每卡时 6.79 美元取自 [Runpod 价格页快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch13/13-06/single-agent-serving/comparison-sources/gpu-prices.md)。m5d.metal 的 48 核（关闭超线程）与 384 GB 内存取自 [Firecracker 论文](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/firecracker.txt)第 5 节的评测环境；1 vCPU、2 GiB 规格与 CPU、内存单价取自 [E2B 计价页快照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/e2b-pricing.md)。热路径准备共 2 秒、0.1 CPU·秒与 95% 验收通过率为题设，结果保存与工作状态清理包含在工具的 1 秒内；模板容量算例单独说明内容加载。
+[^design]: 贯穿平台与例 11-9 的输入、逐阶段时间表、成本、成本相等的条件与复算见[贯穿设计数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/platform-design.json)及[验证程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch11/verify.py)。模型调用时间取自本书对 4 张 B200 运行 DeepSeek V4-Flash、每会话 200K 上下文的估算：每副本 32 个会话时每个输出 token 25.3 ms，16 个会话时 16.9 ms，均含分摊的输入处理与上下文重建（[比较结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/COMPARISON-RESULTS.md)、[完整数据](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/comparison.json)）；355 个 token 的调用分别约 8.99 s 和 6.01 s，设计取 9 s 和 6 s。B200 每卡时 6.79 美元取自 [Runpod 价格页快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch13/13-06/single-agent-serving/comparison-sources/gpu-prices.md)。m5d.metal 的 48 核（关闭超线程）与 384 GB 内存取自 [Firecracker 论文](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/firecracker.txt)第 5 节的评测环境；1 vCPU、2 GiB 规格与 CPU、内存单价取自 [E2B 计价页快照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/e2b-pricing.md)。热路径准备共 2 秒、0.1 CPU·秒与 95% 验收通过率为题设，结果保存与工作状态清理包含在工具的 1 秒内；模板容量算例单独说明内容加载。
 
-[^nodes]: [DGX H100 系统规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/dgx-superpod-h100-ra.txt)（双路 Xeon Platinum 8480C，共 112 核）；[DGX A100 系统规格](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/nvidia-a100.txt)（附录 A 表 10，双路 EPYC 7742，共 128 核）。
+[^nodes]: [DGX H100 系统规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/dgx-superpod-h100-ra.txt)（双路 Xeon Platinum 8480C，共 112 核）；[DGX A100 系统规格](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/nvidia-a100.txt)（附录 A 表 10，双路 EPYC 7742，共 128 核）。
 
-[^firecracker-history]: Agache 等，AWS，[Firecracker: Lightweight Virtualization for Serverless Applications](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/text/firecracker.txt)，NSDI 2020。
+[^firecracker-history]: Agache 等，AWS，[Firecracker: Lightweight Virtualization for Serverless Applications](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/firecracker.txt)，NSDI 2020。
 
-[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/core_principles.py)。
+[^dsec]: DeepSeek-AI 与清华大学，[DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/text/dsec-sandbox.txt)，arXiv 2609.22978，2026（[PDF](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/dsec-sandbox.pdf)）。负载统计见 §2.4、§4；后端与隔离见 §2.2、§3.3、§6.4–6.5；按需加载、内存共享与回收、CPU QoS 见 §5.2–5.3、§8.2、§8.4–8.5；放置与 GPU 验证后端见 §7；暂停与 agent 循环的归属见 §6.2–6.3。沙箱数量、每节点创建速率、暂停收益等换算见[案例笔记](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/dsec-sandbox-platform.md)。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/core_principles.py)。
+
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
 #### 本章小结
 
@@ -10550,7 +10970,7 @@ $$
 
 ### 第十二章 端边云协同
 
-一张图片交给云端精修，模型运行 0.3 秒，用户却等待 12.8 秒。将模型加速十倍，只能节省 0.27 秒；把输入文件压缩到原来的一半，却能节省近 6 秒。决定模型放在哪里时，需要比较整个任务的完成时间。远端设备可以加快模型计算，但调用远端服务也会增加传输和等待时间。
+一张图片交给云端精修，模型运行 0.3 秒，用户却等待 12.8 秒。将模型加速十倍，只能节省 0.27 秒；把输入文件压缩到原来的一半，却能节省近 6 秒。决定模型放在哪里时，需要比较整个任务的完成时间。远端设备可以加快模型计算，但调用远端服务也会增加传输和等待时间。只有远端节省的计算时间多于新增的传输与等待时间，集中到云端部署才划算；模型推理变快以后，许多交互任务已不满足这一条件。
 
 第 8—11 章介绍了模型服务、资源调度和任务运行环境。本章讨论如何把这些服务和环境部署到不同设备上。**端侧**采集输入并与用户交互；**边缘**是在附近提供计算的工作站或服务节点；**云端**提供远程资源池。终端可以在本地执行，也可以调用附近工作站或云端服务，还可以把模型的不同阶段分配给不同设备。
 
@@ -10564,7 +10984,7 @@ $$
 
 先沿一张图片的路径看数据在何处停留。本例的具体速率和处理时间标在图 12-1 中，随后用通用公式表示这些量之间的关系。
 
-![原图经上行到服务器，服务器收齐后处理，再经下行返回完整成片](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-image-path.svg)
+![原图经上行到服务器，服务器收齐后处理，再经下行返回完整成片](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-image-path.svg)
 
 *图 12-1：原图经上行到服务器，服务器收齐后处理，再经下行返回完整成片。实线箭头表示数据与处理顺序；连接已建立，双向传播合计 0.1 s。*
 
@@ -10597,7 +11017,7 @@ $$
 
 令该式的收益为零，就能求出压缩恰好不再省时的上行速率。上行速率为 20 Mbit/s 时，少传 15 MB 可节省 6 秒；为 100 Mbit/s 时节省 1.2 秒；达到 800 Mbit/s 时只节省 0.15 秒，收益降至零。同一种压缩方法的运算量没有改变，改变的是发送这些字节需要多少时间。图 12-2 显示了这种关系。
 
-![上行速率改变三种精修方案的完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-1-raw.svg)
+![上行速率改变三种精修方案的完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-1-raw.svg)
 
 *图 12-2：压缩和计算加速对任务完成时间的影响随上行速率而变化。本例采用原图 30 MB、成片 5 MB、下行 100 Mbit/s、RTT 0.1 秒，原处理时间 0.3 秒；压缩方案将输入减半并增加 0.15 秒编解码。三种方案的成片质量相同，连接已建立且各阶段串行。*
 
@@ -10605,11 +11025,11 @@ $$
 
 图 12-3 和图 12-4 用相同的时间轴比较两种安排。
 
-![分块计算怎样与后续上传重叠](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-2-overlap.svg)
+![分块计算怎样与后续上传重叠](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-2-overlap.svg)
 
 *图 12-3：整图串行：30 MB 全部上传并传播到服务器后才处理，随后回传 5 MB。上行 20 Mbit/s、下行 100 Mbit/s、单向传播 0.05 s，任务于 12.8 s 完成。*
 
-![三块各上传 4 s，每块到达后独立处理 0.1 s，随后回传 1、2、2 MB](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-overlap-chunks.svg)
+![三块各上传 4 s，每块到达后独立处理 0.1 s，随后回传 1、2、2 MB](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-overlap-chunks.svg)
 
 *图 12-4：三块各上传 4 s，每块到达后独立处理 0.1 s，随后回传 1、2、2 MB。前两块的处理和回传与后续上传重叠，完整成片于 12.36 s 返回。*
 
@@ -10631,13 +11051,13 @@ $$
 
 **例：网络延迟抖动为何会耗尽音频播放缓冲？** 脉冲编码调制（PCM）逐次记录音频幅值采样；24 kHz 表示每秒 24,000 次采样，单声道表示一条采样通道，16-bit 表示每个样本占 2 字节。使用 24 kHz、单声道、16-bit PCM，每块 20 ms、960 bytes。处理一块需 12 ms，发送需 1 ms，通常传播耗时为 5 ms。第一块在 20 ms 采集完，于 38 ms 到达；缓冲 40 ms 后在 78 ms 播放（图 12-5）。第二块在 58 ms 到达，于 98 ms 接着播放。每块的处理时间比采集间隔短 8 ms，发送也只需 1 ms，因此处理和发送都能跟上采集速度。
 
-![第一块音频从采集开始计时：20 ms 就绪，32 ms 处理完，33 ms 发完，38 ms 到达；初始缓冲 40 ms 后于 78 ms 播放](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-audio-clocks.svg)
+![第一块音频从采集开始计时：20 ms 就绪，32 ms 处理完，33 ms 发完，38 ms 到达；初始缓冲 40 ms 后于 78 ms 播放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-audio-clocks.svg)
 
 *图 12-5：第一块音频从采集开始计时：20 ms 就绪，32 ms 处理完，33 ms 发完，38 ms 到达；初始缓冲 40 ms 后于 78 ms 播放。圆点标出到达，最后一行是播放设备的时钟。*
 
 把第三块的传播时间改为 50 ms，该块在 123 ms 到达，比原定的播放时刻 118 ms 晚了 5 ms。第四块虽然在 98 ms 已经到达，播放器仍须先播第三块，因而后续播放一起推迟（图 12-6）。[^audio]
 
-![一个音频块晚到如何推迟后续播放](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-3-paths.svg)
+![一个音频块晚到如何推迟后续播放](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-3-paths.svg)
 
 *图 12-6：第三块晚到使后续各块的播放时间都推迟 5 ms。每块长 20 ms，模型处理 12 ms、发送 1 ms；通常传播耗时为 5 ms，第三块传播 50 ms，初始缓冲 40 ms。实线段表示实际播放，浅色轮廓表示原定播放区间，圆点表示到达；所有时间均从开始采集第一块起算。图为上述流水线的计算结果，播放器等待缺块而不丢弃。*
 
@@ -10653,7 +11073,7 @@ $$
 
 把尚未播放的数据画成随时间下降的曲线，就能看出短时抖动与长期速率不足的区别。图 12-7 中，增加缓冲只抬高起点，斜率没有改变。
 
-![接收比播放慢时缓冲逐渐耗尽](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-4-buffer.svg)
+![接收比播放慢时缓冲逐渐耗尽](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-4-buffer.svg)
 
 *图 12-7：缓冲量等于初始数据量加累计接收量，再减累计播放量。PCM 播放需要 256 kbit/s，接收只有 130 kbit/s，两条直线的下降速率均为 126 kbit/s。初始缓冲分别包含 60 ms 和 120 ms 音频，约在 0.12 秒和 0.24 秒耗尽；图画到各自第一次耗尽为止。*
 
@@ -10665,7 +11085,7 @@ Computer Use（计算机界面操作）让程序像用户一样通过截图、�
 
 图 12-8 的返回箭头说明，这一任务难以像音频那样逐块重叠：后续工作必须等待操作产生新的界面。
 
-![下一轮截图依赖本轮操作完成](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-5-agent.svg)
+![下一轮截图依赖本轮操作完成](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-5-agent.svg)
 
 *图 12-8：截图 Agent 的一轮执行。箭头表示先后依赖，方框宽度不表示耗时。底部返回箭头要经过操作执行与界面更新，才能取得下一轮截图。*
 
@@ -10730,7 +11150,7 @@ $$
 
 **本地部署的三档设备。** 比手机高的两档可以直接取自第 4.8.2 节，那里已用同一模型列出 11 款候选设备的 decode／prefill 时间下界：M3 Ultra 的统一内存为 819 GB/s、256／512 GB，每步读取下界 19.96 ms，约 50.1 token/s，容量足以容纳 4-bit 的 235B MoE（第 4.6.3 节）；RTX PRO 6000 为 1,792 GB/s、96 GB，每步 9.12 ms，约 109.6 token/s。图 12-9 把三档设备放进同一条时间轴。
 
-![三档本地设备执行同一步 decode 的读取时间下界](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-local-tiers.svg)
+![三档本地设备执行同一步 decode 的读取时间下界](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-local-tiers.svg)
 
 *图 12-9：三档本地设备读一遍 Qwen3-8B 单请求 8K decode 主要载荷（16.345 GB）的时间下界。手机按四条 x16 LPDDR5X 通道计，合计 84.8 GB/s，BF16 与 q4_0 权重分别成行；M3 Ultra 与 RTX PRO 6000 取自第 4.8.2 节的设备表。柱端标注对应的 token/s 上限。*
 
@@ -10746,6 +11166,8 @@ $$
 一张 RTX 4090 无法容纳 Qwen3-8B 全参数训练的 131.1 GB 状态，却能容纳其 LoRA 训练；Unsloth 节省的是这份状态，而非每步读取权重的带宽下界。
 
 **翻转条件：何时端侧足够，何时必须上云。** 三个下界各给出一个翻转条件。带宽：每轮生成 $G$ 个 token 时，端侧模型时间下界为 $G$ 乘以每步时间。第 12.5 节的“端侧每轮模型计算 2.9 秒”就是这样得到的：按 q4_0 的 15.5 token/s，2.9 秒对应每轮生成约 45 个 token；按 BF16 的 5.2 token/s 则只对应约 15 个。反过来从期限推预算：45 秒期限摊到 20 轮，每轮 2.25 秒，扣除 0.3 秒终端工作后剩约 1.95 秒，手机 q4_0 下每轮最多生成约 30 个 token；需求超过该数量，就要换带宽更高的设备或上云。每轮 45 个 token 的需求已超出预算，所以第 12.5.2 节的端侧方案需要 64.0 秒，超过期限。容量：权重加所需上下文超过本档可用内存时，本档不可行——12 GB 手机无法容纳 BF16 的 8B 模型，手机一档无法容纳 235B 模型。能耗：连续生成把电池变成约束，一次充电对应约 490–590 个提示，批量或长时间生成应交给接通电源的设备。这三个条件补全第 12.1.4 节的初步比较：那里比较各方案的完成时间，这里先排除端侧根本不可行的情形。练习 12-9 用同一组公式复算手机一档的带宽、容量与功率上限。
+
+这里使用的是硬件下界，因此可行性判断并不对称：若时间下界已经超过期限，该方案一定不可行；若时间下界低于期限，只能说明该方案尚未被排除。软件开销、未达到峰值的有效带宽和持续负载下的降频都会使实测时间更长，最终是否达标仍需用目标设备上的测量结果校准。
 
 #### 12.2 跨设备分工
 
@@ -10763,11 +11185,11 @@ $$
 
 先沿图 12-10 和图 12-11 中的箭头确认两种方案分别传什么，再比较传输量和节省的远端计算时间。
 
-![远端编码：先发送压缩图片，在服务器执行视觉编码，再执行语言模型](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-encoder-remote.svg)
+![远端编码：先发送压缩图片，在服务器执行视觉编码，再执行语言模型](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-encoder-remote.svg)
 
 *图 12-10：远端编码的执行路径。端侧上传 0.8 MB 压缩截图，远端依次完成解码与预处理、视觉编码和特征接入；最终投影与三组 DeepStack 特征均留在服务器内。6.4 Mbit/s 上行的图片发送时间为 1 秒，编码和排队时间另计。*
 
-![端侧编码：先执行视觉编码，再发送完整数值特征到语言模型](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-encoder-local.svg)
+![端侧编码：先执行视觉编码，再发送完整数值特征到语言模型](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-encoder-local.svg)
 
 *图 12-11：端侧编码的执行路径。预处理和视觉编码移到终端，跨网络的对象变为最终投影与三组 DeepStack 的完整 BF16 特征，共 8.192 MB；远端接收后仍按相同方式接入语言模型。相同上行的特征发送时间为 10.24 秒，本地编码、序列化和转换时间另计。图中数值采用下文的 Qwen3-VL-4B 固定配置。*
 
@@ -10780,7 +11202,7 @@ $$
 
 四组特征分别输入语言模型的不同层。如果只传最终投影，就会漏掉另外三组特征。完整特征约 8.2 MB，是压缩图片的约十倍；在原有上行链路上，发送时间从 1 秒增加到约 10.2 秒（图 12-12）。[^ec]
 
-![相同上行下原图与完整视觉特征的传输时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-6-placement.svg)
+![相同上行下原图与完整视觉特征的传输时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-6-placement.svg)
 
 *图 12-12：同一图片的完整视觉特征比压缩图片需要更多传输时间。压缩图片为 0.8 MB；Qwen3-VL-4B 在预处理后 640×640 输入上产生 400 个视觉 token，最终投影及三组 DeepStack 合计 [400,10240] BF16，共 8,192,000 bytes。上行速率为 6.4 Mbit/s，柱长表示发送时间；编码、排队和转换时间另计。两种方案处理同一张图片，完成相同的视觉理解任务。*
 
@@ -10798,7 +11220,7 @@ $\Delta T<0$ 时端侧编码更快。设终端是一台装 RTX 4090 的台式机
 
 视觉特征只能省去视觉编码；如果希望复用语言模型已经算出的结果，就要保存语言模型处理前缀时逐层产生的 KV。该配置每个语言模型输入 token 需要 144 KiB 的逻辑 KV 存储空间，400 个视觉 token 约为 56.3 MiB。图片、约 7.8 MiB 的视觉特征、约 56.3 MiB 的视觉 token KV，分别对应不同重算起点（图 12-13）。缓存越接近模型的最终输出，再次使用时节省的计算越多，需要传送的数据也可能越大。第 12.2.3 节比较传送一次状态需要多久，以及后续使用这些状态能节省多少时间。
 
-![三类缓存内容对应三个恢复计算的起点](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-cache-restart.svg)
+![三类缓存内容对应三个恢复计算的起点](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-cache-restart.svg)
 
 *图 12-13：三类缓存内容对应三个恢复计算的起点。EC 省去视觉编码；匹配模型权重、前缀与 token 位置索引的 KV 进一步省去已处理前缀的语言模型计算。容量对应正文固定视觉配置。*
 
@@ -10824,7 +11246,7 @@ $$
 
 图 12-14 中，迁移刚开始时净节省为负，之后每完成一轮就上升 0.4 秒。回本轮数对应曲线越过零线的位置。
 
-![逐轮节省如何抵消迁移开销](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-7-migration.svg)
+![逐轮节省如何抵消迁移开销](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-7-migration.svg)
 
 *图 12-14：迁移 64 MiB 状态，链路 80 Mbit/s，迁移后每轮节省 0.4 秒。两条曲线分别取恢复时间 1 秒和 2 秒，净节省为 N×0.4 减去传输和恢复时间。圆点标出首次获益的整数轮数；零线以上表示迁移更快，首次获益分别在第 20、22 轮。*
 
@@ -10848,11 +11270,11 @@ $$
 
 图 12-15 和图 12-16 依次展开一层的注意力输出与前馈输出，两者沿执行方向各经过一次归约后，才能开始下一层。单次等待虽短，重复的次数却由模型结构决定。
 
-![两台设备每层都要汇总结果才能继续计算](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-8-sync.svg)
+![两台设备每层都要汇总结果才能继续计算](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-8-sync.svg)
 
 *图 12-15：张量并行的一次注意力输出归约：两卡先分别计算，再交换并求和，取得完整输出后进入前馈。横向箭头表示执行顺序，中间纵向箭头表示两卡通信。*
 
-![前馈网络也分别计算局部输出，再做两卡归约](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-sync-ffn.svg)
+![前馈网络也分别计算局部输出，再做两卡归约](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-sync-ffn.svg)
 
 *图 12-16：前馈网络也分别计算局部输出，再做两卡归约。完整前馈结果就绪后才能进入下一层，这一结构在 36 层中重复。*
 
@@ -10886,7 +11308,7 @@ $$
 
 单独考虑整批确认的模型：接收方收齐 64 KB 后才确认，从这批发完到确认返回固定为 100 ms。因此完整周期包含 25.6 ms 发送和 100 ms 反馈，共 125.6 ms。图 12-17 画出了这段等待。蓝色时段确实在发送，浅色时段链路虽然空闲，发送方却因为窗口已满而不能继续。物理带宽提高，只能缩短蓝色部分。
 
-![窗口用完后链路空闲等待确认](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-9-window.svg)
+![窗口用完后链路空闲等待确认](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-9-window.svg)
 
 *图 12-17：固定窗口 64 KB，链路 20 Mbit/s，一批数据发送需 25.6 ms。为单独显示停等，图设接收方收齐一批后统一确认，从这批数据全部发出到收到整批确认再需 100 ms；每批完整周期为 125.6 ms。*
 
@@ -10926,7 +11348,7 @@ $$
 
 **编码冗余：让接收方不等重传。** 既然重传的等待难以接受，就多发冗余数据，由接收方自行修复缺包。前向纠错（forward error correction，FEC）在 $k$ 个数据符号之外多发 $r$ 个修复符号，本例一个符号就是一个 MSS 大小的报文；一块中丢失不超过 $r$ 个符号，接收方就能直接恢复，不需要任何重传轮次。按二项分布精确求 99.9% 成功率所需的最小冗余：丢包率 14% 时，245 个数据包需要 63 个修复包，冗余 25.7%；发送量增至 308 个符号，发送约 10.7 ms，完成时间约 241 ms，贴近 238.5 ms 的串行预算（图 12-18）。同一路径另一时段丢包率为 3.6% 时，逐轮重传的 p99 降为 0.84 s，FEC 只需 20 个修复包，冗余 8.2%。[^wan-loss] 所以冗余比例应随测得的丢包率调整，而不是固定不变。这组数字也是第 12.3.5 节 Queqiao 案例的定量动机：它的前向纠错与发送调度，正是按路径测量结果安排冗余量与发送节奏。
 
-![同一路径上三种修复方式的完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-loss-repair.svg)
+![同一路径上三种修复方式的完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-loss-repair.svg)
 
 *图 12-18：同一路径（RTT 0.2 s、容量膝点 333 Mbit/s、丢包率 14%）传送 354,640 bytes 的完成时间，横轴为对数坐标。串行预算是 RTT、模型 30 ms 与发送 8.5 ms 之和，约 238.5 ms；FEC 多发 63 个修复符号（冗余 25.7%）后 99.9% 不需重传；逐轮重传两行是不计窗口收缩与超时的下界；Mathis 上界对应把丢包当作拥塞的 TCP，仅发送就需约 18.3 s。*
 
@@ -10938,11 +11360,11 @@ $$
 
 再分析接收依赖。保持发送和丢包恢复的时刻不变，音频数据在第 3 秒已经齐备，图片直到第 7 秒才齐备。这里把接收数据交给应用称为交付。整个连接共用一个接收顺序时，前方缺口会阻塞后续数据，形成队头阻塞。整体有序交付时，音频也要等到第 7 秒才能交给应用（图 12-19）；逐流交付在第 3 秒就能将音频交给应用，图片仍为第 7 秒（图 12-20）。这里节省的 4 秒，是因为音频不必再等图片的接收进度，发送的数据量和链路速率都没有改变。
 
-![相同发送轨迹下交付顺序改变音频完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-10-transport.svg)
+![相同发送轨迹下交付顺序改变音频完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-10-transport.svg)
 
 *图 12-19：整体有序交付：音频第 3 s 已收齐，却因图片缺口继续等到第 7 s。灰色段表示数据已齐后的等待，圆点表示数据交给应用的时刻。*
 
-![逐流有序交付：音频在第 3 s 收齐后立即交付，图片仍于第 7 s 交付](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-transport-per-stream.svg)
+![逐流有序交付：音频在第 3 s 收齐后立即交付，图片仍于第 7 s 交付](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-transport-per-stream.svg)
 
 *图 12-20：逐流有序交付：音频在第 3 s 收齐后立即交付，图片仍于第 7 s 交付。两图中的发送、到达与恢复时刻相同；区别在于不同流之间是否需要相互等待。*
 
@@ -10977,17 +11399,17 @@ Queqiao 的设计目标是减少这些额外等待，使短请求尽量接近必
 
 新建连接时两条路径相差约 0.89 秒，复用连接并调优后都约为 0.24 秒（图 12-21、图 12-22）。[^queqiao-calc] 原来的大部分差距随着基线配置的改变消失了。这支持第二种解释：连接准备和发送方式在最初的差距中起了主要作用。即使使用同一种协议，配置不同，请求完成时间也可能相差甚远。这个案例的步骤与第 1.3.4 节一致：先由传播、发送和模型处理算出约 240 ms 的下界，再与实测比较，最后用只改变连接条件的实验分辨差距来自模型漏项还是实现开销。这里的差距几乎全部来自实现开销，下界本身没有错。
 
-![调优基线使同一语音请求的时间差缩小](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-13-queqiao.svg)
+![调优基线使同一语音请求的时间差缩小](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-13-queqiao.svg)
 
 *图 12-21：新建连接时，354,640 bytes 固定音频的直接路径与 Queqiao 请求中位数分别为 1185.3、301.6 ms。计时从发起请求到收齐结果，输入文件相同，两条路径交替运行。*
 
-![保持连接并调优后，同一固定音频的直接路径与 Queqiao 中位数分别为 240.9、236.5 ms](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-queqiao-tuned.svg)
+![保持连接并调优后，同一固定音频的直接路径与 Queqiao 中位数分别为 240.9、236.5 ms](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-queqiao-tuned.svg)
 
 *图 12-22：保持连接并调优后，同一固定音频的直接路径与 Queqiao 中位数分别为 240.9、236.5 ms。与前图采用相同纵轴，两条路径均接近数据发送、必要往返和处理所需的总时间。*
 
 **单因素实验如何区分连接、窗口与发送节奏的影响？** 连接复用改变请求开始时是否需要握手，窗口大小改变确认返回前允许在途的数据量，发送节奏改变链路的空闲区间。图 12-23 将这三类设置与对应事件配对：固定文件、路径和其余设置，每次改变一个因素，记录受其影响的事件发生时刻与请求总时间。连接实验比较握手结束和首字节发送时刻，窗口实验比较在途量与 ACK 到达后的发送，节奏实验比较两次发送之间的空闲时间。
 
-![单因素实验方法：保持相同文件、路径和其他设置，每次只改变一个因素，对照中间事件与总完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-experiment-design.svg)
+![单因素实验方法：保持相同文件、路径和其他设置，每次只改变一个因素，对照中间事件与总完成时间](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-experiment-design.svg)
 
 *图 12-23：单因素实验方法：保持相同文件、路径和其他设置，每次只改变一个因素，对照中间事件与总完成时间。*
 
@@ -11013,7 +11435,7 @@ Queqiao 的设计目标是减少这些额外等待，使短请求尽量接近必
 
 **例：短 ACK 帧的无线接入与确认开销有多大？** 正交频分复用（OFDM）把数据分到多个相互正交的子载波上传送；PPDU 是物理层协议数据单元，包含物理层前导、头部和承载的数据，代表一次无线发送的完整物理层内容；SIFS 是连续交换之间的短帧间间隔。取无聚合的 OFDM 参考交换，数据速率 54 Mbit/s，MAC ACK 速率 6 Mbit/s。数据包交换包含 34 μs 接入等待、208 μs 数据帧、16 μs SIFS 和 44 μs MAC ACK，共 302 μs。承载端到端 ACK 时，数据帧缩至 40 μs，其余三项保持不变，共 134 μs。[^air]
 
-![短数据帧也需要相同的无线交换固定开销](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-11-wireless.svg)
+![短数据帧也需要相同的无线交换固定开销](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-11-wireless.svg)
 
 *图 12-24：报文变短后，固定交换开销仍然存在，因此空口占用时间不会按相同比例缩短。两种成功交换采用相同的 34 μs 接入等待、16 μs SIFS、44 μs MAC ACK，区别只在数据 PPDU：208 μs 或 40 μs。条件为 OFDM54／6、无聚合、无重传的参考模型。*
 
@@ -11037,7 +11459,7 @@ $$
 
 晚到的数据错过原定播放时段，取消则让尚未播放的数据立即失去价值。播放器的待播队列中若已有三块 20 ms 音频，即使远端停止生成，本地仍可继续播出 60 ms。若控制消息需要 100 ms 才能到达服务端，那么在消息到达前，远端还会产生新块。取消过程因此分成两条并行路径（图 12-25）：本地清空待播缓冲，远端停止生成和发送后续音频。前者决定用户何时不再听到声音，后者决定何时停止消耗资源。
 
-![一次取消同时触发两条路径：本地清空待播音频，远端在控制消息到达后停止生成和发送](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-cancel-paths.svg)
+![一次取消同时触发两条路径：本地清空待播音频，远端在控制消息到达后停止生成和发送](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-cancel-paths.svg)
 
 *图 12-25：一次取消同时触发两条路径：本地清空待播音频，远端在控制消息到达后停止生成和发送。虚线表示控制流；本地停止播放与远端资源释放有各自的完成时刻。*
 
@@ -11055,7 +11477,7 @@ $$
 
 如果一条路径先结束，可以把另一条上的部分字节移给它，让原本较晚完成的部分提前结束。因此，最优比例应让两条路径同时完成，即 $x=B_1/(B_1+B_2)$。快路传 20 MB、慢路传 10 MB，各需 8 秒，比只用快路的 12 秒少 4 秒（图 12-26）。
 
-![两条独立路径按带宽比例分配输入，分别发送 20 MB 和 10 MB，均需 8 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-multipath-independent.svg)
+![两条独立路径按带宽比例分配输入，分别发送 20 MB 和 10 MB，均需 8 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-multipath-independent.svg)
 
 *图 12-26：两条独立路径按带宽比例分配输入，分别发送 20 MB 和 10 MB，均需 8 s。任务等两部分都齐备后完成。*
 
@@ -11063,7 +11485,7 @@ $$
 
 图 12-27 中，两条线在出口重新汇合。这一汇合点既解释了两条接入路径的速率为什么不能直接相加，也引出另一个问题：出口所在的设备故障时，另一条接入能否继续传输。
 
-![两条接入路径汇入共同出口](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-12-multipath.svg)
+![两条接入路径汇入共同出口](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-12-multipath.svg)
 
 *图 12-27：30 MB 图片按 20／10 MB 分到 20／10 Mbit/s 两条独立接入，各需 8 秒。两路再经过同一 24 Mbit/s 出口，全部数据通过该出口至少需 10 秒。箭头表示数据路径，不表示传播距离；容量取恒定值。*
 
@@ -11115,15 +11537,15 @@ H100 的内存带宽是 RTX PRO 6000 的 1.87 倍，云端每轮的模型计算�
 
 图 12-28 至图 12-30 汇总了三种部署方式下完整任务的各阶段耗时。云端的绿色计算段更短，蓝色上传段却更长；两段与其余工作依次累加，决定横条终点所示的任务完成时间。
 
-![不同执行设备的时间组成](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-14-budgets.svg)
+![不同执行设备的时间组成](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-14-budgets.svg)
 
 *图 12-28：端侧：终端工作 6 s，模型计算 58.0 s，共 64.0 s。三图共用 45 s 期限线和同一横轴，颜色分别汇总二十轮同类工作的耗时。*
 
-![附近工作站：准备 0.27 s，二十轮终端 6 s、模型 2.7 s、传播 0.4 s、上传 1.6 s，共 11.0 s，满足 45 s 期限](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-budgets-1.svg)
+![附近工作站：准备 0.27 s，二十轮终端 6 s、模型 2.7 s、传播 0.4 s、上传 1.6 s，共 11.0 s，满足 45 s 期限](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-budgets-1.svg)
 
 *图 12-29：附近工作站（RTX PRO 6000）：准备 0.27 s，二十轮终端 6 s、模型 2.7 s、传播 0.4 s、上传 1.6 s，共 11.0 s，满足 45 s 期限。虚线表示 45 s 完成期限。*
 
-![云端：准备 0.14 s，二十轮终端 6 s、模型 1.5 s、传播 4 s、上传 20 s，共 31.6 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-budgets-2.svg)
+![云端：准备 0.14 s，二十轮终端 6 s、模型 1.5 s、传播 4 s、上传 20 s，共 31.6 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-budgets-2.svg)
 
 *图 12-30：云端（H100 SXM）：准备 0.14 s，二十轮终端 6 s、模型 1.5 s、传播 4 s、上传 20 s，共 31.6 s。计算更快而传输更久，比附近工作站慢约 20.6 s，仍在期限之内。虚线表示 45 s 完成期限。*
 
@@ -11139,9 +11561,11 @@ $$
 
 11.6 秒来自一次准备和二十轮非上传工作，128 Mbit 是二十张截图的总上传量。满足期限需要 $b\ge128/33.4\approx3.8$ Mbit/s（图 12-31）。但无法比附近工作站更快：即使上传瞬间完成，云端也要 11.6 秒，仍比附近的 11.0 秒慢。原因在于每轮 0.2 秒的往返传播：它比附近工作站每轮的传播与上传之和（0.1 秒）多出 0.1 秒，超过了 H100 每轮节省的约 0.064 秒模型时间。
 
+反解带宽门槛前必须先检查固定时间。若期限为 $D$，这里的门槛为 $b_{\min}=128/(D-11.6)$ Mbit/s，只在 $D>11.6$ 秒时有意义。当 $D\le11.6$ 秒时，即使上传带宽无限大，固定时间也已经用完期限，不存在有限的带宽门槛；不能把公式算出的零、负数或除零错误解释为可行带宽。
+
 “追不上”这一结论依赖读取下界的口径。实验 8-1 在 RTX PRO 6000 上测得 batch 1、8K decode 每步 25.83 ms，是读取下界 9.12 ms 的约 2.83 倍，多出的主要是每步的固定开销。把两张 GPU 的模型时间都按该倍数放大，附近工作站为 16.04 秒，云端不含上传为 14.29 秒，两者相差 1.75 秒；上行超过 $128/1.75\approx73$ Mbit/s 后云端才更快。[^edge-tiers]
 
-![云路径上行决定云端方案能否满足期限，却追不上附近工作站](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-15-deployment.svg)
+![云路径上行决定云端方案能否满足期限，却追不上附近工作站](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-15-deployment.svg)
 
 *图 12-31：云路径上行改变完整任务的部署选择。剩余 20 轮每轮上传 0.8 MB，云端准备 0.14 秒，每轮其余工作合计约 0.57 秒，因此总时间为 11.6+128/b 秒；附近工作站为 11.0 秒，期限为 45 秒。本例保持模型、处理时间和其他网络参数不变，忽略排队与故障。约 3.8 Mbit/s 起云方案可满足期限；上行再高，云端也不低于 11.6 秒，始终慢于附近工作站。*
 
@@ -11161,11 +11585,11 @@ $$
 
 图 12-32 和图 12-33 标出了两种恢复方式的差异所在：相同的断连事件之后，一种只重复最后一轮，另一种重复此前十轮。恢复开销有多大，首先取决于哪些结果已经可靠保存。
 
-![保留提交记录可以少做哪些工作](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-16-recovery.svg)
+![保留提交记录可以少做哪些工作](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-16-recovery.svg)
 
 *图 12-32：保留前九轮提交记录（绿色），只重做未确认的第十轮（橙色）。云端每轮 1.57 s，恢复连接 1 s，增加 2.57 s，总时间为 34.2 s。此例采用可安全重放的操作；已提交的外部操作则先查询其结果。*
 
-![丢失十轮进度时，恢复连接后重做十轮，额外约 16.7 s，总任务从 31.6 s 延至 48.3 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-recovery-all.svg)
+![丢失十轮进度时，恢复连接后重做十轮，额外约 16.7 s，总任务从 31.6 s 延至 48.3 s](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-recovery-all.svg)
 
 *图 12-33：丢失十轮进度时，恢复连接后重做十轮，额外 1＋10×1.57≈16.7 s，总任务从 31.6 s 延至 48.3 s，超过 45 s 期限。*
 
@@ -11193,7 +11617,7 @@ $$
 
 以上部署比较固定了模型，只改变执行位置；反过来，固定任务流程、只加速模型，完整任务的收益同样有限。设一次固定轨迹中，模型执行合计 8 秒，工具与网络等不可重叠部分合计 2 秒。即使模型整体加速 10 倍，任务也只能从 10 秒降至 2.8 秒，加速比约为 3.57；[^core-calculation] 模型耗时趋近于零时，下界仍是 2 秒（图 12-34）。
 
-![固定任务轨迹中的加速上限。模型从 8 秒缩短至 0.8 秒，其他串行阶段保持 2 秒；第三行表示模型时间趋近于零的理想下界。](https://raw.githubusercontent.com/bojieli/ai-infra-book/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/figure-12-task-counterfactual.svg)
+![固定任务轨迹中的加速上限。模型从 8 秒缩短至 0.8 秒，其他串行阶段保持 2 秒；第三行表示模型时间趋近于零的理想下界。](https://raw.githubusercontent.com/bojieli/ai-infra-book/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/figure-12-task-counterfactual.svg)
 
 *图 12-34：固定任务轨迹中的加速上限。模型从 8 秒缩短至 0.8 秒，其他串行阶段保持 2 秒；第三行表示模型时间趋近于零的理想下界。*
 
@@ -11303,71 +11727,71 @@ $$
 
 (d) 说明冗余比例为什么应随测得的丢包率调整，而不是固定取 25.7%：从达不到成功率目标与浪费发送带宽两个方向说明理由。
 
-[^phone]: [Snapdragon 8 Elite 产品简介](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/qualcomm-8elite-brief.pdf)与[第五代简介](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/qualcomm-8elite-gen5-brief.pdf)：支持 LPDDR5X 最高 5,300 MHz、容量最大 24 GB，未给总线宽度。[Micron LPDDR5X 产品页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/micron-lpddr5x-page.md)：最高速率档 10.7 Gbit/s，JEDEC 标准为 x16 单通道器件，1γ 工艺新增 6／12／24 GB 容量选项，另有面向旗舰手机的 16 GB 器件；[Samsung LPDDR5X 产品页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/samsung-lpddr5x-page.md)同为最高 10.7 Gbit/s。[Apple iPhone 16 Pro 规格页](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/apple-iphone16-pro-specs.md)不公布内存容量与速率。
+[^phone]: [Snapdragon 8 Elite 产品简介](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/qualcomm-8elite-brief.pdf)与[第五代简介](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/qualcomm-8elite-gen5-brief.pdf)：支持 LPDDR5X 最高 5,300 MHz、容量最大 24 GB，未给总线宽度。[Micron LPDDR5X 产品页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/micron-lpddr5x-page.md)：最高速率档 10.7 Gbit/s，JEDEC 标准为 x16 单通道器件，1γ 工艺新增 6／12／24 GB 容量选项，另有面向旗舰手机的 16 GB 器件；[Samsung LPDDR5X 产品页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/samsung-lpddr5x-page.md)同为最高 10.7 Gbit/s。[Apple iPhone 16 Pro 规格页](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/apple-iphone16-pro-specs.md)不公布内存容量与速率。
 
-[^phone-ledger]: [端侧总线与能耗分账](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/energy-ledger-book.md)：通道数按四条 x16 计（`declared_phone_channels_x16=4`；SoC 简介未给总线宽度），每引脚取 SoC 支持的 10.6 Gbit/s，合计 84.8 GB/s；15,136,819,200 bytes 权重与 1,207,959,552 bytes KV 直接读取[单请求 8K decode 结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-8b-decode-b1-s8192.json)。
+[^phone-ledger]: [端侧总线与能耗分账](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/energy-ledger-book.md)：通道数按四条 x16 计（`declared_phone_channels_x16=4`；SoC 简介未给总线宽度），每引脚取 SoC 支持的 10.6 Gbit/s，合计 84.8 GB/s；15,136,819,200 bytes 权重与 1,207,959,552 bytes KV 直接读取[单请求 8K decode 结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-8b-decode-b1-s8192.json)。
 
-[^melt]: [MELTing Point: Mobile Evaluation of Language Transformers](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/melting-point.pdf)，arXiv 2403.12844，§5.2.2 与附录表 5：每 token 0.16／0.20／0.21 mWh；iPhone 14 Pro 持续功率最高 13.8 W、瞬时超过 18 W，Galaxy S23 持续低于 8.5 W；iPhone 14 Pro 上 Zephyr-3B q4_k 为 14.8 token/s、Llama-2 7B q3_k 为 6.0 token/s；一次充电可运行 490.05–590.93 个提示（S23 为 542.78）。提取值逐行核对见[数值提取表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/research/gap-plan-2026-09-11/sources-extract.json)。
+[^melt]: [MELTing Point: Mobile Evaluation of Language Transformers](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/melting-point.pdf)，arXiv 2403.12844，§5.2.2 与附录表 5：每 token 0.16／0.20／0.21 mWh；iPhone 14 Pro 持续功率最高 13.8 W、瞬时超过 18 W，Galaxy S23 持续低于 8.5 W；iPhone 14 Pro 上 Zephyr-3B q4_k 为 14.8 token/s、Llama-2 7B q3_k 为 6.0 token/s；一次充电可运行 490.05–590.93 个提示（S23 为 542.78）。提取值逐行核对见[数值提取表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/research/gap-plan-2026-09-11/sources-extract.json)。
 
-[^mathis]: [Mathis 等，The Macroscopic Behavior of the TCP Congestion Avoidance Algorithm](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/papers/mathis-tcp-model.pdf)，ACM CCR 1997。式 (3)：$BW=(MSS/RTT)\cdot C/\sqrt{p}$；周期性丢包、每包确认时 $C=\sqrt{3/2}\approx1.22$，随机丢包时 1.31；式 (4) 给出更简的上界。
+[^mathis]: [Mathis 等，The Macroscopic Behavior of the TCP Congestion Avoidance Algorithm](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/papers/mathis-tcp-model.pdf)，ACM CCR 1997。式 (3)：$BW=(MSS/RTT)\cdot C/\sqrt{p}$；周期性丢包、每包确认时 $C=\sqrt{3/2}\approx1.22$，随机丢包时 1.31；式 (4) 给出更简的上界。
 
-[^bbr]: [BBR Congestion Control，IETF 草案 draft-cardwell-iccrg-bbr-congestion-control-02](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/standards/bbr-ietf-draft.txt)：BBR.max_bw 为近期带宽样本的窗口最大值，BBR.min_rtt 为窗口最小 RTT 样本，BBR.bdp 为两者之积；Startup 的 pacing 增益为 $4\ln2\approx2.77$、cwnd_gain 为 2，ProbeBW_UP 的 pacing 增益为 1.25。
+[^bbr]: [BBR Congestion Control，IETF 草案 draft-cardwell-iccrg-bbr-congestion-control-02](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/standards/bbr-ietf-draft.txt)：BBR.max_bw 为近期带宽样本的窗口最大值，BBR.min_rtt 为窗口最小 RTT 样本，BBR.bdp 为两者之积；Startup 的 pacing 增益为 $4\ln2\approx2.77$、cwnd_gain 为 2，ProbeBW_UP 的 pacing 增益为 1.25。
 
-[^wan-loss]: [14% 丢包](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/wan-loss-model-book.md)与[3.6% 丢包](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/wan-loss-model-p036.md)两档计算。路径参数取自[鹊桥路径记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/author-context/queqiao-168ff4b/PATH-CHARACTER-DC-20260826.md)：往返 199–207 ms、容量膝点约 333 Mbit/s、Irvine 发往贵阳的下载方向丢包约 14%（另一时段 3.6%），贵阳发往 Irvine 的 41,663 个报文零丢包、MSS 1,448 bytes、固定文件 354,640 bytes；模型时间取固定文件复测一节的约 30 ms，与实测相符：调优后的中位数 236.5 ms 减去同期最短往返 197 ms 和发送 8.5 ms，模型时间不超过约 31 ms，记录前文的 38 ms 来自轮换八个文件的早期测试；FEC 符号大小取 MSS，块恢复成功率目标取 99.9%。重传模型每轮一次理想选择性重传，不计窗口收缩与超时重传，是有利于 TCP 的下界。
+[^wan-loss]: [14% 丢包](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/wan-loss-model-book.md)与[3.6% 丢包](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/wan-loss-model-p036.md)两档计算。路径参数取自[鹊桥路径记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/author-context/queqiao-168ff4b/PATH-CHARACTER-DC-20260826.md)：往返 199–207 ms、容量膝点约 333 Mbit/s、Irvine 发往贵阳的下载方向丢包约 14%（另一时段 3.6%），贵阳发往 Irvine 的 41,663 个报文零丢包、MSS 1,448 bytes、固定文件 354,640 bytes；模型时间取固定文件复测一节的约 30 ms，与实测相符：调优后的中位数 236.5 ms 减去同期最短往返 197 ms 和发送 8.5 ms，模型时间不超过约 31 ms，记录前文的 38 ms 来自轮换八个文件的早期测试；FEC 符号大小取 MSS，块恢复成功率目标取 99.9%。重传模型每轮一次理想选择性重传，不计窗口收缩与超时重传，是有利于 TCP 的下界。
 
-[^raw]: [RAW 图片精修案例与条件预算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/raw-retouching.md)。算例设原图 30 MB、成片 5 MB、图像处理耗时 0.3 秒。
+[^raw]: [RAW 图片精修案例与条件预算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/raw-retouching.md)。算例设原图 30 MB、成片 5 MB、图像处理耗时 0.3 秒。
 
-[^stream]: 分三块的两种计算分别为 12.8 s 与 12.36 s，正文以约 0.4 s 差额解释重叠收益；额外预览另增编码与传输。来源：[整图屏障](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/image-stream-whole-image-without-preview.md)、[独立分块](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/image-stream-independent-blocks-without-preview.md)及[额外预览](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/image-stream-independent-blocks-with-preview.md)。
+[^stream]: 分三块的两种计算分别为 12.8 s 与 12.36 s，正文以约 0.4 s 差额解释重叠收益；额外预览另增编码与传输。来源：[整图屏障](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/image-stream-whole-image-without-preview.md)、[独立分块](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/image-stream-independent-blocks-without-preview.md)及[额外预览](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/image-stream-independent-blocks-with-preview.md)。
 
-[^audio]: [音频块时序计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/audio-timing-base.md)，输入帧与输出音频块一一对应是该模型的简化，用于说明逐块处理与按序播放的依赖。
+[^audio]: [音频块时序计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/audio-timing-base.md)，输入帧与输出音频块一一对应是该模型的简化，用于说明逐块处理与按序播放的依赖。
 
-[^author]: [笔者的材料与技术判断](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/author-context-and-design.md)。AOI 与 Latent Bridge 用于说明应观察哪些界面信息，以及设备之间应传递什么数据。
+[^author]: [笔者的材料与技术判断](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/author-context-and-design.md)。AOI 与 Latent Bridge 用于说明应观察哪些界面信息，以及设备之间应传递什么数据。
 
-[^ec]: [固定视觉形状与完整 EC／KV 计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/multimodal-cache-single.md)、[多模态阶段放置案例](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/case-studies/multimodal-stage-placement.md)。固定视觉变体、DeepStack 及语言状态分别计量。
+[^ec]: [固定视觉形状与完整 EC／KV 计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/multimodal-cache-single.md)、[多模态阶段放置案例](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/case-studies/multimodal-stage-placement.md)。固定视觉变体、DeepStack 及语言状态分别计量。
 
-[^encode-place]: [编码位置与端边云三档的设备计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/edge-tiers-agent-book.md)：视觉编码的矩阵工作量取自[单图视觉编码结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/vision-encoding-single.md)，峰值取自硬件参数表；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/specs/nvidia-connectx7-datasheet.pdf)：单端口速率至 400 Gbit/s。
+[^encode-place]: [编码位置与端边云三档的设备计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/edge-tiers-agent-book.md)：视觉编码的矩阵工作量取自[单图视觉编码结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/vision-encoding-single.md)，峰值取自硬件参数表；[ConnectX-7 数据手册](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/specs/nvidia-connectx7-datasheet.pdf)：单端口速率至 400 Gbit/s。
 
-[^ec-test]: [Qwen3-VL-8B CPU 编码与本机 TCP 传输实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch12/12-03/README.md)。输入为 256×256 的合成测试图像，完整 EC 约 2 MiB，PNG 约 3.4 KiB；8 次传输前后的数据逐位一致。编码在传输计时开始前完成，所列时间对应特征传输阶段。
+[^ec-test]: [Qwen3-VL-8B CPU 编码与本机 TCP 传输实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch12/12-03/README.md)。输入为 256×256 的合成测试图像，完整 EC 约 2 MiB，PNG 约 3.4 KiB；8 次传输前后的数据逐位一致。编码在传输计时开始前完成，所列时间对应特征传输阶段。
 
-[^dense]: [Qwen3-8B TP=2、PP=4 的逐操作通信量计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/dense-comm-qwen8-tp2-pp4-t1.md)。36 层各有两次输出归约，共产生 72 次通信启动；嵌入、阶段激活、logits 与 token 返回还会增加通信。
+[^dense]: [Qwen3-8B TP=2、PP=4 的逐操作通信量计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/dense-comm-qwen8-tp2-pp4-t1.md)。36 层各有两次输出归约，共产生 72 次通信启动；嵌入、阶段激活、logits 与 token 返回还会增加通信。
 
-[^survey]: [FlexSP／llm.npu 论文与实现资料](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/framework-history/2026-09-09/sequence-and-npu/NOTES.md)。
+[^survey]: [FlexSP／llm.npu 论文与实现资料](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/framework-history/2026-09-09/sequence-and-npu/NOTES.md)。
 
-[^quic]: [RFC 9000：QUIC 传输](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/standards/rfc9000.txt)，§2、§7、§9、§13；[RFC 9001：TLS](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/rfc9001.txt)；[RFC 9114：HTTP/3](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/edge-media/rfc9114.txt)；[RFC 9221：不可靠 Datagram](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/outline-checks/2026-09-07/rfc9221.txt)。HTTP/3 规定了如何在 QUIC 上传输 HTTP 请求和响应。
+[^quic]: [RFC 9000：QUIC 传输](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/standards/rfc9000.txt)，§2、§7、§9、§13；[RFC 9001：TLS](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/rfc9001.txt)；[RFC 9114：HTTP/3](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/edge-media/rfc9114.txt)；[RFC 9221：不可靠 Datagram](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/outline-checks/2026-09-07/rfc9221.txt)。HTTP/3 规定了如何在 QUIC 上传输 HTTP 请求和响应。
 
-[^closed]: 精确分包为上传 25,685 包、下载 4,281 包；共 29,966 个数据包和同数 ACK，网络实际传输 39,554,832 bytes，完整响应 14.36339008 s。来源：[完整图片参考闭环](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/closed-loop-book-30mb-5mb.md)。
+[^closed]: 精确分包为上传 25,685 包、下载 4,281 包；共 29,966 个数据包和同数 ACK，网络实际传输 39,554,832 bytes，完整响应 14.36339008 s。来源：[完整图片参考闭环](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/closed-loop-book-30mb-5mb.md)。
 
-[^ack]: 同一填充条件下，立即 ACK 为 39,555,120 bytes／14.52103724 s，聚合 ACK 为 38,177,328 bytes／14.564459796 s，差约 1.38 MB 和 43.4 ms。来源：[立即 ACK 的 NewReno 对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/controller-loop-book-newreno.md)、[聚合 ACK 对照](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/ack-policy-book-newreno.md)及[CUBIC 控制阶段记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/controller-loop-book-cubic_hystart.md)。
+[^ack]: 同一填充条件下，立即 ACK 为 39,555,120 bytes／14.52103724 s，聚合 ACK 为 38,177,328 bytes／14.564459796 s，差约 1.38 MB 和 43.4 ms。来源：[立即 ACK 的 NewReno 对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/controller-loop-book-newreno.md)、[聚合 ACK 对照](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/ack-policy-book-newreno.md)及[CUBIC 控制阶段记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/controller-loop-book-cubic_hystart.md)。
 
-[^media]: [FIFO](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/shared-media-schedule-fifo.md)与[音频优先](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/shared-media-schedule-priority.md)；固定发送记录的[整体有序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/shared-media-hol-connection.md)与[逐流交付](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/shared-media-hol-per_stream.md)。分别考察发送调度和接收方交付依赖的影响。
+[^media]: [FIFO](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/shared-media-schedule-fifo.md)与[音频优先](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/shared-media-schedule-priority.md)；固定发送记录的[整体有序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/shared-media-hol-connection.md)与[逐流交付](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/shared-media-hol-per_stream.md)。分别考察发送调度和接收方交付依赖的影响。
 
-[^http]: [本地 TCP／HTTP3 传输](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch12/12-04/loopback/README.md)与[HTTP3 单连接多流](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch12/12-04/h3-multistream/README.md)。
+[^http]: [本地 TCP／HTTP3 传输](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch12/12-04/loopback/README.md)与[HTTP3 单连接多流](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch12/12-04/h3-multistream/README.md)。
 
-[^air]: [共享空口图片计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/shared-airtime-image-baseline.md)。数据与 MAC ACK 分别采用 OFDM 54／6 Mbit/s，不使用帧聚合；接入等待取 SIFS 16 μs 加两个 9 μs 时隙，即 802.11a OFDM 的 DIFS 34 μs，不计随机退避；MAC 层与端到端确认分别计量。
+[^air]: [共享空口图片计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/shared-airtime-image-baseline.md)。数据与 MAC ACK 分别采用 OFDM 54／6 Mbit/s，不使用帧聚合；接入等待取 SIFS 16 μs 加两个 9 μs 时隙，即 802.11a OFDM 的 DIFS 34 μs，不计随机退避；MAC 层与端到端确认分别计量。
 
-[^wireless-survey]: [计算机网络的新黄金时代（三）](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/network-golden-3.md)，介绍 TACK、Link Turbo 与代理部署的历史背景。
+[^wireless-survey]: [计算机网络的新黄金时代（三）](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/network-golden-3.md)，介绍 TACK、Link Turbo 与代理部署的历史背景。
 
-[^mixed]: [媒体优先与聚合 ACK 的混合反馈计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/media-feedback-mixed-priority-aggregate.md)及同目录 FIFO／立即 ACK 对照。模型处理时间和预定播放时刻由算例设定。
+[^mixed]: [媒体优先与聚合 ACK 的混合反馈计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/media-feedback-mixed-priority-aggregate.md)及同目录 FIFO／立即 ACK 对照。模型处理时间和预定播放时刻由算例设定。
 
-[^dual]: [双进程双 TCP 连接实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch12/12-06/README.md)：实验通过双进程、双 TCP 连接模拟两条传输路径，30 次正式尝试包含共同端点失败的情况。
+[^dual]: [双进程双 TCP 连接实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch12/12-06/README.md)：实验通过双进程、双 TCP 连接模拟两条传输路径，30 次正式尝试包含共同端点失败的情况。
 
-[^queqiao-readme]: 系统定位与跨数据中心动机见 [Queqiao README 固定归档](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/author-context/queqiao-496ca627/README.md)，对应 [GitHub 提交 `496ca627`](https://github.com/bojieli/queqiao/blob/496ca6278e359c02b5107dfab77c6a3db585f80d/README.md)，读取于 2026-09-10。系统介绍依据此版本，性能对照数据来自提交 `168ff4b`。
+[^queqiao-readme]: 系统定位与跨数据中心动机见 [Queqiao README 固定归档](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/author-context/queqiao-496ca627/README.md)，对应 [GitHub 提交 `496ca627`](https://github.com/bojieli/queqiao/blob/496ca6278e359c02b5107dfab77c6a3db585f80d/README.md)，读取于 2026-09-10。系统介绍依据此版本，性能对照数据来自提交 `168ff4b`。
 
-[^queqiao]: [固定归档的路径记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/author-context/queqiao-168ff4b/PATH-CHARACTER-DC-20260826.md)与[设计记录](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/author-context/queqiao-168ff4b/DESIGN-DC-PROFILE.md)，来自提交 `168ff4b`。文件、调优设置和计时起止点均采用原记录中的定义。
+[^queqiao]: [固定归档的路径记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/author-context/queqiao-168ff4b/PATH-CHARACTER-DC-20260826.md)与[设计记录](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/author-context/queqiao-168ff4b/DESIGN-DC-PROFILE.md)，来自提交 `168ff4b`。文件、调优设置和计时起止点均采用原记录中的定义。
 
-[^queqiao-calc]: 新建连接的直接／Queqiao p50 为 1185.3／301.6 ms，调优保持连接为 240.9／236.5 ms；两个中位数之比分别约 3.93／1.019。逐轮计算耗时比再取中位数，结果分别为 3.96／1.03。来源：[Queqiao 同条件统计](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/queqiao-records-conditions.md)。
+[^queqiao-calc]: 新建连接的直接／Queqiao p50 为 1185.3／301.6 ms，调优保持连接为 240.9／236.5 ms；两个中位数之比分别约 3.93／1.019。逐轮计算耗时比再取中位数，结果分别为 3.96／1.03。来源：[Queqiao 同条件统计](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/queqiao-records-conditions.md)。
 
-[^physical]: 8 次完整接收测试中，收到的 PCM 与播放回调读取的 PCM 均逐位一致，播放回调累计有 360–1440 ms 无法取得足够音频样本；实验使用静音输出设备，记录包含接收与播放回调事件。另有 3 次请求在首个播放回调之前取消，接收字节、连接关闭事件和远端 EOF 记录了取消过程。完整四轮数据见[配套证据说明](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/manuscripts/ch12/evidence-notes.md)。来源：[显式物理接口绑定的音频实验](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch12/12-07/audio-physical/README.md)，固定提交 `496ca627`，基线含 socket 绑定适配。
+[^physical]: 8 次完整接收测试中，收到的 PCM 与播放回调读取的 PCM 均逐位一致，播放回调累计有 360–1440 ms 无法取得足够音频样本；实验使用静音输出设备，记录包含接收与播放回调事件。另有 3 次请求在首个播放回调之前取消，接收字节、连接关闭事件和远端 EOF 记录了取消过程。完整四轮数据见[配套证据说明](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/manuscripts/ch12/evidence-notes.md)。来源：[显式物理接口绑定的音频实验](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch12/12-07/audio-physical/README.md)，固定提交 `496ca627`，基线含 socket 绑定适配。
 
-[^region]: [计算机网络的新黄金时代（二）](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/references/files/documents/network-golden-2.md)的云际网络与 Regionless 讨论。本章的地域方案用设备能耗和 GPU 时间衡量成本。
+[^region]: [计算机网络的新黄金时代（二）](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/references/files/documents/network-golden-2.md)的云际网络与 Regionless 讨论。本章的地域方案用设备能耗和 GPU 时间衡量成本。
 
-[^region-trace]: 同一模型、token 序列与轮次的重放，传入服务端的数据量分别为 66,207／10,193 bytes，返回客户端的数据量均为 2,527 bytes。矩阵工作量分别为 296,505,803,538,432 与 60,380,764,176,384 FLOPs，除以 H100 SXM 的 BF16 稠密峰值得到 GPU 时间下界；状态 465,371,136 bytes，按其占 80 GB 显存的比例折算驻留时间，约 41.0 s 后抵消省下的 0.239 GPU 秒。来源：[固定 Agent 轨迹的地域放置](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/region-placement-agent-session.md)，字节与 token 来自原轨迹。
+[^region-trace]: 同一模型、token 序列与轮次的重放，传入服务端的数据量分别为 66,207／10,193 bytes，返回客户端的数据量均为 2,527 bytes。矩阵工作量分别为 296,505,803,538,432 与 60,380,764,176,384 FLOPs，除以 H100 SXM 的 BF16 稠密峰值得到 GPU 时间下界；状态 465,371,136 bytes，按其占 80 GB 显存的比例折算驻留时间，约 41.0 s 后抵消省下的 0.239 GPU 秒。来源：[固定 Agent 轨迹的地域放置](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/region-placement-agent-session.md)，字节与 token 来自原轨迹。
 
-[^edge-tiers]: [端边云三档的设备计算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/edge-tiers-agent-book.md)。每步读取量取[单请求 8K decode 结果](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/qwen3-8b-decode-b1-s8192.md)的权重与 KV，权重按 q4_0 每 32 个值 18 bytes 重排；手机总线取[端侧总线与能耗分账](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/energy-ledger-book.md)；带宽、BF16 稠密峰值与额定功率取自[硬件参数表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/hardware.md)；实测倍数取自[实验 8-1 的效率表](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/experiments/ch08/08-01/efficiency.json)中 batch 1、8K 一行。结果文件同时列出十轮、收紧期限与断连恢复的全部情形。
+[^edge-tiers]: [端边云三档的设备计算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/edge-tiers-agent-book.md)。每步读取量取[单请求 8K decode 结果](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/qwen3-8b-decode-b1-s8192.md)的权重与 KV，权重按 q4_0 每 32 个值 18 bytes 重排；手机总线取[端侧总线与能耗分账](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/energy-ledger-book.md)；带宽、BF16 稠密峰值与额定功率取自[硬件参数表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/hardware.md)；实测倍数取自[实验 8-1 的效率表](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/experiments/ch08/08-01/efficiency.json)中 batch 1、8K 一行。结果文件同时列出十轮、收紧期限与断连恢复的全部情形。
 
-[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/core_principles.py)。
+[^core-calculation]: 本章条件比较的[逐项复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/core-principles.json)与[计算程序](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/core_principles.py)。
 
-[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/58636943ba89f24b854f04f0f8f2fffe7b323829/calculations/results/v41-throughline.json)。
+[^v41-case]: [DeepSeek V4.1 官方技术报告](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/sources/deepseek-v4.1-flash/DeepSeek_V41_Tech_Report.pdf)，第 1、2、3 节与第 6 节；[跨章会话的固定条件与复算](https://github.com/bojieli/ai-infra-book/blob/3bdcb4fcab73010eeaccf31cc10a8242a895d82e/calculations/results/v41-throughline.json)。
 
 #### 本章小结
 
