@@ -9,7 +9,7 @@ tags:
   - "full-stack"
   - "tutorial"
 published_at: "2026-01-13"
-updated_at: "2026-08-18"
+updated_at: "2026-10-21"
 ---
 
 # Easy-Vibe：从零开始学 AI 编程
@@ -21,8 +21,8 @@ updated_at: "2026-08-18"
 | 文档标题 | Easy-Vibe：从零开始学 AI 编程 |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [datawhalechina/easy-vibe](https://github.com/datawhalechina/easy-vibe) |
-| 锁定提交 | [130e9b75b28b](https://github.com/datawhalechina/easy-vibe/commit/130e9b75b28b524e8cc74e615fd9733a4e2b330d) |
-| 提交时间 | 2026-08-25T09:49:19+08:00 |
+| 锁定提交 | [f2239c67052b](https://github.com/datawhalechina/easy-vibe/commit/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64) |
+| 提交时间 | 2026-10-22T18:46:53+08:00 |
 | 生成器版本 | `easy_vibe@4;engine@9` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
@@ -79,7 +79,7 @@ updated_at: "2026-08-18"
   - [Git 和 GitHub 工作流](#git-和-github-工作流)
   - [CLI AI 编程工具](#cli-ai-编程工具)
   - [如何集成 Stripe 等收费系统](#如何集成-stripe-等收费系统)
-  - [把网站发到网上（简单方式）：Vercel/Zeabur/CloudBase 一键发布](#把网站发到网上简单方式vercelzeaburcloudbase-一键发布)
+  - [把网站发到网上（简单方式）：Vercel/Cloudflare/CloudBase 一键发布](#把网站发到网上简单方式vercelcloudflarecloudbase-一键发布)
   - [从设计原型到项目代码](#从设计原型到项目代码)
   - [Figma 与 MasterGo 入门](#figma-与-mastergo-入门)
   - [Project 4: 一起做霍格沃茨画像](#project-4-一起做霍格沃茨画像)
@@ -306,7 +306,7 @@ updated_at: "2026-08-18"
 | 什么是 API                                                                                                      | 理解 HTTP 接口与请求响应模型，为后端集成与联调做准备          | 🚧   |
 | [从数据库到 Supabase](/zh-cn/stage-2/backend/database-supabase/) | 在 Supabase 上落地数据库和 API，打通数据模型与前端页面        | 🚧   |
 | 大模型辅助编写接口代码与接口文档                                                                                | 用大模型协助生成接口与数据库文档及代码，实现可读可测的后端    | 🚧   |
-| Git 工作流与 Zeabur 部署                                                                                        | 在 Git 工作流中管理代码，并将应用部署到 Zeabur 上线           | 🚧   |
+| Git 工作流与 Web 应用部署                                                                                        | 管理 Git 代码，使用 Cloudflare Pages / Vercel 发布前端、Render 托管后端           | 🚧   |
 | 现代 CLI 开发工具                                                                                               | 使用 CLI 类 AI 编程工具加速开发与调试，形成个人工程化工作流   | 🚧   |
 | 如何集成 stripe 等收费系统                                                                                      | 接入支付系统，完成收费链路与基础结算流程                      | 🚧   |
 | 构建第一个现代应用程序-全栈应用                                                                               | 综合前端、后端与支付模块，完成可上线的全栈 Web 应用           | 🚧   |
@@ -429,7 +429,7 @@ AI 出现之后，第一次给了普通人一个全新的可能：你不需要�
 这种「对话即编程」的模式，让编程从「写代码」变成了「描述需求」。你不需要关心底层技术细节，只需要清楚地告诉 AI 你想要什么，它就能帮你把想法变成可运行的程序。这就是 AI 时代编程的新范式——**Vibe Coding（氛围式编码）**。
 :::
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/index-2026-01-07-18-25-03.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/index-2026-01-07-18-25-03.webp)
 
 输入我们的简单需求后点击 **全栈开发** 按钮，你可以实时观看网页的完整创建过程。通常只需泡一杯咖啡的时间，网页便会自动生成完毕！
 
@@ -442,17 +442,17 @@ AI 出现之后，第一次给了普通人一个全新的可能：你不需要�
 5. 界面要简洁好看
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/index-2026-01-07-18-34-03.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/index-2026-01-07-18-34-03.webp)
 
 生成结束后，你能看到右侧出现可浏览的网页界面。你可以上下滚动浏览页面内容，或点击页面顶部的 🧭 按钮切换至全屏模式查看效果。
 
 > 其中顶部从左到右按钮的作用依次为：箭头按钮展开侧边对话历史栏，铅笔按钮用于新建一个对话，循环箭头按钮用于刷新页面，指南针按钮负责切换至全屏模式，Download 按钮用于下载项目，<> 按钮用于切换代码视图，Publish 按钮用于发布项目。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/index-2026-01-07-18-35-11.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/index-2026-01-07-18-35-11.webp)
 
 如果你想查看该网页的源代码，可以点击右上角的代码图标查看完整代码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image7.png)
 
 ::: tip 🌐 探索更多 AI 编程工具
 
@@ -469,7 +469,7 @@ AI 出现之后，第一次给了普通人一个全新的可能：你不需要�
 | **Lovable** | [lovable.dev](https://lovable.dev) | 专注于生成高质量 React 应用，支持 GitHub 集成和一键部署 |
 | **Replit Agent** | [replit.com](https://replit.com) | 集成 AI 编程助手的在线 IDE，支持多种语言和实时协作 |
 
-想了解更多网页编程工具的详细对比和使用教程，可以参考我们的扩展阅读：[7 款主流 Vibe Coding 在线平台实测对比](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/vibe-coding-tools-snake-game-tutorial.md)
+想了解更多网页编程工具的详细对比和使用教程，可以参考我们的扩展阅读：[7 款主流 Vibe Coding 在线平台实测对比](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/vibe-coding-tools-snake-game-tutorial.md)
 :::
 
 ##### 2.2 对话编程能做什么不能做什么
@@ -531,12 +531,12 @@ AI 出现之后，第一次给了普通人一个全新的可能：你不需要�
 
 > **💡 示例提示词：** 帮我做一个贪吃蛇游戏
 >
-> ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image12.webp)
+> ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image12.webp)
 
 > **💡 示例提示词：** 帮我做一个贪吃蛇游戏，它应该支持
 >
 > 1. 可以吃不同的单词，它们会被收集在一个盒子里
->    ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image13.webp)
+>    ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image13.webp)
 
 > **💡 示例提示词：** 帮我做一个贪吃蛇游戏，它应该支持：
 >
@@ -544,13 +544,13 @@ AI 出现之后，第一次给了普通人一个全新的可能：你不需要�
 > 2. 当蛇吃了8个单词时，llm 应该根据这些单词创作一首诗，我们可以根据需要重新混合这首诗。
 > 3. 当诗完成后，下一步将自动根据这首诗创建一幅图像。
 >
-> ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image14.webp)
+> ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image14.webp)
 
 注意，在开发过程中，我们可能会遇到不尽如人意的问题，例如点击按钮没有任何反应、使用功能时报错、功能未按预期工作，或者前端页面与预期设计不符。
 
 在这种情况下，我们需要进一步向模型提问，以帮助修复这些意外问题。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image15.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image15.webp)
 
 ##### 3.2 给游戏添加新功能
 
@@ -594,13 +594,13 @@ AI 出现之后，第一次给了普通人一个全新的可能：你不需要�
 
 z.ai 的回复将会是这样的：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image56.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image56.webp)
 
 我们可以使用这个提示词在全栈开发模式下重新生成项目：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image57.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image57.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image58.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/image58.webp)
 
 <div style="margin: 50px 0;">
 </div>
@@ -645,11 +645,11 @@ z.ai 的回复将会是这样的：
 
 [WotAI Games](https://games.wotai.co/) 是一个完全用 Claude Code（Vibe Coding）从零开发、**不使用任何游戏引擎** 的网页游戏合集。通过对话让 AI 一口气复刻了 10 款经典街机游戏：吃豆人、俄罗斯方块、太空侵略者、贪吃蛇、Flappy Bird、打砖块、小蜜蜂、青蛙过河、涂鸦跳跃和数独。每款都可以直接在线玩，还自带排行榜系统。
 
-![WotAI Games 首页——10 款经典街机游戏合集](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-wotai-games.webp)
+![WotAI Games 首页——10 款经典街机游戏合集](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-wotai-games.webp)
 
-![俄罗斯方块（WotAI Games，Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-wotai-tetris.png)
+![俄罗斯方块（WotAI Games，Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-wotai-tetris.png)
 
-![吃豆人（WotAI Games，Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-wotai-pacman.webp)
+![吃豆人（WotAI Games，Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-wotai-pacman.webp)
 
 > 🔗 在线试玩：[games.wotai.co](https://games.wotai.co/) ｜ 开发复盘：[We vibe coded 10 classic arcade games with Claude Code](https://wotai.co/blog/wotai-games-vibe-coded-arcade-classics)
 
@@ -657,7 +657,7 @@ z.ai 的回复将会是这样的：
 
 日本一位完全不懂编程的开发者 [in0ho1no](https://github.com/in0ho1no)，用 Claude 通过纯对话（Vibe Coding）在 **约 2 小时内** 做出了 2048 风格的「植物花园」游戏 [Blooming Garden](https://in0ho1no.github.io/2025-adhoc-blooming-garden/)：同种植物合成升级、华丽的开花特效、粒子动画、排行榜、音效、手机适配……这些功能全部通过自然语言对话完成，没有手写一行代码。
 
-![Blooming Garden 植物合成游戏（100% AI 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-blooming-garden.webp)
+![Blooming Garden 植物合成游戏（100% AI 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-blooming-garden.webp)
 
 > 🔗 在线试玩：[in0ho1no.github.io/2025-adhoc-blooming-garden](https://in0ho1no.github.io/2025-adhoc-blooming-garden/) ｜ 源码：[github.com/in0ho1no/2025-adhoc-blooming-garden](https://github.com/in0ho1no/2025-adhoc-blooming-garden)
 
@@ -665,7 +665,7 @@ z.ai 的回复将会是这样的：
 
 设计师 [Ricardo de Zoete（Hammy）](https://x.com/RicardoDeZoete) 用 OpenAI 的 AI 通过纯对话（Vibe Coding）在 three.js 基础上做出了 [Planet Jumper](https://gamesbyhammy.cloud/play/planetjumper)——一个**3D 多人平台跳跃游戏**：在一个小球状星球表面奔跑、冲刺、跳跃，还能与陌生人在线同场竞技。球形引力、联网同步、跳跃手感这些并不简单的系统，全靠提示词「聊」出来。
 
-![Planet Jumper 3D 多人平台跳跃游戏（Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-planet-jumper.webp)
+![Planet Jumper 3D 多人平台跳跃游戏（Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-planet-jumper.webp)
 
 > 🔗 在线试玩：[gamesbyhammy.cloud/play/planetjumper](https://gamesbyhammy.cloud/play/planetjumper) ｜ 详细介绍：[Planet Jumper: A Vibe-Coded Three.js Multiplayer Platformer](https://www.webgpu.com/showcase/planet-jumper-threejs-multiplayer/)
 
@@ -673,9 +673,9 @@ z.ai 的回复将会是这样的：
 
 2026 年 7 月，中文社区开发者 [wangzifan396-wzf](https://github.com/wangzifan396-wzf) 开源了 [mini-browser-games](https://github.com/wangzifan396-wzf/mini-browser-games)——**用 Vibe Coding 一个人做出并持续打磨的 100 款浏览器小游戏**，全部是零依赖的单 HTML 文件，双击即可运行。玩法覆盖动作、策略、塔防、经营、卡牌、物理、推理、竞速、节奏、棋类和益智等类型，其中不少已经做到了多章节战役、养成系统、存档码跨设备同步的完整产品级深度。整个项目以 MIT 协议开源，在线目录可以直接开玩。
 
-![100 款浏览器游戏在线目录（2026 年 Vibe Coding 开源项目）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-100-games.webp)
+![100 款浏览器游戏在线目录（2026 年 Vibe Coding 开源项目）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-100-games.webp)
 
-![《霓虹 2048》：六章 18 节点远征 + 多种模式与工具系统](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-100-games-neon2048.webp)
+![《霓虹 2048》：六章 18 节点远征 + 多种模式与工具系统](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-100-games-neon2048.webp)
 
 > 🔗 在线目录：[wangzifan396-wzf.github.io/mini-browser-games](https://wangzifan396-wzf.github.io/mini-browser-games/) ｜ 源码：[github.com/wangzifan396-wzf/mini-browser-games](https://github.com/wangzifan396-wzf/mini-browser-games) ｜ 创作复盘：[我用 Vibe Coding 做了 100 款浏览器游戏，并把它们全部开源了](https://blog.csdn.net/m0_74023007/article/details/162945755)
 
@@ -683,7 +683,7 @@ z.ai 的回复将会是这样的：
 
 2026 年 2 月，开发者 [Trent Sterling](https://tront.xyz/blog/posts/craftmine/) 因为侄子们想玩《我的世界》但没有正版，干脆打开一个空白 HTML 文件，用 Claude Code 通过纯对话做出了 [CraftMine](https://tront.xyz/craftmine/)——一个 **6,820 行、单文件** 的网页版《我的世界》复刻版：46 种方块（还加了 21 种 DOOM 地狱主题方块）、36 种生物（从小鸡到 300 血的泰坦 Boss）、19 种武器（含 BFG 9000）、5 种生物群系、昼夜循环，甚至支持 **P2P 多人联机**。没有任何构建步骤，打开网页就能玩。
 
-![CraftMine：《我的世界》复刻版，6,820 行单文件（Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-craftmine.webp)
+![CraftMine：《我的世界》复刻版，6,820 行单文件（Vibe Coding 生成）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-craftmine.webp)
 
 > 🔗 在线试玩：[tront.xyz/craftmine](https://tront.xyz/craftmine/) ｜ 开发复盘：[CraftMine: A 6,820-line vibe-coded Minecraft clone in one HTML file](https://tront.xyz/blog/posts/craftmine/)
 
@@ -691,9 +691,9 @@ z.ai 的回复将会是这样的：
 
 2026 年 3 月，一位开发者把开源版《超级马里奥》和 OpenAI 的模型结合，做出了 [AI 版超级马里奥](https://supermario.leanmcp.live/)：既能玩经典的原版关卡，也能让 AI **实时生成新关卡**——在「无限模式」下，AI 会随着你的前进动态生成全新的场景和敌人，实测能连续玩 45 分钟。你甚至可以直接在游戏里用文字让 AI 加敌人、放平台、改主题。
 
-![AI 版超级马里奥：经典、AI 关卡、无限模式三种玩法](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-ai-mario-menu.png)
+![AI 版超级马里奥：经典、AI 关卡、无限模式三种玩法](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-ai-mario-menu.png)
 
-![AI 实时生成的马里奥游戏画面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-ai-mario-gameplay.png)
+![AI 实时生成的马里奥游戏画面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-ai-mario-gameplay.png)
 
 > 🔗 在线试玩：[supermario.leanmcp.live](https://supermario.leanmcp.live/) ｜ 详细介绍：[OpenAI and Idiomorph Power Infinite Mario Level Generation in Browser](https://www.thenextgentechinsider.com/pulse/openai-and-idiomorph-power-infinite-mario-level-generation-in-browser)
 
@@ -701,7 +701,7 @@ z.ai 的回复将会是这样的：
 
 2026 年 7 月，开发者 [Dr. Josh Simmons](https://www.drjoshcsimmons.com/writing/kimi-k3-built-the-game-i-still-had-to-play-it) 只给国产大模型 **Kimi K3** 发了一个提示词，就让它做出了一个可玩的第一人称 3D 游戏：在程序化生成的服务器设施里收集数据核心、躲避巡逻无人机、坐货运电梯下三层楼。整个游戏一次生成即可游玩，再通过两轮对话修掉两个 bug 就能顺畅通关，全程花费约 **2 美元**。
 
-![Kimi K3 一个提示词生成的 3D 服务器设施游戏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-kimi-k3-game.webp)
+![Kimi K3 一个提示词生成的 3D 服务器设施游戏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-kimi-k3-game.webp)
 
 > 🔗 在线试玩：[kimi-test-theta.vercel.app](https://kimi-test-theta.vercel.app/) ｜ 源码：[github.com/jcpsimmons/kimi-test](https://github.com/jcpsimmons/kimi-test) ｜ 开发者复盘：[Kimi K3 Built the Game. I Still Had to Play It.](https://www.drjoshcsimmons.com/writing/kimi-k3-built-the-game-i-still-had-to-play-it)
 
@@ -709,9 +709,9 @@ z.ai 的回复将会是这样的：
 
 2026 年 7 月 17 日，月之暗面发布 Kimi K3 模型后，同步上线了网页游戏平台 [K399](https://www.k399.games/)——里面几十款游戏全部由 K3 模型参与制作，点开即玩。品类覆盖 3D 射击、音游、横版动作、宫斗 AVG、3D 解谜甚至开放世界：既有复刻《塞尔达传说》《黑神话：悟空》《泡泡堂》《吸血鬼幸存者》等经典玩法的作品，也有《先锋练习场》（可移动、跳跃、滑铲、瞄准射击的 3D FPS）、开放世界《SpiderPunk》、五章主线八条支线 32 种随机事件的宫斗 AVG《凤阙深宫》等完成度远超 Demo 的原创游戏。
 
-![K399 平台界面——K3 Game Arcade，游戏列表点开即玩](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-k399-platform-live.webp)
+![K399 平台界面——K3 Game Arcade，游戏列表点开即玩](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-k399-platform-live.webp)
 
-![K399 上的开放世界游戏 SpiderPunk：在赛博都市高楼间荡蛛丝（K3 模型生成，实际游玩画面）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-k399-spiderpunk.webp)
+![K399 上的开放世界游戏 SpiderPunk：在赛博都市高楼间荡蛛丝（K3 模型生成，实际游玩画面）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/case-k399-spiderpunk.webp)
 
 > 🔗 在线试玩：[k399.games](https://www.k399.games/)（K3 Game Arcade，点开即玩）｜ 详细介绍：[前米哈游高管加入，当下最火的 AI 公司突然做了几十个游戏](https://eu.36kr.com/zh/p/3906895998178441) ｜ [Kimi K3，让谁紧张？](https://36kr.com/p/3905392402748801)
 
@@ -852,7 +852,7 @@ z.ai 的回复将会是这样的：
 
 > 💡 什么是 Vibe Coding？计算机科学家 [Andrej Karpathy](https://karpathy.ai/)（OpenAI 的联合创始人之一，特斯拉前 AI 负责人）于 2025 年 2 月提出了 **vibe coding** 一词。这个概念指的是一种依赖于 LLM 的编码方法，**允许程序员通过提供自然语言描述而不是手动编写代码来生成可工作的代码。**
 
-![1767350588191](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/ai-capabilities-through-games/images/1767350588191.webp)
+![1767350588191](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/ai-capabilities-through-games/images/1767350588191.webp)
 
 从字面上看，Vibe Coding 可以理解为一种“用说的方式来做开发”。它的核心变化在于：你不再需要自己一行一行写代码、查语法、调 Bug，而是直接用自然语言描述你想要的东西，例如：
 
@@ -1014,7 +1014,7 @@ z.ai 的回复将会是这样的：
 
 第四， **它给出了一种比现状更好的做法或者工具** 。用户原本是怎么完成这件事的，是靠脑子记、纸笔记、Excel、截屏收藏，还是在不同应用之间来回切换。如果你能提供的是一种明显更省事、更稳定、更愉快的方式，那么这个点子才真正开始具备价值。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image1.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image1.webp)
 
 对于上述的思考，如果你想不清楚也没关系，现在是人工智能的时代，你可以把上面的内容整理成一个完整的提示词，再把你的想法、目标用户和使用场景一并写进去，交给大模型来帮你补全和提炼。把模型当成随时在线的产品合伙人，反复对话、追问、修改，就能把一个模糊的概念变具体。
 
@@ -1034,7 +1034,7 @@ z.ai 的回复将会是这样的：
 
 假需求的典型情况恰恰相反。如果不是你主动提起，大部分人并不会意识到那是一个问题，甚至不会觉得非解决不可。你描绘的使用场景更多存在于你的想象里，而不是用户的日常生活中。他们听完你的介绍，只会觉得这东西是好的，挺有意思，但不会付费，甚至转身就忘了。这样的点子，用来写故事还可以，用来做产品就非常危险。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image2.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image2.webp)
 
 所以， **避免自嗨的第一道防线是了解用户需求。** 在一开始你就需要逼自己回答一个看似简单，却非常关键的问题: 除了我自己，还有谁在为这件事认真犯愁。你可以去看论坛、社群、评论区，也可以直接问几个身边可能成为用户的人。如果你很难听到类似于“我每次都被这个事情拖住”或者“现在的做法实在太麻烦”这类带着真实情绪的抱怨，那说明这个点子离真实需求还有一段距离。
 
@@ -1060,7 +1060,7 @@ z.ai 的回复将会是这样的：
 
 下面这四种来源，如果你愿意认真去做，很容易在其中挖到可以起步的方向。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image3.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image3.webp)
 
 ##### 热爱你自己的生活
 
@@ -1070,7 +1070,7 @@ z.ai 的回复将会是这样的：
 
 像你给猫拍照这件事：很多人都遇到过，自己在那儿举着手机，猫却死活不看镜头，要么低头舔爪子，要么盯着别的角落。那能不能有一个小工具，让手机或平板的屏幕上出现一个会自动移动的红点、羽毛或者小虫子的动画，专门吸引猫咪的视线？你按下拍照键时，它自动在前置摄像头附近晃一圈，把猫的目光“骗”到镜头方向，顺手再连拍几张，帮你从中挑出清晰又好看的那一张。再往前想一步，这个应用还能记录每只猫对哪种颜色、哪种移动轨迹最有兴趣，下次自动用它“专属”的逗猫模式，提高成功率。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image4.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image4.webp)
 
 如果你很享受化妆或者护肤的过程，家里柜子上的每一瓶产品背后，都是大量试错和决策的结果。你可能已经习惯用手机相册拍下每次妆容的照片，但每次回顾时，总要一点点回想那天用了哪一支口红、哪一盘眼影。那是否可以把这些信息系统地记录下来，做成一份属于自己的妆容图鉴？甚至可以让应用帮你统计，某种妆容在什么场合被你用得最多，哪些搭配在照片里表现最好，这样每次选妆的时候就不用从零开始想。
 
@@ -1174,7 +1174,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 “ **没关系，这东西将来有机会再做吧。。。** ”
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image5.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image5.webp)
 
 别想了！要就是现在！这一章我们想做的事情，就是帮你学会一套从点子到可做版本的拆解方法。你会看到，从无到有并不依赖天才，而是依赖一系列可以反复练习的具体动作: ** 发散、** **收敛** **、拆解、细化、借鉴、提问。** 按照这个顺序，哪怕没有团队、没有大把时间，也可以把一个点子变成能跑通的应用demo。
 
@@ -1188,9 +1188,9 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 双钻模型是英国设计委员会提出的一个创新与设计流程框架，把整个过程比喻成连续的两个菱形（“双钻”）：第一个钻石是从“发现问题”到“定义清晰问题”，强调先广泛发散、充分调研和理解用户，再收敛梳理出真正要解决的核心问题；第二个钻石是从“发展解决方案”到“交付最终方案”，先对可能的解决思路大胆发散、探索和迭代原型，然后再收敛、筛选和打磨出最优可落地的方案。双钻模型强调在问题和方案两个阶段都要经历“发散—收敛”的过程，避免一开始就跳到解决方案，从而提升创新的质量和成功率。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image6.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image6.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image7.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image7.webp)
 
 ##### 第一钻: 理解问题，从单点到全貌的发散和收敛
 
@@ -1226,7 +1226,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 这里需要的一种能力叫 **拆解并细化，能够把抽象变具体** 。就是把一个大而泛的目标，一点点拆解并细化内容到可以立刻动手的最小可行动项。这个能力不仅在做产品的时候重要，在生活里也非常关键。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image8.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image8.webp)
 
 ##### 从生活例子开始: 我想吃汉堡到底意味着什么
 
@@ -1260,7 +1260,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 “效率”这个词也值得单独拆开。 **效率到底是什么意思？是单纯指速度，还是既包括速度，也包括质量，还包括出错率和理解难度？** 比如，把一份 20 页的文档从 30 分钟看完，变成 5 分钟扫完要点，这是速度；让用户在摘要里快速发现错误逻辑、数据矛盾，这是质量；让一个原本不熟悉专业术语的人，也能通过解释和标注看懂报告，这是认知门槛的降低。你可以很直接地问自己一句: 如果这个应用做得非常成功，对用户来说，最大的变化是什么？是“花在文档上的时间少了一半”，还是“做文档相关的事时，心没那么累了”？回答清楚这句，你的功能优先级就有了依据。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image9.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image9.webp)
 
 ###### 第二层拆解细化
 
@@ -1317,7 +1317,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 这类描述不再是空泛的口号，而是可以直接变成提示词，或者直接让 AI 当做 plan 去执行的一组指令。比如，你完全可以把这段话丢给一个具备开发能力的 AI，让它按这句话去生成一个开发方案或直接生成最小可用版本的网页应用；也可以把它交给设计师，让他据此画出具体的界面原型；或者发给一个工程师同事，让他快速评估实现成本和技术方案。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image10.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image10.webp)
 
 当你做到这里，你会发现两件很现实的变化。第一，你不再被“我要做一个提升效率的应用”这句话压住，而是拥有能够立即动手的步骤。第二，和别人的沟通成本会急剧降低，因为你拿出了一套已经拆到足够具体的初版方案。
 
@@ -1334,7 +1334,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 你可以把整个应用，先分成三类页面: 入口页、操作页、结果页。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image11.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image11.webp)
 
 ##### 入口页: 用户从哪儿进来，第一眼看到什么
 
@@ -1383,9 +1383,9 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 - 结果展示时，最重要的信息有没有被放在最明显的位置，次要信息又是怎样被收纳的
 - 新用户第一次进来时，有没有简短的引导流程，告诉他接下来怎么用
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image12.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image12.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image13.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image13.webp)
 
 具体可以参考如下几个网页截图收集站：
 
@@ -1466,7 +1466,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 好应用最直接的特征，是它能让人在某个场景下实打实地得到一点好处。这个好处不一定宏大，也不需要用多高深的语言去包装，但必须具体到你能说得清楚:** 它到底帮用户少做了什么，少花了多少时间，或者让什么事情不那么容易出错。**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image14.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image14.webp)
 
 比如一个简单的会议纪要工具，如果它能做到只要上传录音或者在会议过程中直接录音，结束后就能自动生成一份结构化的会议纪要，并且把待办事项、责任人、截止时间用列表列清楚，那它帮用户节省的就不仅仅是打字时间，而是从记录、整理、筛选到格式化输出整套过程的心力。你可以很明确地说，这个工具大概每场会为一个人省下二十分钟。而如果整个团队每周有十场这种会议，那么总共节省下来的时间就非常可观。
 
@@ -1478,7 +1478,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 另一个容易被低估但极其重要的特征，是 **好应用通常不太需要解释** 。用户第一次打开时，靠直觉就能知道大概该从哪里开始，点击什么会发生什么，最大按钮通常做的是最核心的事情，最重要的入口会摆在真正重要的位置，而不是藏在菜单的第三层。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image15.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image15.webp)
 
 你可以想象一个刚刚下载你应用的新用户，他可能是在排队、在车上、在咖啡店里随手点开的。当时网络信号不一定很好，他也没有耐心看任何一篇长说明。他能容忍的迷茫时间，往往只有几秒钟。如果在这几秒钟里他看不到任何明确的引导，不知道下一步该干什么，就很容易直接关掉，然后再也不回来。
 
@@ -1508,7 +1508,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 #### 3.2 洞察需求：**马斯洛的需求层次理论**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image16.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image16.webp)
 
 在做应用之前，很多人会直接跳到功能层面思考：这块能不能再做点什么，那块要不要加个按钮。而真正决定一个应用能不能活下去的，是你究竟踩中了人哪一层次的需求，以及踩得有多准。
 
@@ -1591,7 +1591,7 @@ AI 在这里的价值，并不在于替你做决定，而是在于帮你把本�
 
 C 端应用面向的是个人用户，它们嵌在每个人的日常生活里。常见的类型包括内容类、工具类、娱乐类、社交类、学习类等等。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image17.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image17.webp)
 
 内容类应用，比如资讯类阅读、短视频平台、播客工具。它们的核心任务通常是让用户在有限的时间内，从海量信息中筛出自己感兴趣的内容。同时要保证不断有新东西吸引用户回来。
 
@@ -1617,7 +1617,7 @@ C 端应用面向的是个人用户，它们嵌在每个人的日常生活里。
 
 B 端应用面向的是企业、团队、机构或某个部门。常见类型包括 ERP（资源管理系统）、CRM（客户关系管理）、协同办公工具、各类 SaaS 工具、行业内部管理系统等。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image18.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image18.webp)
 
 这些应用和 C 端的最大不同，是它们要同时满足多个角色的需求。使用者可能是一线员工，决策者却是主管或老板，数据的拥有者可能是组织本身，审批流程可能涉及多个部门。你既要让使用者觉得好用，**又要让决策者看到** **投入产出比** **，还要让整个组织在风险和合规层面有安全感。**
 
@@ -1718,7 +1718,7 @@ B 端应用有几项特别核心的关注点。
 
 一个更加清晰的思路，是把 AI 当作几种不同的部件: ** 它可以是大脑，是眼睛，是手** 。你需要根据你的产品目标，决定它在其中负责哪一块，如果可以，最好一开始就只选一两个角色把它做好，而不是一股脑全部塞进去。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image19.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image19.webp)
 
 **当它扮演大脑时，主要负责理解和生成文字内容，或者在复杂信息之间做推理。** 比如，你做一个会议纪要助手，它要能从一段长长的录音里，抓出真正核心的讨论点，而不是简单按时间顺序罗列。你做一个学习应用，它要能根据用户的回答，判断他到底是没理解概念，还是只是粗心写错步骤，并给出不同的反馈。这类场景里，AI 的价值在于它能读懂用户说的话，理解用户给出的材料，然后生成一个带结构、带逻辑的输出。你要做的，是帮用户把问题问清楚，把上下文喂得足够准确，让这个大脑有足够信息做判断。
 
@@ -1787,7 +1787,7 @@ B 端应用有几项特别核心的关注点。
 
 首先是理解不同场景对 AI 的需求不同。就像前面 workflow 和 context 那个例子展示的：当流程和信息都确定时，AI 其实没什么发挥空间，传统自动化就够了；当流程确定但信息不确定时，AI 的价值在于理解和补全；当流程不确定时，AI 才需要做规划和探索。这个拆解方式的本质，就是在识别不确定性的来源和程度。AI 的核心能力，就是在不确定性中找到模式和关联。这套思路不只适用于 Agent，在图像识别、内容生成、推荐系统等各个领域都同样重要。比如做一个 AI 抠图工具，输入是确定的（一张图片），但边缘识别的准确性、复杂背景的处理能力，就是不确定性所在。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image20.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image20.webp)
 
 但是，AI 在解决不确定性的同时，也会引入新的不确定，它的输出是概率性的，可能理解错、推理偏、产生幻觉。而不同场景、不同用户对这种不确定性的容忍度完全不同。所以你还要问：
 
@@ -2044,7 +2044,7 @@ B 端应用有几项特别核心的关注点。
 
 **_结局永远也不会比过程更重要。_**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image21.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-a-product-thinking/images/image21.webp)
 
 ### 七款 AI 编程工具对比
 
@@ -2256,7 +2256,7 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 
 - **效果示例**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image1.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image2.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image1.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image2.webp)
 
 ---
 
@@ -2294,13 +2294,13 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 - **主要特性与工作流：** Lovable 在集成与协作方面做得很好，它自动完成诸如连接 Supabase 数据库等初始化工作，使项目搭建过程非常顺畅。你只需描述项目需求，Agent 就会帮你把各类服务串联起来，构建好基本结构。
 - **适合的用户：** 对于第一次尝试 Vibe Coding 的新手来说，Lovable 是非常友好的选择。它简化了多服务联动的复杂度，让你可以把注意力集中在提示词与迭代上，而不是环境配置。得益于高度自动化，你能很快得到一个可运行的原型。
 - **提示词过程：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image3.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image3.webp)
 - **贪吃蛇游戏效果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image4.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image5.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image4.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image5.webp)
 
 - **价格：** 相对偏贵，但如果你有学校邮箱，可以通过学生验证以半价使用。
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image6.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image6.webp)
 
 ##### 2. Cursor（IDE）
 
@@ -2308,13 +2308,13 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 - **主要特性与工作流：** Cursor 是一款集成了 AI 能力的专有 IDE，支持 Windows、macOS 和 Linux。它把代码生成、智能重写、代码库查询等功能直接嵌入在开发环境中。与 Web 工具相比，它更接近传统本地开发体验。由于是本地环境，不同电脑的配置各异，偶尔会遇到环境相关问题。好处是项目就在本机，无需再额外下载或配置运行环境，Cursor 会帮你处理很多繁琐步骤。
 - **适合的用户：** 对已有一定编程基础的用户，Cursor 是一个非常强大又熟悉的环境。但对完全零基础的新手来说，需要自己理解项目结构、依赖管理和文件组织等概念，学习曲线会更陡一些。更适合想在传统编码流程中加入 AI 助手的开发者。
 - **提示词过程：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image7.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image7.webp)
 - **贪吃蛇游戏效果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image8.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image9.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image8.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image9.webp)
 
 - **价格：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image10.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image10.webp)
 
 ##### 3. Z.ai（Web-based）
 
@@ -2322,30 +2322,30 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 - **主要特性与工作流：** Z.ai 的使用方式比较直接，但一个明显的挑战在于：你需要 **手动复制粘贴生成的代码**。平台本身缺少实时预览窗口，因此很难第一时间看到代码运行效果。
 - **适合的用户：** 这个平台要求比较“动手”的使用方式。缺少自动化意味着你必须与代码直接打交道，这对想深入理解 AI 输出内容的人来说反而是种训练。但频繁的复制粘贴会带来效率问题和出错风险。更适合想看“原生 AI 输出代码”的同学，而不是追求一键式体验的人。
 - **提示词过程：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image11.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image11.webp)
 - **贪吃蛇游戏效果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image12.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image12.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image13.png)
 
 - **价格：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image14.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image14.webp)
 
 ##### 4. Replit（Web-based）
 
 - **平台类型：** Web 端
 - **主要特性与工作流：** Replit 是一体化的在线开发与部署环境，浏览器里就可以写代码、运行程序、生成线上访问地址。开始编码前，它会给出清晰的行动计划；同时还提供可视化编辑器，你可以在预览窗口里直接改 UI，源码会自动同步更新。这样可以让你随时校验 AI 的输出是否符合预期，大幅减少来回修改的次数。
 
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image15.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image15.webp)
 
 - **适合的用户：** Replit 对新手十分友好。它简化了从编码到部署的完整闭环，无需自己额外配置服务器或托管服务。协作功能也很强，适合同学之间一起做项目或请他人远程帮忙查看代码。
 - **提示词过程：** 在构建过程中，AI 并不是一开始就完全理解需求，中间经历了大约 3 轮迭代，最终输出才达到了理想效果。
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image16.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image16.webp)
 - **贪吃蛇游戏效果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image17.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image18.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image17.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image18.webp)
 
 - **价格：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image19.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image19.webp)
 
 ##### 5. Minimax（Web-based）
 
@@ -2354,14 +2354,14 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 - **适合的用户：** 由于它会自动运行测试和修复错误，时间与 Token 消耗都比较大，但你可以清楚看到 AI 如何定位并解决问题，从学习角度看很有价值。
 - **提示词过程：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image20.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image21.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image22.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image23.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image20.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image21.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image22.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image23.webp)
 
 - **贪吃蛇游戏效果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image24.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image25.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image24.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image25.webp)
 
 - **价格：** 免费版在复杂项目中很可能无法顺利从头跑到尾，因此更推荐付费升级，以确保项目可以完整构建。
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image26.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image26.webp)
 
 ##### 6. Trae（IDE）
 
@@ -2369,13 +2369,13 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 - **主要特性与工作流：** 作为桌面应用，Trae 相比 Web 工具在性能和响应速度上通常更有优势。但它需要下载安装，对一些用户来说入门门槛稍高。同样地，由于是本地环境，不同电脑配置和依赖环境的差异，会带来一定的不确定性。优势在于，Trae 会帮助你在本地完成项目创建与运行配置，你可以直接在本机开发与调试。
 - **适合的用户：** 更适合计划长期进行 Vibe Coding 项目、并希望使用专门桌面工具的用户。对于只想“偶尔玩一下”的同学，可能不是最轻量的选择。
 - **提示词过程：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image27.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image27.webp)
 - **贪吃蛇游戏效果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image28.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image29.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image28.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image29.webp)
 
 - **价格：** 价格相对亲民，即便是免费版本，也足以完成质量不错的小项目。
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image30.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image30.webp)
 
 ##### 7. V0（Web-based）
 
@@ -2383,14 +2383,14 @@ AI Agent 是一种软件系统，它能够感知环境、做出决策，并自�
 - **主要特性与工作流：** V0 是一个专注于生成 React UI 组件的工具，由 Vercel 提供。它在生成高质量、可用于生产环境的界面方面表现出色。但在实际使用中，会遇到诸如“难以找到代码视图”、“没有清晰说明 API Key 应该配置在何处”等问题。
 - **适合的用户：** V0 非常适合专注前端和 UI/UX 设计的学生或设计师。但它并不是完整的全栈解决方案，你仍然需要使用其他平台来实现后端逻辑与 API 集成，因此如果你的目标是“一站式搭建完整应用”，它可能不是最佳首选。
 - **提示词过程：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image31.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image31.webp)
 
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image32.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image32.webp)
 
 - **贪吃蛇游戏效果：**
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image33.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image34.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image33.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image34.webp)
 - **价格：** 免费用户大约可以构建 4–5 个简单项目。
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image35.webp)
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-1/images/image35.webp)
 
 #### 3. 平台总结对比
 
@@ -2487,7 +2487,7 @@ Logo 是决定你网站第一印象的关键元素之一。想要从 AI 设计 A
 
 - 输入上述提示词 → 比对 Agent 生成的多个设计稿。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image1.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image2.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image1.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image2.webp)
 
 #### 4. 确定最终 Logo
 
@@ -2546,11 +2546,11 @@ Logo 是决定你网站第一印象的关键元素之一。想要从 AI 设计 A
   - https://colorhunt.co/
   - https://coolors.co/
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image3.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image4.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image3.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image4.webp)
 
 - **在 Google 上通过关键词搜索配色**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image5.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image5.webp)
 
 #### 4. 编写网站设计提示词
 
@@ -2572,7 +2572,7 @@ Logo 是决定你网站第一印象的关键元素之一。想要从 AI 设计 A
 
 **Mastergo 提示词示例**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image6.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image7.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image6.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image7.webp)
 
 #### 2. 审阅设计稿并提出修改意见
 
@@ -2583,7 +2583,7 @@ Logo 是决定你网站第一印象的关键元素之一。想要从 AI 设计 A
 - “调整一下颜色搭配。”
 - “把这里这一块删掉。”
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image8.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image8.webp)
 
 #### 3. 确定最终设计
 
@@ -2595,15 +2595,15 @@ Logo 是决定你网站第一印象的关键元素之一。想要从 AI 设计 A
 
 1. 打开 [Mastergo 插件网站](https://mastergo.com/community/plugin)，搜索 **seal**。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image9.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image9.webp)
 
 2. 回到设计页面，点击 **方块图标（插件）**。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image10.png)
 
 3. 选中你想转换为代码的设计区域，点击 **Generate** 按钮生成代码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image11.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image11.webp)
 
 ---
 
@@ -2682,7 +2682,7 @@ function showAlert() {
 背景为黑色，文字为白色。"
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image12.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image12.webp)
 
 #### 3. 运行网站
 
@@ -2703,7 +2703,7 @@ function showAlert() {
 - “把按钮做大一点。”
 - “字体粗一点。”
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image13.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image13.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image14.png)
 
 #### 5. 修改网站文案内容
 
@@ -2713,15 +2713,15 @@ Agent 生成的初版网站，通常会包含一些自动生成的占位文本�
 
 1. 先写好你想在 About 页面展示的内容。为了方便 Agent 理解，可以将内容保存为 Markdown 格式。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image15.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image15.webp)
 
 2. 然后在对话中告诉 Agent，将该文件中的内容应用到指定页面上。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image16.png)
 
 3. 查看应用内容后的更新版本。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image17.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image17.webp)
 
 #### 6. 插入图片
 
@@ -2729,11 +2729,11 @@ Agent 生成的初版网站，通常会包含一些自动生成的占位文本�
 
 - **示例：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image18.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image19.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image18.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image19.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image20.png)
 
 - **结果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image21.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image21.webp)
 
 ---
 
@@ -2745,11 +2745,11 @@ Agent 生成的初版网站，通常会包含一些自动生成的占位文本�
 
 - **示例：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image22.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image22.webp)
 
 - **结果：**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image23.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-articles/example0-2/images/image23.webp)
 
 ### 常见问题与排错
 
@@ -4714,7 +4714,7 @@ AI 可能输出：
 
 比如找房时，你可能同时开着三个平台，又手抄一份表格比较租金和通勤。看房回来，手机里的照片还经常和房源对不上。
 
-![分散的房源照片通过位置标记和通勤路线汇总到一张比较图中](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-idea-sources/images/rental-listing-comparison.webp)
+![分散的房源照片通过位置标记和通勤路线汇总到一张比较图中](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-idea-sources/images/rental-listing-comparison.webp)
 
 _先把这次经历记下来，不必马上想它能做成什么产品。_
 
@@ -4728,7 +4728,7 @@ _先把这次经历记下来，不必马上想它能做成什么产品。_
 
 比如活动上线前，一张海报常要改成公众号头图、小红书竖图和视频封面。尺寸一变，设计师又要重新安排标题、主体和安全区域。
 
-![同一套视觉内容在横版、方形、竖版和窄版画幅中的不同排布](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-idea-sources/images/multi-format-design.webp)
+![同一套视觉内容在横版、方形、竖版和窄版画幅中的不同排布](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-idea-sources/images/multi-format-design.webp)
 
 _同一种求助隔几天又出现，就值得保存。_
 
@@ -4768,7 +4768,7 @@ site:v2ex.com 有没有工具
 
 Product Hunt 是科技产品集中首发和争取曝光的平台。很多独立开发者和产品团队会提前准备介绍、截图和演示，在上线当天邀请用户来投票，希望冲进当日榜单前几名。
 
-![Product Hunt 首页展示当天发布的新产品、投票数和讨论](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-idea-sources/images/source-product-hunt.webp)
+![Product Hunt 首页展示当天发布的新产品、投票数和讨论](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-idea-sources/images/source-product-hunt.webp)
 
 首页每天都会换一批产品。每个产品旁边有一句简短介绍、所属分类、投票和评论。进去以后先看三处：产品用一句话怎样介绍自己、首屏截图在强调什么、评论区的人在问什么。不要只看第一名，连续看几天，更容易发现最近大家都在做哪些品类。
 
@@ -4776,7 +4776,7 @@ Product Hunt 是科技产品集中首发和争取曝光的平台。很多独立�
 
 Product Hunt 更像产品上线当天的舞台，Indie Hackers 则更像独立开发者长期交流生意的社区。这里有人公开产品进展、收入、获客过程，也会诚实地讲“做了几个月还是没有客户”。
 
-![Indie Hackers Products 页面展示独立产品和开发进展](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-idea-sources/images/source-indie-hackers.webp)
+![Indie Hackers Products 页面展示独立产品和开发进展](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-idea-sources/images/source-indie-hackers.webp)
 
 逛 Products 和案例时，不必只找收入最高的项目。一个人维护、每月稳定赚几千美元的产品，通常更容易看清它最初解决了什么小问题，第一批客户又是从哪里来的。
 
@@ -4784,7 +4784,7 @@ Product Hunt 更像产品上线当天的舞台，Indie Hackers 则更像独立�
 
 Capterra 是商业软件目录和评价网站。公司在挑选 CRM、项目管理、客服、排班等软件时，可以按品类搜索、比较产品，再阅读真实用户写下的优点和缺点。
 
-![Capterra 首页提供商业软件搜索、分类和比较入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-idea-sources/images/source-capterra.webp)
+![Capterra 首页提供商业软件搜索、分类和比较入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-idea-sources/images/source-capterra.webp)
 
 如果你已经对某类产品感兴趣，可以先在这里找到几款常见工具，再打开低分评价。反复出现的抱怨——例如移动端难用、导出格式不对、配置过于复杂——往往比官网的功能列表更值得记录。
 
@@ -4792,7 +4792,7 @@ Capterra 是商业软件目录和评价网站。公司在挑选 CRM、项目管�
 
 Google Trends 展示的是关键词搜索热度的相对变化。你可以比较几个词在不同时间、地区的趋势，也可以查看相关查询和突然升温的词。
 
-![Google Trends 首页展示实时趋势和关键词探索入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-idea-sources/images/source-google-trends.webp)
+![Google Trends 首页展示实时趋势和关键词探索入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-idea-sources/images/source-google-trends.webp)
 
 它适合在已经有了几个关键词以后使用。例如同时比较“AI meeting notes”“AI transcription”和“voice notes”，看看人们更常搜索哪种表达。曲线上升不等于一定有市场，它只能告诉你关注度正在怎样变化。
 
@@ -4803,7 +4803,7 @@ Google Trends 展示的是关键词搜索热度的相对变化。你可以比较
 
 到这里，你只需要有一页能重新找到出处的原始材料。它们可以零散，也不需要看起来像成熟的产品方向。
 
-接下来阅读 [如何判断一个好点子](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/finding-great-idea)，再分析这些线索背后是不是真实需求、影响有多大，以及哪一个更值得继续验证。
+接下来阅读 [如何判断一个好点子](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/finding-great-idea)，再分析这些线索背后是不是真实需求、影响有多大，以及哪一个更值得继续验证。
 
 ### 从真实工作流里找 AI 场景
 
@@ -4843,7 +4843,7 @@ Capgemini 对 12,000 名消费者的调查里，生成式 AI 已经进入商品�
 
 
   <a href="https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/" target="_blank" rel="noreferrer">
-![Klarna AI Assistant 的延期付款、多语言客服与退款解释界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/klarna.webp)
+![Klarna AI Assistant 的延期付款、多语言客服与退款解释界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/klarna.webp)
   </a>
   **Klarna AI Assistant：**左边不是一句“请联系人工”，而是直接给出延期付款入口；右边把退款金额逐项拆开。客服 AI 真正有用的地方，是能查到这笔订单并把动作接下去。
 
@@ -4865,7 +4865,7 @@ Klarna 的 AI 助手已经能处理退款、退货和多语言客服；ResultsCX
 
 
   <a href="https://openai.com/index/morgan-stanley/" target="_blank" rel="noreferrer">
-![Morgan Stanley AI@MS Assistant 内部界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/morgan-stanley.webp)
+![Morgan Stanley AI@MS Assistant 内部界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/morgan-stanley.webp)
   </a>
   **Morgan Stanley AI@MS Assistant：**顾问可以查询开户文件和案例状态；页面底部同时写明“仅限内部使用”和需要人工核验。它更像嵌进工作台的检索入口，而不是替顾问做决定的聊天机器人。
 
@@ -4882,7 +4882,7 @@ McKinsey 对 B2B 销售的研究把应用拆到完整交易周期：寻找线索
 
 
   <a href="https://www.notion.com/help/guides/find-answers-and-generate-reports-with-enterprise-search" target="_blank" rel="noreferrer">
-![Notion Enterprise Search 企业搜索界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/notion-enterprise-search.webp)
+![Notion Enterprise Search 企业搜索界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/notion-enterprise-search.webp)
   </a>
   **Notion Enterprise Search：**同一个问题可以跨 Notion 与 Slack 查找，用户还能在 Ask、Research 和 Build 之间切换。企业知识助手的产品形态，重点是接入现有资料和权限，而不只是上传一份 PDF。
 
@@ -4899,7 +4899,7 @@ Sun Life 的内部助手每周处理一万多次员工查询；Morgan Stanley �
 
 
   <a href="https://mena.thomsonreuters.com/en/products-services/legal/cocounsel.html" target="_blank" rel="noreferrer">
-![Thomson Reuters CoCounsel 合同起草与研究界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/cocounsel.webp)
+![Thomson Reuters CoCounsel 合同起草与研究界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/cocounsel.webp)
   </a>
   **Thomson Reuters CoCounsel：**左侧显示“起草”和“研究”两项任务的进度，完成后再把草稿打开到 Word。AI 先读材料、找依据、起草，专业人员仍在熟悉的文档里复核和定稿。
 
@@ -4916,7 +4916,7 @@ Thomson Reuters 的 2025 年调查显示，法律、税务、风控等专业服�
 
 
   <a href="https://github.blog/changelog/2024-10-29-github-copilot-code-review-in-github-com-private-preview/" target="_blank" rel="noreferrer">
-![GitHub Copilot 在 Pull Request 中给出代码审查建议](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/github-copilot-review.webp)
+![GitHub Copilot 在 Pull Request 中给出代码审查建议](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/github-copilot-review.webp)
   </a>
   **GitHub Copilot Code Review：**Copilot 被选为审查人后，会把问题落到具体代码行，并给出可提交的修改；开发者仍能查看差异、加入批次或拒绝建议。价值发生在 Pull Request 里，不在另一个聊天窗口里。
 
@@ -4931,7 +4931,7 @@ Thomson Reuters 的 2025 年调查显示，法律、税务、风控等专业服�
 
 
   <a href="https://blog.siemens.com/2026/02/the-digital-enterprise-and-the-synthesis-of-industrial-ai-digital-twin-and-data/" target="_blank" rel="noreferrer">
-![Siemens Engineering Copilot 与 TIA Portal 并排运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/siemens-industrial-copilot.webp)
+![Siemens Engineering Copilot 与 TIA Portal 并排运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/siemens-industrial-copilot.webp)
   </a>
   **Siemens Engineering Copilot：**右侧 Copilot 与左侧 TIA Portal 同时打开。工程师提问时，助手面对的是当前自动化项目、设备结构和工程文档，而不是脱离现场回答一个宽泛的“机器为什么坏了”。
 
@@ -4948,7 +4948,7 @@ Siemens Industrial Copilot 已用于解释设备信息、查找维修依据和�
 
 
   <a href="https://www.abridge.com/product" target="_blank" rel="noreferrer">
-![Abridge 将临床记录与原始医患对话关联的界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/abridge-note.webp)
+![Abridge 将临床记录与原始医患对话关联的界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/abridge-note.webp)
   </a>
   **Abridge：**上方是生成的病历段落，下方是对应的医患对话，点击 Linked Evidence 可以回到原话。这里最重要的不是“自动写得快”，而是医生能追溯、修改并确认每条记录。
 
@@ -4965,7 +4965,7 @@ Abridge 等环境式记录产品，会从医患对话生成结构化病历草稿
 
 
   <a href="https://www.canva.com/newsroom/news/magic-studio/" target="_blank" rel="noreferrer">
-![Canva Magic Switch 的改尺寸、翻译与转文档菜单](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/canva-magic-switch.webp)
+![Canva Magic Switch 的改尺寸、翻译与转文档菜单](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/canva-magic-switch.webp)
   </a>
   **Canva Magic Switch：**同一份设计可以继续改尺寸、翻译或转成文档。对内容团队来说，这正是“一份确认过的素材，接着做出多个渠道版本”的那段高频工作。
 
@@ -4986,7 +4986,7 @@ C 端应用最容易犯的错，是把同一个聊天框换七种提示词。下
 
 
   <a href="https://www.aboutamazon.com/news/retail/amazon-rufus" target="_blank" rel="noreferrer">
-![Amazon Rufus 购物助手界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/amazon-rufus.webp)
+![Amazon Rufus 购物助手界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/amazon-rufus.webp)
   </a>
   **Amazon Rufus：**入口就在 Amazon 搜索框下面，问题也围绕购物展开：比较桌布、为 Prime Day 做准备、寻找适合睡眠监测的手表。它能继续接到真实商品，而不是只给一段泛泛建议。
 
@@ -4999,7 +4999,7 @@ C 端应用最容易犯的错，是把同一个聊天框换七种提示词。下
 
 
   <a href="https://www.expedia.com/newsroom/expedia-launches-conversational-trip-planning-powered-by-chatgpt-to-inspire-members-to-dream-about-travel-in-new-ways/" target="_blank" rel="noreferrer">
-![Expedia 对话式旅行规划界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/expedia-chatgpt.webp)
+![Expedia 对话式旅行规划界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/expedia-chatgpt.webp)
   </a>
   **Expedia 对话式旅行规划：**用户从“蜜月去 Maui 还是 Kauai”聊起，得到酒店建议后可以直接保存到 Trips。真正形成产品闭环的，是聊天结果进入了收藏、行程和预订。
 
@@ -5012,7 +5012,7 @@ C 端应用最容易犯的错，是把同一个聊天框换七种提示词。下
 
 
   <a href="https://blog.duolingo.com/duolingo-max/" target="_blank" rel="noreferrer">
-![Duolingo Max 的巴黎咖啡馆角色扮演练习](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/duolingo-roleplay.webp)
+![Duolingo Max 的巴黎咖啡馆角色扮演练习](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/duolingo-roleplay.webp)
   </a>
   **Duolingo Max Roleplay：**练习不是一句“和 AI 聊法语”，而是一个具体任务：在巴黎咖啡馆点餐。场景、角色、目标和奖励都已经设好，用户打开后马上就能练一轮。
 
@@ -5025,7 +5025,7 @@ C 端应用最容易犯的错，是把同一个聊天框换七种提示词。下
 
 
   <a href="https://firefly.adobe.com/" target="_blank" rel="noreferrer">
-![Adobe Firefly 文生图工作界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/adobe-firefly.webp)
+![Adobe Firefly 文生图工作界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/adobe-firefly.webp)
   </a>
   **Adobe Firefly：**真实界面里不只有一个提示词框，还能选择模型、比例、内容类型、视觉强度和参考图，并比较多组结果。个人创作产品要给用户继续修改的控制，而不是只剩“再生成一次”。
 
@@ -5038,7 +5038,7 @@ C 端应用最容易犯的错，是把同一个聊天框换七种提示词。下
 
 
   <a href="https://blog.duolingo.com/duolingo-max/" target="_blank" rel="noreferrer">
-![Duolingo Max Explain My Answer 的答错解释界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/duolingo-explain.webp)
+![Duolingo Max Explain My Answer 的答错解释界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/duolingo-explain.webp)
   </a>
   **Explain My Answer：**中间这张界面直接引用用户刚才的答案，解释为什么复数 vestidos 要配 gustan，并允许继续要例子。它不是重新讲一节语法课，而是接住“我刚才到底错在哪”这一刻。
 
@@ -5051,7 +5051,7 @@ C 端应用最容易犯的错，是把同一个聊天框换七种提示词。下
 
 
   <a href="https://newsroom.spotify.com/2023-02-22/spotify-debuts-a-new-ai-dj-right-in-your-pocket/" target="_blank" rel="noreferrer">
-![Spotify AI DJ 播放界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/spotify-ai-dj.webp)
+![Spotify AI DJ 播放界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/spotify-ai-dj.webp)
   </a>
   **Spotify AI DJ：**DJ 是首页里的一个持续播放入口，下面直接接着曲目和播放控制。它依靠的是用户长期收听记录、Spotify 的内容库和下一首播放动作，而不只是生成一段像主持人的话。
 
@@ -5064,7 +5064,7 @@ Spotify 的 AI DJ 不只是生成一句介绍，它基于用户长期的收听�
 
 
   <a href="https://turbotax.intuit.com/personal-taxes/mobile-apps/turbotax/" target="_blank" rel="noreferrer">
-![TurboTax 中 Intuit Assist 比较两年税收抵免的界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/intuit-assist.jpg)
+![TurboTax 中 Intuit Assist 比较两年税收抵免的界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/images/products/intuit-assist.jpg)
   </a>
   **TurboTax 中的 Intuit Assist：**它不是从零谈税务，而是拿用户今年与去年的抵免金额做比较，再给出“还能申请哪些抵免”等下一步问题。个人财务助手的基础，是用户自己的数据和当下任务。
 
@@ -6177,7 +6177,7 @@ export default {
 
 打开 [魔搭社区创空间](https://modelscope.cn/studios)。页面顶部会显示“创建空间 → 搭建应用 → 发布空间 → 分享创意”的流程。
 
-![魔搭社区创空间首页，页面顶部展示创建、搭建、发布和分享流程](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/01-studios-home.webp)
+![魔搭社区创空间首页，页面顶部展示创建、搭建、发布和分享流程](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/01-studios-home.webp)
 
 点击页面中的创建按钮，或直接访问 [创建创空间](https://modelscope.cn/studios/create)。未登录时，平台会先要求登录或注册。国内站 `modelscope.cn` 和国际站 `modelscope.ai` 的账号、令牌与内容并不互通；面向国内用户时通常选择国内站。
 
@@ -6185,7 +6185,7 @@ export default {
 
 在“创建创空间”页面填写基础信息：
 
-![魔搭社区“创建创空间”页面，包含名称、所有者、许可证、可见性和描述等基础信息](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/02-create-studio.jpg)
+![魔搭社区“创建创空间”页面，包含名称、所有者、许可证、可见性和描述等基础信息](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/02-create-studio.jpg)
 
 1. **所属账号或组织**：决定链接中的拥有者名称。
 2. **空间名称**：建议使用小写英文字母、数字和连字符，例如 `my-portfolio`。
@@ -6199,7 +6199,7 @@ export default {
 
 下面是一个已经运行的 Static 创空间文件页。可以看到网页入口 `index.html` 直接位于仓库根目录，同时还有平台生成或项目自带的 `README.md`。
 
-![魔搭社区 Static 创空间文件页，根目录包含 index.html 和 README.md](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/04-studio-files.jpg)
+![魔搭社区 Static 创空间文件页，根目录包含 index.html 和 README.md](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/04-studio-files.jpg)
 
 进入新空间的 **文件** 页，点击新增或上传文件，把 `index.html`、CSS、JavaScript 和图片等发布文件传上去。上传完成后，文件列表的根目录必须直接出现 `index.html`，不能多包一层 `dist/`、`build/` 或项目目录。
 
@@ -6209,7 +6209,7 @@ export default {
 
 文件上传完成后，进入创空间的部署设置，在 SDK 类型中选择 **Static**。页面会提示 Static 适合展示已经准备好的 HTML 页面；同一区域也会提供 Gradio、Streamlit 和 Docker 等类型。
 
-![魔搭社区创空间的部署设置，在“接入 SDK”区域选择 Static](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/03-select-static.webp)
+![魔搭社区创空间的部署设置，在“接入 SDK”区域选择 Static](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-modelscope-static-site/images/modelscope-static-site/03-select-static.webp)
 
 再次确认仓库根目录有 `index.html`，然后保存部署设置。
 
@@ -7076,13 +7076,100 @@ AI 可能输出：
 
 这就是我们在写代码之前要想清楚的事。代码只是工具，**理解用户、找准问题**才是第一步。
 
+##### 1.3 把结论写成一页需求说明
+
+到这里，访谈记录和收敛结论还分散在上面几个提示框里。开始写代码之前，建议把它们整理成一页需求说明。这样做有两个用处：
+
+- **先和自己对齐范围**：写下来以后，哪些事第一版要做、哪些暂时不做，一眼就能看清；
+- **作为交给 AI IDE 的输入**：下一节 2.1.2 可以直接使用这份说明，AI 不需要再猜用户和场景。
+
+需求说明不需要很长，一页、六项就够了。可以把下面的模板复制到自己的文档里，按括号里的提示填写：
+
+```markdown
+# 需求说明：（产品或功能名称）
+
+1. 给谁用、在什么场景下用：
+   （先选一类参与方，再按行为或动机选出一个细分群体，写清他在什么时刻用）
+
+2. 要解决的问题：
+   当我……时，我想要……，以便于……
+
+3. 第一版只做的核心流程：
+   （用户从第一步到拿到结果，一共几步）
+
+4. 第一版不做什么：
+   （列出明确推迟的功能，避免范围越写越大）
+
+5. 怎样算验证成功：
+   （写成能观察到的结果，而不是“好用”“高效”这样的形容词）
+
+6. 还没确认的问题：
+   （需要再问用户或做完原型才能回答的事）
+```
+
+第 1 项最容易写得太宽。可以按下面三步来定：
+
+1. **列出参与方**：先把这个场景里互不重叠的参与方列出来。以电商为例，有店铺运营、买家、设计师等，他们的需求各不相同，不要混在一起写；
+2. **选一类参与方，再细分**：在选中的参与方里，按行为或动机分组，而不是按年龄、性别这类人口属性。比如同样是运营，“同时管好几个店、要批量上新”和“只管一个店、精细打磨每个商品”就是两类人；
+3. **给细分群体打分，挑一个**：从两个角度比较。一是影响，这类人多不多、问题出现得频不频繁；二是需求未被满足的程度，他们现在的办法有多麻烦。最后只挑一个你最想服务的群体。
+
+::: info 💡 为什么第一版仍然要足够小？
+
+第 4 项决定了第一版有多小。AI 让开发变快了，但第一版的范围仍然要足够小。正因为做得快，我们才可以先满足一个群体的需求，拿去测试，再根据反馈迭代，一小步一小步地把产品能力补上，也就是“小步快跑”。
+
+:::
+
+第 2 项可以直接使用 [JTBD 句式](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-jobs-to-be-done)；如果你在上一章用过[双钻模板](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-double-diamond)，Define 和 Deliver 阶段的答案也可以填到这里。
+
+::: info 📋 示例：电商内容工作台的需求说明
+
+下面的内容全部来自 1.1 的访谈和 1.2 的结论，没有引入新的信息。
+
+**1. 给谁用、在什么场景下用**
+- 参与方选的是店铺运营。在运营里，我们选的细分群体是同时管理多个店铺、要批量上新做测试的运营：他们在准备一批新商品上架、需要快速做出首版图文进行测试的时候使用。
+
+**2. 要解决的问题**
+- 当我要一次上架多个新商品时，我想要快速得到一批能用于测试的首版主图和文案，以便于我先上架看看有没有人买，再决定哪些商品值得认真做。
+
+**3. 第一版只做的核心流程**
+1. 批量导入商品信息和图片（Excel 或页面填写）；
+2. 系统生成每个商品的主图草稿、标题和 1–2 句卖点文案；
+3. 运营筛选和修改草稿；
+4. 把好用的一套方案存成模板，下次直接套用。
+
+**4. 第一版不做什么**
+- 不做上架时间、调价等节奏管理；
+- 不做多店铺、多商品的统一管理；
+- 不做“看数据”这类数据分析功能；
+- 不追求一次生成精修图，首版内容只需达到测试要求。
+
+**5. 怎样算验证成功**
+- 运营能在一个页面里完成一批商品的导入、生成和修改；
+- 例如：请 3 位运营试用，其中至少 2 位愿意直接用生成的草稿上架测试；
+- 存过的模板，下次做同类商品时能直接找到并套用。
+
+**6. 还没确认的问题**
+- 一批通常有多少个商品，Excel 里需要哪些字段？
+- 运营更习惯从零生成，还是先选一个模板再生成？
+
+:::
+
+::: warning ⚠️ 两个常见误区
+
+- **把需求说明写成功能清单**：只罗列“上传、生成、编辑、导出、分享……”，却没写给谁用、解决什么问题。功能越列越多，AI 也会照单全收。先写清第 1、2 项，再决定需要哪些功能。
+- **只写“做什么”，不写“不做什么”**：第 4 项最容易被跳过，但它最能防止范围膨胀。交给 AI IDE 时，“不做什么”能提醒它不要自行补功能。
+
+:::
+
+写好以后，就可以进入第 2 节。2.1.2 会直接用到这份说明。项目变大、功能变多以后，可以把它升级成第三阶段[《Spec Coding》](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/spec-coding)里的完整 Spec，补上业务规则、边界与异常和验收标准。
+
 <div style="margin: 50px 0;">
 </div>
 
 #### 2. 用 AI IDE 做出第一版原型
 
 ::: info 💡 工具说明
-AI IDE 的界面、可用模型和额度会持续变化。选择你当前能够稳定使用的工具即可；本章关注的需求表达、生成、检查和修改流程并不依赖某个品牌。需要使用命令行编程工具时，可以参考[现代 AI CLI 工具](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli)。
+AI IDE 的界面、可用模型和额度会持续变化。选择你当前能够稳定使用的工具即可；本章关注的需求表达、生成、检查和修改流程并不依赖某个品牌。需要使用命令行编程工具时，可以参考[现代 AI CLI 工具](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli)。
 :::
 
 需求已经足够清楚后，我们先实现一个单页面，用较小的成本检查核心流程。
@@ -7121,7 +7208,7 @@ AI 会返回一份结构化的需求和对应的提示词。你自己检查一�
 
 ###### 2.1.2 跳过扩写环节：直接把你整理好的业务文档丢给 AI
 
-如果前面的章节已经整理好需求说明，可以直接套用下面的格式交给 AI IDE，适合范围清楚、准备开始实现的情况：
+如果你已经按 [1.3](#requirements-one-pager) 整理好需求说明，可以直接套用下面的格式交给 AI IDE，适合范围清楚、准备开始实现的情况：
 
 ```
 请参考下面的业务逻辑实现一个单页面应用，用来验证核心流程。
@@ -7161,7 +7248,7 @@ AI 会返回一份结构化的需求和对应的提示词。你自己检查一�
 ```
 
 通常 AI 会生成类似下面的结构化提示词：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-14-25-56.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-14-25-56.webp)
 
 你可以把这份提示词稍作修改后，发给 AI IDE 生成代码。
 
@@ -7186,13 +7273,13 @@ AI IDE 的界面和确认方式会持续变化，这里只保留一条稳定的�
 如果 AI 停止运行，先查看它是否在等待确认，或者终端中是否已经启动了开发服务。不要只按教程寻找某个固定按钮。
 
 完成第一轮生成后，可以得到一版包含主要结构的页面：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-14-50-34.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-14-50-34.webp)
 
 初版页面已经包含主要结构，但信息层级和间距还可以继续调整。此时可以通过具体描述和页面截图，让 AI 修改界面。调整以后，页面会更容易阅读和操作：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-05-16.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-05-16.webp)
 
 你可以根据需求继续删减功能，例如：“第一版暂时不需要批量导入，请先移除”，“左侧字段太多，请只保留完成核心流程所需的内容”。也可以参考成熟产品的信息结构和交互方式，但应重新组织品牌、文案和视觉细节，而不是直接复制页面。完成后可以得到：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-15-18.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-15-18.webp)
 
 ##### 2.3 遇到报错怎么办
 
@@ -7234,12 +7321,12 @@ AI IDE 的界面和确认方式会持续变化，这里只保留一条稳定的�
 核心流程可以运行后，再检查导航、设置和列表等页面。初版中有些入口可能只有外观，还没有对应行为。
 
 可以让 AI 对照需求列出尚未实现的页面，再按优先级逐个补充。每完成一个页面，都实际点击并检查关键交互：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-17-55.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-17-55.webp)
 
 等待片刻后，我们能够看到程序已经在之前的基础上补充了多个页面和可交互功能：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-23-40.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-23-40.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-23-53.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-23-53.webp)
 
 完成后，按真实使用顺序走一遍流程。记录无法点击、跳转错误或内容缺失的位置，再逐项修复。
 
@@ -7306,21 +7393,21 @@ AI IDE 的界面和确认方式会持续变化，这里只保留一条稳定的�
 ```
 
 可以先准备一个正常示例，再补充信息缺失、图片格式不符等边界示例：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-30-30.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-30-30.webp)
 
 点击后得到结果：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-31-23.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-31-23.webp)
 
 如果结果立即出现，用户无法判断系统是否正在处理。可以加入一个短暂的加载状态，用来验证等待过程中的按钮、提示和占位内容：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-50-05.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-50-05.webp)
 
 走通生成功能后，我们还要确保模板库的功能正常，从页面的生成卡片上我们能够知道模版库收藏功能并没有实现，此时需要和 AI 进一步深入对话，“请你帮我确保需求 [此处粘贴上面的 2. 的内容] 正常，可以点击一个结果收藏对应的模板，点开后能看到生成参数”
 
 第一次实现通常还会遗漏一些状态，可以结合截图逐项修正：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-57-14.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-57-14.webp)
 
 最后得到预期结果：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-16-12-56.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-16-12-56.webp)
 
 除了手动体验需求流程，你还可以让 AI 帮你直接做需求检查，例如：
 
@@ -7428,7 +7515,7 @@ AI 可以辅助生成检查清单，但最终仍要由你实际操作并确认�
 
 这次选择的是 Framer 官网展示的一张页面。画面里有大标题、导航栏、紫色山景和几个小按钮，主要内容很清楚。
 
-![老师放进 Trae 的网页截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/framer-official-interface.webp)
+![老师放进 Trae 的网页截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/framer-official-interface.webp)
 
 _截图来源：[Framer Website Builder](https://www.framer.com/solutions/website-builder/)_
 
@@ -7447,7 +7534,7 @@ _截图来源：[Framer Website Builder](https://www.framer.com/solutions/websit
 Trae 创建了 `index.html`、`styles.css` 和 `script.js`，随后把网页启动在浏览器里。下面的动图是这次实际生成的结果：
 
 
-![Trae 根据截图实际生成并运行的 Wishlabs 网页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-wishlabs.webp)
+![Trae 根据截图实际生成并运行的 Wishlabs 网页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-wishlabs.webp)
 
 先别急着研究代码，我们只看页面。对照前面的参考图，你会发现：
 
@@ -7514,7 +7601,7 @@ Trae 创建了 `index.html`、`styles.css` 和 `script.js`，随后把网页启�
 
 SaaS 产品经常使用数据看板来展示项目进度、销售情况或用户数据。下面这张 Linear 页面里，左边是导航，右边是看板列表，整体结构非常清楚。
 
-![Linear 官方 Dashboard 界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/linear-official-dashboard.webp)
+![Linear 官方 Dashboard 界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/linear-official-dashboard.webp)
 
 _课堂参考图：[Linear Dashboards](https://linear.app/docs/dashboards)_
 
@@ -7527,7 +7614,7 @@ _课堂参考图：[Linear Dashboards](https://linear.app/docs/dashboards)_
 
 Trae 做出了侧边栏、数据卡片和图表。下面是页面打开后的操作动图：
 
-![Trae 根据截图实际生成并运行的数据看板](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-linear-dashboard.webp)
+![Trae 根据截图实际生成并运行的数据看板](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-linear-dashboard.webp)
 
 这里的数据不是真实业务数据，但没有关系。第一次练习的重点，是把看板的结构做出来。等页面稳定以后，再把标题、数字和图表内容换成你自己的。
 
@@ -7535,7 +7622,7 @@ Trae 做出了侧边栏、数据卡片和图表。下面是页面打开后的操
 
 如果你对普通网页没有兴趣，也可以拿游戏画面来练习。老师选择了一张 Minecraft 的方块世界截图作为参考。
 
-![Minecraft Creative Mode 真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/minecraft-official-creative-mode.webp)
+![Minecraft Creative Mode 真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/minecraft-official-creative-mode.webp)
 
 _课堂参考图：[Microsoft Learn 的 Minecraft 示例](https://learn.microsoft.com/en-us/xbox/accessibility/xbox-accessibility-guidelines/108)_
 
@@ -7548,7 +7635,7 @@ _课堂参考图：[Microsoft Learn 的 Minecraft 示例](https://learn.microsof
 
 Trae 做出了一个可以玩的网页小游戏。人物可以移动，也可以放置和破坏方块：
 
-![Trae 根据截图实际生成并运行的 2D 方块小游戏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-block-game.webp)
+![Trae 根据截图实际生成并运行的 2D 方块小游戏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-block-game.webp)
 
 先看清楚：上面这个结果是一个 **2D 横版游戏**。人物只能在平面里移动，画面没有前后远近。因为老师只说了“方块小游戏”，没有告诉 Trae 一定要做成 3D，所以它选择了比较简单的做法。
 
@@ -7565,7 +7652,7 @@ Trae 做出了一个可以玩的网页小游戏。人物可以移动，也可以
 
 这次 Trae 做出了一个真正的 3D 方块世界：
 
-![Trae 根据截图实际生成并运行的 3D 方块小游戏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-3d-block-game.webp)
+![Trae 根据截图实际生成并运行的 3D 方块小游戏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/clone-your-favorite-app/images/trae-generated-3d-block-game.webp)
 
 点击“开始游戏”后，可以用 `WASD` 走动，用鼠标转动视角。左键破坏方块，右键放置方块，数字键可以更换方块。
 
@@ -7753,7 +7840,7 @@ AI IDE 可以帮你找到可能有问题的代码，但页面好不好用，还�
 
 AI 请求往往需要几秒甚至更久。点击以后，按钮应该显示“生成中”并暂时避免重复提交；已经填写的内容不要突然消失，页面也不要立刻跳到一个空白结果区。
 
-![商品内容生成过程中的等待状态](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-50-05.webp)
+![商品内容生成过程中的等待状态](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/building-prototype/images/index-2026-01-14-15-50-05.webp)
 
 *等待状态不需要复杂动画。让用户看见任务已经开始，并且原来的输入和页面位置仍然保留，就已经解决了大部分困惑。*
 
@@ -7763,7 +7850,7 @@ AI 请求往往需要几秒甚至更久。点击以后，按钮应该显示“�
 
 AI 返回内容不是流程的终点。用户通常还要检查事实、修改措辞，并把结果带到下一步。因此结果区至少应提供一种可继续操作的方式，例如编辑、复制、下载或重新生成。
 
-![图片理解和文案生成接入后的结果页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-35-41.webp)
+![图片理解和文案生成接入后的结果页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-35-41.webp)
 
 *这个页面先保留用户上传的商品图片，再把识别和生成结果放在下方。用户可以对照原图检查内容，而不是只能接受模型的一次回答。*
 
@@ -7903,7 +7990,7 @@ AI 返回内容不是流程的终点。用户通常还要检查事实、修改�
 
 ##### 5.3 继续做这个作品，还是换一个？
 
-你可以继续完成贯穿本章的电商内容工作台，也可以把同一套方法用到自己的场景，例如会议整理、有声内容、学习辅助或行业小工具。[AI 应用场景参考](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/appendix-industry-scenarios/index.md)可以帮助你扩展方向。
+你可以继续完成贯穿本章的电商内容工作台，也可以把同一套方法用到自己的场景，例如会议整理、有声内容、学习辅助或行业小工具。[AI 应用场景参考](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/appendix-industry-scenarios/index.md)可以帮助你扩展方向。
 
 不必为了显得原创而重新做一个陌生题目。一个来自自己学习、工作或生活的问题，即使范围很小，只要经过真实试用和修改，也比功能很多但没有人用过的页面更有说服力。
 
@@ -9082,7 +9169,7 @@ AI 回复说："产后妈妈这个群体其实很好找，推广成本可以很�
 
 AI 只负责其中适合它的部分。登录、支付、保存文件和页面跳转都有明确规则，仍然使用普通程序来完成。
 
-![商品图片经过图片理解后生成商品描述的实际页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-35-41.webp)
+![商品图片经过图片理解后生成商品描述的实际页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-35-41.webp)
 
 *在这个原型中，用户先上传商品图片，页面识别出商品信息，再生成可以继续编辑的描述和卖点。*
 
@@ -9176,7 +9263,7 @@ API Key 是应用调用模型时使用的凭证。创建以后，把它放进本
 
 发出第一次请求后，可以打开 Usage 或 Billing 页面看看是否出现了新的调用记录。这里还会显示余额和 Quota（额度）。遇到请求失败时，先确认是代码没有发出去、平台拒绝了请求，还是账号已经没有可用额度。
 
-![DeepSeek 用量页面，包含余额、月度支出和调用趋势](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-13-57-41.webp)
+![DeepSeek 用量页面，包含余额、月度支出和调用趋势](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-13-57-41.webp)
 
 *DeepSeek 的 Usage 页面会显示调用量、消耗和余额。*
 
@@ -9186,13 +9273,13 @@ API Key 是应用调用模型时使用的凭证。创建以后，把它放进本
 
 模型广场或 Models 页面用来查看平台当前提供哪些文本、图片、语音和视频模型。点进详情页以后，注意复制代码中使用的 Model ID；它可能和页面上显示的中文名称不同。
 
-![SiliconFlow 模型广场，左侧按文本、图像、视频和语音区分能力](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-05-04.webp)
+![SiliconFlow 模型广场，左侧按文本、图像、视频和语音区分能力](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-05-04.webp)
 
 *SiliconFlow 的模型广场可以按文本、图像、视频和语音筛选模型。*
 
 有些平台还要求先选择 Region（区域），或者创建一个 Deployment（推理服务），然后才会给出 Base URL 和 Endpoint。遇到这种情况，直接跟着平台的快速接入向导完成，不要把控制台页面的网址当成 API 地址。
 
-![火山方舟快速 API 接入页面，展示 API Key 与快速测试步骤](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-23-13-01.webp)
+![火山方舟快速 API 接入页面，展示 API Key 与快速测试步骤](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-23-13-01.webp)
 
 *火山方舟的快速接入页面把创建 Key、选择模型和运行示例放在了一起。*
 
@@ -9303,7 +9390,7 @@ response = client.chat.completions.create(
 )
 ```
 
-![在 AI IDE 中接入图片理解接口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-34-36.webp)
+![在 AI IDE 中接入图片理解接口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-15-34-36.webp)
 
 *先让用户确认模型识别出的商品信息，再生成文案，通常比直接从图片生成最终文案更容易发现错误。*
 
@@ -9335,7 +9422,7 @@ curl -X POST https://ark.cn-beijing.volces.com/api/v3/images/generations \
   }'
 ```
 
-![图片生成能力接入产品后的效果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-23-21-13.webp)
+![图片生成能力接入产品后的效果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/integrating-ai-capabilities/images/index-2026-01-20-23-21-13.webp)
 
 图片 URL 往往有有效期。原型可以直接展示，准备上线时要根据服务条款决定是否转存，并记录提示词、模型版本和生成时间。
 
@@ -9543,7 +9630,7 @@ flowchart LR
 学完这一章，你将会**掌握和程序员相似的开发流程**。
 
 ::: tip 💡 进阶提示
-如果你有一定的编程基础，想要提前使用更强大的工具，可以结合参考 [现代 CLI Coding 工具](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli) 使用命令行方式进行开发。
+如果你有一定的编程基础，想要提前使用更强大的工具，可以结合参考 [现代 CLI Coding 工具](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli) 使用命令行方式进行开发。
 :::
 
 
@@ -9589,13 +9676,13 @@ flowchart LR
 
 你可以把 IDE 理解成专门用来“编辑、管理、运行和调试”代码的程序。早期的 IDE 外观非常“原始”，几乎完全通过键盘操作。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image1.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image1.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image2.png)
 
 终端界面（Terminal） 图片来源：https://en.wikipedia.org/wiki/File:Emacs-screenshot.png
 
 知名且功能成熟的“内置 IDE”如 `Vim`，常用于服务器远程操作。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image3.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image3.webp)
 
 为了更高效，我们需要支持鼠标操作的现代 IDE，通常包含：
 
@@ -9605,15 +9692,15 @@ flowchart LR
 
 现代 IDE 往往还内置 Git 等工具。最流行的是微软的 **[Visual Studio Code (VS Code)](https://code.visualstudio.com/)**，它轻量且可扩展。虽然也有 JetBrains 全家桶等专业 IDE，但 VS Code 对初学者最友好。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image4.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image4.webp)
 
 VS Code 的核心理念是“一切皆插件”。它通过插件机制支持各种语言，安装 Python 插件就是 Python IDE，安装 C++ 插件就是 C++ IDE。不装插件时，它只是个高级文本编辑器。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image5.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image5.webp)
 
 甚至可以用来编辑 Markdown 文档。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image6.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image6.webp)
 
 总之，IDE 是一套帮助开发者高效写代码和运行程序的工具集。
 
@@ -9640,7 +9727,7 @@ VS Code 的核心理念是“一切皆插件”。它通过插件机制支持各
 
 你可以下载安装 VS Code，在点击右上角的侧边栏入口，打开 AI 功能区域，体验这些能力。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image7.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image7.webp)
 
 不过，VS Code 并不是 AI 能力最强的 IDE。对于需要大量 AI 辅助编码的场景，我们往往希望使用“更聪明、效率更高”的工具——好的 AI IDE 能显著节省写代码和改 Bug 的时间。下面我们会介绍几款目前比较流行的 AI IDE，你可以根据个人喜好选择任意一款 AI IDE 使用。
 
@@ -9667,7 +9754,7 @@ Antigravity 是 Google 在 2025 年 11 月与 Gemini 3 一同发布的全新 AI 
 
 ##### [Trae](https://www.trae.ai/)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image8.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image8.webp)
 
 Trae 是字节跳动推出的一款 AI 编程助手，支持 100 多种编程语言，并能集成到主流 IDE 中。它的功能包括：用自然语言生成代码、自动调试、把设计稿转换为 React/Vue 组件等。在 2025 年 8 月的更新之后，Trae 新增了智能依赖导入、重命名建议、任务清单管理等功能；SOLO 模式也开始支持后端代码生成和技术架构文档编辑。
 :::
@@ -9680,7 +9767,7 @@ Cursor 是 Anysphere 开发的一款 AI 代码编辑器，基于 VS Code 定制�
 
 目前，Cursor 可以说是“带前端界面的 AI IDE”中综合体验最好的一款之一，用户数量庞大，功能迭代频率也很高。它最大的缺点是价格较高——专业版大约需要每月 20 美元。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image9.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image9.webp)
 :::
 
 ::: details Qoder
@@ -9689,7 +9776,7 @@ Cursor 是 Anysphere 开发的一款 AI 代码编辑器，基于 VS Code 定制�
 
 Qoder 是阿里巴巴推出的一款强调“透明协作”和“增强上下文工程能力”的 AI IDE。它通过 Action Flow 支持把任务拆解成多个步骤，并实时跟踪 AI 的执行过程；还支持多模型动态路由和任务状态机管理，非常适合在中大型项目中做架构治理和对遗留系统进行“反向工程”分析。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image10.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image10.webp)
 :::
 
 ::: details CodeBuddy
@@ -9698,7 +9785,7 @@ Qoder 是阿里巴巴推出的一款强调“透明协作”和“增强上下�
 
 CodeBuddy 是腾讯云推出的一款 AI 编程工具，强调对中文指令的支持以及企业级合规能力。它提供代码补全、批量代码审查和多模型切换等功能；其中的 Craft 智能体可以实现多文件代码生成和 API 集成。企业版支持私有化部署，并通过了三级等保认证，适合金融、医疗等对数据安全要求较高的行业。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image11.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image11.webp)
 :::
 
 ::: details VS Code + Cline
@@ -9707,9 +9794,9 @@ CodeBuddy 是腾讯云推出的一款 AI 编程工具，强调对中文指令的
 
 Cline 是 VS Code（Visual Studio Code）的一款 AI 编程 Agent 插件，可以通过配置不同的 API 端点来灵活切换所使用的大模型。Cline 支持多模态输入、MCP 工具扩展以及成本监控，所有操作都需要用户确认后才会执行。它非常适合用于快速验证想法，或与现有开发流程集成。基础功能是免费的，企业版则支持在私有环境中部署模型。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image13.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image13.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image14.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image14.webp)
 :::
 
 ::: details Kiro
@@ -9776,28 +9863,28 @@ Trae 分为国际版和中国版。国际版需要能够访问海外网络，但
 
 从界面形态上看，Trae 与我们日常使用的 VS Code 高度相似：同样是左侧资源管理器、中间编辑区、右侧扩展面板的经典三栏布局。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image17.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image17.webp)
 
 右侧的侧边栏就是 Copilot 交互窗口，也可以理解为 Agent 窗口。如果你暂时看不到它，可以点击 Trae 右上角的侧边栏图标将其打开。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image18.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image18.webp)
 
 打开侧边栏之后，你会看到一个 `Builder` 选项，这就是 Agent 模式。简单理解，它相当于 z.ai 的“本地版”，可以帮你操作本机环境，安装运行环境、打开网页等。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image19.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image19.webp)
 
 点击 “Builder” 后，你会看到 “Chat” 模式和 “Builder with MCP” 模式：
 
 - **Chat 模式**：主要用于和当前文件夹里的代码对话，或者当作普通聊天模型来使用。（你可以通过左上角的 “File” 菜单打开一个文件夹，在这个文件夹中进行编辑操作。在这种情况下，Builder 创建或修改的文件都只会发生在这个文件夹内部。）
 - **Builder with MCP 模式**：为 Agent 提供了更多可用工具（例如把语言模型和其他软件联通起来、查询天气等）。你可以简单理解为：MCP 能让语言模型更方便地调用各种外部工具。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image20.png)
 
 在下面的区域，你还会看到模型选择选项，点击即可修改当前使用的大模型。在中国版中，你可以选择使用 Kimi k2 或 GLM 等国内模型；如果你使用的是国际版 Trae，还可以选择 ChatGPT 或 Claude 等海外模型。不过，由于国内大模型发展非常快，Kimi、Qwen、GLM 等在很多任务上的实际体验已经接近 Claude 3.5 或 3.7，对日常开发来说已经完全够用，这里不强制要求使用国际版或者国内版进行操作。
 
 **需要注意的是，这里不推荐使用 Auto 模式（自动选择模型），如果是国际版，我们推荐使用 Gemini 或者 GPT 模型， 如果是国内版，我们推荐你尝试 Kimi k2 或 Minimax、GLM 等国内模型，** 不同模型有不同的使用场景，没有教条式的一定谁比谁好在哪，你可以在不同任务遇到困难无法解决时换一个模型，通过多次测试得到属于自己的最佳实验结果。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image21.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image21.webp)
 
 以上就是对 Trae 的一个简单介绍。接下来，我们可以回顾一下之前在 z.ai 中做过的操作，并尝试在 Trae 中做同样的事情。
 
@@ -9865,9 +9952,9 @@ Coding Plan 是各大云服务厂商推出的订阅计划，购买后你可以�
 
 通过下列界面，你可以成功添加（注意看选择模型的选项后【一定要滑动到最底部】，下面有一个“自定义模型“，点击后才可以输入模型 ID，此时可以输入上述推荐的模型 ID 如 `stepfun/step-3.5-flash:free` 直接写入即可，同时点击下方的获取 Key 前往官网获得对应的 API Key 写入即可正常使用。）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-02-12-14-14-51.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-02-12-14-14-51.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-02-12-14-15-29.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-02-12-14-15-29.webp)
 :::
 
 ##### 4.3 第二步：在侧边栏聊天，让 AI 用 React 设计贪吃蛇游戏
@@ -9885,20 +9972,20 @@ Coding Plan 是各大云服务厂商推出的订阅计划，购买后你可以�
 :::
 
 如图所示，这里我们需要点击 Run 进行确认：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-52-55.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-52-55.webp)
 
 如图所示，这里我们只需要输入 y 即可确认：
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-53-24.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-53-24.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-26-33.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-26-33.webp)
 
 如图所示，这里我们正在创建模板，但不知道如何操作，我们可以截图该部分对大模型进行询问：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-29-12.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-29-12.webp)
 
 AI Agent 在执行过程中暂停的还有一部分原因是因为此时启动了一个“服务”，我们的贪吃蛇本身属于一种“服务”，如果你看到如下命令的网址，则表示 Agent 帮我们执行了一个本地的电脑服务，我们可以访问对应的网址访问我们的贪吃蛇，由于服务需要持续启动，这里会陷入暂停。我们只需要点击 `Skip` 按钮即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-30-51.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-30-51.webp)
 
 在这个过程中，如果你遇到一些术语和看不懂的内容，不用担心，你可以查阅附录中的“计算机术语解释”部分，或者直接向 AI 咨询，或者及时提问！
 
@@ -9906,13 +9993,13 @@ AI Agent 在执行过程中暂停的还有一部分原因是因为此时启动�
 
 稍作片刻，我们即可得到类似 z.ai 一样的结果：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-33-37.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-33-37.webp)
 
 我们可以点击右下角的打勾进行确定代码的变更，也可以点击 `Cancel` 按钮取消变更。或者点击 2 files need review 的地方展开查看变动后的代码。
 
 这里还值得注意的是，由于修改代码并不一定正确，我们还需要知道所有的 IDE 的 Agent 都支持代码回退，例如，假设我这里不小心做了个错误的修改操作，或者这次操作的结果让你感到不满意，在修改结束后我们可以返回输入框的部分，点击 Revert 按钮将操作回退到修改前的状态，你可以修改输入的文字进行再一次操作：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-42-53.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-42-53.webp)
 
 ##### 4.4 第三步（可选）：向 AI 追问代码实现细节
 
@@ -9922,7 +10009,7 @@ AI Agent 在执行过程中暂停的还有一部分原因是因为此时启动�
 
 > “请从上到下讲一遍，这个贪吃蛇游戏每一步是怎么动起来的？尽量少用专业术语。”
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-44-36.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-44-36.webp)
 
 然后再顺着它的回答继续追问关键点，例如：
 
@@ -9975,15 +10062,15 @@ AI 会根据你的描述，直接修改 React 组件和样式。保存后刷新�
 
 对于 vibe coding 小白来说，最难的事情反而是不知道什么才算是“最佳实践“，不知道怎么样的架构才是最适合的；因为不知道计算机基础，所以没办法很好的引导 AI，解决这个难题的方法是”直接参考“；还记得我们之前说过的 z.ai 中可以查看代码吗？其实对应 README（项目中用于介绍功能和技术架构的部分）中已经给出了一个最佳架构参考：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-49-33.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-49-33.webp)
 
 我们想要让本地的结果尽量符合 z.ai 的结果，我们可以复制这个 README 的全部内容，粘贴到 Trae 的侧边栏中，让他根据 README 的架构，修改本地的代码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-50-31.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-10-50-31.webp)
 
 最后我们能得到与 z.ai 高度相似的页面设计风格：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-11-00-57.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/index-2026-01-09-11-00-57.webp)
 
 <div style="margin: 50px 0;">
 </div>
@@ -9992,7 +10079,7 @@ AI 会根据你的描述，直接修改 React 组件和样式。保存后刷新�
 
 在上述操作中，我们已经快速跑通了最小程序生成闭环，但我们仍然对 IDE 不能说得上熟悉。为了彻底熟悉这个之后与我们长期相处的工具。我们会在这一节中对 IDE 的每个细节环节进行深入解释，首先从界面开始，不同 AI IDE 的界面略有差异，但大部分都延续了 [VS Code 的布局](https://code.visualstudio.com/docs/getstarted/getting-started)。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image32.webp)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/introduction-to-ai-ide/images/image32.webp)
 
 其中每个部分的具体作用为：
 
@@ -10744,7 +10831,7 @@ VS Code / Trae 用来描述“当前这一次打开了一组什么东西”的�
 它最先带来的突破，是让更多人跨过了“不会写代码，所以无法开始”的门槛。一个没有编程经验的人，也可以在几分钟内做出小游戏、网页或可以演示的原型。
 
 
-![一位创作者借助 AI 将自然语言想法变成产品原型，交给真实用户使用，并根据反馈继续迭代](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/vibe-coding-to-product.webp)
+![一位创作者借助 AI 将自然语言想法变成产品原型，交给真实用户使用，并根据反馈继续迭代](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/vibe-coding-to-product.webp)
   Vibe Coding 帮助你跨过“做出来”的门槛；Build Product 要继续走向真实用户、反馈与价值。
 
 
@@ -10787,7 +10874,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
   工程师不能只埋头写代码，也要懂用户、参与讨论产品该往哪走。
 
 
-<div class="screenshot-scroll">![Intercom 关于 Product Engineer 的文章截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/intercom-product-engineer.webp)</div>
+<div class="screenshot-scroll">![Intercom 关于 Product Engineer 的文章截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/intercom-product-engineer.webp)</div>
     Intercom 早在 2018 年就提出了 Product Engineer 的概念
 
 
@@ -10795,7 +10882,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
   直接跟客户聊天，从一次对话里挖出需求做出产品，马上给真实用户试用。
 
 
-<div class="screenshot-scroll">![Hamilton AI 产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/hamilton-ai-product-engineer.webp)</div>
+<div class="screenshot-scroll">![Hamilton AI 产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/hamilton-ai-product-engineer.webp)</div>
     2026 年的招聘要求已经覆盖从客户交流到产品验证的完整闭环
 
 
@@ -10803,7 +10890,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
   一个人搞定 Agent 设计、后端代码、界面开发，还要观察律师和客户实际怎么用。
 
 
-<div class="screenshot-scroll">![Alma AI 产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/alma-product-engineer-ai.webp)</div>
+<div class="screenshot-scroll">![Alma AI 产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/alma-product-engineer-ai.webp)</div>
     法律科技公司 Alma 要求产品工程师能独立完成从 Agent 到界面的全栈工作
 
 
@@ -10811,7 +10898,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
   要深入销售、客服、承保现场，最终对转化率这类业务指标负责，不只是把功能上线。
 
 
-<div class="screenshot-scroll">![Harper 产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/harper-product-engineer.webp)</div>
+<div class="screenshot-scroll">![Harper 产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/harper-product-engineer.webp)</div>
     保险公司 Harper 要求工程师深入业务一线，直接对转化率负责
 
 
@@ -10819,7 +10906,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
   要泡在投资、研究、业务团队里找问题，做内部工具也做开源产品，在实践里找新机会。
 
 
-<div class="screenshot-scroll">![Paradigm 应用AI产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/paradigm-product-engineer.webp)</div>
+<div class="screenshot-scroll">![Paradigm 应用AI产品工程师招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/paradigm-product-engineer.webp)</div>
     加密投资机构 Paradigm 要求工程师深入业务团队，既做内部工具也做开源产品
 
 
@@ -10827,7 +10914,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
   从找问题、定方案、写代码到部署上线全包，成功标准是用户用不用、有没有真的提升工作效率。
 
 
-<div class="screenshot-scroll">![OpenAI FDE 岗位招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/openai-fde.webp)</div>
+<div class="screenshot-scroll">![OpenAI FDE 岗位招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/openai-fde.webp)</div>
     OpenAI 的 FDE 岗位把生产采用率和工作流影响作为核心成功标准
 
 
@@ -10951,7 +11038,7 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
 截至 2026 年 8 月，OpenAI 已经在全球多个城市招聘 FDE，并且在岗位描述里明确写了：成功标准不是写了多少代码，而是客户的生产采用率、可量化的工作流效率提升，以及从一线带回来、能改变产品和模型路线图的真实反馈。这说明 FDE 这种模式正在从少数企业软件公司的"特殊岗位"，变成 AI 产品落地的重要角色。
 
 
-<div class="screenshot-scroll">![OpenAI FDE 岗位招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/openai-fde.webp)</div>
+<div class="screenshot-scroll">![OpenAI FDE 岗位招聘截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/openai-fde.webp)</div>
   OpenAI 的 FDE 岗位描述把"生产采用率"和"工作流影响"作为核心考核标准
 
 
@@ -10964,14 +11051,14 @@ AI 带来的真正变化，是把“做东西”这件事的门槛大大降低�
 这种趋势也不是 AI 出现后才有的。独立开发者 Pieter Levels 已经一个人做了很多年，Nomads.com、Remote OK、Photo AI、Interior AI 这些产品都是他独自构建和运营的。AI 只是让这种模式能覆盖的范围更广了——设计、编程、内容、分析、客服这些以前需要不同专业人做的事，现在一个人加 AI 就能搞定，但最终还是要经过真实市场的检验。[查看 Pieter Levels 的项目记录](https://levels.io/projects/)
 
 
-<div class="screenshot-scroll">![Pieter Levels 的个人项目页面截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/pieter-levels-projects.webp)</div>
+<div class="screenshot-scroll">![Pieter Levels 的个人项目页面截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/pieter-levels-projects.webp)</div>
   独立开发者 Pieter Levels 一个人构建和运营了多个产品
 
 
 2025 年，微软在 Work Trend Index 报告里提出了 **Agent Boss** 这个概念，用来描述那些会创建、分配任务给 AI Agent、并管理它们工作的人。这份报告调查了 31 个国家的 31,000 名职场人，数据显示 81% 的企业领导者预计在未来 12～18 个月里，会把 AI Agent 深度融入业务流程。[查看 Microsoft 2025 Work Trend Index](https://www.microsoft.com/en-us/worklab/work-trend-index/2025-the-year-the-frontier-firm-is-born)
 
 
-<div class="screenshot-scroll">![Microsoft Work Trend Index 报告截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-1/learning-map/images/sources/microsoft-agent-boss.webp)</div>
+<div class="screenshot-scroll">![Microsoft Work Trend Index 报告截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-1/learning-map/images/sources/microsoft-agent-boss.webp)</div>
   微软 2025 年报告提出"Agent Boss"概念，描述能够管理 AI Agent 的新型工作者
 
 
@@ -11386,7 +11473,7 @@ AI 产品工程师 / 技术负责人
 
 这就是 AI 智能体（AI Agent）的雏形：一个具备目标、知识、工具和执行路径的自动化单元。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image1.webp)
 
 > 注意：当前业界所说的简单版本的“智能体”，大多指基于 LLM + 工具 + 知识库组合而成的增强型应用，并非所谓能够自主规划的智能体。简单的智能体虽不具备真正的推理与长期规划能力，但已足以支撑大量企业级自动化场景。我们将会在之后的章节详细介绍真正的具备自主规划和行动能力的智能体。
 
@@ -11402,7 +11489,7 @@ AI 产品工程师 / 技术负责人
 
 RAG 的基本思路是：在用户提问时，系统首先从企业知识库中检索出与问题语义最相关的若干文本片段（例如产品手册中的某一段、HR制度中的某一条款），然后将这些片段作为上下文“注入”到大模型的输入中，引导它基于真实资料生成回答。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image2.webp)
 
 图片来源：[https://www.datacamp.com/blog/what-is-retrieval-augmented-generation-rag](https://www.datacamp.com/blog/what-is-retrieval-augmented-generation-rag)
 
@@ -11410,7 +11497,7 @@ RAG 的基本思路是：在用户提问时，系统首先从企业知识库中�
 
 在实际业务中，这项技术尤为重要，因为大模型常常会产生“幻觉”。例如，若你以 CFO 或咨询顾问的身份询问某个时间段的具体数据，模型很可能编造日期和事件。引入 RAG 后，回答的可控性与可靠性将得到显著提升。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image3.png)
 
 图片来源：[https://www.databricks.com/glossary/retrieval-augmented-generation-rag](https://www.databricks.com/glossary/retrieval-augmented-generation-rag)
 
@@ -11437,7 +11524,7 @@ RAG 的基本思路是：在用户提问时，系统首先从企业知识库中�
 
 这就引出了更高阶的 AI 应用范式：AI 工作流（AI Workflow）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image4.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image4.webp)
 
 工作流是指将一个复杂任务拆解为多个有序、可配置、可自动执行的子步骤，并通过可视化或代码方式编排它们之间的逻辑关系，如条件判断、循环或并行执行。将 AI 能力 SOP 化（即标准化操作流程），意味着把如何用 AI 完成某项任务的经验固化为可重复使用的模板。
 
@@ -11447,7 +11534,7 @@ AI 工作流的使用人群非常广泛。产品经理无需写代码，即可�
 
 此外，值得注意的是，AI 工作流通常可用一种中间表示（Intermediate Representation）来描述。不同工作流平台的具体表达方式虽有差异，但大多采用结构化文件（如 JSON、YAML 等）来定义节点类型、输入输出及执行逻辑，其结构类似下图所示：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image5.png)
 
 简言之，如果说智能体让 AI 从会聊天走向能做事，那么工作流则让 AI 从偶尔做成一件事迈向“稳定、可靠、规模化地完成一类事。在接下来的实践中，我们还将借助 Dify 平台，上手并亲手构建完整的 AI 工作流，体验从想法到可运行应用的完整过程。
 
@@ -11480,11 +11567,11 @@ AI 工作流的使用人群非常广泛。产品经理无需写代码，即可�
 
 Dify 定位是LLM应用开发与运营平台，致力于提供AI应用从构思、部署到优化的全生命周期管理。其核心是一个低代码平台，旨在帮助开发者和非技术背景的创新者快速构建生产级AI应用。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image6.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image6.png)
 
 在功能上，Dify覆盖了可视化工作流编排、智能体构建、知识库管理、多模型支持等功能。平台允许通过拖拽节点设计复杂任务流程，并支持创建基于意图的Agent。其知识库功能突出，能处理多种格式文档并进行高效的向量检索。同时，Dify兼容支持包括GPT、Claude及众多开源模型在内的多种LLM，构建的应用可一键发布为标准API便于集成。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image7.webp)
 
 技术架构方面，Dify以开源和可私有化部署为特色，强调灵活性、扩展性及企业级合规。目标用户包括开发者团队和业务创新者，典型应用场景涵盖企业知识库与智能客服、内容创作自动化、垂直领域AI助手以及企业AI中台。
 
@@ -11492,11 +11579,11 @@ Dify 定位是LLM应用开发与运营平台，致力于提供AI应用从构思�
 
 Coze是字节跳动推出的AI智能体开发平台，以极致易用性为核心，让无编程经验的用户也能轻松创建、调试并发布功能丰富的AI聊天机器人。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image8.png)
 
 其核心是将Bot构建简化为搭积木式操作。用户可通过界面轻松配置角色与知识库，并利用丰富的内置插件库为Bot添加新闻、旅游、图像生成等多类外部能力。创建好的Bot可一键快速发布至豆包、飞书、微信公众号等多个平台。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image9.png)
 
 技术架构完全服务于低门槛使用，后端集成字节自有模型并封装复杂流程，强调多模态理解与实时响应。作为一个主要以云服务形式提供的平台，其私有化部署能力相对有限。典型应用场景包括个人助理与娱乐Bot、智能客服与问答系统、在线教育助手以及快速原型验证。
 
@@ -11506,7 +11593,7 @@ n8n是一个通用的可编程工作流自动化平台，其核心定位是连�
 
 它通过庞大的集成节点库支持数百种SaaS服务、数据库及协议，并采用可视化与代码结合的方式：用户可在画布拖拽节点，同时注入JavaScript或Python代码编写自定义逻辑。n8n擅长处理后端数据密集型任务，如数据同步、ETL流程与API编排。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image10.png)
 
 关键技术特性是“源码可见”和“可自托管”，用户可将其私有化部署以完全掌控数据与环境，这使其对数据安全要求高的行业极具吸引力。其主要目标用户是开发者、技术运营及数据分析师。n8n 最大的优势，在于拥有极其强大的社区生态。网络上拥有随处可见丰富的 n8n 分享视频，为用户提供了便捷的学习参考与经验借鉴；同时，它支持连接 YouTube、Instagram 等全球众多不同生态平台，能够帮助用户轻松打破跨平台数据与服务的壁垒，实现多生态流程的自动化流转。
 
@@ -11526,7 +11613,7 @@ n8n是一个通用的可编程工作流自动化平台，其核心定位是连�
 
 Dify 是一个用于开发 LLM 应用的开源平台。它提供了直观的界面，将 Agent 工作流、RAG 流水线、工具能力、模型管理、可观测性等功能结合在一起，帮助你快速地从原型走向生产环境。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image11.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image11.webp)
 
 你可以在 Dify 中使用大语言模型和各种功能不同的工具来搭建“工作流”。所谓工作流，就是把原本需要你手动一步步完成的操作——例如数据检索、大模型调用、网页搜索、结果过滤、格式整理等——按照业务逻辑串联起来，变成一个自动化、可复用的流程。如果没有工作流，每次你都需要把同样的内容复制粘贴给大模型，非常低效、容易出错，也难以在真实业务中复用。
 
@@ -11541,43 +11628,41 @@ Dify 是一个用于开发 LLM 应用的开源平台。它提供了直观的界�
 5. 条件节点：检查大模型生成的回答中是否包含清晰的质保时间（例如“1 年”、“3 年”），如果有则继续下一步，如果没有则让它回复“请提供产品型号”。
 6. 输出节点（类似 ANSWER）：将最终答案返回给用户，并自动把本次咨询记录到表格中。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image12.webp)
 
 在整个过程中，你不需要手动去翻知识库、反复调整模型的回答、或单独记录数据——工作流会把这些步骤“连起来自动跑”。并且它非常灵活：例如，如果你之后想加一个新规则“当用户问质保范围时，调用另一个知识库”，只需要在工作流中多加一个条件节点，而无需重构整个系统。
 
 这是一个比较简单的工作流示例，但要完全掌握这些能力，对现在的你来说可能还有点难。因此在本节课中，我们从更加基础的知识库智能体开始，后面再逐步学习更复杂的工作流技巧。
 
-##### 2.1.1 部署属于自己的 Dify（可选）
+##### 2.1.1 先使用官方云，自部署作为可选路径
 
-本部分内容原本安排在后续课程中详细介绍，但考虑到当前部分学习者可能因网络限制暂时无法访问 Dify 官方网站或云端服务，我们决定提前提供这一可选的学习路径，帮助你顺利推进课程进度。
+本节可以直接使用 [Dify 官方云](https://cloud.dify.ai/apps) 的 Sandbox 免费方案。注册、登录并进入工作区后，就可以继续跟随教程创建知识库和应用，不需要先购买服务器或部署 Dify。
 
-你需要参考该教程入门 web 部署平台的基本使用方式：[如何部署 Web 应用](/zh-cn/stage-2/backend/zeabur-deployment/)
+Sandbox 的应用、文档、知识库容量和消息额度以 [官方价格页](https://www.dify.ai/pricing) 为准；使用自己的模型 API Key 时，还需要核对模型供应商的可用额度。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image13.png)
+如果确实需要控制实例和运行环境，可以先参考 [如何部署 Web 应用](/zh-cn/stage-2/backend/zeabur-deployment/)，再按 [Dify 官方 Docker Compose 指南](https://docs.dify.ai/en/self-host/deploy/quick-start/docker-compose) 自部署。自部署会占用本地或云服务器资源，不是本节实验的必做前置条件，也不代表云服务器长期免费。
 
-你需要学习如何在 Zeabur 上部署一个自己的 Dify，部署后进入到对应链接注册并登录后继续跟随下列教程操作即可。
-
-注意，不同版本的 Dify 的操作方面和前端界面可能有些许差别，但总体上差别不大，当你发现不同的时候不要慌张，找到类似的接口和入口进行操作即可。
+注意，不同版本的 Dify 的操作和前端界面可能有些许差别，当发现不同的时候，可以找到相同功能的入口继续操作。
 
 #### 2.2 创建第一个 Dify Chatbot 应用
 
 访问 Dify 首页 [https://cloud.dify.ai/apps](https://cloud.dify.ai/apps) 并注册和登录后，选择 Studio，你会看到如下界面：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image14.png)
 
 在左侧找到 `CREATE APP` 区块，点击 `Create from Blank`。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image15.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image16.webp)
 
 在 APP Type 中找到 Chatbot（如果一开始没看到，可以点击“查看更多类型”的按钮，然后在完整列表中找到）。选择 Chatbot 之后，在下方输入应用的名称和描述，最后点击创建。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image17.png)
 
 创建完成后，你会看到类似下面的界面。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image18.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image18.png)
 
 中间区域的 “INSTRUCTIONS” 指的是内置指令，你可以把它理解为默认提示词或系统提示词。
 
@@ -11587,11 +11672,11 @@ Dify 是一个用于开发 LLM 应用的开源平台。它提供了直观的界�
 
 你可以在 INSTRUCTIONS 区域自由输入角色提示词，观察对话效果；也可以点击 Generate，让大模型自动帮你生成提示词。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image19.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image19.webp)
 
 注意右上角会出现许多不同模型的选项，这意味着你可以点击切换不同的对话模型，从而比较它们在语气、逻辑推理、长文本处理等方面的差异，寻找最适合你需求的模型。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image20.png)
 
 #### 2.3 支持自定义模型供应商
 
@@ -11606,45 +11691,45 @@ Dify 能够灵活接入来自 OpenAI、Azure、Anthropic 等主流服务商的�
    2. https://marketplace.dify.ai/plugins/langgenius/siliconflow
 2. 如果你是自己部署的 Dify，你可以在对应系统设置界面进入插件市场进行操作
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image21.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image21.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image22.png)
 
 进入插件市场后，搜索对应的插件名称即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image23.png)
 
 3. 安装结束后，我们能够配置支持新的模型供应商，在设置里的模型提供商部分，我们可以看到目前支持的所有模型商：
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image24.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image24.png)
 4. 在开始使用前，需要先完成模型的配置。对于 OpenAI-API-compatible 插件，你可以点击 “Add Model” 来添加并配置任意模型。你可以在 “Model Type” 中选择该模型是LLM还是 Embedding，你需要确保模型的类型被正确配置。
    你需要写入具体的模型名字、模型 endpoint URL 以及 API Key 才能确保模型启用，如果你初步觉得配置该参数麻烦，你可以直接跳到后者的 SiliconFLow 平台的 Key 配置，或者安装 OpenRouter 等第三方服务商插件进行简单的模型支持配置。（确保服务商内有剩余可使用额度）
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image25.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image25.png)
 
    对于 `SiliconFlow` 插件，只需要点击 Setup 配置 key 后即可使用 Embedding 和 Rerank 模型进行测试，你可以点击 Get you API Key from SiliconFlow 获得鉴权密钥。
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image26.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image26.png)
 
 5. 配置完成后，你可以点击模型列表查看当前支持多少模型，此时已经完成了基础模型的全部配置。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image27.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image27.png)
 
    其中支持了绝大部分常见的 Embedding 与 Rerank 模型：
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image28.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image28.png)
 
    此时如果你想要修改 Dify 默认使用模型的配置，你还可以点击 System Model Settings 按钮修改默认的所有模型。
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image29.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image29.png)
 
 #### 2.4 创建第一个 Dify 知识库
 
 到这里，我们已经完成了最简单的 Agent 创建，但它还缺少一个知识库。现在，请点击顶部菜单中的 `Knowledge`，进入知识库创建页面。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image30.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image30.png)
 
 然后点击左侧的 `Create Knowledge`，创建你的第一个知识库。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image31.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image31.png)
 
 在这个界面中，你可以上传多种类型的文件（例如 pdf、txt 等）来构建知识库。可以上传很长的文本，或者把维基百科上的内容复制下来保存成 txt 文件进行上传。本例中，我们会上传一份关于 Elon Musk 的维基百科 txt 文件。
 
@@ -11654,7 +11739,7 @@ Dify 能够灵活接入来自 OpenAI、Azure、Anthropic 等主流服务商的�
 
 你也可以调整 **Chunk overlap（切片重叠）** 选项。它决定相邻片段之间是否会保留一部分重叠内容。适当的重叠有助于避免重要信息被拆到不同片段而难以理解。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image32.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image32.png)
 
 在设置中还有一个选项叫做 **Chunk using Q&A format in English** 。启用后，系统会使用大语言模型，将知识库的一部分内容转换成问答形式来存储，这在某些场景下可以显著提升检索效果。
 
@@ -11666,7 +11751,7 @@ Dify 能够灵活接入来自 OpenAI、Azure、Anthropic 等主流服务商的�
 
 Embedding 模型的选择会显著影响最终的检索效果（例如匹配准确度、响应速度等）。在这里，我们推荐优先使用 Qwen 0.6B 的 Embedding 模型，你也可以切换到 4B 或 8B 版本，直观对比不同参数规模下检索效果的差异。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image33.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image33.webp)
 
 在此处，你还会看到另一个模型设置叫做 **Rerank model** ，默认值是 **Jina-rerank-m0** 。（如果你非校园内的学生，此时你可能会看到 Rerank 模型缺失的报错，你需要在模型处配置 rerank 模型才能在此处启用使用）
 
@@ -11676,33 +11761,33 @@ Rerank 模型的主要作用，是对“初步筛选出的候选结果”进行�
 
 推荐系统同理：它可能首先找出 500 个“可能适合你”的商品，再通过 Rerank 模型排序，让你最可能购买的商品排在列表顶部。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image34.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image34.webp)
 
 当所有设置完成后，点击 **Save & Process** ，系统就会进入知识库向量化阶段。在这一阶段，Embedding 模型会把切分后的文本转换为向量表示。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image35.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image35.png)
 
 处理完成后，点击 **Go to document** ，可以查看已经处理完毕并存储好的知识库内容。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image36.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image36.png)
 
 直接点击知识库名称，可以查看每个切片的具体内容。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image37.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image37.png)
 
 在这里，你可以对任意不合适的文本片段进行精确的编辑或删除操作。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image38.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image38.webp)
 
 在左侧边栏中，选择 **Retrieval Testing** 可以对知识库进行召回测试，检查检索是否正常工作。每次测试会返回若干相似度最高的切片。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image39.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image39.webp)
 
 如果你希望看到更多的切片结果，需要点击 `VECTOR SEARCH` 设置：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image40.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image40.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image41.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image41.png)
 
 Top K 指的是向量检索时，返回与查询向量最相似的前 K 个文本切片数量。当前设置为 3，表示会返回相似度最高的 3 段文本。
 
@@ -11710,15 +11795,15 @@ Score Threshold 则是一个“得分阈值”：只有相似度得分大于或�
 
 现在知识库部分就全部准备好了。接下来，点击顶部菜单栏中的 “studio”，找到刚才创建的智能体，为它接入我们已经配置好的知识库。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image42.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image42.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image43.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image43.png)
 
 此时，在每一轮对话中，你都可以在回答中看到被命中的知识库来源。点击对应条目即可查看检索到的具体文本片段。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image44.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image44.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image45.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image45.png)
 
 #### 2.5 更多 DIfy 常见操作
 
@@ -11728,11 +11813,11 @@ Score Threshold 则是一个“得分阈值”：只有相似度得分大于或�
 
 还记得之前提到的工作流的中间表示法吗？Dify 支持通过 DSL（Domain Specific Language） 格式导入和导出工作流。DSL 是一种基于 JSON 的标准化描述方式，能够完整保留工作流的节点结构、连接关系和配置参数。你可以很容易导入和导出 DSL 文件，分享工作流给其他人使用，或者导入别人的工作流进行参考。具体而言，我们能够容易在工作台页面看到工作流的导入按钮：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image46.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image46.png)
 
 而对于工作流的导出，我们只需要点击单个工作流块的右下角即可找到导出按钮：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image47.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image47.png)
 
 通过使用 DSL 文件，你可以轻松地在不同 Dify 实例之间迁移或共享复杂的工作流设计。
 
@@ -11740,7 +11825,7 @@ Score Threshold 则是一个“得分阈值”：只有相似度得分大于或�
 
 如果你觉得自己搭建的工作流或者智能体过于简单，Dify平台提供了丰富的示例项目，帮助你快速了解如何构建复杂应用。这些示例项目涵盖了多种业务场景。你可以点击 Explora 查看别人构建的工作流进行学习。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image48.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image48.webp)
 
 #### 2.6 创建第一个 Dify Workflow 应用
 
@@ -11748,9 +11833,9 @@ Score Threshold 则是一个“得分阈值”：只有相似度得分大于或�
 
 你可以选择从空白处创建，或者直接从模板处创建，此处演示如何从空白处创建工作流：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image49.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image49.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image50.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image50.webp)
 
 在这里我们会看见两个选择，分别是 Chatflow 与 Workflow，这两者该如何选择呢？关键是你需要理解你所要构建的，其核心是持续对话，还是任务流程。
 
@@ -11769,7 +11854,7 @@ Workflow 则专注于流程的自动化执行。它像一条预设的流水线�
 
 此处我们选择 Chatflow 作为案例进行介绍，点击 Chatflow 后进入到操作台界面：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image51.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image51.png)
 
 我们来简单介绍工作流界面的页面。其中整个界面的核心是中央的编辑画布，你将以可视化方式在这里构建应用逻辑。如图所示，一个基础的工作流通常始于 START 节点（用于接收输入），经由连线将数据传递至 LLM 节点进行处理，最终通过 ANSWER 节点输出结果。每个节点代表一个功能模块，而连线则决定了任务执行的顺序。
 
@@ -11785,19 +11870,19 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 在画布右键点击“Add Node”即可添加节点，也可以在左侧的节点面板中查看所有可用节点：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image52.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image52.png)
 
 同时，可以打开工具选择面板，查看支持调用的各类工具：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image53.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image53.png)
 
 下面是一些常用节点和工具的简要说明。不需要一次性全部掌握，建议先留个印象，在实际使用中逐步熟悉，必要时再回查阅。
 
 1. LLM与推理节点
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image54.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image54.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image55.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image55.png)
 
 此类节点负责工作流中的核心流程。
 
@@ -11809,7 +11894,7 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 2. 逻辑与流程控制节点
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image56.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image56.png)
 
 此类节点定义工作流的执行路径与规则。
 
@@ -11819,7 +11904,7 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 3. 数据操作与集成节点
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image57.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image57.png)
 
 - Code 节点：代码处理单元，负责在工作流中执行自定义代码逻辑，可实现数据格式转换、复杂计算等个性化处理需求。其配置重点在于代码语法的正确性与执行环境的适配。
 - Template 节点：模板处理单元，负责将动态数据填充至预设模板中，生成符合格式要求的内容（如定制化文案、报告框架）。其配置重点在于模板语法的编写与变量映射规则的设置。
@@ -11832,7 +11917,7 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 ##### 2.6.2 常见工具介绍
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image58.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image58.png)
 
 在 Dify 中，大部分工具都可以直接作为节点放在画布上，像其他节点一样被上下游连线，只要你提供的输入符合该节点（工具）的参数规范，它就能正常执行并产出可继续流转的结果。
 
@@ -11897,15 +11982,15 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 本次教程我们选择创建 Workflow 而不是 Chatflow，选择 User Input：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image59.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image59.png)
 
 随后点击 Start 的 User Input 节点，定义一个名为 `user_text` 的字符串类型变量，作为整个流程的输入源。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image60.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image60.png)
 
 保存后点击右上角的 Test Run，你能够看到需要指定对应的文本输入进行处理：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image61.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image61.png)
 
 随后我们需要点击输入节点后的 + 符号，选择 Question Classifier 节点添加，并且我们需为其配置四类标签，并为每个标签提供清晰的描述和示例。
 
@@ -11920,13 +12005,13 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 从 buy_food / complain / chitchat / other 中选择一个最合适的标签。如果用户在抱怨的同时也点了餐，请优先判断其核心情绪，若重点在于表达不满，应归为 complain。如果只是轻微吐槽但主要意图是下单，则归为 buy_food。若实在难以判断，使用 other 作为兜底
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image62.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image62.webp)
 
 设定完成后，你可以在右上角的播放键单独测试该节点是否能够正常运行：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image63.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image63.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image64.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image64.png)
 
 从 OUTPUT 的结果来看，我们的分类是准确的。你可以进行多种不同类型输入的测试，验证我们分类器的稳定性。
 
@@ -11952,11 +12037,11 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 同样的，为了确保一切顺利，你可以点击该节点右上角的播放箭进行具体的对话测试验证效果，比如对话说“我想要喝珍珠奶茶”等，查看回复是否符合预期。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image65.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image65.webp)
 
 接下来我们处理并行 LLM 的输出值，我们在 `Variable Aggregator` 节点的配置面板中，找到 `ASSIGN VARIABLES`（分配变量）区域，点击后依次将之前的大模型回复加入即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image66.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image66.webp)
 
 接下来我们需要对所有的输出进行聚合，最后得到我们想要的结果，包含用户的输入、分类、以及回复。由于我们使用的是 Workflow 而不是 Chatflow，故没有 Answer 节点选择进行结果的聚合，我们能够选择其他节点变相实现结果的聚合与输出，此时选择 Template 节点，在变量部分指定用户意图分类结果、用户的输入值、变量聚合的最终回复，并且在 CODE 中写入最后回复的 json 格式模板，我们可以得到：
 
@@ -11972,11 +12057,11 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 }
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image67.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image67.png)
 
 最后加入 output 节点即完成所有操作：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image68.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image68.png)
 
 ###### 工作流运行测试
 
@@ -11999,7 +12084,7 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 在 Test Run 中运行后，我们能够看到工作流的执行过程，此时根据分类走了正确的流程，并得到了最后的 output 结果。至此，全流程完成。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image69.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image69.webp)
 
 #### 2.7 运行第一个模板 Workflow 应用
 
@@ -12007,33 +12092,33 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 导入后第一步直接运行，我们根据每一步报错的地方和原因解决具体问题即可，如果遇到解决不了的问题，你可以截图后询问大模型进行解决。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image70.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image70.png)
 
 刚进入感觉十分复杂，没关系，我们点击右上角的 Preview 运行工作流，直到报错出现：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image71.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image71.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image72.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image72.webp)
 
 我们需要根据报错的节点解决问题，打开后发现是没有配置 Tavily 的 API Token，Tavily 的搜索API 是一个专为 AI 设计的搜索引擎，提供实时、准确和事实性的结果。此时根据提示操作：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image73.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image73.png)
 
 经过处理后，搜索引擎能够正常工作：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image74.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image74.webp)
 
 继续修正模型调用导致的问题后，你应该能够得到如下结果，结合大模型理解下的详细搜索：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image75.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image75.png)
 
 我们在最后能够看到对应的参考文档地址：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image76.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image76.png)
 
 如果你想理解每个环节的作用，最好的方法是将每个环节的 output 记录为一个变量，最后在输出的时候打印每个中间变量的结果，还有一个方法就是你可以在上方找到 Process 的过程，点击后可以查看每个环节的细节：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image77.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image77.png)
 
 #### 2.8 将 Dify 作为 API 提供方
 
@@ -12047,25 +12132,25 @@ Dify 中提供了多种节点，你可以先了解每个节点的基本功能。
 
 如果你的本地开发环境还没有完整配置好，也不用担心。只要你信任自己的代码助手（不管是 [z.ai](http://z.ai) 还是 Trae），遇到任何不懂的地方或报错，都可以直接把问题抛给它，它会根据你的描述给出详细的解决方案。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image78.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image78.png)
 
 右侧的区域叫做 Copilot 交互窗口，或者 Agent 窗口。如果你看不到它，可以点击右上角的侧边栏图标来打开。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image79.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image79.png)
 
 打开侧边栏后，你会看到 `Builder` 选项。这就是 Agent 模式。你可以简单地把 “Builder” 理解为 [z.ai](http://z.ai) 的“开发模式”，它同样可以帮你操作本地电脑环境、安装依赖、打开网页等。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image80.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image80.png)
 
 点击 “Builder” 后，你会看到 “Chat” 模式和 “Builder with MCP” 模式。 Chat 模式主要用于与当前文件夹进行交互，或者和大模型进行自然语言对话。（你可以通过点击 Trae 左上角的 “File” 打开一个文件夹，然后在该文件夹内进行编辑。这种情况下，Builder 所有的新建文件操作都会发生在这个文件夹中。）
 
 Builder with MCP 模式则为 Agent 提供了更多工具（例如让大模型连接到其他软件、获取天气信息等）。你可以简单地认为 MCP 是一个让大模型更方便调用各种外部工具的能力集合。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image81.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image81.png)
 
 在下方区域，你还可以看到模型选择的下拉列表，可以点击切换不同模型。这里你可以选择 Kimi k2 或 GLM。如果你使用的是国际版 Trae，也可以选择 ChatGPT 或 Claude。 不过，随着国内大模型的快速发展，Kimi、Qwen、GLM 等模型的综合能力已经基本接近 Claude 3.5 或 3.7，对于日常开发场景来说完全够用。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image82.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image82.png)
 
 上面是对 Trae 的一个简要介绍。接下来，我们可以回顾在 [z.ai](http://z.ai) 中的操作步骤，并在 Trae 中复用这些思路。
 
@@ -12075,37 +12160,37 @@ Builder with MCP 模式则为 Agent 提供了更多工具（例如让大模型�
 
 还记得刚才创建的那个 Agent 吗？ 先点击右上角的 “Publish”，然后点击 “Publish Update”，最后点击 “Access API Reference” 进入 API 文档。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image83.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image83.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image84.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image84.webp)
 
 进入 API 文档后，找到 “Send Chat Message” 这一部分，点击进入，然后在右侧找到 “Request” 和 “Response” 示例并复制出来。
 
 为什么一定要复制这两部分内容？ 因为它们是 API 的“核心信息”： 有了 Key、请求示例和返回示例，我们就可以让大模型帮我们生成调用服务的代码，并且根据返回结构把需要的字段提取出来。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image85.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image85.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image86.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image86.webp)
 
 在找到会话所需的 Request 和 Response 示例之后，我们还需要获取一个 API Key。在文档右上角，你会看到 “API key” 相关选项。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image87.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image87.png)
 
 点击 “Create new Secret key”，就可以创建属于你自己的 API Key。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image88.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image88.png)
 
-现在一切准备就绪。我们会把刚才拿到的 API Key、Request 示例和 Response 示例一起交给 Trae Builder。
+现在一切准备就绪。我们会把 Request、Response 示例和密钥变量名称交给 Trae Builder，让它同时生成前端页面与后端调用接口。真实 API Key 存放在后端环境变量 `DIFY_API_KEY` 中，不写入前端源码或 Git 仓库。
 
-注意：请将 `{DIFY_API_URL}` 替换为实际的 Dify API 地址。
+注意：请将 `{DIFY_API_URL}` 替换为实际 Dify API 的主机名。Dify Cloud 对应 `api.dify.ai`；自部署实例需要先配置有效的 HTTPS 地址。
 
-```json
-key:
-app-zKdCHUXXXXXXXX
+```text
+Read the API key from the backend environment variable DIFY_API_KEY.
 
-Please write me a front-end based on the following reference:
+Please write a front-end with a backend API based on the following reference.
+Only the backend calls Dify; never expose the API key in the browser:
 
-curl -X POST 'http://{DIFY_API_URL}/v1/chat-messages' \
+curl -X POST 'https://{DIFY_API_URL}/v1/chat-messages' \
 --header 'Authorization: Bearer {api_key}' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -12163,25 +12248,25 @@ curl -X POST 'http://{DIFY_API_URL}/v1/chat-messages' \
 }
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image89.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image89.png)
 
 在这个阶段，你可能会发现生成出来的程序并不能一次性正常运行——比如对话会出现奇怪的错误，或者没有任何返回结果。当出现这种情况时，你可以尝试切换到另一个大语言模型，或者把错误信息复制出来，详细描述问题，再发给模型让它根据反馈继续迭代。
 
 此时你的工作方式已经非常接近真实开发过程了。在日常开发中，我们经常会在与大模型协作时遇到各种问题，为了更好地解决这些问题，我们需要提供更多上下文信息。除了提供错误信息，你还可以复制更完整的文档内容（例如在文档左侧 “Send message” 部分中复制更多说明），一并交给模型，让它在更多细节的基础上给出更完整的解决方案。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image90.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image90.webp)
 
 此时浏览器是嵌在 Trae 内部的。你可以点击顶部的指南针图标，把网页在外部浏览器中全屏打开。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image91.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image91.png)
 
 如果运气不错，你可能在第一次尝试时就能获得一个可以正常交互的前端页面。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image92.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image92.webp)
 
 不过，由于大模型本身具有一定随机性，有时你可能在单轮对话中一切顺利，但在多轮对话时出现异常。因此，建议你进行多轮对话测试，确保程序在多轮交互场景下也能稳定运行。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image93.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image93.webp)
 
 到这里，你已经学会了如何构建一个简单的 Dify 知识库 Agent，并使用 Trae 替代 [z.ai](http://z.ai) 来搭建一个交互式前端。从现在开始，Trae 将成为我们构建各种原型时的主要开发工具，逐步取代 [z.ai](http://z.ai)。你可以尝试用 Trae 重新实现之前的贪吃蛇游戏，看看会有什么不同的体验。加油！
 
@@ -12277,19 +12362,19 @@ curl -X POST 'http://{DIFY_API_URL}/v1/chat-messages' \
 - 当密码不正确时，提供第二次尝试机会（不提供第三次）
 - 当用户提及要再次登录时，为用户提供重新输入密码的机会
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image94.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image94.png)
 
 参考输入输出：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image95.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image95.webp)
 
 3. Love loop workflow 工作流解密挑战
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image96.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image96.png)
 
 在这个解密挑战中，你需要修复当前工作流的问题，让工作流最后的输出类似如下显示：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image97.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image97.png)
 
 如果你遇到无法解决的问题，请截图询问大模型，或查阅官方文档得到结果：[https://docs.dify.ai/en/use-dify/getting-started/quick-start](https://docs.dify.ai/en/use-dify/getting-started/quick-start)
 
@@ -12297,8 +12382,8 @@ curl -X POST 'http://{DIFY_API_URL}/v1/chat-messages' \
 
 为了测试你真正掌握了 Dify 的 API 调用知识，你需要完成以下任务：
 
-1. 部署 Dify 并创建一个简单的知识库（选取你喜欢的资料)。
-2. 使用 Trae IDE 构建一个对话前端，与 Dify 知识库进行 API 交互。
+1. 使用 Dify 官方云或自部署实例创建一个简单的知识库（选取你喜欢的资料）。
+2. 使用 Trae IDE 构建对话前端与配套后端，由后端读取密钥并调用 Dify 知识库应用。
 3. 测试多轮对话的效果，确保程序正常运行。
 
 你需要提交最终运行截图和知识库的处理过程截图。
@@ -12315,7 +12400,7 @@ curl -X POST 'http://{DIFY_API_URL}/v1/chat-messages' \
 
 有时候可能你会把 Dify 部署在自己的服务器，但是服务器的对外地址通常都是 http 而不是 https 的，但当我们请求一个只支持 HTTP 的服务时，你可能会看到类似这样的提示（启用 F12 浏览器调试信息模式，查看有问题的点）：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image98.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image98.webp)
 
 出现这个问题的原因，是因为我们默认把 Dify 部署在一台只支持 HTTP 而不支持 HTTPS 的服务器上。 HTTPS（HyperText Transfer Protocol Secure）是在 HTTP（超文本传输协议）的基础上增加了 SSL/TLS 加密层，可以简单理解为“更安全版的 HTTP”。
 
@@ -12324,65 +12409,76 @@ curl -X POST 'http://{DIFY_API_URL}/v1/chat-messages' \
 - 使用其他程序转发请求（例如在有证书的 nginx 上做反向代理），或者
 - 绑定域名后为该域名申请证书。
 
-但这些操作都比较复杂，在这里我们使用 Zeabur 作为网络转发网关来解决问题。
+使用 Dify 官方云时，可以直接让自己的后端请求 `https://api.dify.ai/v1`，不需要额外部署 Dify 转发服务。前端只访问自己的 HTTPS 后端接口，密钥由后端读取。
 
-Zeabur 的网页默认是通过 HTTPS 访问的，因此我们只需要把原来请求的域名转发到 Zeabur 提供的域名，就可以修复这个问题。
+如果使用自部署的 Dify，也可以在 Render 部署下面的转发程序，由 Render 提供 HTTPS 入口。先连接代码仓库、配置启动命令和环境变量并完成实际部署，再把前端请求改到自己的后端；只替换 URL 字符串不会自动建立转发关系。
 
 - 原始地址：`http://{DIFY_API_URL}/v1/chat-messages`
-- 现在地址：`https://{DIFY_NEW_API_URL}.zeabur.app/v1/chat-messages`
+- 现在地址：`https://{RENDER_SERVICE_NAME}.onrender.com/v1/chat-messages`
 
-你只需要简单地把 URL 中的域名部分（公网 IP 或域名）替换为已经在 Zeabur 上部署好的域名即可，我们已经提前在服务里配置好了转发功能。
+上面的新地址只是格式示例，需要先部署服务才能访问。Render 免费实例闲置 15 分钟会休眠，首次请求可能较慢；如果后端与前端不同域，还需要为实际前端来源配置 CORS。
 
-如果你感兴趣，也可以自己在 Zeabur 上部署一个转发服务。在 Zeabur 中创建服务时，选择 Python，然后填入下面的 Python 代码，部署后即可得到一个 https 的地址，https 即可正常使用。
+可以让 AI 将下面的程序保存为 `app.py`，补上包含 `flask`、`requests`、`gunicorn` 的 `requirements.txt`，再按 [Render 部署步骤](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment) 创建 Python Web Service。构建命令为 `pip install -r requirements.txt`，启动命令为 `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120`。
 
-部署完成后，在网络设置中把程序监听端口设置为本地 8080，并对外暴露该端口。
+在 Render 的 Environment 中设置 `DIFY_API_URL`（例如 `https://api.dify.ai`，不包含末尾 `/v1`）、`DIFY_API_KEY`（应用密钥）与 `FRONTEND_ORIGIN`（前端实际来源，不含末尾斜杠）。下面的示例只转发聊天接口，并在后端添加 Dify 密钥。公开使用前还应增加用户身份验证与用量控制。
 
-注意：请将 `{DIFY_API_URL}` 替换为实际的 Dify API 地址。
+使用公网服务时，Dify 上游也应配置有效的 HTTPS，不通过关闭证书校验来解决连接问题。
 
 ```python
-from flask import Flask, request, Response
+import os
+from flask import Flask, request, Response, stream_with_context
 import requests
 
 app = Flask(__name__)
+TARGET_BASE_URL = os.environ["DIFY_API_URL"].rstrip("/")
+DIFY_API_KEY = os.environ["DIFY_API_KEY"]
+FRONTEND_ORIGIN = os.environ["FRONTEND_ORIGIN"].rstrip("/")
 
-TARGET_BASE_URL = "{DIFY_API_URL}"
-LISTEN_PORT = 8080
+@app.after_request
+def cors(response):
+    if request.headers.get("Origin") == FRONTEND_ORIGIN:
+        response.headers["Access-Control-Allow-Origin"] = FRONTEND_ORIGIN
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        response.headers["Vary"] = "Origin"
+    return response
 
-@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'])
-@app.route('/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'])
-def proxy_request(path):
-    target_url = f"{TARGET_BASE_URL}/{path}"
-    if request.query_string:
-        target_url += f"?{request.query_string.decode('utf-8')}"
-
-    headers = {key: value for key, value in request.headers if key.lower() not in ['host', 'connection', 'content-length', 'accept-encoding']}
-
+@app.route("/v1/chat-messages", methods=["POST", "OPTIONS"])
+def chat():
+    if request.method == "OPTIONS":
+        return Response(status=204)
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return {"error": "Request body must be a JSON object"}, 400
     try:
-        resp = requests.request(
-            method=request.method,
-            url=target_url,
-            headers=headers,
-            data=request.get_data(),
-            cookies=request.cookies,
-            allow_redirects=False,
-            timeout=30
+        upstream = requests.post(
+            f"{TARGET_BASE_URL}/v1/chat-messages",
+            headers={"Authorization": f"Bearer {DIFY_API_KEY}"},
+            json=payload,
+            stream=True,
+            timeout=(10, 90)
         )
+    except requests.RequestException:
+        return {"error": "Could not connect to Dify"}, 502
 
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        response_headers = [(name, value) for name, value in resp.raw.headers.items() if name.lower() not in excluded_headers]
+    @stream_with_context
+    def generate():
+        try:
+            yield from upstream.iter_content(chunk_size=1024)
+        finally:
+            upstream.close()
 
-        return Response(resp.content, resp.status_code, response_headers)
+    return Response(
+        generate(),
+        status=upstream.status_code,
+        content_type=upstream.headers.get("Content-Type", "application/json")
+    )
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error forwarding request to {target_url}: {e}")
-        return Response(f"Proxy Error: Could not reach target server or invalid response: {e}", status=502)
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return Response(f"Internal Proxy Error: {e}", status=500)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=LISTEN_PORT, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "3000")))
 ```
+
+如果浏览器提示 Mixed Content，应先修正 HTTP / HTTPS；如果提示 CORS，应检查前端来源与预检请求；如果返回 401 或额度错误，则检查 Dify 应用密钥和可用额度。这几类问题需要分别处理。
 
 ### AI 营销文案 SaaS 开发实战
 
@@ -12396,11 +12492,11 @@ if __name__ == '__main__':
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- 支付集成（[Stripe 收费系统](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/stripe-payment)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- 支付集成（[Stripe 收费系统](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/stripe-payment)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -12425,7 +12521,7 @@ if __name__ == '__main__':
 后端使用 Supabase 提供数据库和鉴权能力，使用 Stripe 处理支付，使用 AI 模型生成营销文案。
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/copywriting-platform-supabase/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/copywriting-platform-supabase/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -12527,11 +12623,11 @@ flowchart TD
 
 如果你在前端搭建阶段卡住，可以回顾这些章节：
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [参考 UI 设计规范设计页面和按钮](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/multi-product-ui)
-- [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)
-- [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [参考 UI 设计规范设计页面和按钮](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/multi-product-ui)
+- [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)
+- [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
 
 #### 第三部分：后端集成
 
@@ -12632,9 +12728,9 @@ flowchart TD
 
 如果你在后端开发阶段卡住，可以回顾这些章节：
 
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [如何集成 Stripe 等收费系统](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/stripe-payment)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [如何集成 Stripe 等收费系统](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/stripe-payment)
 
 #### 第四部分：联调与上线
 
@@ -12665,7 +12761,7 @@ flowchart TD
 
 ##### 4.2 部署
 
-将项目部署到公网环境。部署教程参考：[Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)。
+将项目部署到公网环境。部署教程参考：[Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)。
 
 #### 交付物
 
@@ -12712,16 +12808,16 @@ README 至少包含：项目简介、核心页面说明、技术栈、本地启�
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [参考 UI 设计规范设计页面和按钮](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/multi-product-ui)
-- [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)
-- [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
-- [如何集成 Stripe 等收费系统](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/stripe-payment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [参考 UI 设计规范设计页面和按钮](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/multi-product-ui)
+- [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)
+- [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [如何集成 Stripe 等收费系统](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/stripe-payment)
 
 ### PRD：AI 营销文案 SaaS 平台
 
@@ -13097,10 +13193,10 @@ billing_records (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -13124,7 +13220,7 @@ billing_records (
 后端需要支持以下核心能力：智能体管理、会话管理、消息存储、模型调用、调用日志记录、知识库接入。
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/custom-dify-agent-platform/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/custom-dify-agent-platform/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -13239,7 +13335,7 @@ flowchart TD
 
 ##### 4.2 部署
 
-将项目部署到公网环境。部署教程参考：[Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)。
+将项目部署到公网环境。部署教程参考：[Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)。
 
 #### 交付物
 
@@ -13281,12 +13377,12 @@ README 至少包含：项目简介、架构说明、技术栈、本地启动步�
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 ### PRD：类 Dify 智能体编排平台
 
@@ -13743,10 +13839,10 @@ run_logs (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -13771,7 +13867,7 @@ run_logs (
 后端使用 Express，需要支持：登录鉴权、角色权限、考试和题库管理、提交流程与自动判分、成绩和统计管理。
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/exam-management-express/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/exam-management-express/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -13886,9 +13982,9 @@ flowchart TD
 
 如果你在前端搭建阶段卡住，可以回顾这些章节：
 
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [应用后端接口设计与开发](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [应用后端接口设计与开发](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
 
 #### 第三部分：后端开发
 
@@ -13970,8 +14066,9 @@ flowchart TD
 
 ##### 4.2 部署
 
-- 前端部署到 Vercel / Zeabur
-- Express API 部署到 Zeabur / Railway / Render
+- 前端部署到 Cloudflare Pages 或 Vercel，按项目填写构建命令与输出目录
+- Express API 部署到 Render，使用平台提供的 `PORT` 并监听 `0.0.0.0`
+- 如果使用 Render 免费服务，说明闲置休眠的影响；数据库单独选择持久化方案，不依赖服务本地文件或短期试用数据库
 - 数据库用 Supabase Postgres 或托管 PostgreSQL
 
 部署前检查：
@@ -14023,12 +14120,12 @@ README 至少包含：项目简介、核心页面说明、技术栈、本地启�
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 ### PRD：在线考试与管理系统
 
@@ -14399,11 +14496,11 @@ submissions (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- 支付集成（[Stripe 收费系统](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/stripe-payment)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- 支付集成（[Stripe 收费系统](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/stripe-payment)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -14428,7 +14525,7 @@ submissions (
 后端需要支持以下核心能力：用户鉴权、图片生成任务、OSS 对象存储、积分与套餐支付、图片社交互动、运营数据监控。
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/modern-landing-page/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/modern-landing-page/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -14554,7 +14651,7 @@ flowchart TD
 - 支付回调地址正确
 - 页面无缺失的 loading、空状态、错误提示
 
-部署教程参考：[Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)。
+部署教程参考：[Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)。
 
 #### 交付物
 
@@ -14580,16 +14677,16 @@ README 至少包含：项目简介、核心页面说明、技术栈、本地启�
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [参考 UI 设计规范设计页面和按钮](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/multi-product-ui)
-- [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)
-- [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
-- [如何集成 Stripe 等收费系统](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/stripe-payment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [参考 UI 设计规范设计页面和按钮](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/multi-product-ui)
+- [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)
+- [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [如何集成 Stripe 等收费系统](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/stripe-payment)
 
 ### PRD：现代 AI 生图 SaaS 平台
 
@@ -15362,10 +15459,10 @@ post_comments (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -15389,7 +15486,7 @@ post_comments (
 | **管理后台** | 管理员维护电影数据、查看推荐效果 |
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/movie-recommendation-springboot/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/movie-recommendation-springboot/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -15498,12 +15595,12 @@ flowchart TD
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 ### PRD：Spring Boot 电影推荐系统
 
@@ -15926,10 +16023,10 @@ recommendation_logs (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -15961,7 +16058,7 @@ recommendation_logs (
 | **Order Service** | 订单创建、状态管理 |
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/simple-grocery-microservices/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/simple-grocery-microservices/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -16072,12 +16169,12 @@ flowchart TD
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 ### PRD：生鲜电商微服务系统
 
@@ -16485,10 +16582,10 @@ order_items (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -16512,7 +16609,7 @@ order_items (
 | **看板展示** | 在前端展示趋势图、排行榜和告警列表 |
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/traffic-data-visualization-go/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/traffic-data-visualization-go/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -16622,12 +16719,12 @@ flowchart TD
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 ### PRD：Go 交通数据分析与可视化平台
 
@@ -17003,10 +17100,10 @@ import_jobs (
 
 在开始本项目之前，你应该已经掌握以下内容：
 
-- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)）
-- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)）
-- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)）
-- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)）
+- 前端页面设计与组件库使用（[UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)、[现代组件库](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)）
+- 后端接口设计与开发（[接口代码编写](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)）
+- 数据库基础与 Supabase（[从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)）
+- Git 工作流与部署（[Git 和 GitHub](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)、[部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)）
 
 #### 学习目标
 
@@ -17030,7 +17127,7 @@ import_jobs (
 | **管理后台** | 管理员查看热门目的地、失败任务和用户反馈 |
 
 ::: tip PRD 入口
-本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/assignments/travel-planning-agent-platform/PRD.md)
+本项目的需求文档在 GitHub： [查看 PRD](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/assignments/travel-planning-agent-platform/PRD.md)
 :::
 
 <div style="margin: 32px 0;">
@@ -17141,12 +17238,12 @@ flowchart TD
 
 #### 参考资料
 
-- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design)
-- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)
-- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow)
-- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+- [UI 设计](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design)
+- [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)
+- [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+- [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+- [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow)
+- [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 ### PRD：智能旅游规划 Agent 编排平台
 
@@ -17565,8 +17662,8 @@ trip_feedback (
 > 💡 **前置知识**
 >
 > 在学习本节之前，建议你先了解以下内容：
-> - [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase) - 了解数据库和数据模型的概念。
-> - [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow) - 熟悉如何在项目开发中进行版本控制。
+> - [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase) - 了解数据库和数据模型的概念。
+> - [Git 和 GitHub 工作流](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow) - 熟悉如何在项目开发中进行版本控制。
 > - [什么是终端/命令行](/zh-cn/appendix/2-development-tools/command-line-shell) - 项目初始化与启动离不开基础的命令操作。
 
 #### 你将学到
@@ -17624,7 +17721,7 @@ my-api-project/
 
 这是本章节最核心的部分。大模型写出的代码往往容易存在“逻辑漏洞”或“表面敷衍”，原因在于开发者给的上下文不足。**大模型不怕需求复杂，最怕需求模糊。**
 
-以我们在 [数据库章节](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase) 中提到的 `menu_items` (菜单表) 的新增接口为例，看如何写出一份高质量的 Prompt。
+以我们在 [数据库章节](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase) 中提到的 `menu_items` (菜单表) 的新增接口为例，看如何写出一份高质量的 Prompt。
 
 #### 3.1 赋予大模型完整上下文
 在请求 AI 写接口之前，一定要提供**数据库字段定义（Schema）**和**具体的约束条件**。
@@ -17720,7 +17817,9 @@ exports.createMenuItem = async (menuData) => {
 
 > 💡 **什么叫"把网站发到网上"？** 也叫"上线"或"部署发布"。你在本地电脑写好的网站，只有你自己能打开；**"发到网上"就是把它放到一台 24 小时开机的服务器上，让任何一个人在浏览器里输入网址就能访问到**——就像你写了一篇 Word 文档只有自己电脑能看，发到公众号/博客后所有人都能看一样，只不过这次发上去的是一个完整的网站。
 
-上一章我们学了最简单的"一键发布"方式（用 Vercel/Zeabur 这类平台，连仓库即上线），这一章讲更灵活、也更彻底的方式：**自己买一台云服务器，从头到尾把网站搭起来发布出去**。你会学到怎么选服务器、怎么连接上去、怎么装环境、怎么配 Nginx、怎么绑域名开 HTTPS——搞懂之后，没有任何平台能限制你，想跑什么服务就跑什么。
+上一章我们学了最简单的"一键发布"方式（用 Vercel、Cloudflare Pages、Render 这类平台，连仓库即上线），这一章讲更灵活、也更彻底的方式：**自己买一台云服务器，从头到尾把网站搭起来发布出去**。你会学到怎么选服务器、怎么连接上去、怎么装环境、怎么配 Nginx、怎么绑域名开 HTTPS——搞懂之后，没有任何平台能限制你，想跑什么服务就跑什么。
+
+可以把本章连同项目的技术栈、运行方式和预算一起发给 AI，让它帮助挑选平台并生成集成配置。需要它自动操作时，先说明允许使用的终端、账号和部署权限；真实密码与私钥通过凭证配置提供。
 
 ---
 
@@ -17737,8 +17836,8 @@ exports.createMenuItem = async (menuData) => {
    - 需要（自己跑开源模型、生成图片/视频）→ 选 **GPU 云平台**（Modal、Replicate、AutoDL 等）
 
 3. **你的用户主要在哪里？**
-   - 国内 → 优先国内云（阿里云/腾讯云）或 Cloudflare（国内访问快）
-   - 海外 → Vercel/Railway/Fly.io/AWS 随便选
+   - 国内 → 优先评估国内云（阿里云/腾讯云），并在目标用户的实际网络下测试访问效果
+   - 海外 → 按运行方式、可用地域与预算比较 Vercel / Railway / Fly.io / AWS
    - 都有 → 用 CDN，国内放国内，海外放海外
 
 根据这三个问题，对应下面的决策路径：
@@ -17747,16 +17846,16 @@ exports.createMenuItem = async (menuData) => {
 你的项目是什么类型？
 │
 ├─ 纯前端静态站（Vite/React/Vue 构建产物）
-│   ├─ 完全免费 → Cloudflare Pages（无限带宽）/ GitHub Pages
+│   ├─ 静态托管免费方案 → Cloudflare Pages / GitHub Pages（仍有构建、大小等限制）
 │   ├─ Next.js 项目 → Vercel（官方平台，体验最好）
-│   └─ 国内用户为主 → Cloudflare Pages 或 国内 OSS+CDN
+│   └─ 国内用户为主 → 国内 OSS+CDN 或其他已实测的托管方案
 │
 ├─ 有后端 API，但不需要 24 小时常驻（请求触发）
-│   ├─ Node.js/Python API → Vercel Functions / Cloudflare Workers
+│   ├─ 请求触发的 API → Vercel Functions / Cloudflare Workers（先检查语言与依赖兼容性）
 │   └─ 全栈框架（Next.js/Nuxt/SvelteKit）→ Vercel
 │
 ├─ 需要常驻进程（Bot、定时任务、WebSocket）
-│   ├─ 不想管服务器 → Railway / Render / Fly.io
+│   ├─ 不想管服务器 → Railway / Render 付费实例 / Fly.io（按所需在线方式选套餐）
 │   ├─ 想完全控制 & 省钱 → 买 VPS（腾讯云轻量/阿里云轻量/Vultr/Hetzner）
 │   └─ 国内项目 → 腾讯云轻量应用服务器
 │
@@ -17777,7 +17876,7 @@ exports.createMenuItem = async (menuData) => {
 
 #### 1.1 Vercel — Next.js 官方平台，前端首选
 
-![Vercel 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/vercel.png)
+![Vercel 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/vercel.png)
 
 **官网**：https://vercel.com
 
@@ -17790,39 +17889,31 @@ exports.createMenuItem = async (menuData) => {
 4. Vercel 自动检测框架（Next.js/Vite/React 等），填好环境变量
 5. 点 "Deploy"，等 1-2 分钟就上线了，自动给你一个 `xxx.vercel.app` 域名
 
-**免费额度（Hobby 计划）：**
-- 100 GB 带宽/月
-- 100 小时构建时间/月
-- Serverless Function 执行时长 **10 秒**（这是最关键的限制！）
-- 自动 HTTPS、全球 CDN、PR 预览链接
+**免费方案（Hobby 计划）：**
+- 适合个人、非商业项目，包含自动 HTTPS 与 Git 预览部署
+- 请求、函数、构建和其他资源有各自额度，超额行为以套餐为准
+- 函数运行时长与运行模式、套餐和配置有关，不统一写成“免费只能运行 10 秒”
 
-**付费（Pro，$20/月）：**
-- Function 执行时长延长到 60-300 秒
-- 1 TB 带宽
-- 团队协作功能
+**关键限制：**
+- 函数不是始终运行的服务器进程，不能直接承载常驻 Bot 或任意 WebSocket 服务端
+- 可以配置定时触发，但触发频率与函数限制需要核对当前套餐
+- AI 流式接口也要检查最大运行时长，模型 API 与平台资源分别计费
 
-**⚠️ 关键限制（新手常踩的坑）：**
-- **Serverless Function 超时 10 秒**：AI API 调用超过 10 秒就会断（免费版）。Pro 版 $20/月可延长到 60 秒，300 秒需额外付费
-- **不能跑常驻进程**：没有 cron、没有 WebSocket 长连接、没有永远在线的 Bot
-- **冷启动**：长时间没人访问的 Function 首次请求会慢一点
-- **AI 项目成本**：AI 流式输出耗带宽，用户多了之后 Pro 版账单可能飙到 $200/月
+**结论**：适合前端和符合函数运行条件的 Next.js 项目；需要常驻进程时选择其他后端托管或 VPS。当前规则见 [Hobby 套餐](https://vercel.com/docs/plans/hobby)与 [函数时长说明](https://vercel.com/docs/functions/configuring-functions/duration)。
 
-**结论**：部署前端页面、文档站、快速 Demo → Vercel 是最丝滑的选择。但需要常驻进程或长时间 AI 调用的 Agent → 不要选 Vercel。
+#### 1.2 Cloudflare Pages — 静态资源托管与边缘函数
 
-#### 1.2 Cloudflare Pages — 无限带宽，国内访问快
-
-![Cloudflare Pages 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cloudflare-pages.png)
+![Cloudflare Pages 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cloudflare-pages.png)
 
 **官网**：https://pages.cloudflare.com
 
-**适合什么：** 静态站点、需要大带宽的项目、国内用户为主的网站、Edge Functions
+**适合什么：** 静态站点、Vite / VitePress 构建产物、与 Pages Functions 配合的小型网站
 
-**免费额度：**
-- **无限带宽**（这是最大卖点！）
-- 500 次构建/月
-- Unlimited 请求数
-- Cloudflare Workers 100,000 请求/天
-- 全球 300+ 边缘节点，国内访问速度比 Vercel/Netlify 快很多
+**免费方案：**
+- 不调用函数的静态资源请求免费且不按请求次数设限
+- 免费方案有每月构建次数、单文件大小等限制
+- Pages Functions 使用 Workers 的计费与运行限制；Worker 免费请求额度不能当作无限后端算力
+- 普通免费服务不等于接入 Cloudflare 中国大陆网络，访问效果应实测
 
 **怎么用：**
 1. 注册 Cloudflare 账号（免费）
@@ -17830,27 +17921,27 @@ exports.createMenuItem = async (menuData) => {
 3. 选择仓库，设置构建命令（Vite 是 `npm run build`，输出目录 `dist`）
 4. 点 Save and Deploy
 
-**配套的 Workers AI：** Cloudflare 还提供在边缘节点直接跑开源 AI 模型的能力（Llama 3、Mistral、Stable Diffusion 等），免费额度每天 10,000 神经元（推理单位）。适合不想依赖 OpenAI API、想在边缘跑小模型的场景。
+**配套的 Workers AI：** 可以按支持的模型和配额调用托管推理服务，免费额度以 [Workers AI 价格页](https://developers.cloudflare.com/workers-ai/platform/pricing/)为准。不同模型的调用成本不同，不用固定的调用次数估算所有模型。
 
-**结论**：静态站首选，尤其是面向国内用户的项目，Cloudflare Pages 的国内访问速度和无限带宽是杀手锏。
+**结论**：适合先发布静态网页，再按需增加轻量函数。参考 [Pages 限制](https://developers.cloudflare.com/pages/platform/limits/)与 [中国大陆网络说明](https://developers.cloudflare.com/china-network/)。
 
 #### 1.3 Netlify — 老牌静态托管，插件生态丰富
 
-![Netlify 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/netlify.png)
+![Netlify 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/netlify.png)
 
 **官网**：https://www.netlify.com
 
-**免费额度：** 100 GB 带宽/月 + 300 分钟构建时间
+**免费方案：** 当前 Free 套餐使用 credits 计算部署、请求、流量等用量，不沿用旧的固定带宽与构建分钟数。规则见 [Netlify 价格页](https://www.netlify.com/pricing/)。
 
 **特点：** 插件市场非常丰富（表单处理、图片优化、A/B 测试等），支持分支预览，企业级功能多。适合需要更多内置功能的静态站项目。
 
 **和 Vercel 的区别：** Netlify 更中立，不绑定特定框架；Vercel 对 Next.js 有深度优化。纯静态站选哪个都行。
 
-#### 1.4 Railway — 部署后端的最佳体验（常驻服务）
+#### 1.4 Railway — 组合部署后端与数据库
 
-![Railway 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/railway.png)
+![Railway 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/railway.webp)
 
-**官网**：https://railway.app
+**官网**：https://railway.com
 
 **适合什么：** 需要常驻运行的后端服务、Node.js/Python/Go API、Discord/Telegram Bot、需要数据库的全栈项目
 
@@ -17862,33 +17953,25 @@ exports.createMenuItem = async (menuData) => {
 5. 自动给域名，也可以绑定自定义域名
 
 **定价：**
-- 新用户注册送 **$5 试用额度**（不是永久免费）
-- 之后按用量计费，大概 $5/月起（一个最小规格的常驻服务 + 数据库）
-- 空闲 5 分钟后休眠（免费试用期间）；付费后不睡眠
+- 当前 Free 方案先提供 30 天、5 美元试用额度，之后每月提供 1 美元额度，资源与服务数量有上限
+- Hobby 最低消费每月 5 美元，包含相应使用额度，超出部分另计
+- 应用、数据库、磁盘与流量需要合并估算，不能把最低消费当成完整项目的固定总价
 
-**⚠️ 关键限制：**
-- 没有真正的永久免费层，$5 用完就停
-- 按用量计费，成本不可预测（但对小项目来说通常在 $5-15/月）
-- 没有原生 GPU 支持
+**结论**：适合需要组合多个服务、希望减少服务器配置工作的项目。在线行为和资源上限应按具体服务设置核对，规则见 [Railway 价格页](https://railway.com/pricing/)。
 
-**结论**：部署后端 API、Bot、需要数据库的全栈应用，Railway 的体验是最好的——连 GitHub 自动部署、内置数据库、日志监控全有，不用写 Dockerfile。适合不想折腾服务器但需要比 Vercel 更灵活的场景。
+#### 1.5 CloudBase — 静态网站与后端云托管
 
-#### 1.5 Zeabur — 国内开发者友好的 PaaS
+**官网**：https://cloudbase.net
 
-![Zeabur 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/zeabur.png)
-
-**官网**：https://zeabur.com
-
-**适合什么：** 国内开发者、需要国内访问速度的项目、从 Vercel/Heroku 迁移的项目
+**适合什么：** 已使用腾讯云生态的项目、需要托管网页或后端程序的应用
 
 **特点：**
-- 国产 PaaS 平台，中文界面，国内访问速度好
-- 支持 Node.js、Python、Go、Rust、Docker 等几乎所有语言
-- 一键部署常见模板（WordPress、Ghost、Uptime Kuma 等）
-- 内置 MySQL/PostgreSQL/Redis/MongoDB 数据库
-- 免费额度可用，付费方案 ¥30/月起
+- 静态网站托管用于发布 HTML、CSS、JavaScript 和前端构建产物
+- 云托管用于运行 Node.js、Python 等后端程序，支持仓库、代码包或镜像部署
+- 可以结合腾讯云数据库、存储等服务，按项目需要分别配置
+- 试用资格与可用额度依账户和环境而定，不作为长期免费的默认方案
 
-**怎么用：** 我们已经在 [上一章](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment) 详细讲过 Zeabur 的使用方法，这里不再赘述。
+**怎么用：** 我们已经在 [上一章](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment) 介绍 CloudBase 的使用方法。后端程序需要选择云托管，不能只上传到静态网站托管。具体部署方式见 [官方说明](https://docs.cloudbase.net/run/deploy/deploy/introduce)。
 
 #### 1.6 Render — 750 小时免费，但会休眠
 
@@ -17896,62 +17979,48 @@ exports.createMenuItem = async (menuData) => {
 
 **适合什么：** 学习阶段、个人项目、不介意冷启动的小项目
 
-**免费额度：**
-- Web Service：750 小时/月（一个实例可以一直跑）
-- PostgreSQL：免费 90 天（⚠️ 到期数据库被删！）
-- 静态站：完全免费，100 GB 带宽
+**免费方案与限制：**
+- 免费 Web Service 每个工作区每月共享 750 个实例小时，流量与构建另有额度
+- 连续 15 分钟无入站流量会休眠，下一次请求唤醒可能需要约一分钟
+- 免费实例没有持久化磁盘，不把本地文件或 SQLite 当作长期数据存储
+- 免费 Postgres 创建 30 天后到期，不是长期免费数据库
 
-**⚠️ 关键问题：**
-- **15 分钟无访问就休眠**，首次唤醒需要 10-30 秒冷启动（用户体验差）
-- 免费数据库 90 天后被删除，记得备份！
-- 冷启动期间用户看到的就是转圈或超时
+![Render 免费实例选择界面（官方文档配图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/render-free-plan.png)
 
-**结论**：适合开发测试、课程作业，但不要把面向用户的生产项目放在免费层。付费 $7/月起，可以关闭休眠。
+**结论**：适合课程练习和允许冷启动的演示；持续在线或长期数据存储需另选合适方案。配图与规则分别见 [官方首次部署指南](https://render.com/docs/your-first-deploy)和 [免费服务说明](https://render.com/docs/free)。
 
-#### 1.7 Fly.io — 真正 7×24 在线的免费容器
+#### 1.7 Fly.io — 容器部署与限时试用
 
-![Fly.io 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/flyio.png)
+![Fly.io 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/flyio.webp)
 
 **官网**：https://fly.io
 
-**适合什么：** 需要全球分布的低延迟服务、想要真正 7×24 小时免费运行的容器、能接受一点学习曲线
+**适合什么：** 使用容器、需要选择部署地域、愿意使用命令行管理服务的项目
 
-**免费额度：**
-- 3 台微型共享 VM（micro-1x，256 MB 内存）
-- **不限运行时间**（不像 Render 会休眠）
-- 160 GB 出站流量/月
-- 3 GB 持久化卷
-- 全球 30+ 数据中心可选
-- 支持 GPU（A100/H100）
+**免费试用：** 当前新账户试用为总计 2 小时虚拟机运行时间或 7 天访问期，以先到者为准。它不是长期免费、持续在线的容器资源；添加付款方式后，资源按规则计费。
 
 **怎么用：**
-1. 注册需要绑信用卡（不扣钱，验证身份）
-2. 安装 flyctl CLI
-3. 在项目目录写 `fly.toml` 配置文件（AI 可以帮你生成）
-4. `fly launch` → 自动构建 Docker 镜像、分配 IP、部署
-5. `fly deploy` 更新，`fly logs` 看日志
+1. 注册并检查账户的试用或计费状态
+2. 安装 `flyctl`，在项目目录执行 `fly launch`
+3. 核对镜像、地域、实例、磁盘和网络配置后部署
+4. 用 `fly deploy` 更新，用 `fly logs` 查看日志
 
-**⚠️ 注意：**
-- 需要会写 Dockerfile 或使用 buildpack
-- 学习曲线比 Railway 陡
-- 超出免费额度按量计费，但小项目基本不会超
-
-**结论**：如果你需要一个**真正 24 小时在线**的免费容器跑 Bot/API/定时任务，Fly.io 是目前最好的免费选择。缺点是需要学一下 flyctl 命令行和 Docker。
+**结论**：可以用于容器化服务，但应核算实例、卷和网络等费用。当前规则见 [Fly.io 免费试用说明](https://docs.fly.io/about/free-trial)。
 
 #### 1.8 其他值得了解的免费/低成本平台
 
-| 平台 | 类型 | 免费额度 | 特点 |
-|------|------|---------|------|
-| **GitHub Pages** | 静态站 | 无限（100GB 软限制） | 最省心，推 GitHub 就上线，适合博客/文档 |
-| **Hugging Face Spaces** | AI 应用 | 免费 CPU 小实例 | 专门部署 AI Demo（Gradio/Streamlit），社区活跃 |
-| **Modal** | AI/Serverless GPU | $30/月额度 | Python 函数即服务，GPU 冷启动 < 4 秒，适合 AI 推理 |
-| **Replicate** | AI 模型托管 | 按调用付费 | 把模型变成 API，不用管基础设施 |
-| **Denoland Deploy** | Deno/Edge | 免费 100k 请求/天 | Deno 官方平台，TypeScript 原生支持 |
-| **Koyeb** | 全栈 PaaS | 免费 1 个服务 | 支持 Docker，全球边缘部署 |
-| **Railway 模板** | 一键部署 | - | 有上百个开源项目模板，点一下就部署（如 Uptime Kuma、Plausible） |
-| **Supabase** | 后端即服务 | 免费 500MB 数据库 | Firebase 的开源替代品，Postgres+Auth+Storage |
-| **Neon** | Serverless Postgres | 免费 500MB | 分支数据库，适合 Serverless 架构 |
-| **Upstash** | Serverless Redis | 免费 10k 命令/天 | 按请求计费的 Redis，适合 Serverless 项目 |
+| 平台 | 类型 | 费用与限制核对入口 | 特点 |
+|------|------|-------------------|------|
+| **GitHub Pages** | 静态站 | [使用限制](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits) | 适合博客、文档和项目展示，不运行独立后端 |
+| **Hugging Face Spaces** | AI 演示 | [Spaces 概述](https://huggingface.co/docs/hub/spaces-overview) | 有免费 CPU 资源；GPU、休眠和存储按具体配置核对 |
+| **Modal** | Python / GPU | [价格页](https://modal.com/pricing) | 按资源用量计费，赠送额度不代表所有项目免费 |
+| **Replicate** | 模型推理 API | [价格页](https://replicate.com/pricing) | 调用托管模型，按模型与实际使用计费 |
+| **Deno Deploy** | 应用托管 | [价格页](https://deno.com/deploy/pricing) | 根据当前运行环境和套餐检查兼容性 |
+| **Koyeb** | 应用托管 | [价格页](https://www.koyeb.com/pricing) | 可用实例、地域和休眠规则需要核对 |
+| **Railway 模板** | 多服务部署 | [模板入口](https://railway.com/deploy) | 模板创建的服务仍按资源计费 |
+| **Supabase** | 数据库与后端服务 | [价格页](https://supabase.com/pricing) | Postgres、Auth、Storage 等分别有配额 |
+| **Neon** | Serverless Postgres | [价格页](https://neon.com/pricing) | 按计算、存储等额度核对套餐 |
+| **Upstash** | 托管 Redis 等 | [价格页](https://upstash.com/pricing) | 请求、存储和带宽分别计量 |
 
 ---
 
@@ -17963,14 +18032,14 @@ exports.createMenuItem = async (menuData) => {
 
 ##### 腾讯云轻量应用服务器（推荐新手）
 
-![腾讯云轻量应用服务器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/tencent-lighthouse.png)
+![腾讯云轻量应用服务器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/tencent-lighthouse.webp)
 
 **官网**：https://cloud.tencent.com/product/lighthouse
 
 **推荐理由：**
-- **最便宜**：新用户 2核2G 4M 带宽只要 99 元/年，秒杀最低 38 元/年
+- **便于入门**：可在购买页比较 CPU、内存、磁盘、带宽和流量包，核对新购与续费价格
 - **操作最简单**：控制台直观，一键应用镜像（WordPress、宝塔面板、Docker 等开箱即用）
-- **带宽给得大方**：入门款 4-5 Mbps，锐驰型套餐有 200 Mbps 无限流量
+- **套餐集中展示**：带宽峰值、月流量和超额费用需要一起查看，不能把带宽峰值理解为不限量流量
 - **微信生态整合好**：部署小程序后端、公众号服务很方便
 
 **怎么买：**
@@ -17979,9 +18048,9 @@ exports.createMenuItem = async (menuData) => {
 3. 点击「立即选购」
 4. 选择配置：
    - **地域**：离你的用户最近的（南方选广州、北方选北京、海外选香港/新加坡）
-   - **镜像**：选「系统镜像」→ **Ubuntu 22.04 LTS**（最推荐新手）
-   - **套餐**：入门选 2核2G 4M 套餐（~99元/年）；预算够选 2核4G 5M（~198元/年）
-   - **时长**：建议直接买 1 年，新用户折扣只有首单
+   - **镜像**：选「系统镜像」→ **Ubuntu 24.04 LTS**（本章示例环境；已有 22.04 LTS 可按官方支持情况使用）
+   - **套餐**：按项目内存、磁盘、带宽和月流量选择，核对首购价、续费价和超额收费
+   - **时长**：先确认项目适用，再按预算选择购买时长；活动优惠不一定适用于续费
 5. 确认订单，付款
 6. 购买成功后，进入「控制台」→「轻量应用服务器」就能看到你的服务器了
 7. **重置密码**：点进服务器详情 → 重置密码（设一个强密码）
@@ -17991,34 +18060,34 @@ exports.createMenuItem = async (menuData) => {
    - TCP:22（SSH）
    - 其他端口按需开放（比如 3000 调试用）
 
-**学生优惠：** 完成学生认证后 2核2G 4M 约 10 元/月。访问 https://cloud.tencent.com/act/campus 申请。
+**学生优惠：** 如需学生方案，在 [官方校园活动页](https://cloud.tencent.com/act/campus)核对认证资格、可购资源与有效期，不将活动价格视为固定价格。
 
 ##### 阿里云轻量应用服务器
 
-![阿里云轻量应用服务器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/aliyun-lighthouse.png)
+![阿里云轻量应用服务器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/aliyun-lighthouse.webp)
 
 **官网**：https://www.aliyun.com/product/swas
 
 **推荐理由：**
 - **文档最丰富**：网上教程最多，遇到问题容易搜到答案
-- **免费学生机**：学生认证（学信网）后 2核2G 免费 1-3 个月，还有 300 元代金券
+- **学生与新用户活动**：资格、优惠券和可用产品以活动页为准，不保证所有账户都能免费领机
 - **稳定性好**：ESSD 云盘性能强，企业级稳定性
 - **生态最全**：配套的 CDN、OSS、RDS、域名等服务最完善
 
 **怎么买：**
 1. 注册阿里云账号，完成实名认证
-2. 学生用户先去「飞天加速计划」领免费券：https://university.aliyun.com/
+2. 学生用户可先检查当前教育优惠及资格：https://university.aliyun.com/
 3. 打开轻量应用服务器：https://www.aliyun.com/product/swas
 4. 点击「立即购买」
 5. 选择配置：
-   - **地域**：同腾讯云，选近的。香港/新加坡免备案但带宽小
-   - **镜像**：Ubuntu 22.04 LTS
-   - **套餐**：入门 2核2G 3M ~99 元/年
+   - **地域**：同腾讯云，选近的。中国香港/新加坡等地域按实际套餐核对带宽、流量和访问延迟
+   - **镜像**：Ubuntu 24.04 LTS（或项目确认支持的 LTS 版本）
+   - **套餐**：根据 CPU、内存、磁盘、带宽与流量选择，比较新购价和续费价
 6. 付款后到控制台查看服务器
 7. **重置密码**：实例详情 → 重置实例密码
 8. **配置防火墙**：「安全组」/「防火墙」放行 22、80、443 端口
 
-**学生免费领：** 访问 https://university.aliyun.com/ → 学生认证 → 领 300 元券 → 0 元购机。
+**学生活动：** 在 [阿里云学生入口](https://university.aliyun.com/)查看当期资格与资源，不把代金券等同于不限条件的免费服务器。
 
 ##### 华为云耀云服务器 HECS
 
@@ -18026,55 +18095,49 @@ exports.createMenuItem = async (menuData) => {
 
 **推荐理由：**
 - 企业级稳定性，安全防护能力强
-- 学生价约 9 元/月（1核2G）
-- 不限制 CPU 使用率（部分厂商突发性能实例会限速）
-- 可选鲲鹏 ARM 架构（国产化需求时有用）
+- 价格、配置与学生优惠以 [华为云产品购买页](https://www.huaweicloud.com/product/hecs.html)为准
+- 选择前核对 CPU 类型、性能约束、磁盘和公网计费方式
+- 如需 ARM 架构，先确认所选地域、实例和镜像实际支持
 
 **不足：** 文档和社区不如阿里云/腾讯云丰富，新手入门资料较少。
 
 #### 2.2 海外 VPS 选择（不想备案/面向海外用户）
 
-如果你的用户主要在海外，或者不想做备案（国内服务器必须备案才能用 80/443 端口），选海外 VPS：
+如果用户主要在海外，或准备使用中国香港、境外资源部署，可以比较下面的平台。备案要求取决于服务部署位置与具体业务，并不是改用其他端口就可以绕过。
 
-| 厂商 | 入门价格 | 特点 | 适合人群 |
-|------|---------|------|---------|
-| **Vultr** | $2.5/月（IPv6 only）/ $5/月 | 按小时计费，随时销毁，20+ 全球节点 | 新手练手、快速测试 |
-| **DigitalOcean** | $4/月 | 文档极佳，社区教程多，Droplet 一键部署 | 想学习的人 |
-| **Hetzner** | €3.49/月（CX22） | 性价比之王，欧洲厂商，网络稳定 | 追求性价比的长期项目 |
-| **AWS Lightsail** | $3.5/月（首年免费） | 亚马逊旗下，免费 1 年 | 想用 AWS 生态的人 |
-| **RackNerd** | ~$10/年（年付） | 超低价，适合非核心项目练手 | 纯练手、预算极低 |
-| **雨云** | ¥10/月起 | 国内厂商运营的海外 VPS，支付宝付款方便 | 国内用户图方便 |
-
-![Vultr 首页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/vultr.png)
+| 厂商 | 价格核对入口 | 需要一起检查 | 适合场景 |
+|------|-------------|-------------|---------|
+| **Vultr** | [产品与价格](https://www.vultr.com/pricing/) | 是否带 IPv4、流量额度、地域与磁盘 | 按需创建实例和练习部署 |
+| **DigitalOcean** | [Droplet 价格](https://www.digitalocean.com/pricing/droplets) | 配置、带宽额度、备份和快照 | 结合官方文档学习 VPS |
+| **Hetzner** | [Cloud 价格](https://www.hetzner.com/cloud/) | 地域、税费、IPv4 与流量 | 比较长期运行成本 |
+| **AWS Lightsail** | [价格与试用](https://aws.amazon.com/lightsail/pricing/) | 账户资格、试用期限、IP 类型与流量 | 使用 AWS 生态的简单应用 |
+| **RackNerd** | [产品入口](https://www.racknerd.com/) | 年付、退款、地域、备份和支持条件 | 非核心实验项目 |
+| **雨云** | [产品入口](https://www.rainyun.com/) | 实际地域、配置、计费与访问效果 | 按实际网络测试后选择 |
 
 **Vultr 购买流程（其他海外厂商类似）：**
 1. 访问 https://www.vultr.com/ 注册账号（需要邮箱+信用卡/PayPal）
 2. 点击 "Deploy Server"
 3. 选择：
-   - **Server Type**: Ubuntu 22.04 LTS
-   - **Server Size**: $5/月的 Regular Performance（1 vCPU / 1GB 内存，足够入门）
-   - **Location**: 选离用户近的（Tokyo/Singapore 对国内速度好一些；美西对国内延迟高但便宜）
+   - **系统镜像**：Ubuntu 24.04 LTS；实例类型、地域与系统镜像分别核对
+   - **Server Size**：按项目实际内存和 CPU 选择；同时检查 IPv4、磁盘和流量费用
+   - **Location**：按目标用户位置选择，并实测网络，不仅根据城市推断延迟
 4. 不用加额外选项，点 "Deploy Now"
 5. 等 1-2 分钟，服务器创建完成，在 Products 页面能看到 IP 和密码
-6. 海外 VPS 没有额外的「安全组」，系统装好防火墙默认关闭，连上后自己配 `ufw`
+6. 海外 VPS 也可能提供云防火墙或安全组；检查云端入站规则，再检查系统内 `ufw` 等防火墙
 
-**⚠️ 注意：** 海外 VPS 不备案，但从国内访问延迟较高（香港 ~50ms，新加坡 ~100ms，美西 ~200ms）。对延迟敏感的项目建议用国内服务器+备案。
+**访问效果：** 延迟取决于地域、运营商和线路，不能把固定毫秒数当作保证。用目标用户的网络测试页面与接口，再确定部署地域。
 
 #### 2.3 备案问题（国内服务器必须了解）
 
-**什么是备案？** 中国大陆的服务器要绑定域名对外提供 Web 服务（80/443 端口），必须在工信部做 ICP 备案，免费但需要 7-20 天审核。
+**什么是备案？** 在中国大陆资源上对外提供网站或 APP 服务时，需要按接入商与主管部门要求办理相应备案。它是网站和服务接入要求，不能理解成“只管 80/443，换个端口就不用备案”。
 
-**备案规则：**
-- 用国内节点（阿里云/腾讯云/华为云国内地域）→ **必须备案**才能通过域名访问 80/443
-- 用中国香港/海外节点 → **不需要备案**，域名直接解析就能用
-- 备案免费，在云厂商控制台提交资料（身份证、人脸核验、域名信息）
-- 备案期间域名不能访问，可以先买服务器配环境
-- 个人备案和企业备案流程类似，个人备案不能做经营性网站
+**选择地域时检查：**
+- 中国大陆地域：在上线前核对接入商的备案条件、域名实名认证与所需材料
+- 中国香港及境外地域：通常不按大陆接入资源办理 ICP 备案；仍按产品和业务的实际规则使用
+- 处理时间受资料、地区和审核进度影响，不保证固定天数
+- 个人与单位主体适用条件不同，具体要求查看接入商当期说明
 
-**建议：**
-- 面向国内用户 → 买国内服务器 + 花 2-3 周备案（备案期间可以开发）
-- 想快速上线/面向海外 → 香港节点或海外 VPS，跳过备案
-- 不想备案但想要国内速度 → Cloudflare Pages（CDN 国内有节点）
+腾讯云的 [备案资源条件](https://cloud.tencent.com/document/product/243/18908)与 [常见问题](https://cloud.tencent.com/document/faq/243)可以作为操作入口。普通 Cloudflare 免费服务不自动接入中国大陆网络，不能据此承诺“免备案且有大陆 CDN 加速”。
 
 ---
 
@@ -18085,7 +18148,7 @@ exports.createMenuItem = async (menuData) => {
 买好服务器后，你会拿到：
 - **公网 IP 地址**（比如 `123.45.67.89`）
 - **登录用户名**（Ubuntu 镜像默认是 `root` 或 `ubuntu`）
-- **登录密码**（你在购买时设置的，或者在控制台重置的）
+- **认证方式**（购买时设置的密码或 SSH 密钥，按镜像和云厂商说明确认）
 
 **如果你用 macOS / Linux：** 直接打开终端，输入：
 
@@ -18104,10 +18167,10 @@ ED25519 key fingerprint is SHA256:xxxxxx.
 Are you sure you want to continue connecting (yes/no/[fingerprint])?
 ```
 
-输入 `yes` 回车，然后输入密码。看到类似这样的提示符，就说明登录成功了：
+先通过云控制台或可信渠道核对主机指纹，确认连接的是自己的服务器，再输入 `yes`。使用密码时输入密码，使用密钥时按密钥配置认证。看到类似提示符，说明登录成功：
 
 ```
-Welcome to Ubuntu 22.04.3 LTS!
+Welcome to Ubuntu 24.04 LTS!
 root@your-server:~#
 ```
 
@@ -18121,7 +18184,7 @@ ssh-keygen -t ed25519
 # 把公钥传到服务器
 ssh-copy-id root@你的服务器IP
 
-# 之后就可以免密码登录了
+# 用新终端验证密钥能正常登录，确认成功后再考虑关闭密码登录
 ssh root@你的服务器IP
 ```
 
@@ -18136,63 +18199,75 @@ ssh root@你的服务器IP
 | **22** | SSH 登录 | 必开，建议限制为自己的 IP |
 | **80** | HTTP 访问 | 必开 |
 | **443** | HTTPS 访问 | 必开 |
-| **3000-3999** | Node.js 开发端口 | 调试时临时开，部署完关闭 |
+| **实际应用端口** | 本地或临时调试 | 不批量放开端口段；通过 Nginx 代理时通常无需向公网开放 |
 | **8080** | 常见备用端口 | 按需 |
 
 **服务器内部防火墙（登录后执行）：**
 
 ```bash
 # 安装 ufw
-apt install -y ufw
+sudo apt install -y ufw
 
 # 允许 SSH、HTTP、HTTPS
-ufw allow ssh
-ufw allow http
-ufw allow https
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
 
 # 启用防火墙
-ufw enable
+sudo ufw enable
 
 # 查看状态
-ufw status
+sudo ufw status
 ```
 
-> ⚠️ 安全组是云厂商层面的防火墙，ufw 是服务器内部的防火墙。**两层都需要放行才能访问。新手最常见的坑就是程序跑起来了但访问不到，90% 是安全组没开端口。**
+> 安全组是云端的入站规则，ufw 是服务器内的防火墙。启用 ufw 前先确认实际 SSH 端口已放行，并保留当前会话，用另一个终端测试登录；Docker 发布端口还受 Docker 网络规则影响，不应只依赖 ufw 判断暴露范围。
+
+![腾讯云轻量应用服务器官方防火墙规则列表](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/lighthouse-firewall.png)
+
+![腾讯云轻量应用服务器官方添加防火墙规则界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/lighthouse-firewall-rule.png)
+
+图片来源：[腾讯云轻量应用服务器管理防火墙](https://cloud.tencent.com/document/product/1207/44577)。图中的规则是官方操作示意，不是本项目的推荐端口清单；按上文仅放行实际需要的端口，并限制 SSH 来源。
 
 #### 3.3 初始化服务器环境
 
-登录服务器后，你可以**直接把下面这段话复制给你的 AI 编程助手**，让它帮你生成完整初始化命令：
+登录服务器后，可以把下面这段话复制给 AI 编程助手，让它按项目生成初始化命令：
 
-> 「我刚买了一台 Ubuntu 22.04 的云服务器，打算部署一个 [Node.js/Python/...] 项目，帮我写出完整的初始化命令，包括：更新系统、创建非 root 用户、配置 SSH 密钥登录、安装 Docker/Nginx/Node.js、配置基础防火墙。」
+> 「我刚买了一台 Ubuntu 24.04 LTS 云服务器，准备部署一个 [项目类型]。请区分本地操作、管理员操作和普通用户操作，完成基础工具、非 root 用户、SSH 密钥、Node.js、Nginx 与防火墙配置。需要 Docker 时按官方 Ubuntu 安装指南操作，并说明如何验证每一步。」
 
-下面是一个典型的初始化流程，供你参考理解：
+下面以 Ubuntu 24.04 LTS 为例。**第一段在服务器的管理员终端执行**，如果当前用户不是 root，则使用具备 sudo 权限的账户：
 
 ```bash
-# 1. 更新系统 & 安装基础工具
-apt update && apt upgrade -y
-apt install -y curl wget git vim ufw build-essential
-
-# 2. 创建普通用户（不要一直用 root）
-adduser yourname
-usermod -aG sudo yourname
-
-# 3. 安装 Node.js（用 nvm，不要用 apt）
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-source ~/.bashrc
-nvm install 20
-node -v  # 验证
-
-# 4. 安装 Nginx
-apt install -y nginx
-systemctl start nginx
-systemctl enable nginx
-# 浏览器访问 http://你的IP，应该看到 Nginx 欢迎页
-
-# 5. 安装 Docker（如果用容器部署）
-curl -fsSL https://get.docker.com | sh
-usermod -aG docker yourname  # 免 sudo
-docker --version
+sudo apt update
+sudo apt install -y ca-certificates curl git vim ufw build-essential nginx
+sudo adduser yourname
+sudo usermod -aG sudo yourname
+sudo systemctl enable --now nginx
 ```
+
+为 `yourname` 配置自己的 SSH 公钥，确认 `/home/yourname/.ssh` 权限为 `700`、`authorized_keys` 为 `600`，并且归该用户所有。保留原来的管理员会话，用本地另一个终端测试 `ssh yourname@服务器IP`，成功后再继续。
+
+**后面的 Node.js 操作在 `yourname` 的服务器会话里执行**，不要在 root 的家目录安装后再假定普通用户也能使用：
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+nvm install 24
+nvm alias default 24
+node --version
+npm --version
+```
+
+本章核对时 Node.js 24 是受支持的 LTS，Node.js 20 已进入 EOL。实际项目仍需检查 `engines`、锁文件和依赖兼容性，版本支持见 [Node.js 官方发布表](https://nodejs.org/en/about/previous-releases)，安装脚本见 [nvm 官方仓库](https://github.com/nvm-sh/nvm)。
+
+浏览器访问 `http://服务器IP` 可以检查 Nginx 是否响应。如果准备使用 Docker Compose，按 [Docker 官方 Ubuntu 安装步骤](https://docs.docker.com/engine/install/ubuntu/)安装 Engine 与 Compose 插件，再验证：
+
+```bash
+sudo docker version
+sudo docker compose version
+```
+
+可选择把普通用户加入 `docker` 组，但这相当于授予很高的主机权限；加入后要重新登录才能生效。后文示例默认使用 `sudo docker compose`，无需为练习额外放宽组权限。
 
 ---
 
@@ -18202,21 +18277,38 @@ docker --version
 
 #### 4.1 场景一：部署纯前端静态站（Vite/React/Vue）
 
-`npm run build` 后会生成 `dist/` 目录，里面是纯 HTML/CSS/JS 文件。
+Vite 项目执行 `npm run build` 后通常会生成 `dist/`，其他工具应按实际输出目录操作。这里统一把发布文件放在服务器的 `/var/www/myapp/dist`，避免上传位置与 Nginx 的 `root` 不一致。
 
-**把代码传到服务器：**
+**先在服务器准备目录：**
 
 ```bash
-# 方式一：在本地用 rsync 传到服务器
-rsync -avz --exclude=node_modules ./dist/ yourname@你的IP:/var/www/myapp/
-
-# 方式二：在服务器上 git clone（推荐，更新方便）
-cd /var/www
-sudo git clone https://github.com/你的用户名/你的仓库.git myapp
-cd myapp
-npm install
-npm run build
+sudo mkdir -p /var/www/myapp/dist
+sudo chown -R yourname:yourname /var/www/myapp
 ```
+
+**方式一：本地构建并上传。下面在本地项目目录执行：**
+
+```bash
+npm ci
+npm run build
+rsync -avz ./dist/ yourname@服务器IP:/var/www/myapp/dist/
+```
+
+`npm ci` 适用于有 `package-lock.json` 的项目，pnpm / Yarn 项目沿用各自的安装方式。`dist/` 末尾的斜杠表示传输目录内的文件。
+
+**方式二：在服务器构建。下面以 `yourname` 用户执行：**
+
+```bash
+mkdir -p ~/apps
+cd ~/apps
+git clone https://github.com/你的用户名/你的仓库.git myapp
+cd myapp
+npm ci
+npm run build
+rsync -av ./dist/ /var/www/myapp/dist/
+```
+
+这两种方式任选其一。前者不要求服务器安装前端构建依赖，后者便于从仓库更新；不要在同一个练习里把两种目录结构混用。
 
 **配置 Nginx：**
 
@@ -18224,49 +18316,73 @@ npm run build
 sudo vim /etc/nginx/sites-available/myapp
 ```
 
-写入：
+写入下面的配置，将域名占位符替换为自己的域名。尚未配置域名时，可以用实际公网 IP 测试：
 
 ```nginx
 server {
     listen 80;
-    server_name 你的IP或域名;
+    server_name example.com www.example.com;
 
     root /var/www/myapp/dist;
     index index.html;
 
     location / {
-        try_files $uri $uri/ /index.html;  # 前端路由 history 模式
+        try_files $uri $uri/ /index.html;
     }
 
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+    }
+
+    # 适合 Vite 默认生成的带内容哈希的构建资源。
+    location /assets/ {
+        try_files $uri =404;
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 }
 ```
 
-启用：
+`try_files` 的回退适合有前端路由的单页应用。文档站或多页网站应按自己的路由结构配置，不统一回退到同一个首页。长期缓存只给带版本或哈希的构建资源，不能给所有同名图片和入口 HTML 都设置一年不可变缓存。
+
+启用配置并检查：
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
+sudo ln -sfn /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/myapp
+sudo nginx -t
+sudo systemctl reload nginx
+curl -I -H 'Host: example.com' http://127.0.0.1
 ```
+
+如果保留了 Ubuntu 的默认 Nginx 站点，通过 IP 访问可能仍显示欢迎页。先用上面的 Host 头确认配置命中，再通过已正确解析的域名访问；需要直接用 IP 时把它加入本例 `server_name`。最后测试首页、图片、脚本和页面刷新。`nginx -t` 只检查配置，不能代替实际访问测试。
 
 #### 4.2 场景二：部署 Node.js 后端服务
 
 后端需要持续运行，关键是让它在后台不停止。
 
-**用 PM2（最推荐新手）：**
+**用 PM2：** 下面在普通部署用户的服务器会话执行，启动文件以实际项目为准：
 
 ```bash
 npm install -g pm2
 cd /path/to/your/app
-npm install
-npm run build  # TypeScript 项目需要
-pm2 start dist/main.js --name "myapp"
-pm2 startup && pm2 save  # 开机自启
-pm2 logs myapp  # 看日志
+npm ci
+npm run build  # 只有项目确实定义了 build 脚本时才执行
+pm2 start dist/main.js --name myapp
+pm2 startup
 ```
+
+`dist/main.js` 只是一个编译后入口示例。纯 JavaScript 项目可能是 `server.js`，也可以按项目使用 `pm2 start npm --name myapp -- start`。
+
+`pm2 startup` 会输出一条带环境路径的管理员命令。先核对并执行它，再执行 `pm2 save` 保存进程列表，不是运行一次 `pm2 startup && pm2 save` 就自动完成所有设置。更换 nvm 下的 Node.js 版本后，还需检查启动服务里的 Node 路径。参考 [PM2 开机启动说明](https://pm2.keymetrics.io/docs/usage/startup/)。
+
+```bash
+pm2 save
+pm2 status
+pm2 logs myapp
+curl http://127.0.0.1:3000/health
+```
+
+最后一个命令使用本例的健康检查路径；现有项目要替换成实际存在的接口。通过同机 Nginx 代理的后端可以只监听 `127.0.0.1:3000`，无需把应用端口额外开放到公网。
 
 **用 Nginx 反向代理：**
 
@@ -18278,74 +18394,162 @@ server {
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
     }
 }
 ```
 
+将这个后端配置保存为独立的 `/etc/nginx/sites-available/myapp-api`，再用第 4.1 节的方式建立同名启用链接、运行 `sudo nginx -t` 并重新加载。每个站点的 `server_name` 应与实际域名一致，不能只把配置留在编辑器里。
+
+普通 HTTP 接口可使用以上配置；WebSocket 服务还需要按应用要求添加 Upgrade 代理配置，不能直接假定这个最小示例已经支持。
+
 #### 4.3 场景三：Docker Compose 一键部署全栈
 
-不想在服务器上装各种环境？用 Docker：
+使用容器时，应用仍需有明确的构建与启动入口。下面继续以执行 `npm run build` 后生成 `dist/main.js` 的 Node.js 后端为例：应用需要监听 `0.0.0.0:3000`，并按需读取 `DATABASE_URL` 与 `REDIS_URL`。纯前端项目不照抄这个 Dockerfile。
+
+先准备目录：
+
+```text
+project/
+├── Dockerfile
+├── .dockerignore
+├── compose.yaml
+├── nginx.conf
+├── .env
+├── package.json
+├── package-lock.json
+├── src/
+└── frontend/dist/
+```
+
+`frontend/dist` 是已经构建好的前端文件；后端代码和依赖文件放在项目根目录。`.env` 保存本机秘密配置，不提交到 Git。
 
 ```dockerfile
-# Dockerfile
-FROM node:20-alpine
+# Dockerfile：本例是需要编译的 Node.js 后端。
+FROM node:24-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
+ENV NODE_ENV=production
 EXPOSE 3000
+USER node
 CMD ["node", "dist/main.js"]
 ```
 
+创建 `.dockerignore`，避免把本机依赖、密钥和前端产物复制进后端镜像：
+
+```text
+node_modules
+.git
+.env
+frontend/dist
+```
+
+在服务器的项目目录创建私有 `.env`，设置一个长随机字母数字密码，例如 `POSTGRES_PASSWORD=替换为自己的随机密码`。不要把这个占位符当作实际密码。连接串中的密码若含特殊字符，需要按 URL 规则编码；本例用字母数字密码简化练习。
+
 ```yaml
-# docker-compose.yml
-version: '3.8'
+# compose.yaml
 services:
   app:
     build: .
-    ports:
-      - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:pass@db:5432/myapp
-    depends_on: [db, redis]
-    restart: always
+      PORT: "3000"
+      DATABASE_URL: postgresql://myapp:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/myapp
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: myapp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
       POSTGRES_DB: myapp
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myapp -d myapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
 
   nginx:
-    image: nginx:alpine
+    image: nginx:stable-alpine
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./frontend/dist:/usr/share/nginx/html
-    depends_on: [app]
-    restart: always
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - app
+    restart: unless-stopped
 
 volumes:
   postgres_data:
 ```
 
-启动：`docker compose up -d`。查看日志：`docker compose logs -f`。
+数据库与 Redis 没有映射到宿主机公网端口，应用通过 Compose 内网访问它们。数据卷保存 PostgreSQL 数据，但数据卷不是备份；Redis 在本例中仅作为可重建缓存使用。
+
+把下面内容保存为同一目录的 `nginx.conf`：
+
+```nginx
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location /api/ {
+        proxy_pass http://app:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+这里的 `proxy_pass` 不带末尾斜杠，会保留 `/api/` 路径前缀，因此后端应提供 `/api/...` 接口；如果实际后端没有这个前缀，需要相应修改路由或代理规则。
+
+先检查配置，再构建与启动。`config --quiet` 不会把展开后的数据库密码打印出来：
+
+```bash
+sudo docker compose config --quiet
+sudo docker compose up -d --build
+sudo docker compose ps
+sudo docker compose logs --tail=50 app
+curl -I http://127.0.0.1
+```
+
+同一台机器的宿主机 Nginx 如果已经占用 80 端口，这个容器就不能再次绑定 80。实际部署时选择“宿主机代理”或“容器代理”中的一种，不要把两套示例同时直接运行。
+
+本例先提供 HTTP。配置 HTTPS 时需要真正添加证书、443 监听和证书挂载，不能只在 `ports` 里写上 `443:443` 就认为已经启用 HTTPS。
 
 ---
 
@@ -18353,7 +18557,7 @@ volumes:
 
 #### 5.1 买域名 & 解析
 
-在阿里云万网、腾讯云、Namecheap、Cloudflare、GoDaddy 等平台买域名（.com 约 55-75 元/年，.cn 约 29 元/年）。
+在阿里云、腾讯云、Namecheap、Cloudflare Registrar 等平台选购域名时，同时核对首年价格、续费价格和注册要求。域名价格不按固定金额保证。
 
 在域名控制台添加 **A 记录**：
 
@@ -18365,12 +18569,17 @@ volumes:
 
 #### 5.2 一键 HTTPS（Let's Encrypt 免费证书）
 
+下面的方式适用于宿主机直接运行的 Nginx。先确认所有列出的域名都已经正确解析、相应站点能通过公网 HTTP 访问，且 80 / 443 端口可用。只有一个域名时，只保留相应的 `-d` 参数。
+
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com -d api.yourdomain.com
-# 选 2（Redirect）自动把 HTTP 跳转到 HTTPS
-sudo certbot renew --dry-run  # 测试自动续期
+# 按当前交互提示选择需要的配置，不依赖固定的菜单序号
+sudo certbot renew --dry-run  # 测试续期流程
+systemctl list-timers --all | grep certbot
 ```
+
+还需确认自动续期任务确实存在并能执行；证书签发成功不等于后续一定自动续期。容器 Nginx 需要对应的 ACME 客户端、共享验证目录与证书挂载，不能直接套用宿主机插件配置。参考 [Certbot 官方安装指引](https://certbot.eff.org/instructions)。
 
 ---
 
@@ -18383,16 +18592,15 @@ sudo certbot renew --dry-run  # 测试自动续期
 先看全景。一个完整的 Web 应用在云上通常长这样：
 
 ```
-用户 ──→ CDN（静态资源加速）──→ 负载均衡 SLB/ALB ──→ 云服务器 ECS/EC2（你的应用）
-                │                        │                │
-                │                        │                ├── 对象存储 OSS/S3（图片/文件）
-                │                        │                ├── 云数据库 RDS/RDS（MySQL/Postgres）
-                │                        │                └── 缓存 Redis/ElastiCache
-                │                        │
-                │                        └── 容器服务 ACK/EKS（Kubernetes，进阶）
-                │
-                └── 域名解析 DNS/DNS（把域名指向你的服务）
-                     + SSL 证书（HTTPS 加密）
+用户先查询 DNS → 得到网站入口地址
+
+用户 ──HTTPS──→ CDN（可选）──→ 负载均衡（可选）──→ 云服务器 / 容器（应用）
+                                                        │
+                                                        ├── 对象存储 OSS/COS/S3（文件）
+                                                        ├── 云数据库 RDS（结构化数据）
+                                                        └── Redis（缓存）
+
+HTTPS 证书配置在实际接收 HTTPS 的 CDN、负载均衡或服务器上。
 ```
 
 下面逐个解释每个服务是什么、什么时候用、怎么操作。
@@ -18414,15 +18622,15 @@ sudo certbot renew --dry-run  # 测试自动续期
 
 **怎么操作（以腾讯云轻量为例）：**
 1. 进入「轻量应用服务器」控制台
-2. 点「新建」选镜像（推荐 Ubuntu 22.04）、套餐、地域
+2. 点「新建」选镜像（推荐 Ubuntu 24.04 LTS）、套餐、地域
 3. 购买后在实例列表里看到公网 IP
-4. 点「重置密码」设置 root 密码
+4. 按镜像要求绑定 SSH 密钥，或设置初始登录密码；默认用户名以控制台提示为准
 5. 点「防火墙」添加端口规则（22/80/443）
 6. SSH 连接上去开始部署
 
 ##### Serverless 函数计算 / Lambda
 
-不用买服务器，上传代码，按调用次数和运行时间付费。请求来了才运行，没请求不花钱。
+不用先购买一台常驻服务器，上传代码后按请求、计算时间等计费。预置并发、存储、网络和日志可能另行收费，不能把“没有请求”直接理解为“所有资源零费用”。
 
 | 厂商 | 产品名 |
 |------|--------|
@@ -18448,59 +18656,108 @@ sudo certbot renew --dry-run  # 测试自动续期
 
 ##### 对象存储 OSS / COS / S3 ⭐ 最常用
 
-**这是除了服务器之外最常用的服务**，用来存放图片、视频、PDF、前端打包后的静态文件等「大文件」。**不要把用户上传的文件存在服务器本地磁盘上！** 服务器重装/迁移/扩容时很容易丢。
+这是除了服务器之外最常用的服务，用来存放图片、视频、PDF、前端静态资源和备份。用户上传的文件放在对象存储里，应用重装或迁移时就不必跟着复制整块服务器磁盘；仍需根据数据重要性设置版本控制、保留策略和备份。
 
-| 厂商 | 产品名 | 免费额度 | 费用 |
-|------|--------|---------|------|
-| 阿里云 | OSS（对象存储服务）| 新用户 5GB 标准存储 6 个月 | 标准存储约 ¥0.12/GB/月 |
-| 腾讯云 | COS（对象存储） | 新用户 50GB 6 个月 | 标准存储约 ¥0.118/GB/月 |
-| AWS | S3（Simple Storage Service）| 5GB（Free Tier，12个月）| 标准存储约 $0.023/GB/月 |
+| 厂商 | 产品名 | 选用时关注什么 |
+|------|--------|----------------|
+| 阿里云 | [OSS](https://www.aliyun.com/product/oss) | 国内应用常用，核对地域、存储类型和外网流量费 |
+| 腾讯云 | [COS](https://cloud.tencent.com/product/cos) | 适合腾讯云生态，核对请求、流量和资源包适用范围 |
+| AWS | [S3](https://aws.amazon.com/s3/pricing/) | 地域和存储类型丰富，存储、请求、取回和传输分别计费 |
+| Cloudflare | [R2](https://developers.cloudflare.com/r2/pricing/) | 兼容 S3 API，直接从 R2 出站不收流量费，但存储和操作仍可能收费 |
+
+新用户赠送额度和试用资格会变，以账号控制台和以上官方页面为准。“有免费存储”不等于请求、下载和 CDN 都免费。
 
 **它能做什么：**
-- 存放用户上传的图片/头像/附件（博客配图、商品图片、用户头像）
-- 托管前端静态网站（把 `dist/` 目录直接传上去，开启「静态网站托管」功能就能访问）
+- 存放用户上传的图片、头像和附件
+- 分发构建好的静态资源；整站托管还要配置首页、路由回退、域名和 HTTPS
 - 备份数据库导出文件
-- 和 CDN 配合，让全世界用户快速下载你的文件
+- 配合 CDN 分发公开资源
 - 生成临时链接分享私有文件
 
+下面的配图来自各平台官方文档，未登录个人账号创建资源。界面可能随版本调整，图中的名称、地域和套餐仅作演示；上传成功后，先确认文件仍是私有，再测试临时链接。
+
 **怎么操作（以阿里云 OSS 为例）：**
-1. 进入 OSS 控制台，点「创建 Bucket」
-2. 填写 Bucket 名称（全局唯一，比如 `myapp-images`）
-3. 地域选离你服务器近的
-4. 存储类型选「标准存储」
-5. 读写权限：**初期建议「公共读」**（图片可以直接访问），敏感文件用「私有」
-6. 创建完成后，进入 Bucket →「文件管理」→「上传文件」
-7. 上传后每个文件都有一个 URL，比如 `https://myapp-images.oss-cn-hangzhou.aliyuncs.com/avatar.jpg`
-8. 前端代码里直接用这个 URL 显示图片
 
-**配合 CDN 加速：** 给 OSS Bucket 绑定自定义域名 + CDN，用户访问图片时从最近的 CDN 节点获取，速度快且省 OSS 流量费。
+1. 进入 OSS 控制台，点「创建 Bucket」，填写唯一名称并选择地域。与应用放在同一地域通常便于使用内网端点。
+2. 入门先选「标准存储」，读写权限保留「私有」。不要为了显示一张图片就把整个存储桶公开。
+3. 进入 Bucket →「文件管理」→「文件列表」，点「上传文件」，先用一张不含敏感信息的测试图片。
+4. 上传后打开文件详情，用控制台生成的临时授权链接测试下载。私有文件的普通地址直接打开出现 403，通常是访问控制生效。
+5. 接入应用时，由后端校验用户身份后生成短期签名链接；确实需要公开的静态资源再单独设计公共访问或 CDN 策略。
 
-**用代码操作（Node.js 示例，让 AI 帮你写具体逻辑）：**
+![阿里云 OSS 官方控制台文件上传界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/oss-upload.png)
+
+图片来源：[阿里云 OSS 简单上传文档](https://help.aliyun.com/zh/oss/user-guide/simple-upload)。创建存储桶和权限设置见 [OSS 控制台快速入门](https://help.aliyun.com/zh/oss/user-guide/console-quick-start)。
+
+**用代码操作（Node.js 服务端示例）：**
 
 ```javascript
-// 安装 SDK: npm install ali-oss
+// 安装：npm install ali-oss
+// 此示例使用 CommonJS（可保存为 upload.cjs）
 const OSS = require('ali-oss');
 const client = new OSS({
-  region: 'oss-cn-hangzhou',
-  accessKeyId: '你的AccessKey',
-  accessKeySecret: '你的AccessKeySecret',
-  bucket: 'myapp-images'
+  region: process.env.OSS_REGION,
+  accessKeyId: process.env.OSS_ACCESS_KEY_ID,
+  accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
+  bucket: process.env.OSS_BUCKET,
+  secure: true
 });
 
-// 上传文件
-async function uploadFile(localPath, ossPath) {
-  const result = await client.put(ossPath, localPath);
-  return result.url; // 返回文件的公网 URL
+async function uploadFile(localPath, objectKey) {
+  await client.put(objectKey, localPath);
+  // 私有对象返回短期下载链接，而不是假定 result.url 可公开访问
+  return client.signatureUrl(objectKey, { expires: 300 });
 }
 ```
 
-> ⚠️ **重要安全提醒：** AccessKey 相当于你的 OSS 密码，**绝对不要硬编码在前端代码或提交到 Git**！放在服务端环境变量里。如果不小心泄露了，立即到 RAM 控制台禁用旧 Key 并生成新的。
+环境变量放在服务器的密钥配置中；使用仅能访问目标 Bucket 和目录的 RAM 身份，不使用主账号 AccessKey。生产环境也可以改用实例角色或临时凭证。不要把密钥写进前端、Git 或 AI 对话；签名链接本身也应按临时凭证保护。参考 [ali-oss 官方 SDK](https://github.com/ali-sdk/ali-oss)。
 
-**AWS S3 操作（同样流程）：**
-1. AWS 控制台搜索 S3 → Create bucket
-2. 填名字、选区域（如 us-east-1）、取消勾选 "Block all public access"（如果需要公开访问）
-3. 上传文件后可以通过 `https://bucket-name.s3.region.amazonaws.com/file.jpg` 访问
-4. SDK 用 `aws-sdk` 或 `@aws-sdk/client-s3`
+**腾讯云 COS 操作：**
+
+1. 打开 COS 控制台 →「存储桶列表」→「创建存储桶」，选择地域，填写名称。完整名称包含账号的 APPID 后缀。
+2. 访问权限选择「私有读写」，再按实际需要设置日志、版本控制等功能，留意额外费用。
+3. 进入「文件列表」→「上传文件」，上传测试图片，核对路径和大小。
+4. 在文件详情中获取带签名的临时链接测试访问。应用通过后端生成链接，或用临时密钥限制前端上传范围。
+
+![腾讯云 COS 官方创建存储桶界面及访问权限选项](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cos-create-bucket.png)
+
+图片来源：[腾讯云 COS 创建存储桶](https://cloud.tencent.com/document/product/436/14106)。
+
+![腾讯云 COS 官方上传文件窗口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cos-upload.png)
+
+图片来源：[腾讯云 COS 上传对象](https://cloud.tencent.com/document/product/436/14113)。
+
+**AWS S3 操作：**
+
+1. AWS 控制台搜索 S3 →「Create bucket」，选择通用存储桶、唯一名称和区域。
+
+![AWS S3 官方创建存储桶的名称与区域设置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/s3-create-bucket.png)
+
+2. 保留「ACLs disabled」和「Block all public access」默认设置。后端使用 IAM 角色或受限身份访问，不需要为上传文件关闭公共访问拦截。
+
+![AWS S3 官方对象所有权与阻止公共访问设置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/s3-private-access.png)
+
+3. 创建后进入「Objects」→「Upload」→「Add files」，上传一张测试图片并等待成功。
+
+![AWS S3 官方存储桶中的上传入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/s3-upload.png)
+
+4. 回到对象列表，选择文件，在对象操作中生成预签名 URL（控制台可能显示「Share with a presigned URL」），先设置较短有效期，再在未登录的浏览器窗口测试。普通对象 URL 不会因为上传成功就自动公开。
+
+![AWS S3 官方上传成功后的对象列表](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/s3-object-list.png)
+
+以上四张图片来源：[AWS S3 官方上传教程](https://docs.aws.amazon.com/hands-on/latest/backup-files-to-amazon-s3/backup-files-to-amazon-s3.html)；临时访问步骤见 [分享预签名 URL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html)。代码接入使用 AWS SDK for JavaScript v3，例如 `@aws-sdk/client-s3` 和 `@aws-sdk/s3-request-presigner`，凭证由服务端角色或凭证链提供。
+
+**Cloudflare R2 操作：**
+
+1. Cloudflare 控制台进入 R2，按账号提示开通服务并创建 Bucket，先确认当前免费额度、计费方式和预算。
+2. 在 Bucket 的对象页面上传测试文件。保持私有，通过 S3 兼容 API 和预签名 URL 验证读取。
+3. 接入现有 S3 客户端时，除了 Bucket 和凭证，还要把 endpoint 改成账号对应的 R2 地址；它不是 AWS S3 的默认端点。
+4. 需要公开分发时再配置自定义域名；`r2.dev` 开发地址有速率限制，不适合作为生产分发入口。
+
+![Cloudflare R2 官方入门文档页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/r2-official-guide.png)
+
+截图为官方指南页面，非个人账号控制台。来源：[R2 Get started](https://developers.cloudflare.com/r2/get-started/)；公共域名说明见 [Public buckets](https://developers.cloudflare.com/r2/buckets/public-buckets/)。
+
+**配合 CDN 加速：** 对公开图片，可为 Bucket 配置自定义域名和 CDN。私有源站还需要授权回源和访问控制，不能简单改成公共读。是否省钱取决于命中率、回源流量、CDN 流量与请求费，应结合账单核对。
 
 ##### 云硬盘 / 云盘 / EBS
 
@@ -18510,7 +18767,7 @@ async function uploadFile(localPath, ossPath) {
 - 腾讯云：云硬盘 CBS
 - AWS：EBS（Elastic Block Store）
 
-**什么时候用：** 服务器磁盘不够、需要额外存储空间、需要独立于服务器生命周期保留数据（服务器删了数据盘还在）。
+**什么时候用：** 服务器磁盘不够、需要额外存储空间、需要独立管理数据。创建时要核对“随实例释放 / Delete on termination”等选项；删除服务器后是否保留云盘取决于配置，快照和备份也要另外安排。
 
 ##### 文件存储 / NAS / EFS
 
@@ -18526,26 +18783,34 @@ async function uploadFile(localPath, ossPath) {
 
 ##### 云数据库 RDS / Cloud Database ⭐ 常用
 
-**不要把数据库装在同一台 VPS 上跑生产环境！** 虽然技术上可以（我们前面的教程就是在 VPS 上装 PostgreSQL），但生产环境用云数据库更省心：自动备份、高可用、监控告警、一键扩容。
+前面的 Docker Compose 把 PostgreSQL 放在同一台 VPS，适合学习和小规模项目，但需要自行维护备份、恢复和资源隔离。有重要用户数据、可用性要求较高时，可以考虑托管数据库；自动备份、保留时间、高可用和扩容能力仍要按所选规格逐项配置。
 
-| 厂商 | 产品名 | 支持的数据库 | 免费/入门 |
-|------|--------|------------|----------|
-| 阿里云 | RDS | MySQL、PostgreSQL、SQL Server、MariaDB | 新用户免费试用 1-3 个月 |
-| 腾讯云 | TDSQL-C（原CynosDB）/ 云数据库 MySQL | MySQL、PostgreSQL、MariaDB | 新用户 1核1G 约 ¥30/月 |
-| AWS | RDS（Relational Database Service） | MySQL、PostgreSQL、MariaDB、SQL Server、Oracle、Aurora | Free Tier 12 个月（t2.micro/t3.micro） |
+| 厂商 | 产品名 | 选用时关注什么 |
+|------|--------|----------------|
+| 阿里云 | RDS | 按 MySQL、PostgreSQL 等引擎选择版本、规格和备份策略 |
+| 腾讯云 | 云数据库 MySQL / PostgreSQL、TDSQL-C | 产品与兼容引擎对应，不能假定一个实例支持所有引擎 |
+| AWS | RDS / Aurora | 核对引擎、区域、实例、存储、备份和账号优惠资格 |
 
 **什么时候用：** 生产环境的数据库（特别是有用户数据、不能丢数据的场景）。
 
 **怎么操作（以阿里云 RDS 为例）：**
 1. RDS 控制台 → 创建实例
-2. 选数据库引擎（MySQL 8.0 最常用）、规格（入门选 1核2G）、存储空间
-3. 创建后设置「白名单」把你的服务器 IP 加进去（重要！否则连不上）
+2. 选择与项目驱动和迁移脚本匹配的数据库引擎、受支持版本、规格和存储空间
+3. 优先让数据库与应用位于同地域、可互通的 VPC，使用内网连接地址。白名单或安全组只允许应用的地址或安全组访问，不开放给所有公网 IP
 4. 创建数据库账号和密码
 5. 在「数据库管理」里创建数据库名
 6. 拿到连接地址（类似 `rm-xxxxx.mysql.rds.aliyuncs.com:3306`）
-7. 修改你项目的 `.env` 里的 `DATABASE_URL` 指向这个地址
+7. 修改服务端的 `DATABASE_URL`，按厂商要求配置 TLS，再运行连接测试和数据库迁移。不要把连接串发到浏览器
 
-> 💡 **vibecoding 提示：** 告诉 AI「我有一个阿里云 RDS MySQL 实例，连接地址是 xxx，账号是 xxx，帮我写 Node.js/Python 连接代码和数据库初始化迁移脚本」。
+AWS RDS 的流程类似：选引擎、规格和网络，再设置应用的连接权限。下图是官方文档中的 MySQL 创建界面，图中 Free tier 选项不代表所有新账号或当前规格都免费；以实际创建页面的资格和费用预估为准。
+
+![AWS RDS 官方 MySQL 创建界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/rds-create-mysql.png)
+
+![AWS RDS 官方关联同 VPC EC2 应用的连接设置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/rds-connect-ec2.png)
+
+图片来源：[AWS RDS 创建并连接 MySQL 实例](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.MySQL.html)。私网连接还要核对 VPC、子网、路由和安全组，实例显示“可用”并不代表应用一定能连上。
+
+> 💡 **vibecoding 提示：** 告诉 AI 数据库类型、版本和环境变量名称，让它生成连接代码、连接测试与迁移脚本；真实密码通过服务器密钥配置注入。
 
 ##### 缓存 Redis / ElastiCache
 
@@ -18555,7 +18820,7 @@ async function uploadFile(localPath, ossPath) {
 - 腾讯云：云数据库 Redis
 - AWS：ElastiCache for Redis
 
-入门可以直接在 VPS 上 `apt install redis-server`，生产环境/高可用场景用云 Redis。
+入门可以自行安装 Redis 或使用前面的容器示例。只允许应用通过内网或本机连接，不把 6379 直接暴露到公网；使用认证并按数据用途配置持久化。托管 Redis 可以减少维护工作，高可用能力和费用仍取决于套餐。把 Redis 用作任务队列时，还需要确认任务确认、重试和持久化机制，不能仅凭“用了 Redis”就保证任务不丢。
 
 #### 6.5 网络类：让用户访问更快更安全
 
@@ -18576,9 +18841,15 @@ async function uploadFile(localPath, ossPath) {
 **怎么配置（以腾讯云 CDN 为例）：**
 1. CDN 控制台 → 添加域名 → 填入你的域名（比如 `static.yourdomain.com`）
 2. 源站类型选「COS源」或「自有源」（填你的服务器 IP）
-3. 等待配置下发（约 5-10 分钟）
+3. 按控制台提示配置源站 Host、缓存规则及 HTTPS；私有 COS 还要授权 CDN 回源，等待配置生效
 4. 去域名解析控制台，给 `static.yourdomain.com` 添加 CNAME 记录，指向 CDN 分配给你的 CNAME 地址
-5. 配置完成，访问 `static.yourdomain.com/images/xxx.jpg` 就是 CDN 加速了
+5. 用真实存在的测试文件验证 HTTPS、响应状态和缓存命中。不要缓存带用户隐私的接口响应；配置流量告警并检查实际费用。
+
+![腾讯云 CDN 官方添加加速域名入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cdn-domain.png)
+
+![腾讯云 CDN 官方域名配置管理页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cdn-origin.png)
+
+图片来源：[腾讯云 CDN 域名接入官方文档](https://cloud.tencent.com/document/product/228/3149)。DNS 已指向 CDN 只是其中一步，还需确认源站可达、证书匹配和缓存规则正确。
 
 ##### 负载均衡 SLB / CLB / ALB / ELB
 
@@ -18597,7 +18868,7 @@ async function uploadFile(localPath, ossPath) {
 - 阿里云：云解析 DNS（万网域名自带）
 - 腾讯云：DNSPod（腾讯云旗下）
 - AWS：Route 53
-- 第三方推荐：Cloudflare DNS（免费、全球最快之一）
+- 第三方：Cloudflare DNS（提供免费方案，实际解析与访问表现需按用户网络验证）
 
 **怎么操作：** 在域名控制台添加解析记录：
 
@@ -18609,19 +18880,31 @@ async function uploadFile(localPath, ossPath) {
 | **MX 记录** | 邮件服务器（用企业邮箱需要配） | - |
 | **TXT 记录** | 任意文本（验证域名所有权、配置 SPF/DKIM 等） | - |
 
+![DNSPod 官方域名解析列表中的添加记录入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/dnspod-domain-list.png)
+
+![DNSPod 官方 A 记录填写示例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/dnspod-a-record.png)
+
+图片来源：[DNSPod 添加 A 记录](https://docs.dnspod.cn/dns/help-a/)。先确认域名实际使用 DNSPod 的权威 DNS；只在未生效的平台添加记录不会改变解析。记录值替换为自己的公网 IP，图中的地址不可直接照抄。
+
 ##### SSL 证书服务
 
 HTTPS 需要的 SSL 证书。
 
-- 阿里云/腾讯云：免费 SSL 证书（Let's Encrypt 或云厂商免费证书，有效期 3-12 个月）
-- AWS：ACM（AWS Certificate Manager，免费）
-- 通用免费方案：Certbot + Let's Encrypt（我们前面第 5 章的方法，90 天自动续期）
+- 阿里云/腾讯云：有免费或付费证书产品，资格、域名数量、有效期与续期方式以当前产品规则为准。
+- AWS：ACM 用于支持的 AWS 集成服务时有免费公有证书方案；可导出公有证书、私有证书等另有费用，不能把所有 ACM 证书都当作免费且可直接装进 VPS。
+- 通用免费方案：Certbot + Let's Encrypt，需要验证域名、安装证书并维护自动续期。
 
-我们前面用的 `certbot --nginx` 就是最通用的免费方案，不用专门去云厂商买证书。
+前面第 5 章适用于宿主机 Nginx。证书有效期可能调整，按实际到期时间和续期任务检查。参考 [ACM 官方计费](https://aws.amazon.com/certificate-manager/pricing/) 和 [Let's Encrypt 证书说明](https://letsencrypt.org/certificates/)。
 
 ##### VPC（私有网络）/ VPC
 
-在云上划一个隔离的虚拟局域网，你的服务器、数据库都在里面，更安全。新用户创建云产品时一般会默认创建一个 VPC，不用你操心。进阶用法（比如公有子网/私有子网分离、NAT 网关）需要专门学习。
+VPC 是云上的隔离网络。创建服务器和数据库时，需要核对地域、VPC、子网和安全组：即使两个资源在同一家云，也不代表能直接通过内网通信。
+
+应用服务器可以通过公网入口提供 HTTPS，数据库通常放在受限的私网。只有确实需要出站访问的私有子网才考虑 NAT 网关，并核对其费用。
+
+![AWS EC2 官方网络设置中的 VPC、子网和 SSH 来源限制](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/ec2-network-settings.png)
+
+图片来源：[AWS RDS 与 EC2 连接教程](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.MySQL.html)。图中 SSH 来源选 My IP，体现的是管理端口按来源限制；Web 服务的 80/443 则按实际访问需求另设规则。
 
 #### 6.6 其他常用服务
 
@@ -18629,8 +18912,8 @@ HTTPS 需要的 SSL 证书。
 
 买域名的地方。
 - 国内：阿里云万网、腾讯云（DNSPod）、华为云
-- 海外：Namecheap、Cloudflare Registrar、GoDaddy、Google Domains（已迁移到 Squarespace）
-- 建议：国内用户用国内注册商（方便备案），海外项目用 Namecheap 或 Cloudflare（便宜、免费隐私保护）
+- 海外：Namecheap、Cloudflare Registrar、GoDaddy、Squarespace Domains
+- 建议：核对域名实名与备案要求、后缀支持、续费价格、隐私保护和 DNS 限制，再选注册商
 
 ##### 邮件服务 / SES
 
@@ -18644,7 +18927,7 @@ HTTPS 需要的 SSL 证书。
 发送验证码短信、通知短信：
 - 国内：阿里云短信服务、腾讯云短信
 - 海外：AWS SNS、Twilio
-- 国内发短信需要企业资质/签名备案，个人开发者比较难申请到。个人项目可以用邮件/邮箱验证码代替短信。
+- 国内短信的签名、模板和主体资质要求以运营商及服务商当前审核规则为准。个人项目若不满足条件，可以先用邮件验证码。
 
 ##### 监控/日志 / CloudWatch
 
@@ -18653,7 +18936,13 @@ HTTPS 需要的 SSL 证书。
 - 腾讯云：云监控、CLS（日志服务）
 - AWS：CloudWatch
 
-入门阶段：可以用 PM2 自带的监控 + Uptime Kuma（开源监控工具，一个 Docker 就能跑）。
+AWS EC2 的基础指标与操作系统内存、磁盘使用率是两回事：后两者通常需要安装 CloudWatch Agent 或自行上报，应用日志也需要配置采集。指标、日志保存和告警可能另行收费。
+
+![AWS CloudWatch 官方仪表盘中的告警状态与指标图表](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/cloud-server-deployment/images/cloudwatch-dashboard.png)
+
+图片来源：[CloudWatch Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/GettingStarted.html)。内存、磁盘和日志采集见 [CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html)。
+
+入门阶段可以用 PM2 看进程状态，再用 Uptime Kuma 从另一台机器检查站点可用性。若监控与应用在同一台 VPS，整台机器宕机时监控也会停止，不能据此确认站点仍然正常。
 
 ##### 对象存储的进阶用法：图片处理/视频转码
 
@@ -18662,7 +18951,7 @@ HTTPS 需要的 SSL 证书。
 - 腾讯云 COS：数据万象 CI（图片处理/内容审核/人脸识别）
 - AWS S3：配合 Lambda 自动生成缩略图
 
-**示例**：你上传了一张 5MB 的原图 `photo.jpg`，访问时在 URL 后面加参数 `?x-oss-process=image/resize,w_300` 就能直接拿到 300px 宽的缩略图，不用你自己处理。
+**示例**：你上传了一张 5MB 的原图 `photo.jpg`，在支持该处理方式的 OSS 对象地址后加参数 `?x-oss-process=image/resize,w_300`，可以请求 300px 宽的缩略图。私有对象还需要把处理参数纳入签名；图片处理可能单独计费，这个参数也不能直接用于 COS 或 S3。
 
 #### 6.7 国内 vs 海外：两套生态对照速查
 
@@ -18672,14 +18961,14 @@ HTTPS 需要的 SSL 证书。
 |---------|--------|--------|-----|-------------|
 | 云服务器 | ECS | CVM / Lighthouse | EC2 | Vultr / DigitalOcean / Hetzner |
 | 对象存储 | OSS | COS | S3 | Cloudflare R2（免出站流量费）|
-| 关系数据库 | RDS | 云数据库 | RDS | Supabase / Neon / PlanetScale |
+| 关系数据库 | RDS | 云数据库 | RDS | Supabase / Neon（核对各自额度） |
 | 缓存 Redis | 云 Redis | 云 Redis | ElastiCache | Upstash（Serverless Redis）|
 | CDN | CDN | CDN / EdgeOne | CloudFront | Cloudflare CDN（免费）|
 | 负载均衡 | SLB/ALB | CLB | ELB | Nginx 自建 / Caddy |
 | Serverless | 函数计算 FC | 云函数 SCF | Lambda | Cloudflare Workers |
-| 容器/K8s | ACK | TKE | EKS | Fly.io / Railway |
+| 容器/K8s | ACK | TKE | EKS | 小项目可改用 VPS + Compose；Fly.io / Railway 提供容器托管，但不是同等 K8s 服务 |
 | DNS 解析 | 云解析 | DNSPod | Route 53 | Cloudflare DNS（免费）|
-| SSL 证书 | 免费证书 | 免费证书 | ACM（免费）| Let's Encrypt（免费）|
+| SSL 证书 | 免费/付费证书 | 免费/付费证书 | ACM（区分集成、导出与私有证书）| Let's Encrypt |
 | 邮件推送 | 邮件推送 | SES | SES | Resend / SendGrid 免费额度 |
 | 短信服务 | 短信服务 | 短信 | SNS | Twilio |
 | 监控 | 云监控 | 云监控 | CloudWatch | Uptime Kuma（自建开源）|
@@ -18691,26 +18980,21 @@ HTTPS 需要的 SSL 证书。
 **Q：我应该把所有服务都用云厂商的，还是都在 VPS 上自己搭？**
 
 **个人项目/学习阶段：** VPS 自己搭就行（Docker Compose 一把梭），省钱且能学到东西。
-**面向用户的生产项目：** 数据库和对象存储建议用云服务（自动备份、稳定），应用层还是可以跑在 VPS 上。
+**面向用户的生产项目：** 数据库和对象存储可以优先考虑托管服务（仍需配置备份并验证恢复），应用层还是可以跑在 VPS 上。
 **预算充足/团队项目：** 尽量用云托管服务（RDS/Redis/OSS），把精力放在写业务代码上而不是运维上。
 
 **Q：AWS 免费套餐怎么用？**
 
-AWS 给新用户 12 个月的 Free Tier，包含：
-- EC2：t2.micro/t3.micro 每月 750 小时（相当于一台一直跑）
-- S3：5GB 标准存储
-- RDS：750 小时 db.t2.micro/t3.micro + 20GB 存储
-- Lambda：每月 100 万次请求免费
-- CloudFront：50GB 出站流量 + 200万次请求/月
+AWS 当前新账号免费计划与旧版“12 个月免费套餐”不同。新账号可获得初始 100 美元额度，并通过指定活动再获得额度，总计最高 200 美元；免费计划最长 6 个月，也可能在额度用完时提前结束。账号创建时间和计划类型会影响规则，不能直接照搬 EC2/RDS 每月 750 小时等旧表格。
 
-但注意：**AWS Free Tier 到期后自动按标准费率计费**，不用了记得销毁资源，不然月底账单会很惊喜。建议设置账单告警（Billing Dashboard → Budgets）。
+开通前核对资源是否支持当前免费计划、剩余额度和到期处理方式。升级为付费计划后，超出优惠范围的资源会按标准费率计费；清理实验资源时也要检查磁盘、快照、数据库、IP 和存储桶是否仍保留。设置预算与告警，但不要把预算告警当成自动停止计费的开关。参考 [AWS 当前免费计划](https://aws.amazon.com/free/) 和 [免费套餐 FAQ](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-FAQ.html)。
 
 **Q：国内云和海外云怎么选？**
 
 - 用户在国内 → 用国内云（阿里云/腾讯云）+ 备案，访问速度快且合规
 - 用户在海外 → 用 AWS/Vultr/Fly.io/Cloudflare 等海外服务
-- 两边都有用户 → 前端用 Cloudflare CDN，国内放阿里云/腾讯云海外节点（香港/新加坡），海外用 AWS，通过 GeoDNS 分流
-- 不想备案但要国内能访问 → Cloudflare Pages（静态站）或香港节点 VPS，但速度不如国内备案服务器
+- 两边都有用户 → 先从主要用户所在地域部署，测量不同网络表现；确需多地域时再设计 CDN、DNS 分流和数据一致性
+- 选香港或其他海外节点 → 仍要测试国内不同运营商的访问表现，不能保证 Cloudflare Pages 或海外 VPS 在所有网络都稳定
 
 ---
 
@@ -18726,22 +19010,28 @@ AWS 给新用户 12 个月的 Free Tier，包含：
 
 **特点：**
 - 用 Python 装饰器定义函数，`modal deploy` 一键部署
-- GPU 容器冷启动约 1 秒，按毫秒计费
+- 按计算资源与使用时间计费；冷启动还受镜像、依赖和模型加载时间影响
 - 内置定时任务、密钥管理、共享存储
-- 免费计划每月 $30 额度（个人项目基本够用）
+- 当前 Starter 计划每月提供 $30 计算额度；是否够用取决于 GPU、运行时长与并发，见 [Modal 官方定价](https://modal.com/pricing)
 - 缺点：只支持 Python
 
 ```python
-# 示例：一个简单的 Modal 部署
+# 保存为 agent.py：先验证远程函数调用，不申请 GPU
 import modal
 
 app = modal.App("my-ai-agent")
 
-@app.function(gpu="A10G", timeout=300)
+@app.function(timeout=300)
 def run_agent(prompt: str):
-    # 在这里跑你的 AI 模型/Agent
-    return result
+    # 替换为实际模型逻辑前，先用回显检查部署链路
+    return {"received": prompt}
+
+@app.local_entrypoint()
+def main():
+    print(run_agent.remote("hello"))
 ```
+
+安装 `modal` 并完成账号认证后，运行 `modal run agent.py` 测试，再用 `modal deploy agent.py` 部署函数。这个回显示例不是模型推理，也没有创建公开 HTTP 接口；实际 Agent 还要添加模型依赖、密钥、推理代码及所需的 Web 接口。参考 [Modal 入门](https://modal.com/docs/guide)。
 
 #### 7.2 Hugging Face Spaces — AI Demo 首选
 
@@ -18750,10 +19040,12 @@ def run_agent(prompt: str):
 **适合：** 快速展示 AI Demo（Gradio/Streamlit 界面）、开源模型展示
 
 **特点：**
-- 免费 CPU 小实例，GPU 需付费
-- 支持 Gradio、Streamlit、Docker 三种方式
-- 社区活跃，每个 Space 都有公开的代码和讨论区
-- 点一下就能 Fork 别人的 Space 改自己的
+- 提供免费 CPU 基础实例，闲置会休眠；运行目录中的临时文件不要当作永久存储
+- 原生选择包括 Gradio、Docker、静态页面；Streamlit 应用使用 Docker 方式部署
+- 可以创建公开或私有 Space；复用别人的 Demo 时先检查代码许可、依赖和密钥配置
+- 常规 GPU 实例需要付费；ZeroGPU 有单独的资格和使用限制，不能当作人人都有的免费常驻 GPU
+
+参考 [Spaces 官方概览](https://huggingface.co/docs/hub/spaces-overview) 与 [Streamlit 部署说明](https://huggingface.co/docs/hub/spaces-sdks-streamlit)。
 
 #### 7.3 Replicate — 把模型变成 API
 
@@ -18761,7 +19053,7 @@ def run_agent(prompt: str):
 
 **适合：** 想把 AI 模型变成 API 但不想管服务器
 
-**特点：** 把你的模型推上去，它自动打包成可调用的 HTTP API，按调用量计费。适合发布自己微调的模型。
+**特点：** 可以调用现成模型，也可按官方 Cog 工作流打包和部署自己的模型。费用可能按运行时间、硬件或输入输出计量，并非统一按请求次数；模型许可和冷启动也要分别检查。参考 [Replicate 计费说明](https://replicate.com/docs/topics/billing)。
 
 #### 7.4 国内 GPU 云：AutoDL
 
@@ -18770,11 +19062,12 @@ def run_agent(prompt: str):
 **适合：** 国内用户跑 AI 模型训练/推理，需要 GPU 且预算有限
 
 **特点：**
-- 价格极低（RTX 3090 约 1 元/小时，A100 约 5-8 元/小时）
-- 有免费 CPU 实例
-- 支持 JupyterLab、SSH、VS Code Remote
-- 镜像市场预装了各种 AI 框架（PyTorch、TensorFlow、Stable Diffusion 等）
-- 关机后只收存储费，很适合学生和研究者
+- 按 GPU 型号、地域、库存和计费方式选择实例，价格以购买页面为准
+- 支持通过 JupyterLab、SSH 等方式开发；具体连接方式以实例控制台为准
+- 镜像可以减少框架安装工作，但仍要核对 CUDA、驱动和项目依赖版本
+- 停止计算后仍需检查存储及其他保留资源的费用；长期不用时先备份，再按控制台说明释放
+
+使用前查看 [AutoDL 官方文档](https://www.autodl.com/docs/)，不要把临时活动或“无卡模式”等同于长期免费的 CPU 服务器。
 
 ---
 
@@ -18794,24 +19087,22 @@ def run_agent(prompt: str):
 > 3. 部署脚本 deploy.sh
 > 4. 环境变量检查清单」
 
-AI 生成好所有文件后，你只需要复制执行即可。
+AI 生成好文件后，先检查路径、启动命令、端口和环境变量是否与项目匹配，再在测试环境执行。
 
 **方式二：AI 直接 SSH 到服务器操作（更省事）**
 
-Claude Code 支持 SSH 远程操作：
+具备终端工具权限的 AI 编程助手，可以在获得授权后调用本地 SSH；是否可用取决于工具环境、网络和已有的 SSH 配置，并不是只开启聊天窗口就能远程操作。
 
-```bash
-claude
-# 告诉它：
-# 「通过 SSH 连接到 root@我的IP，帮我部署 /root/myapp，配置 Nginx + HTTPS + PM2」
-```
+可以这样描述任务：
 
-AI 会自动检查环境、安装缺失依赖、拉代码、构建、配置、验证，全程不用你手动敲命令。
+> 「通过已有 SSH 配置连接部署用户，先检查 `~/apps/myapp` 的运行环境，再给出 Nginx、HTTPS、PM2 的配置和验证步骤。删除数据、修改登录方式或产生云费用前先说明影响。」
+
+先用本地终端确认 `ssh yourname@服务器IP` 能登录，再让 AI 在相同环境操作。真实私钥与密码留在本地凭证配置中。
 
 > ⚠️ **安全提醒**：
 > - 先在测试服务器练手，确认 AI 不会误操作
 > - 重要数据定期备份
-> - 给 AI 的用户权限最小化（不要给 root，可以给有 sudo 的普通用户）
+> - 使用独立部署用户，并限制允许执行的管理命令；有不受限 sudo 的普通用户仍能取得 root 权限
 > - AI 执行危险命令前先看一眼它要做什么
 
 #### 8.2 万能部署 Prompt 模板
@@ -18822,17 +19113,18 @@ AI 会自动检查环境、安装缺失依赖、拉代码、构建、配置、�
 帮我部署一个项目，信息如下：
 
 【部署目标】
-- 平台/服务器：[Vercel / Railway / Fly.io / Ubuntu 22.04 VPS / ...]
+- 平台/服务器：[Vercel / Railway / Fly.io / Ubuntu 24.04 VPS / ...]
 - 服务器 IP（如果是 VPS）：xxx.xxx.xxx.xxx
 - 已配置：[SSH密钥登录 / Docker已装 / Nginx已装 / ...]
 
 【项目信息】
-- 项目类型：[Next.js 14 / Vite+React / Node.js Express / Python FastAPI / ...]
+- 项目类型：[Next.js / Vite+React / Node.js Express / Python FastAPI / ...]
 - 代码位置：GitHub 仓库 https://github.com/xxx/xxx
-- 技术栈：Node.js 20 + PostgreSQL 16 + Redis 7
+- 技术栈：Node.js 24 LTS（按项目 engines 核对）+ PostgreSQL 16 + Redis 7
 - 启动命令：npm run start
 - 监听端口：3000
-- 环境变量：DATABASE_URL=xxx, JWT_SECRET=xxx, OPENAI_API_KEY=xxx
+- 需要的环境变量名称：DATABASE_URL、JWT_SECRET、OPENAI_API_KEY
+- 真实值通过服务器密钥配置注入，不粘贴到对话中
 
 【域名】
 - 域名：mydomain.com
@@ -18853,10 +19145,10 @@ AI 会自动检查环境、安装缺失依赖、拉代码、构建、配置、�
 1. **先看日志**：
    - Nginx：`sudo tail -50 /var/log/nginx/error.log`
    - PM2：`pm2 logs myapp`
-   - Docker：`docker compose logs app`
+   - Docker：`sudo docker compose logs --tail=50 app`
    - systemd：`sudo journalctl -u myapp -n 50`
 
-2. **把报错完整复制给 AI**，加上上下文：
+2. **把报错去除密码、Token 和个人数据后发给 AI**，加上上下文：
    > 「部署 Node.js 到 Ubuntu，访问显示 502，Nginx 错误日志是 [粘贴]，配置是 [粘贴]，PM2 状态是 [粘贴]，帮我排查」
 
 3. **常见问题速查：**
@@ -18866,8 +19158,8 @@ AI 会自动检查环境、安装缺失依赖、拉代码、构建、配置、�
    - **静态资源 404**：root 路径错、文件权限不对
    - **HTTPS 证书失败**：域名没解析、80 端口被占、防火墙没开 80
    - **PM2 频繁重启**：代码有 bug，`pm2 logs` 看错误
-   - **Vercel Function 超时**：超过 10 秒限制，改长时间运行的选 Fly.io/Railway/VPS
-   - **Railway/Render 服务 503**：休眠了或额度用完了
+   - **Vercel Function 超时**：核对当前套餐与运行模式的时长限制；需要后台常驻进程时考虑容器托管或 VPS
+   - **Railway/Render 服务 503**：检查部署日志、监听地址与平台端口、健康检查、资源额度和休眠状态
 
 ---
 
@@ -18884,35 +19176,43 @@ scp -r ./dir yourname@IP:/home/yourname/
 scp yourname@IP:/home/yourname/file.zip ./
 
 # rsync（增量同步，推荐部署用）
-rsync -avz --exclude=node_modules --exclude=.git ./project/ yourname@IP:/var/www/project/
+rsync -avz --exclude=node_modules --exclude=.git --exclude=.env ./project/ yourname@IP:/home/yourname/apps/project/
 ```
+
+先创建目标目录并确认部署用户有写入权限。真实 `.env` 留在服务端，其他密钥文件也要单独排除，不能直接同步到公开静态目录。
 
 #### 9.2 一键更新脚本
 
-在服务器上创建 `deploy.sh`：
+这个示例适用于已配置好 PM2 的 Node.js 项目，需要仓库提交 `package-lock.json`，并提供 `/health` 健康接口。先把路径、端口和接口改成实际值，再以同一个部署用户在服务器创建 `deploy.sh`：
 
 ```bash
 #!/bin/bash
-set -e
-cd /path/to/project
-git pull origin main
-npm install
+set -euo pipefail
+cd "$HOME/apps/myapp"
+test -z "$(git status --porcelain)" || {
+  echo "工作区有未提交修改，先处理后再部署" >&2
+  exit 1
+}
+git pull --ff-only origin main
+npm ci
 npm run build
-pm2 restart myapp
-echo "✅ 部署完成！"
+pm2 restart myapp --update-env
+curl --fail --silent --show-error --retry 5 --retry-connrefused \
+  --retry-delay 2 --max-time 10 http://127.0.0.1:3000/health
+printf '\n✅ 构建、重启与健康检查通过。\n'
 ```
 
-以后更新只需要 `bash deploy.sh`。再配个 GitHub Actions（让 AI 帮你写），代码 push 后自动部署。
+以后可以运行 `bash deploy.sh`。这只是单机更新示例，不包含数据库迁移、零停机发布和自动回滚；正式发布前保留上一版本和可恢复备份，迁移步骤另行审核。`--update-env` 更新的是 PM2 接收到的环境，应用若自行读取 `.env`，还要确认它实际加载的新配置。再根据需要配置 GitHub Actions 自动部署。
 
 #### 9.3 安全加固清单
 
 让 AI 帮你生成完整的安全加固脚本，主要包括：
-- 禁用密码登录，只用 SSH 密钥
-- 修改 SSH 默认端口（22 → 其他）
+- 先在新终端验证密钥登录和 sudo 可用，再考虑禁用密码登录；修改 SSH 配置后先运行 `sudo sshd -t`
+- SSH 管理端口限制来源 IP；改端口只能减少部分扫描，不能代替密钥认证和访问控制
 - 安装 fail2ban（自动封禁暴力破解 IP）
-- 启用自动安全更新：`apt install unattended-upgrades`
+- 启用自动安全更新：`sudo apt install unattended-upgrades`，并确认更新策略与任务已启用
 - 不要把密钥/.env 提交到 Git
-- 定期备份数据库到对象存储
+- 定期备份数据库到私有对象存储，并在独立环境验证能恢复；设置保留期，避免备份无限累积
 
 ---
 
@@ -18922,13 +19222,13 @@ echo "✅ 部署完成！"
 
 | 场景 | 推荐方案 | 成本 | 难度 |
 |------|---------|------|------|
-| 纯前端/文档站 | Cloudflare Pages / Vercel / GitHub Pages | 免费 | ⭐ |
-| Next.js 全栈（快速响应） | Vercel | 免费/$20月 | ⭐ |
-| 后端 API / Bot（常驻） | Railway / Fly.io（免费）/ VPS | $0-10/月 | ⭐⭐ |
-| 全栈项目（完全控制） | 腾讯云轻量 / Vultr + Docker | ¥99/年起 | ⭐⭐⭐ |
-| AI Agent 演示 | Hugging Face Spaces | 免费 | ⭐ |
-| AI GPU 推理 | Modal（海外）/ AutoDL（国内） | $0-30/月 | ⭐⭐ |
-| 面向国内用户正式项目 | 国内云服务器 + 备案 + CDN | ¥200+/年 | ⭐⭐⭐ |
+| 纯前端/文档站 | Cloudflare Pages / Vercel / GitHub Pages | 有免费方案，核对配额与用途限制 | ⭐ |
+| Next.js 全栈 | Vercel | 按套餐、用途和用量核对 | ⭐ |
+| 后端 API / Bot（常驻） | Railway / Fly.io / VPS | 通常需持续付费；试用不等于长期免费 | ⭐⭐ |
+| 全栈项目（完全控制） | 腾讯云轻量 / Vultr + Docker | 按配置、带宽、存储与续费计费 | ⭐⭐⭐ |
+| AI Agent 演示 | Hugging Face Spaces | 免费 CPU 可入门，GPU 与持久化另查 | ⭐ |
+| AI GPU 推理 | Modal（海外）/ AutoDL（国内） | 按硬件与运行时间核算，额度有上限 | ⭐⭐ |
+| 面向国内用户正式项目 | 国内云服务器 + 备案 + 按需 CDN | 分别核算计算、流量、存储与数据库 | ⭐⭐⭐ |
 
 **核心流程记住 5 步：**
 1. **选平台** → 根据项目类型从上面的表选
@@ -18941,7 +19241,7 @@ echo "✅ 部署完成！"
 1. 理解「需要做什么」，不需要记住每条命令
 2. 把需求清楚描述给 AI，它会给你完整方案
 3. 看得懂 AI 在做什么，关键步骤确认
-4. 出问题复制日志给 AI，它能排查 90% 的问题
+4. 出问题复制日志给 AI，让它结合日志和配置逐项定位原因
 5. 重要数据备份，权限最小化
 
 部署一次你就会发现——原来上线也没那么难。🎯
@@ -18950,14 +19250,14 @@ echo "✅ 部署完成！"
 
 ### 从数据库到 Supabase
 
-在上节课中，我们学会了 UI 设计程序 Mastergo 和 Figma 的基本用法，能够使用 github 进行代码的获取与版本管理，并通过 Zeabur 部署网站将自己的应用 / 网站传达给更多人使用。
+在上节课中，我们学会了 UI 设计程序 Mastergo 和 Figma 的基本用法，能够使用 github 进行代码的获取与版本管理，并通过 Cloudflare Pages 或 Vercel 发布网页，让其他人通过网址访问应用。
 
 为了帮助大家更好地衔接知识，在开始本节课关于设计工具与部署的新内容前，让我们一起通过几道简单的题目快速回顾一下上节课的核心知识点：
 
 1. 什么是前端设计工具、Figma、MasterGo 的定义和使用方式。
 2. 将设计稿转换为代码的基础方法。
 3. 什么是 Github，如何配置 SSH，如何构建自己的第一个仓库。
-4. 部署是什么意思，如何使用 Zeabur，如何将 Github 或本地代码部署至公共网络给大家访问。
+4. 部署是什么意思，如何使用 Cloudflare Pages 或 Vercel 发布网页，以及如何用 Render 托管独立后端。
 
 如果对以上任何一个问题还有印象模糊的地方，建议先回顾一下上节课的文档和讲义。欢迎随时在微信学习群中提出疑问。
 
@@ -19041,7 +19341,7 @@ user_info = {
 
 总的来说，在现实世界中有太多不同形态、用途的数据值得我们详细分析，每种数据可能都需要专门的数据库用于存储，具体可参考下图——是不是感觉非常多？
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image1.webp)
 
 #### 1.2 为什么我们需要数据库
 
@@ -19235,23 +19535,23 @@ Examples of NoSQL databases：
 
 在清晰把握 Supabase 的整体定位后，接下来我们将沿着 Supabase 控制台的操作路径，逐项拆解它具体提供哪些核心能力，以及每项能力对应的核心职责。我们会详细介绍 supabase 涉及的每个选项，帮助你快速入门 supabase 的基本操作。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image2.png)
 
 访问 Supabase 官网并登录后，在控制台首页点击 New project 进入创建流程；
 
 输入需要配置的主要内容 Project Name、数据库密码，地址只需要选择为与程序目标用户最接近的区域即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image3.png)
 
 创建成功后，控制台左侧侧边栏将显示所有核心功能模块（Table Editor、SQL Editor、Database、Authentication 等），后续操作将围绕这些模块展开。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image4.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image4.png)
 
 ##### 表编辑器
 
 Table Editor 可以当成是 Supabase 的可视化数据表编辑器，它能让你像操作 Excel 一样直接查看和修改数据库里的数据，无需编写 SQL 语句，只需要用鼠标交互即可修改数据内容。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image5.png)
 
 其中值得关注的是 Schema，Schema 可理解为数据库内的 “资源容器”，用于对表、视图、函数、索引等资源进行分组管理，主要作用有二：一是避免命名冲突（不同 Schema 下可存在同名table），二是实现权限隔离（如仅允许特定用户访问某 Schema 下的表）；
 
@@ -19260,13 +19560,13 @@ Table Editor 可以当成是 Supabase 的可视化数据表编辑器，它能让
 - `public`：默认的公共资源容器，开发者新建的业务表（如 “文章表”“评论表”）均存储于此；
 - `auth`：用户认证专属容器，其中的 `users` 表自动存储所有注册用户信息（如用户 ID、邮箱、登录时间），不建议手动修改此 Schema 下的默认表，避免影响认证功能；
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image6.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image6.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image7.png)
 
 ##### SQL 编辑器
 
 SQL Editor 作为 Supabase 的 SQL 语句执行器，可让你用代码的方式直接操作数据库。你可以让大模型直接生成 SQL 语句，在右侧输入后点击 RUN 即可用语句创建或修改 table，也可以直接在 Results 中直接看到筛选出的 table 数据。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image8.png)
 
 你可以在运行 RUN 之后，在 Table Editor 的 public schema 里找到新建后的数据表；并且运行后的语句会保存在左侧的 PRIVATE 栏中，甚至可以点击下方的爱心标志对这一条查询或创建语句进行收藏。
 
@@ -19274,47 +19574,47 @@ SQL Editor 作为 Supabase 的 SQL 语句执行器，可让你用代码的方式
 
 Database 是 Supabase 的数据库管理中心，支持可视化地查看和管理所有数据表，并通过表的相互连线理解不同表间的关联关系（即外键约束，表示数据间的引用关系）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image9.png)
 
 如果你想要手动新建 table，可以在 tables 中直接新建表格，我们会在之后的教程中详细讲解。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image10.png)
 
 ##### 身份认证
 
 Authentication 负责管理用户的注册、登录和权限。默认的用户管理系统数据都在此处存储，它提供了开箱即用的用户注册、登录、密码重置、邮箱验证等功能，并支持第三方 OAuth 登录（如微信、GitHub、Google 等）。所有用户数据会自动同步到数据库的 `auth.users` 表中。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image11.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image11.png)
 
 你可以在 Provider 选项中找到不同 supabase 支持的用户信息登录入口，默认使用 Email；如果你想使用 Github 或者 Google 账户进行登录，还需要更多属性配置，我们会在下面的课程中进行详细讲解。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image12.png)
 
 在 Sign In / Providers 里还包含了对注册邮箱行为的控制，如果你不想每次邮箱注册都必须让用户接受邀请后才能成为用户，你可以取消 Confirm email 的强制要求。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image13.png)
 
 如果你想切换非 Supabase 的其他 auth 系统服务商，你可以点击 Third Party Auth，比如此处就使用 Clerk 作为第三方的系统服务商。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image14.png)
 
 如果你担心注册用户在短期内访问量过大，你可以在 Rate Limits 中启用对应的流量限制策略：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image15.png)
 
 ##### 存储
 
 Storage 是 Supabase 的存储系统，兼容 amazon cloud 的 s3 概念，可用于存储任意类型的文件（如图片、视频、文档、音频等），并提供访问权限管理（公开或私有）和下载链接获取（永久链接或临时链接），你能够很方便在应用中对用户涉及到的文件内容进行上传与下载管理，并与 Supabase 的认证系统无缝集成，实现精细化的访问控制。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image16.png)
 
 我们将会在本节课的进阶 project 中讲解 storage 的具体用法。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image17.png)
 
 如果你想使用 S3 的相关协议进行操作，可以直接使用对应的配置：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image18.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image18.png)
 
 > Amazon Cloud（亚马逊云服务，简称 AWS）是亚马逊提供的云计算平台（就像一个大型的网络机房，你可以按需租用计算和存储资源）。S3（Simple Storage Service）是 AWS 里专门用来存储文件的服务（类似一个无限大的网盘，可以存图片、视频、备份等各种文件），它是目前最流行的对象存储服务，已经成为了事实上的行业标准。
 >
@@ -19324,15 +19624,15 @@ Storage 是 Supabase 的存储系统，兼容 amazon cloud 的 s3 概念，可�
 
 如果你不想部署后端，但是想使用数据库和函数操作，你可以使用 Edge Functions 构建无需自建服务器的后端核心能力，它是 Supabase 提供的全球分布式服务端函数。简单来说，它让你无需购买和管理自己的后端服务器，就能直接编写并部署在云端的后端代码。这些函数部署在全球网络的边缘节点上，会自动在离你的用户最近的位置运行，从而大幅降低网络延迟，提供极致的响应速度。你可以在 Supabase 的仪表盘中直接创建、编辑和部署，整个开发流程非常便捷。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image19.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image19.png)
 
 Edge Functions 的一个核心用途是充当安全的中间层，保护你的敏感信息和鉴权密钥。在前端代码中直接调用第三方服务（如 OpenAI、Stripe）会暴露你的 API Key，带来极大的安全风险。通过 Edge Functions，你的前端应用只与你的 supabase 函数通信，所有秘密只在 supabase 中保管。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image20.png)
 
 Edge Functions 的函数使用 secrets 中暴露的密钥作为环境变量，通过 `Deno.env.get` 加载，从而实现第三方服务的调用。这样一来，敏感密钥就永远不会暴露在客户端（你的浏览器），彻底杜绝了被盗用的风险。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image21.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image21.png)
 
 请求 Supabase Edge Function 时，需在请求头携带对应的 Supabase 密钥，下面是一个极简示例：
 
@@ -19389,15 +19689,15 @@ Realtime 主要包含三大核心功能，覆盖了绝大多数实时场景：
 
 Project Settings 是 Supabase 项目的高级配置部分，你可在此实现计算资源的深度调度，以及各类功能底层参数的精细化配置。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image22.png)
 
 在入门阶段，我们只需聚焦以下两个核心板块，一个是 Data API，我们在此可获取关键的 “Supabase URL”， 它是形如 `https://xxx.supabase.co` 的 RESTful 端点，是所有数据查询、新增、修改、删除操作的 “入口地址”。前端或服务端需通过该 URL 初始化 Supabase 客户端，建立与数据库的连接。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image23.png)
 
 另一个重点是 API Keys，选择 “Legacy anon, service_role API keys” 标签页，其中的 anon public 密钥 是前端场景的重要身份凭证，它的权限被 RLS 严格限制，仅能访问用户被授权的数据。而 service_role 密钥属于 “服务端高权限密钥”，具备绕过行级安全的能力，可执行批量数据操作、系统级配置等敏感操作。绝对禁止公开分享，若泄露需立即生成新密钥并更新服务端配置。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image24.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image24.png)
 
 其余配置项在当前阶段无需深究，待后续有进阶使用需求时再逐一探索即可。
 
@@ -19410,15 +19710,15 @@ Project Settings 是 Supabase 项目的高级配置部分，你可在此实现�
 1. （推荐）借助大语言模型生成适配 Supabase 的 SQL 语句，直接在 **SQL Editor（** 前文介绍的 SQL 语句执行器）中粘贴执行，高效快捷，我们会在下个部分环节重点说明这个操作过程。
 2. 通过可视化操作创建：在左侧侧边栏找到 Database 模块，点击进入后选中侧边栏的 Tables，在右侧点击 New table 按钮，即可通过图形化界面创建数据表。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image25.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image25.png)
 
 值得注意的是，对应数据表的名称以及存储的数据类型可在下方的 Columns 中指定。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image26.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image26.png)
 
 对于关系数据库，其中很重要的特点是表与表之间的关联，你可以在下方找到 `Foreign keys` ，点击创建相应的关联关系：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image27.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image27.png)
 
 其中 `Foreign keys` 表达了表与表之间的关联关系：一个或一组字段，它在当前表（子表）中的值，会引用另一张表（父表）中主键的值。
 
@@ -19458,7 +19758,7 @@ CREATE TABLE 学生表 (
 
 在 Supabse 中，点击添加 Foreign Key 后，你可直接选择进行关联表对应列的选取
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image28.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image28.png)
 
 #### 2.3 SQL Editor 简介与数据库基本操作
 
@@ -19493,7 +19793,7 @@ CREATE TABLE IF NOT EXISTS orders (
 
 成功执行后，系统将提示脚本已完成。你可以在 Table Editor 中看到对应的表被创建完成：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image29.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image29.png)
 
 ##### **2.3.2 **`INSERT`** - 填充初始数据**
 
@@ -19527,7 +19827,7 @@ INSERT INTO orders (user_id, status, amount, details, placed_at, is_paid) VALUES
 
 执行成功后，此时表中已经插入了原始数据，你可以进入到 Table Editor 界面刷新后看到结果，也可以直接在 SQL Editor 界面中新建窗口，执行查询语句 `SELECT * FROM orders;`查看结果：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image30.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image30.png)
 
 ##### **2.3.3 **`SELECT`** - 读取与查询数据**
 
@@ -19556,7 +19856,7 @@ SELECT id, details -> 'items' AS item_list FROM orders;
 - **示例 1:** 返回 `orders` 表中的所有行和列，与第二步的输出类似。
 - **示例 2:** 仅返回状态为 'pending' 的订单，且只包含指定的列：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image31.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image31.png)
 
 - **示例 3:** 仅返回已支付的订单，并显示指定的列：
 
@@ -19656,15 +19956,15 @@ RLS 正是为解决这类数据安全与隔离需求而生。它允许开发者�
 
 启用 RLS 策略的方式很灵活，你可以在 Supabase 数据库管理界面中的 “RLS” 按钮，直接配置并启用策略：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image32.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image32.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image33.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image33.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image34.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image34.png)
 
 主动配置难免显得麻烦，通常，我们在数据表语句创建、初始化的时候就会自动考虑植入对应的 RLS 策略。我们只需在 SQL Editor 中执行类似如下语句，即可自动开启对应数据表的行级安全策略。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image35.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image35.png)
 
 #### 3. 第一个 SQL 应用
 
@@ -19676,7 +19976,7 @@ RLS 正是为解决这类数据安全与隔离需求而生。它允许开发者�
 
 若已配置 SSH 密钥，建议使用 SSH 地址进行 clone（git@github.com:THU-SIGS-AIID/Project5-Supabase-Demos.git）以提升安全性；若 SSH 或 HTTPS 连接遇到网络问题，可以直接点击仓库页面的 “Download ZIP”，获取压缩包后解压即可看到完整代码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image36.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image36.png)
 
 Clone 后，你同样可以让 Trae 或者是 Claude Code 帮你启动项目，例如直接在 Agent 界面中说明： `帮我直接启动这个项目里面的 project 1 `，或者复制对应想启动 project 的绝对路径，粘贴给大模型让大模型直接启动。
 
@@ -19766,9 +20066,9 @@ export function maybeCreateBrowserClient(): SupabaseClient | null {
 
 创建完数据库，填写完对应的 Supabase Link 相关配置后，即可看到如下界面，你可以尝试对商品进行增删查改，并观察 Supabase 中对应部分数据表的变化。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image37.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image37.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image38.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image38.png)
 
 ##### 📚 作业
 
@@ -19794,7 +20094,7 @@ const { error: err } = await supabaseClient.auth.signUp({
 });
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image39.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image39.png)
 
 登录成功后，Supabase 会自动为用户创建一个会话（session），并在后续所有数据库请求中自动携带认证信息；通过 RLS 的作用，每个用户根据对应的认证信息只能看到自己的账户信息（已购买项目、钱包剩余额度），无法看到其他用户的账户信息，这就实现了不同用户登录后的数据隔离，每个人只能看到自己的内容。
 
@@ -19802,15 +20102,15 @@ const { error: err } = await supabaseClient.auth.signUp({
 
 成功使用邮箱注册账户、在邮箱确认注册账户后，登录后进入 Shop 界面即可看到如下内容：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image40.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image40.png)
 
 但此时点击 admin，你并不能看到如下界面，你需要尝试在数据表中找到控制用户权限的部分，将权限修改为 `admin`，从而能够在 Admin 界面正常看到如下内容：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image41.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image41.png)
 
 值得提示的是，目前每次注册新的邮箱，你都需要在邮箱中进行注册确认才可登录；但这一步并非是必须的，你可以在 Supabase 的 Authentication 栏目中找到 Sign In / Providers，点击Confirm email 取消邮箱的强制确认。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image42.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image42.png)
 
 ##### 📚 作业
 
@@ -19844,7 +20144,7 @@ const { error: err } = await supabaseClient.auth.signUp({
 
 根据上面所提到的 SOP ，让我们通过一个具体的实际案例 `Project5-Supabase-Demos/apps_snakegame`来实践：为一个已有的“贪吃蛇”游戏项目增加分数排行榜单，包含用户登录与数据库基础功能。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image43.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image43.webp)
 
 ##### 4.2.1 分析项目，识别数据需求
 
@@ -19858,13 +20158,13 @@ const { error: err } = await supabaseClient.auth.signUp({
 
 此时你会得到类似如下返回：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image44.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image44.png)
 
 ##### 4.2.2 生成 `init.sql` 脚本
 
 确定需要的部分，我们可以让 AI 生成需要在 Supabase 执行的数据库初始化脚本：“请你基于上面的分析，帮我在项目中生成 scripts/init.sql 脚本用于在 Supabase 中初始化所需数据库”。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image45.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image45.png)
 
 ##### 4.2.3 改造项目代码
 
@@ -19876,9 +20176,9 @@ const { error: err } = await supabaseClient.auth.signUp({
 
 在代码修改过程中，若出现实际效果与预期不符的情况（如排行榜数据不显示、登录验证失效等），只需完整记录具体现象并反馈给 AI，即可逐步接近正确结果。改造成功的标准为：用户能顺利完成注册与登录操作，且登录后可正常查看对应的游戏排行榜单。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image46.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image46.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image47.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image47.png)
 
 ##### 📚 课程作业
 
@@ -19907,7 +20207,7 @@ Supabase 将这些后端能力打包为开箱即用的服务（PostgreSQL数据�
 
 本项目 `Project5-Supabase-Demos/apps/project-burger-shop-auth-advanced-supabase-6`)完整地演示了如何实现这些高级功能。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image48.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image48.png)
 
 ##### 5.2.1 OAuth 流程：第三方登录是如何工作的？
 
@@ -19921,7 +20221,7 @@ Supabase 将这些后端能力打包为开箱即用的服务（PostgreSQL数据�
 4. Supabase 交换访问令牌（Access Token）：我们的后端（由 Supabase 托管，无需自建）会拿着这个授权码，向 Google 官方接口发起请求，换取可用于获取用户信息的 Access Token（授权码仅用于换 Token，避免 Token 直接在前端传输）。
 5. 创建账户并建立会话：Supabase 使用 Access Token 从 Google 拉取用户的公开信息（如邮箱、头像），并在我们的项目中为该用户自动创建账户（若首次登录）或直接关联现有账户，最终生成一个有效的用户会话（Session），完成登录。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image49.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image49.png)
 
 ##### 5.2.2 配置 Google Cloud 获取 Client ID 和 Secret
 
@@ -19942,7 +20242,7 @@ Supabase 将这些后端能力打包为开箱即用的服务（PostgreSQL数据�
 13. 在 “Application type” 中选择 “Web application”。
 14. 为它取一个名字，例如 “Supabase Auth”。
 15. 在 “Authorized redirect URIs” 部分，点击 “ADD URI”，并填入你的 Supabase 项目的回调 URL。你可以在 Supabase Dashboard 的 “Authentication” -> “Providers” -> “Google” 中找到这个 URL，它的格式通常是 `https://<你的项目ID>.supabase.co/auth/v1/callback`。
-    ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image50.png)
+    ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image50.png)
 16. 点击 “CREATE”。
 17. **获取 Client ID 和 Client Secret** :
 18. 创建成功后，一个弹窗会显示你的 **Client ID** 和 **Client Secret** 。请务必**立即复制并妥善保存** 它们。
@@ -19964,7 +20264,7 @@ Supabase 将这些后端能力打包为开箱即用的服务（PostgreSQL数据�
 7. 点击 “Register application”。
 8. **获取 Client ID 和 Client Secret** :
 9. 注册成功后，页面会显示你的 **Client ID** 。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image51.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image51.png)
 10. 点击 “Generate a new client secret” 来生成你的 **Client Secret** 。同样，请**立即复制并保存** 它。
 
 ##### 5.2.4 在 Supabase 中配置 Provider
@@ -19982,7 +20282,7 @@ Supabase 将这些后端能力打包为开箱即用的服务（PostgreSQL数据�
    2. 将你从 GitHub 获取的 **Client ID** 和 **Client Secret** 粘贴到对应的输入框中。
    3. 点击 “Save”。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image52.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image52.png)
 
 至此，你已经能够使用第三方账户在构建的网站中进行登录，你可以直接让 AI 基于 `Project5-Supabase-Demos/apps/project-burger-shop-auth-advanced-supabase-6`项目作为参考，在你的项目的基础上支持用户登录系统，以最小成本集成包含 github 与 google 鉴权的用户登录界面。
 
@@ -19999,7 +20299,7 @@ Supabase 将这些后端能力打包为开箱即用的服务（PostgreSQL数据�
 
 除了 Reset password 功能外，你还能看到许多其他与用户管理相关的高级功能设定（例如 Invite user 等），你可根据对应功能各自的开发文档，结合 Vibe coding 工具自行添加对应功能。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image53.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image53.png)
 
 #### 5.3 实时功能
 
@@ -20007,7 +20307,7 @@ Supabase 的实时功能是其最强大的特性之一，为构建协作文档�
 
 本项目 `Project5-Supabase-Demos/apps/project-burger-shop-realtime-orders-3 `通过构建一个 多人实时聊天室、光标位置共享 功能，展示了 Supabase Realtime 涉及到的三大核心能力：数据库变更监听 (Postgres Changes)、广播 (Broadcast) 和 在线状态 (Presence)。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image54.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image54.png)
 
 如果你觉得相关代码部分有一定难度，可以直接让 AI 参考该部分文档内容，对你的程序进行修改。
 
@@ -20192,9 +20492,9 @@ ch.on('broadcast', { event: 'cursor' }, ({ payload }) => {
 
 本项目 `project-burger-shop-storage-uploads-4` 便通过一个用户头像上传功能，深入演示了如何利用 Supabase Storage 构建现代化的文件上传系统，让开发者直观理解非结构化文件从上传到通过 URL 访问的完整流程。此外，本项目使用 `Uppy` 库来提供一个优秀的文件上传界面，并结合 `Tus` 插件实现了可续传上传，通过将 Uppy 的上传端点指向 Supabase 的标准 API (`<supabaseUrl>/storage/v1/upload/resumable`) 进行工作，你可以参考类似的方式实现上传功能组件。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image55.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image55.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image56.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image56.png)
 
 ##### 5.4.1 存储桶
 
@@ -20277,7 +20577,7 @@ Edge Function 是 Serverless（无服务器架构）生态中极具核心价值�
 
 本项目 `Project5-Supabase-Demos/apps/project-burger-shop-edge-function-5`通过一个与大语言模型（LLM）实时流式对话的功能，展示了 Edge Functions 的最简应用流程。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image57.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image57.png)
 
 ##### 5.5.1 LLM Chat 案例解析
 
@@ -20322,16 +20622,16 @@ Supabase 提供了非常友好的界面，让你无需接触命令行即可完�
 3. 在左侧导航栏中，点击像代码一样的图标，进入 “Edge Functions”。
 4. **创建新函数** :
 5. 点击 “Create a new function” 按钮。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image58.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image58.png)
 6. 为函数命名，例如 `llm-chat`。
 7. **粘贴代码** :
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image59.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image59.png)
 8. 在弹出的在线编辑器中， **删除所有默认的占位代码** 。
 9. 打开你本地的 `llm-chat.ts` 文件， **复制其全部内容** 。
 10. 将复制的代码**粘贴**到 Supabase 的在线编辑器中。
 11. **配置\*\***环境变量\*\* ** (Secrets)** :
     1. 在侧边栏找到 Secrets。
-       ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image60.png)
+       ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image60.png)
     2. Name: 输入 `OPENAI_API_KEY`。
     3. Value: 粘贴你自己的 OpenAI API Key。
     4. 点击 “Save”。在这里设置的 Secret 会被加密存储，并安全地注入到你的函数运行时环境中。
@@ -20351,7 +20651,7 @@ Clerk 是一款专注于身份认证与用户管理的专业开发工具，核�
 
 本部分将介绍如何从零开始配置 Clerk 服务，并将其与 Supabase 进行整合。你可以在项目 `project-burger-shop-auth-advanced-clerk-7` 中体验全流程。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image61.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image61.png)
 
 ##### 5.6.1 创建 Clerk 应用与获取密钥
 
@@ -20360,15 +20660,15 @@ Clerk 是一款专注于身份认证与用户管理的专业开发工具，核�
 1. 注册与创建:
    1. 访问 [dashboard.clerk.com](https://dashboard.clerk.com/) 并注册账号。
    2. 点击 "Create application" 。
-      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image62.png)
+      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image62.png)
    3. 输入应用名称（例如 "Burger Shop"）。
    4. 在 "How will your users sign in?" 中，默认勾选 Email , Google , GitHub 。
    5. 点击 Create application 。
 2. 获取 API Keys:
    1. 创建成功后，你会被引导至 API Keys 页面。
-      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image63.png)
+      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image63.png)
    2. 找到 Publishable key (以 `pk_` 开头) 和 Secret key (以 `sk_` 开头)。
-      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image64.png)
+      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image64.png)
    3. 将它们复制到你的 `.env.local` 文件中（参考本项目 `.env.example`）：
 
       ```bash
@@ -20542,7 +20842,7 @@ serve(async (req) => {
 - 在 Clerk Dashboard -> **Webhooks** 中添加 Endpoint，填入Supabase Edge Function 的 URL。
 - 勾选 `user.created`, `user.updated`, `user.deleted` 等事件。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase/images/image65.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase/images/image65.png)
 
 一旦设置成功，你能够在 Message Attempts 中看到不同请求信息，点击后可看到详细的请求返回参数结果；如果 webhook 在请求 Edge function 时出现问题，你可以快速在返回值中找到详细原因结果。推荐你同时对照 Clerk 和 Supabase 的请求日志信息，用于分析各个函数设定是否正确。
 
@@ -20719,16 +21019,16 @@ serve(async (req) => {
 
 1. 前往 [Git 官方下载页面](https://git-scm.com/download/win) 并下载适合你系统的安装程序：[安装包](https://github.com/git-for-windows/git/releases/download/v2.51.0.windows.1/Git-2.51.0-64-bit.exe)。默认情况下，推荐使用 x64 安装程序。
 2. 双击安装程序并按照安装向导说明进行操作：
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image5.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image5.png)
    1. 建议保持默认选项。如果你需要自定义，请注意以下几点：（在大多数情况下，你可以一直点击"Next"）
       - 选择 Git 使用的默认编辑器：选择你喜欢的编辑器（如 VS Code）。你可以默认选择第一个选项，即 Vim（一个文本编辑器），或选择"Visual Studio Code as Git's default editor"选项（需要预先安装 VS Code）。你可以保持默认选择并点击"Next"继续。
-        ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image6.png)
+        ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image6.png)
       - 选择如何使用 Git：这三个选项控制 Git 在系统中的可访问性。建议选择选项 2（"from command line and 3rd-party software"）——它将基本的 Git 工具添加到 PATH 中，让你可以在 Git Bash、命令提示符、PowerShell 和 IDE 中使用 Git，而不会使系统混乱。
-        ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image7.png)
+        ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image7.png)
 
 3. 安装后，在桌面上右键单击。如果在菜单中看到"Git Bash Here"，则安装成功。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image8.png)
 
 ##### MacOS
 
@@ -20782,18 +21082,18 @@ GitHub 是一个基于 Git 的代码托管平台。它不仅为 Git 仓库提供
 
 GitHub 不仅是世界上最大的代码托管平台，也是全球最活跃、最具影响力的开源社区。这里"开源"的核心思想是任何人都可以下载并运行软件的源代码。这种模式允许世界各地的人们检查彼此的代码并进行修改，或基于此创建新项目。例如，你可以在 GitHub 上找到各种学习教程以及用于训练 GPT 模型的框架（如 PyTorch）的完整源代码。每天，无数人在全球范围内协作审查和改进代码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image9.webp)
 
 许多大公司在 GitHub 上开源他们的程序或教程，以获得行业竞争优势——这也可以看作是一种广告形式。在 GitHub 社区中，项目获得的"星标 (stars)"数量是衡量其价值的主要指标；项目或组织拥有的星标越多，其可信度和影响力就越大。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image10.png)
 
 在我们的课程中，支持资源和作业也将上传到专用的 GitHub 仓库。通过上传作业的过程，你将逐渐熟悉并掌握 GitHub 的使用，为未来应用程序开发中的版本控制打下坚实的基础。
 
 #### 注册 GitHub 账号
 
 1. 访问 [GitHub 官网](https://github.com/) 并点击右上角的"Sign up"。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image11.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image11.webp)
 2. 输入你的电子邮件地址（建议使用常用邮箱，因为验证和通知将发送到那里），设置密码（必须包含字母、数字和特殊字符）。
 3. 完成人工验证，按照提示验证邮箱，你的账号就创建好了。
 
@@ -20801,9 +21101,9 @@ GitHub 不仅是世界上最大的代码托管平台，也是全球最活跃、�
 
 接下来，我们将创建第一个存储文件夹，也称为仓库或"repo"。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image12.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image12.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image13.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image14.png)
 
 1. Repository name：向他人显示的仓库名称。
 2. Description：仓库的详细描述。
@@ -20817,15 +21117,15 @@ GitHub 不仅是世界上最大的代码托管平台，也是全球最活跃、�
 
 建议勾选"Add README"，将仓库可见性设置为"Private"，并根据自己的喜好填写仓库名称和描述，然后点击"Create repository"完成创建第一个远程仓库。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image15.png)
 
 之后，你将拥有一个没有任何额外文件的干净仓库。接下来你可以开始上传文件了。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image16.png)
 
 获取仓库的命令是 `git clone`，但它需要仓库地址。你可以通过点击绿色的"Code"按钮找到仓库地址，你会看到 HTTPS 和 SSH 选项。通常，你可以使用这两种方法中的任何一种将仓库下载到本地机器（只有这样你才能修改和上传文件）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image17.png)
 
 一般来说，通过 HTTP 克隆的仓库适合临时下载和测试他人的仓库，但不建议用于自己的开发。为了更好的学习体验，你应该先设置 SSH 认证。
 
@@ -20867,13 +21167,13 @@ SSH 认证依赖于密钥对（公钥 + 私钥），它们是匹配的加密文�
    1. 使用 Trae 获取公钥（推荐）
       提示词：`Help me create the SSH key needed for GitHub login. My email is your_email@gmail.com , Please return the public key for me to copy`
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image18.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image18.webp)
 
    输入提示词后，你还需要在左侧终端按 Enter 键，否则命令会一直等待而不执行。由于 Trae 无法帮你执行任何条件判断，我们只需要一直按 Enter 即可。
 
    最后，你会看到右侧的 Trae 返回了它读取的公钥。你只需复制它并准备在下一步中粘贴。
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image19.png) 2. 手动获取公钥
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image19.webp) 2. 手动获取公钥
    打开你的本地终端（在 Windows 上使用 Git Bash 或 PowerShell；在 macOS/Linux 上使用终端），输入以下命令（将 your_email@example.com 替换为你注册 GitHub 账号时使用的邮箱）：
 
    ```bash
@@ -20894,12 +21194,12 @@ SSH 认证依赖于密钥对（公钥 + 私钥），它们是匹配的加密文�
    3. macOS/Linux：在终端运行 cat ~/.ssh/id_ed25519.pub 并复制所有输出（从开头的 SSH-ed25519 到结尾的邮箱）。
 2. 登录 GitHub 并进入"SSH Key Management"页面：
    1. 点击右上角头像 → Settings → 左侧菜单 SSH and GPG keys → 点击 New SSH key。
-      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image20.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image21.png)
+      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image20.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image21.png)
    2. 输入任何标题（例如，your local computer's SSH），然后将你刚刚获取的 SSH 公钥粘贴到这里。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image22.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image23.png)
 
 3. 验证绑定是否成功
 
@@ -20928,7 +21228,7 @@ ssh -T git@github.com
 
 你可以直接告诉它你想克隆的仓库地址
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image24.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image24.webp)
 
 #### Git pull : 从远程仓库获取更新
 
@@ -20944,7 +21244,7 @@ prompt:`Help me pull this repository AIID-TEST in ./AIID-TEST.`
 
 prompt:`I finished. Commit and push to the repository AIID-TEST in ./AIID-TEST.`
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/git-workflow/images/image25.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/git-workflow/images/image25.webp)
 
 推送成功。现在你可以在 GitHub 上看到更新的内容了。
 
@@ -20963,13 +21263,13 @@ prompt:`I finished. Commit and push to the repository AIID-TEST in ./AIID-TEST.`
 
 > 在 Windows 上，常见的终端有“命令提示符（cmd）”和 “PowerShell”。你可以在电脑的运行/搜索框中输入 “cmd” 或 “powershell” 来启动这些命令行程序。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image1.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image1.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image2.png)
 
 CLI 天生适合文本命令操作，在一小部分极客（追求极致的编程爱好者）群体中，CLI 甚至比 GUI 更受欢迎——他们希望所有操作都通过键盘完成，觉得动鼠标反而会拖慢自己的编码效率。
 
 在工业界，CLI 往往也是最常见的接口形式，因为 GUI 需要操作系统额外绘制界面、管理窗口，对计算机资源的要求更高；而 CLI 只需要把收到的命令传给系统执行即可。因此，在连接大规模服务器集群时，我们通常只通过 CLI 进行交互。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image3.png)
 
 对于许多没有 CLI 经验的同学来说，可能会觉得 CLI 操作很复杂、命令太多，甚至担心“一不小心就把电脑搞坏”。不用担心。还记得我们在前面教程里，经常让 Trae 帮忙完成各种基础操作吗？这里也可以完全照搬这个思路——我们可以让 CLI 编程工具帮我们执行所有 CLI 操作：让它帮你进入指定文件夹、搜索和处理文件、运行或复制开源项目等。整个过程都可以通过和 CLI AI 编程工具的对话来完成。
 
@@ -20977,7 +21277,7 @@ CLI 天生适合文本命令操作，在一小部分极客（追求极致的编�
 
 我们可以把 CLI AI 编程工具类比成之前学过的 z.ai 和 Trae。某种意义上，CLI AI 编程工具可以看成是一种特殊的 z.ai：它们同样只需要一个简单的对话入口，就会自动为你执行所有需要的操作（只是有时你需要手动打开浏览器查看最终效果）。而如果类比 AI IDE，那么 CLI AI 编程工具可以被看作是 IDE 中的 Agent 模块——也就是侧边那块对话区域。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image4.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image4.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image5.png)
 
 不过，由于不同 AI IDE 对 Agent 的实现方式不同，能力差异也很大，AI 编程效果经常不稳定，因此 CLI AI 编程工具通常由大型科技公司直接开发，例如 Claude 背后的 Anthropic、ChatGPT 背后的 OpenAI 等。
 
@@ -21022,22 +21322,22 @@ CLI 天生适合文本命令操作，在一小部分极客（追求极致的编�
 
 Claude Code 是由 Anthropic 基于 Claude 大模型能力开发的一款 AI 编程工具。它的主要交互场景在终端，同时也支持作为 VS Code 插件来使用。类似于 AI IDE 中的 Agent，它可以深度理解开发者的代码仓库，并通过自然语言指令完成端到端的开发任务——包括代码编辑、修复 Bug、执行和修复测试、管理 Git 工作流（例如解决合并冲突、创建 PR）、复杂代码讲解、执行终端命令等。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image6.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image6.png)
 
 Claude Code 的优势主要体现在：极长的上下文窗口（可以处理完整文件甚至小型项目）、可以主动澄清模糊需求、自动规划和分配执行任务，以及对整个代码库内容的深度理解和解释能力。与普通 IDE Agent 相比，它更适合“沉浸式 vibe coding” 的开发流程。
 
 在实际使用中，你可以通过对话指令，让它帮你创建新项目、执行 CLI 操作（例如整理文件夹、批量重命名文件、部署开源项目等）、配置开发环境（例如安装和调试 Python 环境）。如果觉得某段代码难以理解、某个目录结构不清晰，也可以直接让 Claude Code 生成结构化的分析文档，或者对特定内容进行分步骤讲解。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image7.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image7.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image8.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image9.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image9.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image10.png)
 
 如果你想系统地学习 Claude Code，可以参考 Andrew Ng 与 Anthropic 联合推出的课程：
 <https://www.bilibili.com/video/BV176t2zSEpr>
 
 接下来，我们将学习如何使用 Claude Code。由于直接使用官方 Claude Code 的成本往往非常高（如下图所示），我们会转而使用兼容 Claude Code 协议、但基于其他大模型的 API 平台。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image11.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image11.png)
 
 你需要学习下面几种不同方案（最好都尝试一遍），最后选择最适合你的那一种作为主要实践路径。
 
@@ -21051,11 +21351,11 @@ Claude Code 的优势主要体现在：极长的上下文窗口（可以处理�
 
 GLM（General Language Model）是智谱 AI 自主研发的一系列大型语言模型。GLM-4.6 是当前 GLM 系列的最新版本，其核心亮点是在代码能力上的优异表现（在公开基准和真实任务中对标 Claude Sonnet 4，在国内处于第一梯队）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image12.webp)
 
 它还将上下文窗口扩展到 200K，可以更加从容地处理长文本和大体量代码，同时加强了推理与工具调用能力，在性能和成本之间取得了不错的平衡。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image13.webp)
 
 在接入 GLM 之前，我们需要先安装 Claude Code。
 
@@ -21116,7 +21416,7 @@ please help me configure and start Claude Code
 
 你会看到类似下面的过程输出：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image14.webp)
 
 > 💡 什么是环境变量？
 >
@@ -21180,8 +21480,10 @@ Minimax 是稀宇科技（MiniMax）推出的新一代大语言模型，在编�
 ```bash
 export ANTHROPIC_BASE_URL=https://api.minimax.io/anthropic
 export ANTHROPIC_AUTH_TOKEN=YOUR_MINIMAX_API_KEY
-export ANTHROPIC_MODEL=MiniMax-M2.7
+export ANTHROPIC_MODEL=MiniMax-M3.1-Flash
 ```
+
+Use `MiniMax-M3.1-Flash` for new configurations, or set `ANTHROPIC_MODEL=MiniMax-M3` explicitly. Keep any intentionally saved legacy or custom model ID. These are direct API model IDs; check your account's access before using a subscription plan. Flash requires adaptive thinking: do not disable thinking or set effort to `none`. See the [MiniMax API compatibility reference](https://platform.minimax.io/docs/api-reference/text-anthropic-api).
 
 ###### 使用 DeepSeek 作为后端（推荐）
 
@@ -21255,11 +21557,11 @@ export ANTHROPIC_API_KEY="YOUR_DASHSCOPE_API_KEY"
 
 [Claude Code Router](https://github.com/musistudio/claude-code-router) 是一款专门为 Claude Code 设计的智能路由增强工具。它的核心作用，是帮助用户按需将 AI 请求分发到不同平台上的模型，并可以高度自定义。它支持接入几十个平台，包括 OpenRouter、DeepSeek、Ollama、Gemini 等，也可以按场景将任务路由到特定模型，比如 GLM-4.5、Kimi-K2、Qwen3-Coder 等。举例来说，你可以将后台任务自动交给本地 Ollama，以节省成本；将长文本 / 长代码任务交给 Gemini-2.5-Pro；把代码讲解交给 DeepSeek。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image16.png)
 
 该工具还提供了方便的 UI/CLI 配置管理能力，并通过"转换器（converter）"适配不同平台的 API 格式。它支持 GitHub Actions 等自动化集成以及自定义扩展，解决了"单一模型无法覆盖所有场景"以及"频繁切换平台很麻烦"的问题，帮助用户更灵活、低成本地利用 AI 工具。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image17.png)
 
 下面我们简单介绍如何安装 Claude Code Router。大致需要以下步骤（同样可以让 Trae 帮你执行），以准备好相关环境：
 
@@ -21270,7 +21572,7 @@ npm install -g @musistudio/claude-code-router
 
 安装完成后，你需要确认本地可以使用 `ccr` 命令。如果看到类似下面的输出，说明安装成功：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image18.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image18.png)
 
 接下来，有两种方式来初始化和配置模型：
 
@@ -21279,7 +21581,7 @@ npm install -g @musistudio/claude-code-router
 
 如果选择使用 CCR UI，你会看到类似下面的界面：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image19.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image19.png)
 
 此时点击 "Add Provider" 按钮，就会看到如下界面。你需要：
 
@@ -21291,21 +21593,21 @@ npm install -g @musistudio/claude-code-router
 
 （界面往下滚动还有很多高级选项，但目前你可以先忽略它们。）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image20.png)
 
 下面是 DeepSeek 与 Kimi 的配置示例：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image21.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image21.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image22.png)
 
 保存模型配置后，还需要在右侧 Router 区域中指定默认模型（Default）。点击对应的下拉选择，将其设置为 `kimi`（推荐），然后在右上角点击 `Save and Restart`。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image23.png)
 
 之后，只需在终端中输入 `ccr code`，即可通过 Claude Code Router 启动 Claude Code 的编码工作流。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image24.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image24.png)
 
 :::
 
@@ -21377,7 +21679,7 @@ npm install -g @musistudio/claude-code-router
 
 其他 CLI AI 编程工具的整体实现方式也大体类似。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image25.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image25.png)
 
 Claude Code 会把编程任务拆解成一个持续的“感知—思考—行动—验证”循环，并在其中调用不同工具完成任务。它模仿人类开发者的工作流：不断“写代码 → 运行 → 看结果 → 再改进”。系统内部通过一个主任务循环不断执行步骤，在每一轮循环中，Claude 都可以调用不同工具——例如读写文件、执行命令、搜索代码等——再根据工具返回的真实结果决定下一步行动。
 
@@ -21390,9 +21692,9 @@ Claude Code 会把编程任务拆解成一个持续的“感知—思考—行�
 
 ##### Codex
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image26.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image26.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image27.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image27.png)
 
 和 Claude Code 类似，Codex 是由 OpenAI 开发的一款 AI 协作编程工具，你可以把它理解成 “OpenAI 版的 Claude Code”。它最大的优势是对 GPT-5 的高效适配。
 
@@ -21408,9 +21710,9 @@ npm i -g @openai/codex
 
 如果直接使用 OpenAI 官方的 Codex 入口，配置会非常简单：当你已经开通 OpenAI 订阅或申请到了相应 API 配额之后，只需要在命令行中输入 `codex` 启动程序，并按提示完成登录即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image28.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image28.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image29.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image29.png)
 
 ###### 使用转发 OpenAI API 的方式作为后端
 
@@ -21425,7 +21727,7 @@ npm i -g @openai/codex
 
 在密钥分组设置中，要注意选择专门用于 Codex 的那一项。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image30.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image30.png)
 
 接下来，我们需要把获取到的 Key 填入下面的提示词中，并把整段提示词交给 Trae，让它帮你完成整个配置过程：
 
@@ -21478,15 +21780,15 @@ I can use the command `codex --profile myrelay` to run it
 
 ##### OpenCode
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image32.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image32.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image33.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image33.png)
 
 OpenCode 是一款面向开发者的开源 AI Coding Agent 平台，定位类似于 “多模型版的 Claude Code”。它以 Terminal 为核心交互入口，同时也支持编辑器集成（如 VS Code、Neovim 等），能够深度接入本地代码仓库，并通过自然语言完成从代码理解到工程执行的一整套开发流程。
 
 它不是绑定单一模型的 AI 编程工具，而是一个可自由切换 GPT、Claude、Gemini 乃至本地模型的开放式 AI Coding Agent 平台。就连 OpenAI 官方也持 OpenCode 接入 Codex / OpenAI 订阅。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image34.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image34.png)
 
 你可以通过下面的命令安装 OpenCode:
 
@@ -21502,7 +21804,7 @@ npm i -g opencode-ai
 
 在 OpenCode 中不定期会提供免费模型可以进行使用, 配置也非常简单。你可以在你需要使用 OpenCode 的位置在命令行输入 `opencode` 启动 Opencode 程序进入聊天面板。输入 `/models`命令搜索 free 关键词就可以看到带有 free 字眼的免费模型
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image35.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image35.png)
 
 在一般情况下免费模型完成编码任务会比付费 / 订阅模型要慢一些，这通常取决于模型线路是否阻塞, 是否编码高峰期以及模型本身的能力。
 
@@ -21512,27 +21814,27 @@ npm i -g opencode-ai
 
 在 OpenCode 的聊天窗口中输入 `/connect` 命令选中第一条最相关指令按下 enter 键，就可以进行选择第三方模型提供商的认证授权。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image36.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image36.png)
 
 这里以选择 OpenAI 为例,进行回车选择认证方式。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image37.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image37.png)
 
 选哪种都可以,只是认证方式不同。这里选择第一种进行浏览器登录。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image38.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image38.webp)
 
 复制此链接到浏览器上进行正常的 OpenAI 登录操作，浏览器上出现 Authorization Successful 后 OpenCode 客户端会自动跳转至选择 OpenAI 的模型界面。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image39.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image39.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image40.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image40.png)
 
 ###### 安装 Oh My OpenAgent 插件
 
 OpenCode 的强大之处还在于他有非常活跃的社区生态，你可以在 Github 上搜索出非常多与 OpenCode 相关的插件。如果说 OpenCode 是一款可以任意切换模型的 AI 协作工具的话，那么 Oh-My-OpenAgent 就是一款运行在 OpenCode 之上的 "多 Agent AI 编程指挥系统"。它可以将一个复杂任务拆给多个子任务分给不同的模型进行各司其职的工作。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image41.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image41.png)
 
 你可以将以下话术复制之后粘贴给上文在 OpenCode 中配置好的模型进行安装 OpenCode。
 
@@ -21596,6 +21898,8 @@ Prometheus (claude-opus-4-7 / kimi-k2.6 / glm-5.1) 是你的战略规划师。�
 
 如果你想同时配置多个模型，可以在配置中指定不同任务分类：
 
+The MiniMax quick-task example uses the [OpenCode Console route](https://opencode.ai/v2/docs/console/models/). Connect that provider with `/connect` first. Its `minimax-m3.1-flash-free` offer is time-limited; `opencode/minimax-m3` is a paid alternative. These gateway IDs are distinct from direct MiniMax API IDs and OpenCode Go subscription models.
+
 ```json
 {
   "model": "bailian-coding-plan/qwen3.5-plus",
@@ -21609,7 +21913,7 @@ Prometheus (claude-opus-4-7 / kimi-k2.6 / glm-5.1) 是你的战略规划师。�
       "description": "复杂逻辑、算法、架构决策"
     },
     "quick": {
-      "model": "opencode-go/minimax-m2.5",
+      "model": "opencode/minimax-m3.1-flash-free",
       "description": "简单修改、拼写修复"
     }
   }
@@ -21849,7 +22153,7 @@ Features: Add “Templates,” “Themes & Personalization,” and start develop
 
 收到你的请求后，Claude Code 会自动完成一系列操作，包括从 GitHub 拉取代码、配置运行环境、启动项目等。如果中间某一步出错或项目启动状态不正常，你再根据提示进行少量人工处理即可。除了 Dify，你也可以用 Claude Code 帮你部署大部分常见的 GitHub 开源项目——你只需要一个对话框，再加上喝一杯咖啡的时间 ☕️。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/modern-cli/images/image31.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/modern-cli/images/image31.webp)
 
 ##### 讲解代码与撰写文档
 
@@ -21884,9 +22188,9 @@ Features: Add “Templates,” “Themes & Personalization,” and start develop
 
 > 💡 建议先学完这些章节再继续
 >
-> - [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/database-supabase)
-> - [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/ai-interface-code)
-> - [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment)
+> - [从数据库到 Supabase](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/database-supabase)
+> - [大模型辅助编写接口代码与接口文档](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/ai-interface-code)
+> - [如何部署 Web 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment)
 
 #### 你将学到
 
@@ -22779,11 +23083,13 @@ sequenceDiagram
 | 海外数字产品 | Stripe / Lemon Squeezy / Paddle |
 | 多地区企业级 | Adyen / Airwallex / Stripe 组合 |
 
-### 把网站发到网上（简单方式）：Vercel/Zeabur/CloudBase 一键发布
+### 把网站发到网上（简单方式）：Vercel/Cloudflare/CloudBase 一键发布
+
+你可以把本页内容和项目代码一起发给 AI，让 AI 根据项目类型、免费额度和使用需求，帮你挑选合适的平台，并自动完成部署配置与服务集成。也可以直接告诉 AI：“请参考这份教程，优先选择适合当前项目的免费方案，帮我配置部署、连接前后端接口，并验证能否正常访问。”
 
 > 💡 **什么叫"把网站发到网上"？** 也叫"上线"或"部署发布"。你在本地电脑写好的网站，只有你自己能打开；**"发到网上"就是把它放到一台 24 小时开机的服务器上，让任何一个人在浏览器里输入网址就能访问到**——就像你写了一篇 Word 文档只有自己电脑能看，发到公众号/博客后所有人都能看一样，只不过这次发上去的是一个完整的网站。
 
-在本教程中，我们会介绍最简单的发站方式——**不需要买服务器，不需要懂运维**，连一下 GitHub 仓库点几下按钮就能把网站发到网上。我们会介绍三个常用平台：**腾讯云 CloudBase**、**Vercel** 和 **Zeabur**。
+在本教程中，我们会介绍最简单的发站方式——**不需要买服务器，不需要懂运维**，连一下 GitHub 仓库点几下按钮就能把网站发到网上。我们会介绍 **腾讯云 CloudBase**、**Vercel**、**Netlify**、**Cloudflare Pages** 和 **Render**，并补充直接使用 **Dify 官方云** 的方法。
 
 #### 为什么用平台一键发布，而不自己搭服务器？
 
@@ -22792,21 +23098,21 @@ sequenceDiagram
 如果手动部署，一个项目往往需要好几个步骤，每一步都可能踩坑。常见关键步骤包括：
 
 1. **服务器准备**：你需要先购买云服务器（比如阿里云、腾讯云、或 AWS EC2），选择服务器所在地区（如上海、新加坡）、配置（CPU、内存、磁盘大小等），还要学会如何远程连接服务器（例如通过 SSH 工具登录）。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image2.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image2.png)
 2. **环境配置**：Web 应用需要在特定"环境"中才能运行——例如运行 Node.js 项目必须先安装 Node.js；运行 Python 项目必须安装 Python 以及对应的第三方库。如果环境版本不匹配，程序就可能报错、无法启动。
 3. **上传资源**：你需要把本地的代码和资源上传到服务器上，常用的方法包括 FTP 或 Git。如果项目体积比较大（比如包含视频文件），中途一旦断线，有时需要重新上传。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image3.png)
 
 4. **启动服务并测试**：上传完成后，你还需要在服务器上执行命令启动应用，并测试"分配的网络地址是否能访问"。如果访问不了，有可能是服务器防火墙没有放行对应端口（比如你的应用监听 3000 端口，但该端口被防火墙拦截），也可能是程序本身有 Bug，这时就需要查看服务器日志进行排查。
    > 💡 可以把端口理解为区分同一台设备上不同应用的"房间号"，而 IP 则是这台设备的"门牌号"。IP 和端口合在一起（IP:port），就可以精确定位到某一个网络服务。
 5. **维护与更新**：后续每次你修改代码，都要重新上传并重启服务。如果服务器宕机（例如断电、网络故障），还需要手动重启应用，有时还要额外配置"进程守护工具"，让程序在异常退出后自动拉起。
 
-像 CloudBase、Vercel、Zeabur 这样的"低代码部署平台"，就是为了解决上述复杂问题而诞生的。它们会帮你自动完成"买服务器、配环境、上传代码、启动服务、监控运行"等步骤。你只需要把自己的代码仓库（比如 GitHub 或 GitLab）连接到平台，或者直接上传代码，它就会自动拉取代码、识别应用类型、配置对应的运行时环境，最后给你一个可以被任何人访问的公网地址。它甚至可以一键绑定你自己的域名。
+像 CloudBase、Vercel、Cloudflare Pages 这样的"低代码部署平台"，就是为了解决上述复杂问题而诞生的。它们会帮你自动完成"买服务器、配环境、上传代码、启动服务、监控运行"等步骤。你只需要把自己的代码仓库（比如 GitHub 或 GitLab）连接到平台，或者直接上传代码，它就会自动拉取代码、识别应用类型、配置对应的运行时环境，最后给你一个可以被任何人访问的公网地址。它甚至可以一键绑定你自己的域名。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image4.png)
+![Cloudflare Pages 项目控制台（图片来自官方 Git 集成指南）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/cloudflare-site-dashboard.png)
 
-接下来，我们会分别介绍这三个平台的特点和使用方法，帮助你选择最适合自己的部署方案。
+接下来，我们会分别介绍这些平台的特点和使用方法，帮助你选择最适合自己的部署方案。
 
 ---
 
@@ -22817,7 +23123,9 @@ sequenceDiagram
 | **腾讯云 CloudBase** | 国内访问速度快，与微信生态深度整合 | 国内用户为主、需要微信小程序支持的项目 | 有免费额度 |
 | **Vercel** | 前端框架支持好，与 GitHub 集成紧密 | React/Vue/Next.js 等现代前端项目 | 有免费额度 |
 | **Netlify** | 功能全面，支持表单处理和身份验证，与 Git 集成好 | 需要表单处理、身份验证等高级功能的静态网站 | 有免费额度 |
-| **Zeabur** | 支持多种语言和服务模板，配置灵活 | 需要部署多种服务（如 Dify、n8n）的复杂项目 | 每月约 5 美元免费额度 |
+| **Cloudflare Pages** | 支持本地上传和 Git 自动部署，提供 HTTPS 访问地址 | 静态网站、Vue / React 构建产物、小游戏 | 静态资源请求免费，构建和文件大小等有限制 |
+| **Render** | 支持运行独立的 Node.js / Python 后端程序 | Express、Flask、FastAPI 等后端 API | 有免费 Web Service，闲置 15 分钟会休眠 |
+| **Dify 官方云** | 注册后直接使用知识库、Agent 和工作流 | 学习与分享 Dify 应用，无需先自部署 | 有 Sandbox 免费方案，模型与知识库等额度有限 |
 
 ---
 
@@ -22846,7 +23154,7 @@ sequenceDiagram
 
 在环境管理页面，找到"静态网站托管"功能并开通。开通后你会获得一个默认的访问域名。
 
-CloudBase 的静态网站托管提供多种部署方式，与 Zeabur 类似：
+CloudBase 的静态网站托管提供多种部署方式：
 
 - **本地项目上传**：直接从本地上传构建好的静态文件（HTML、CSS、JS 等）
 - **模板部署**：使用预设模板快速创建项目，如 React Web 应用模板、Vue Web 应用模板
@@ -23057,212 +23365,290 @@ netlify functions:serve
 
 ---
 
-#### 4. Zeabur
+#### 4. Cloudflare Pages
 
-Zeabur 是一个新兴的部署平台，特别适合需要部署多种服务的复杂项目。它的优势在于：
+Cloudflare Pages 是一个用于发布网页的平台。它特别适合纯 HTML 网页、Vue / React 项目和文档网站，优点包括：
 
-- **服务模板丰富**：内置 Dify、n8n、数据库等多种服务模板
-- **支持多种部署方式**：GitHub、模板、Docker 镜像、本地项目等
-- **灵活的服务组合**：可以在一个项目中部署多个相互关联的服务
-- **按量计费**：用多少付多少，适合实验性项目
+- **本地文件上传**：把已经生成的网页文件上传后，就能得到访问地址
+- **Git 自动部署**：连接 GitHub 或 GitLab 后，推送代码会自动构建和更新网站
+- **自动 HTTPS**：平台会提供可公开访问的 `pages.dev` 地址，也支持自定义域名
+- **有免费方案**：静态资源请求免费，构建次数和文件大小等仍有上限；动态函数另按 Workers 规则计算
 
-#### 使用 Zeabur 部署 Dify
+#### 使用 Cloudflare Pages 与 Trae 部署贪吃蛇游戏
 
-在之前的课程中，我们已经简单接触过 Dify。现在，我们可以通过 [Zeabur](https://zeabur.com/projects) 非常轻松地启动自己的 Dify 服务。首先打开 [控制台页面](https://zeabur.com/projects)，我们先看一下上面的各个区域。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image5.png)
-
-在这个页面上，你首先能看到许多方块，这些就是已经启动的服务。在顶部菜单中，你会看到 Agent、Servers、Docs、Templates 等几个选项，它们分别代表：
-
-1. **Agent**：可以打开 Zeabur 内置的智能助手（Agent），向它提问如何操作，或者查询当前服务器的状态。
-2. **Servers**：在这里可以添加你自己购买的云服务器，或者直接通过 Zeabur 购买服务器。
-3. **Docs**：查看 Zeabur 的完整文档说明。
-4. **Templates**：这里列出了所有内置的模板镜像。
-
-> 这里提到的"镜像（Image）"，可以理解为"包含代码和运行环境的压缩包"。当某个服务在一台服务器上成功跑起来之后，我们可以选择把"这套运行环境 + 代码"打包成镜像。之后，在任何新服务器上，只要把这个压缩包解压并运行，就不需要重新配置环境和代码，服务就能直接跑起来。
-
-在页面右上角，你还能看到自己的余额。默认情况下，每个月会有 5 美元左右的免费额度。关于细节计费规则暂时可以不用太在意，只需要知道：只要服务器在运行，就会消耗额度。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image6.png)
-
-点击余额可以查看每日的消耗明细。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image7.png)
-
-现在我们来创建自己的 Dify 服务。首先，在 [控制台首页](https://zeabur.com/projects) 点击 "New Project"。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image8.png)
-
-接下来是各个创建方式的解释：
-
-1. **GitHub**
-   可以连接到你的 GitHub 账号。绑定之后，就可以直接从 GitHub 仓库里选择项目部署（GitHub 是目前全球最大的代码托管平台）。
-2. **Template（模板）**
-    可以基于模板来部署服务。Zeabur 内置了很多预设项目模板（例如 Dify、n8n 等），你可以基于这些模板快速创建并部署应用。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image9.png)
-3. **Databases（数据库）**
-   用于部署数据库服务，比如 MySQL、MongoDB 等常见数据库。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image10.png)
-4. **Functions（函数）**
-   可以部署函数服务，你可以编写 JavaScript 或 Python 代码，让它们以函数的形式被调用。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image11.png)
-
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image12.png)
-
-5. **Local Project（本地项目）**
-   上传一个本地文件夹，Zeabur 会自动识别其中的启动脚本。这适合将你已经在本地开发好的项目快速部署到 Zeabur 上。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image13.png)
-6. **Docker Image**
-   部署已经打包好的 Docker 镜像。如果你的项目已经被打成了 Docker 镜像（例如存放在 Docker Hub 或其他镜像仓库中），可以在这里直接部署。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image14.png)
-7. **Cursor**
-   如果你安装了 Cursor（例如 Cursor IDE），可以通过这个入口将 Cursor 中的项目直接部署到 Zeabur。
-
-如果你想部署自己的 Dify 服务，推荐选择 **Template** 方式，然后在搜索框中输入 "dify"。可以看到很多由不同作者维护的版本，你可以任选其一（比如 v1.6.0 版本）。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image15.png)
-
-接着，输入任意一个名称，Zeabur 会基于这个名称生成一个临时的自定义域名。之后所有人都可以通过这个网址访问你的服务。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image16.png)
-
-创建完成后，你会看到多个程序（服务）依次启动。需要耐心等待所有服务都进入"已启动"状态。（Dify 服务是由多个程序组成的，每个程序负责不同的功能，它们之间会相互协作。）
-
-一般来说，你只需要点击左侧的 Dify 应用，就可以看到默认的访问入口地址。但在本例中，由于前面还套了一层 nginx，你需要点击 nginx 服务来获取最终访问地址。可以理解为：nginx 就是负责对外统一"收发请求"的主程序，它会把外部访问的地址分发给内部各个服务。点击左侧的 Nginx，在详情页中可以看到当前的服务地址，然后在浏览器里打开这个地址，等待服务完全启动。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image17.png)
-
-稍等片刻后，你就能看到 Dify 的登录界面了。输入邮箱地址和注册密码，就可以开始使用你自己的 Dify 服务了。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image18.png)
-
-如果你有兴趣，还可以顺便启动一个 n8n 服务。n8n 也是海外非常流行的一款 AI 工作流平台。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image19.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image20.png)
-
-#### 使用 Zeabur 与 Trae 部署贪吃蛇游戏
-
-在本教程的下一个部分，我们会体验 Zeabur 的一些进阶用法。我们先用 Trae 生成一个贪吃蛇小游戏，再把它部署到 Zeabur 的服务器上，并配置一个可公开访问的链接，让任何人都可以打开你的游戏。
+在本教程的下一个部分，我们会实际发布一个网页游戏。我们先用 Trae 生成一个贪吃蛇小游戏，再把它部署到 Cloudflare Pages，并取得一个可公开访问的链接，让其他人也能打开游戏。
 
 第一步，是在本地使用 Trae 创建一个贪吃蛇项目。
 
 ##### 使用 HTML 框架实现
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image23.webp)
 
-对于 Trae 来说，生成一个基于 HTML 的贪吃蛇网页游戏非常简单。游戏生成完成后，你只需要按照前面介绍的 Zeabur 本地部署方式，把包含所有文件的文件夹上传上去即可。
+对于 Trae 来说，生成一个基于 HTML 的贪吃蛇网页游戏非常简单。游戏生成后，我们需要找到包含 `index.html`、CSS、JavaScript 等文件的文件夹。可以先让 Trae 检查：这个文件夹是否包含运行游戏所需的全部资源，是否还依赖只在本机存在的文件路径。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image24.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image25.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image26.png)
+接下来，访问 [Cloudflare 控制台](https://dash.cloudflare.com/)，注册并登录。在左侧进入 **Workers & Pages**，创建应用时选择 **Pages** 的文件上传入口，界面可能显示为 `Get started` 或 `Drag and drop your files`。
 
-完成后，你就会进入该服务的详情界面：
+这里有两种方式：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image27.png)
+1. **直接上传（Direct Upload）**：适合现在这个已经在本地生成好的 HTML 小游戏。
+2. **连接 Git（Git integration）**：适合后续持续修改代码，希望每次推送后自动更新网站的项目。
 
-点击左侧的 "Network" 选项，在页面中找到 "Public Address" 区域。点击 "Generate Domain"，即可生成一个对外访问地址，你可以输入任意喜欢的名称。
+这次先选择直接上传。输入项目名称，把包含 `index.html` 的文件夹拖入上传区域，再点击部署。这里上传的是网页文件，不是 `node_modules`，也不是一个需要运行开发服务器才能访问的完整源码目录。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image28.png)
+部署完成后，Cloudflare 会给出一个类似 `https://项目名.pages.dev` 的访问地址。打开这个地址，测试游戏能否开始、按键能否控制、图片和样式能否正常加载。以后更新游戏时，修改代码，再创建一次新部署并上传更新后的文件即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image29.png)
-
-生成完成后，只要在浏览器中打开这个地址，就可以运行你自己的贪吃蛇游戏了。其它 HTML 类型的 Web 应用也可以用完全相同的方式来部署。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image30.png)
+> 直接上传与 Git 集成是两种项目创建方式。直接上传的 Pages 项目不能直接切换成 Git 集成；需要自动发布时，可以另建一个连接 Git 的项目。具体入口见 [Cloudflare 官方上传指南](https://developers.cloudflare.com/pages/get-started/direct-upload/)。
 
 ##### 使用 React 框架实现
 
-前面我们学习了如何部署基于 HTML 的 Web 应用。接下来，我们再尝试部署一个目前更常用的前端框架：React 应用。相比纯 HTML，React 被认为是一种更加成熟、现代的前端开发框架。它通过组件化的方式组织页面结构，能够显著加快复杂页面的开发，是企业级项目中非常主流的选择。
+前面我们学习了如何部署基于 HTML 的 Web 应用。接下来，我们再尝试部署一个目前更常用的前端框架：React 应用。相比纯 HTML，React 通过组件化的方式组织页面结构，能够帮助我们管理更复杂的交互界面。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image31.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image31.webp)
 
 ###### 重构为 React 架构
 
-在 Trae 中，你只需要向 Agent 说明："帮我把这份代码重构成 React 架构"，就可以比较轻松地把原本基于 HTML 的结构重构成 React 项目。
+在 Trae 中，可以向 Agent 说明：“帮我把这份代码重构成 React 架构，使用 Vite 构建，并保留现有的游戏功能。”
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image32.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image32.webp)
 
-不过，相比简单的 HTML 文件，React 应用依赖更复杂的构建工具和项目结构，因此部署过程也会稍微麻烦一些。一个典型的问题体现在端口设置上：默认情况下，React 应用一般会监听 3000 端口（你也可以在配置文件或启动日志中看到这一点）。
+重构完成后，先在本地运行并测试。然后让 Trae 执行构建命令：
 
-然而，在 Zeabur 上这样部署会失败——因为 Zeabur 只支持监听 8080 端口的应用。也就是说，如果想让 React 应用在 Zeabur 上正常运行，我们必须先把默认监听端口从 3000 改成 8080。
+```bash
+npm install
+npm run build
+```
 
-要正确进行这一步配置，我们需要先弄清楚两个概念：什么是"端口（Port）"，以及"监听端口（Listening Port）"是什么意思。
+Vite 项目通常会生成一个 `dist` 文件夹。打开这个文件夹，可以看到 `index.html` 和经过构建的脚本、样式等文件。现在需要上传到 Cloudflare Pages 的是 **`dist` 里面的构建产物**，不是 React 源码目录。
 
-###### 什么是端口？
+也可以直接把下面的要求发给 Trae：
 
-> 在计算机网络中，端口可以理解为一个"逻辑通信端点"，用来区分同一台设备上运行的不同网络服务。简单类比的话，如果 IP 地址好比一个"门牌号"（例如 162.128.1.1），那端口号就像这栋楼里不同房间的"房间号"——每个房间对应一个服务（例如 Web 服务器、邮箱服务，或者你的 React 应用）。
+```text
+请检查这个 React 项目能否部署到 Cloudflare Pages：
+1. 确认使用的构建工具、构建命令和输出目录，不要只根据 React 这个名字猜测。
+2. 在本地执行构建，修复构建报错。
+3. 检查图片、脚本和页面路由，避免依赖本机绝对路径。
+4. 告诉我应该上传哪个文件夹。如果使用 Git 部署，列出需要填写的构建设置。
+```
+
+###### 从 GitHub 自动部署
+
+如果代码已经上传到 GitHub，可以在 Pages 中选择连接 Git 仓库，授权后选择项目和生产分支，例如 `main`。
+
+首先设置项目名称和分支。下面的界面图来自 [Cloudflare 官方 Git 集成指南](https://developers.cloudflare.com/pages/get-started/git-integration/)，截图中的示例项目名称不需要照抄。
+
+![Cloudflare Pages 设置项目名称和生产分支（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/cloudflare-project-settings.png)
+
+接下来填写构建设置。Vite 创建的 React / Vue 项目通常使用：
+
+| 设置项 | 本例填写内容 | 含义 |
+| --- | --- | --- |
+| Framework preset | 按实际框架选择 | 帮助平台识别项目 |
+| Build command | `npm run build` | 安装依赖后执行的构建命令 |
+| Build output directory | `dist` | 平台对外发布的文件目录 |
+| Root directory | 项目所在目录 | 如果代码就在仓库根目录，使用默认设置 |
+
+![Cloudflare Pages 构建设置（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/cloudflare-build-settings.png)
+
+> 配图来自官方指南的示例项目，可能显示其他框架和输出目录；本例填写上表中的 Vite 设置。旧的 Create React App 通常输出 `build`，不能把所有 React 项目都当作 `dist`。
+
+保存并部署后，平台会安装依赖、构建并发布网站。构建失败时，先看日志里最早出现的错误，再让 AI 根据错误信息修改代码或配置。
+
+![Cloudflare Pages 部署日志（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/cloudflare-deploy-log.png)
+
+部署成功后，在项目页面取得公开访问地址。之后推送到所选生产分支，就会触发一次新的部署。
+
+![Cloudflare Pages 项目访问地址与部署记录（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/cloudflare-site-dashboard.png)
+
+如果页面空白、图片或脚本返回 404，优先检查构建输出目录，以及 Vite 的 `base` 配置。原本为 GitHub Pages 仓库子路径配置的 `/项目名/`，不一定适合独立域名根目录。
+
+###### 本地监听端口与线上静态网站有什么区别？
+
+在 Trae 的本地预览里，可能会看到 `localhost:3000` 或 `localhost:5173`。这表示我们通过本机开发服务器查看网页。React 本身并不规定端口，具体数字由开发工具和项目配置决定。
+
+> 在计算机网络中，端口可以理解为一个“逻辑通信端点”，用来区分同一台设备上运行的不同网络服务。简单类比的话，如果 IP 地址好比一个“门牌号”，端口号就像这栋楼里不同房间的“房间号”——每个房间对应一个服务。
 >
 > 端口号用 16 位整型表示，取值范围是 0 到 65535。
 
-如果不想记这些细节，可以简单理解：端口是构成"网络访问地址"的一个必要部分。
+“监听端口号”指的是某个程序主动打开并等待请求的端口。假设电脑是一栋写字楼，开发服务器在 3000 号房间接收请求，操作系统就会把发送到这个端口的请求交给它。
 
-我们平时访问网站或 IP 地址时，通常不会手动加端口号，是因为 Web 的默认端口是 80 或 443（HTTPS）。大多数浏览器会自动使用这些标准端口。而对于一些特殊端口，比如 React 默认的 3000、Zeabur 要求的 8080，我们就必须在地址后面加上 `:3000` 或 `:8080` 才能访问到对应的内容。
+我们平时访问网站时，通常不需要手动添加端口，因为浏览器访问 HTTP、HTTPS 时分别默认使用 80、443。把构建产物上传到 Cloudflare Pages 后，网页文件由平台提供访问服务，不需要把本地开发服务器的端口改成某个固定数字。
 
-###### 什么是"监听端口号"？
-
-> "监听端口号"指的是某个程序在一台设备上主动"打开并监控"的端口。当一个应用设置了监听端口时，其实就是在告诉操作系统："我会一直在这个端口上等待网络请求——只要有请求进来，就请转发给我。"
-
-再形象一点地理解：假设你的电脑是一栋写字楼，IP 地址是这栋楼的地址。楼里开了很多公司或部门，它们分别占用不同的房间，房间号就是端口号。
-
-当默认的 React 开发服务器启动时，它会"打开"某个房间的门，并安排"前台"在门口值班，这个房间号就是它的监听端口——3000。
-
-同时，React 程序还会告诉这栋楼的"物业管理"（操作系统）："我在 3000 号房间，请把所有寄给 3000 的信件（网络请求）都转给我。"
-
-这样，当你访问 React 网站时，请求首先会到达这栋楼；物业看到请求要送到 3000 号房间，就会立刻把请求交给 React 的"前台"，由它来处理并返回结果——这就是访问 React 应用的过程。
-
-当你在本地执行 `npm start`（本地启动 React 开发服务器的默认命令，也可以在 Vibe Coding 的 Agent 侧边栏中执行）时，React 开发服务器就会自动把监听端口设置为 3000。
-而 Zeabur 的平台设计决定了它只会"识别"监听 8080 端口的应用。如果你的 React 应用仍然使用默认的 3000 端口，Zeabur 就无法将请求正确转发给你的应用，最终导致部署失败。
-
-###### 修改默认监听端口
-
-要把 React 默认监听端口（3000）改成 Zeabur 所要求的 8080，有很多做法。最简单的方式，就是直接在 Trae 里对 Agent 下指令："请帮我把这个 React 项目的默认端口改为 8080。"Trae 就会帮你修改项目中对应的配置文件。修改完成后，你只需重新打包并按前面的方式上传到 Zeabur 即可。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image33.png)
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image34.png)
-
-在网络设置中指定一个访问 URL，方式和部署 HTML 项目时基本相同，就可以启动 React 版本的服务。
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image35.png)
-
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image36.png)
-
-对于其它需要修改端口号的程序，你也可以采用同样的思路：先改默认端口，再上传到 Zeabur 部署。至此，你已经掌握了将常见 Web 应用部署到服务器的基础技能。
-
-你可以尝试让 Trae 帮你构建不同类型的应用，并把它们部署到 Zeabur 的默认服务器上。在后续课程中，我们还会学习如何把应用部署到你自己购买的云服务器上。
+如果项目除了网页，还需要一直运行 Node.js / Python 后端，就不能只上传静态产物。下面我们继续介绍这种情况。
 
 ---
 
-#### ⚠️ 如何停止和删除项目（Zeabur）
+#### 5. Render
 
-由于启用服务器相关资源都会产生费用，我们在使用时一定要养成"及时关闭不用服务"的习惯，避免把每个月的免费额度消耗完。
+Render 可以运行独立的后端程序。比如前端发来一条聊天消息，后端需要读取 API Key、请求模型并返回结果，这部分程序可以部署在 Render，而网页仍然放在 Cloudflare Pages、Vercel 等平台。
 
-如果要找到项目的管理入口，首先点击项目中的 "Settings" 选项。
+它支持连接 Git 仓库、配置启动命令和环境变量，并为服务提供 HTTPS 地址。免费 Web Service 适合学习和演示，但连续 15 分钟没有入站流量后会休眠，下一次访问需要等待唤醒。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image21.png)
+#### 使用 Render 部署后端 API
 
-进入设置页面后，将页面拉到最下方，你会看到类似下面的界面：
+##### 步骤 1：准备能够启动的后端项目
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/backend/zeabur-deployment/images/image22.png)
+如果已经有 Express、Flask 或 FastAPI 项目，先让 Trae 检查依赖文件、启动命令和监听地址。以 Node.js / Express 为例，可以在一个新的练习文件夹中执行：
 
-你可以点击 "Suspend All Services" 来暂停所有服务以降低费用；如果服务出现问题，可以点击 "Restart All Services" 对全部服务进行重启。如果你确定不再需要这个项目，可以点击 "Delete Project" 将整个项目彻底删除。
+```bash
+npm init -y
+npm install express
+npm pkg set type=module
+npm pkg set scripts.start="node server.js"
+```
+
+创建 `server.js`：
+
+```javascript
+import express from 'express'
+
+const app = express()
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' })
+})
+
+const port = Number(process.env.PORT || 3000)
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server listening on port ${port}`)
+})
+```
+
+先运行 `npm start`，再打开 `http://localhost:3000/health`。看到 `{"status":"ok"}`，说明程序已经能够响应请求。
+
+这里的 `process.env.PORT` 用来读取 Render 提供的端口。监听地址使用 `0.0.0.0`，使平台能够把请求交给程序。不要把线上端口固定为本地开发时的数字，也不要只监听 `127.0.0.1`。
+
+把 `server.js`、`package.json`、`package-lock.json` 上传到 GitHub。`node_modules` 和保存真实密钥的 `.env` 应加入 `.gitignore`，不要上传。
+
+##### 步骤 2：连接仓库
+
+访问 [Render 控制台](https://dashboard.render.com/)，注册并登录。点击右上角的 **New**，选择 **Web Service**。
+
+![Render 新建 Web Service 的入口（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/render-new-service.jpg)
+
+选择 Git Provider，连接 GitHub，并授权需要部署的仓库。授权后，在仓库列表中找到项目并点击连接。
+
+![Render 选择代码仓库（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/render-select-repository.png)
+
+以上界面图来自 [Render 官方首次部署指南](https://render.com/docs/your-first-deploy)。账户中显示的仓库名称会不同，以自己的项目为准。
+
+##### 步骤 3：配置构建与启动命令
+
+给服务取一个名称，选择区域、分支和语言。本例选择 Node，填写：
+
+| 设置项 | 本例填写内容 |
+| --- | --- |
+| Root Directory | 代码在仓库根目录时留空；如果在 `server` 等子目录，则填写该目录 |
+| Build Command | `npm ci`，本例已经包含 `package-lock.json` |
+| Start Command | `npm start` |
+| Instance Type / Compute | `Free` |
+
+TypeScript 项目通常还需要编译；Python 项目则需要填写自己的依赖安装与生产启动命令。这些设置应根据实际代码确定，不能直接照抄 Node 示例。
+
+选择实例时，确认选中的是 **Free**。后续如果另外添加数据库或其他服务，也要分别检查它们的套餐。
+
+![Render 选择免费实例（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/render-free-plan.png)
+
+##### 步骤 4：配置环境变量并部署
+
+如果后端要调用 Dify 或模型服务，在 Environment 中填写服务端需要的环境变量，例如 `DIFY_API_KEY`。这些变量由后端读取，不放进前端代码；`VITE_`、`NEXT_PUBLIC_` 等公开变量也不适合保存密钥。
+
+点击创建 Web Service 后，Render 会开始构建。打开 Deploys / Logs 查看依赖安装和程序启动过程。
+
+![Render 构建和启动日志（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/render-deploy-logs.png)
+
+##### 步骤 5：取得地址并测试接口
+
+当服务状态变为 **Live**，在服务页面找到 `onrender.com` 地址。
+
+![Render 服务的公开访问地址（官方文档界面图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/backend/zeabur-deployment/images/render-public-url.png)
+
+本例需要访问的是 `https://服务名.onrender.com/health`，而不是只打开根路径。看到和本地相同的 JSON，说明部署已经成功。
+
+接下来，把前端接口地址改成自己的 Render 域名。如果前后端不在同一个域名，后端还需要为实际前端来源配置 CORS，并处理浏览器的 `OPTIONS` 预检请求。
+
+> **免费服务的存储限制**：免费 Web Service 不能挂载持久化磁盘，本地上传文件或 SQLite 数据不能当作长期存储。免费 Render Postgres 在创建 30 天后到期；需要长期保存数据时，按数据库课程选择合适的持久化方案。当前规则见 [Render 免费服务说明](https://render.com/docs/free)。
+
+---
+
+#### 6. Dify 官方云
+
+在之前的课程中，我们已经简单接触过 Dify。学习知识库、Agent 和工作流时，可以直接使用 [Dify 官方云](https://cloud.dify.ai/apps)，不需要先买服务器、找模板或等待多个服务启动。
+
+#### 使用 Dify 官方云创建应用
+
+##### 步骤 1：注册并进入工作区
+
+打开 Dify 官方云，注册并登录，进入自己的工作区。学习阶段可以先使用 **Sandbox** 免费方案。免费托管有应用、知识库、文档和消息等额度限制，具体以 [当前价格页](https://www.dify.ai/pricing) 为准。
+
+进入 Studio 后，可以看到应用列表以及创建入口。下面复用本课程 Dify 章节的操作截图，不同版本的布局可能稍有变化。
+
+![Dify Studio 应用列表与创建入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image14.png)
+
+这里的 **Create from Blank** 用于从空白创建应用，**Create from Template** 用于使用模板，**Import DSL file** 用于导入已有工作流。它们创建的是 Dify 里的应用，不是另起一台云服务器。
+
+##### 步骤 2：创建一个 Chatbot
+
+点击 **Create from Blank**，选择 Chatbot，填写应用名称和描述，再点击创建。
+
+![Dify 填写应用名称并创建](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image17.png)
+
+如果创建入口提示应用数量已到上限，先检查当前工作区额度，而不是反复重新部署。模型供应商也需要有可用模型和额度；使用自己的模型 API Key 时，费用按照模型供应商规则计算。
+
+知识库上传、检索测试、Agent 和工作流的具体配置，继续参考 [Dify 入门与知识库集成](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base)。
+
+##### 步骤 3：测试并分享应用
+
+先在应用的预览区域完成一次对话，确认模型能回答，知识库能检索到预期资料。再打开右上角 **Publish**，发布当前配置，并通过 **Run App** 打开应用页面。
+
+![Dify 发布与运行应用入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/ai-capabilities/dify-knowledge-base/images/image83.webp)
+
+复制实际的 WebApp 地址，用另一个浏览器窗口测试应用的访问设置。需要登录才能访问的应用，应按当前设置完成登录，不要把自己的 Studio 管理地址当成分享地址。
+
+#### 将 Dify 接到自己的网页
+
+如果希望使用自己制作的聊天界面，可以在应用 API 文档中取得调用地址和密钥。Dify Cloud 的 API 基础地址为 `https://api.dify.ai/v1`，自部署则使用实例自己的 API 地址。
+
+浏览器先请求自己的后端，由后端读取 `DIFY_API_KEY`，再调用 Dify。后端可以使用前面介绍的 Render。不要把 Dify 应用密钥直接放进前端源码或浏览器请求里。
+
+#### 什么时候再考虑自部署？
+
+需要控制 Dify 实例、插件或运行环境时，可以按 [Dify 官方 Docker Compose 指南](https://docs.dify.ai/en/self-host/deploy/quick-start/docker-compose) 部署到自己的电脑或云服务器。当前最低硬件要求为 2 核 CPU、4 GiB 内存，具体需求还取决于版本和使用量。
+
+开源软件可以自行部署，不代表服务器、存储、流量和模型调用都免费。自部署作为后续进阶路径，不再作为本节使用 Dify 的必做前置步骤。
+
+---
+
+#### ⚠️ 如何停止和删除项目
+
+实验结束后，需要分别检查网站、后端和数据库。暂停一个网页服务，不代表相关数据库、磁盘或其他资源也已经停止计费。
+
+#### Cloudflare Pages
+
+打开项目的 Settings，在删除项目入口按提示确认。需要保留代码时，先确认源码已保存在 Git 仓库；绑定自定义域名的项目，也要按平台要求清理域名记录。可以在 [官方项目管理说明](https://developers.cloudflare.com/pages/get-started/git-integration/#delete-a-project) 中核对当前入口。
+
+#### Render
+
+在服务的 Settings 中找到暂停或删除入口，按控制台提示操作。删除服务前先备份需要的数据；单独创建的数据库和其他资源也需要分别检查。
+
+#### Dify 官方云
+
+学习完成后，可以在应用设置中删除不再使用的应用；需要复用的工作流先导出 DSL。删除应用不等于注销账号或取消已订阅的付费套餐，使用付费方案时还要单独检查 Billing。
 
 ---
 
 #### 总结
 
-在本教程中，我们介绍了四个常用的 Web 应用部署平台：
+在本教程中，我们介绍了几种可用的发布方式：
 
-1. **腾讯云 CloudBase**：适合国内用户，访问速度快，与微信生态整合好
-2. **Vercel**：适合现代前端框架项目，与 GitHub 集成紧密，全球 CDN 加速
-3. **Netlify**：功能全面，支持表单处理和身份验证，适合需要高级功能的静态网站
-4. **Zeabur**：适合复杂项目，服务模板丰富，支持多种部署方式
+1. **腾讯云 CloudBase**：适合结合腾讯云生态发布网站或后端
+2. **Vercel**：适合现代前端框架和 Next.js 项目，与 GitHub 集成紧密
+3. **Netlify**：适合静态网站与 Git 自动发布，也提供表单和函数等功能
+4. **Cloudflare Pages**：适合静态网页、Vue / React 构建产物和小游戏
+5. **Render**：适合独立后端，免费实例有休眠与存储限制
 
-选择哪个平台取决于你的具体需求：
-- 如果主要面向国内用户，推荐 **CloudBase**
-- 如果使用 React/Next.js 等框架，推荐 **Vercel** 或 **Netlify**
-- 如果需要表单处理、身份验证等高级功能，推荐 **Netlify**
-- 如果需要部署 Dify、n8n 等服务，推荐 **Zeabur**
+选择哪个平台取决于项目需要什么。纯网页先选择静态托管，独立后端选择能运行该程序的服务，学习 Dify 则可以直接从官方云开始。
 
-无论选择哪个平台，部署的核心流程都是相似的：准备代码 → 选择平台 → 配置构建设置 → 部署上线。掌握这些技能后，你就可以将自己开发的应用分享给全世界了！
+无论选择哪个平台，部署的核心流程都是相似的：准备代码 → 选择平台 → 配置构建设置 → 部署上线。完成后，再用实际访问地址验证页面和接口是否能够正常工作。
 
 ### 从设计原型到项目代码
 
@@ -23287,7 +23673,7 @@ Zeabur 是一个新兴的部署平台，特别适合需要部署多种服务的�
 本文将详细介绍这三种路径的具体实现方法，帮助你根据项目需求选择最合适的工作流。
 
 ::: tip 📚 前置知识
-在开始本节之前，建议你先学习 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo) 教程，掌握前端设计工具的基础操作。
+在开始本节之前，建议你先学习 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo) 教程，掌握前端设计工具的基础操作。
 :::
 
 ---
@@ -23316,7 +23702,7 @@ Zeabur 是一个新兴的部署平台，特别适合需要部署多种服务的�
    - 颜色、字体大小尽量还原设计稿
    ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image42.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image42.png)
 
 4. **获取并保存代码**
    - 要求模型返回完整的 HTML 代码
@@ -23346,7 +23732,7 @@ MasterGo 同样提供了强大的 AI 页面生成功能，可以根据参考图�
 
 在 MasterGo 编辑界面的上方工具栏中，可以找到 AI 工具按钮：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image47.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image47.png)
 
 ###### 生成流程
 
@@ -23356,15 +23742,15 @@ MasterGo 同样提供了强大的 AI 页面生成功能，可以根据参考图�
 
 2. **查看生成结果**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image48.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image48.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image49.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image49.webp)
 
 3. **获取代码**
    - 点击蓝色按钮"插入到画布"，可直接编辑生成后的网页
    - 或点击右侧的"代码"按钮，复制代码内容到本地
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image50.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image50.png)
 
 ---
 
@@ -23394,25 +23780,25 @@ Figma Make 是 Figma 官方推出的 AI 设计工具，能够根据用户输入�
    - 将你想要还原的设计图上传到对话框
    - 添加描述需求的提示词
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image43.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image43.webp)
 
 3. **查看生成结果**
    - 稍等片刻后即可看到渲染结果
    - 点击右上角的播放按钮可进行全屏预览
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image44.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image44.webp)
 
 4. **细节调整**
    - 点击右上角的编辑器图标（鼠标和尺子图标）
    - 回到熟悉的 Figma Editor 界面进行详细调整
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image45.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image45.webp)
 
 5. **导出代码**
    - 调整满意后，选择导出代码
    - 可以直接连接到 GitHub 保存代码
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code/images/image46.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code/images/image46.png)
 
 ##### 3.2 插件导出代码
 
@@ -23620,8 +24006,8 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 #### 参考资源
 
-- [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo) - 学习设计工具基础
-- [一起做霍格沃茨画像](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits) - 完整项目实战
+- [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo) - 学习设计工具基础
+- [一起做霍格沃茨画像](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits) - 完整项目实战
 - [MCP 官方文档](https://modelcontextprotocol.io/) - 了解协议详情
 - [Figma Make 官方文档](https://help.figma.com/hc/en-us/sections/360007453634-Figma-Make)
 - [MasterGo AI 教程](https://mastergo.com/tutorials)
@@ -23645,7 +24031,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 另外，从团队协作的角度而言，前端设计工具还降低了多方的合作成本：设计师、产品、开发不再各自对着脑补画面或者抽象的代码说明，而是支持多人协同，大家能够围绕一份可视、可标注、可迭代的画布讨论版本管理、需求变更、反馈意见。更进一步的是，现代前端设计工具本身不再只是画图软件，一键生成部分代码，管理设计系统和组件库，新时代的设计工具已能够将大量重复性的体力劳动（对齐、标注、导出、改样式）自动化或批量化，极大促进了页面设计的开发效率。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image8.webp)
 
 ##### 1.1 前端设计工具的演变
 
@@ -23655,41 +24041,41 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 #### 1.2 诞生之旅
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image9.webp)
 
 在现代前端专用工具尚未诞生的年代，整个界面设计行业的视觉设计工作，很长一段时间都由 Photoshop 这类 "全能型" 设计软件顺带承包。设计师会在本地通过一层层叠加的图层，细致完成页面整体视觉效果的设计，最终将体积不小的 .psd 源文件交付给前端工程师 —— 而前端要精准还原设计图，还必须手动完成三项繁琐且关键的工作：
 
 一是 "切图"：需要从 .psd 文件的多层结构里，把按钮、图标、Logo、背景模块等独立视觉元素逐一拆分提取，再导出为 PNG、JPG 等网页能直接加载的图片格式（毕竟网页无法直接识别 PSD 的图层信息，只能依赖这些拆分后的图片呈现细节）；
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image10.webp)
 
 二是 "量尺寸"：得用软件自带的测量工具，逐一确认每个元素的宽高、不同模块间的间距（margin/padding）等数据，确保所有尺寸都精准到像素；
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image11.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image11.webp)
 
 三是 "抠标注"：要从设计图中提取那些 "看不见却必须有的" 隐性参数 —— 比如文字的字号、字重、行距，每个色块的 RGB 或 HEX 色值等，相当于把设计师没写在纸上的 "设计规格" 手动 "抠" 出来记录。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image12.webp)
 
 在此之后，前端的实现阶段才真正展开。无论使用的是原生 HTML/CSS/JS，还是基于 Vue、React 等框架，本质过程是一致的。前端会以 "容器为核心载体"，根据设计中各模块的层级与语义重建页面结构。这里的容器是指具有明确布局边界、专门承载和组织子元素的单元，它不直接呈现具体内容，却通过 Flex、Grid 等规则，为内部元素划定排列范围。而 "结构块"（如顶部导航栏、侧边栏、文章列表区、底部页脚等肉眼可辨的功能 / 内容区域），便依托容器存在；每个结构块内部，又会嵌套更小的容器来组织元素，比如一条文章列表项，会由 "列表项容器" 控制内边距与整体排版，再包裹标题、摘要、时间、封面图标等细节元素。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image13.webp)
 
 在现代前端框架里，这些 "结构块（及关联的容器与元素）" 通常会被实现为 "组件"。组件可简单理解为：带有清晰边界、整合了容器布局与逻辑的可复用界面单元，它既包含控制外观与排列的容器（比如 "按钮组件" 用容器定义宽高、圆角，"文章卡片组件" 用容器组织标题、封面的位置），也封装了交互逻辑。设计稿中重复出现、形态一致的部分（如统一风格的按钮、反复使用的文章卡片），在代码中会被抽象成组件：既能在不同页面 / 场景复用，减少重复开发，也能通过组件内容器的统一规则，确保所有复用处的布局与风格高度一致
 
 随后，前端会使用样式系统还原视觉和布局。切图阶段导出的 PNG/JPG 等资源，会作为组件或结构块内部的 `<img>`、背景图片，或者按照各框架推荐的静态资源方式引入；量尺寸阶段得到的宽高、间距、行高等具体数值，会被转写为 `width`、`height`、`margin`、`padding`、`line-height` 等样式属性，应用到对应的组件或结构块上；抠标注阶段整理出的颜色、字体、阴影、圆角以及 hover/active 等状态，则会落实到 CSS、CSS Modules、CSS-in-JS、Tailwind 等具体方案中的 `color`、`font-family`、`font-size`、`box-shadow`、`border-radius` 以及伪类或状态类名上。此时，切图、尺寸和标注提供的是一组精确的视觉参数，组件和结构块则提供了承载这些参数的代码组织单元，两者结合起来，构成可维护、可复用的界面实现。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image14.webp)
 
 但是，以本地文件为中心的模式天然是低效率的。版本通过邮件和网盘传输，新旧稿件容易混淆，设计和开发之间大量依赖上述的复杂交互方法，协作成本和出错概率都不低。
 
 移动互联网兴起后界面复杂度和迭代速度需求快速上升，Photoshop 的"大而全"逐渐显得笨重。这个阶段，出现了 Sketch。Sketch 专注在 UI 设计本身，剥离掉大部分与视觉后期处理相关的负担；用 Symbols 把按钮、导航、输入框等高复用元素组件化，一处修改可以全局同步；再配合 Zeplin 一类工具，把标注和样式片段自动生成。Sketch 把"组件思维"引入了设计工作流。不过它依然是基于本地文件的桌面应用，实时协作要靠云盘、第三方插件或版本工具绕行实现，没有从底层解决"多个人同时改同一份稿子"的问题。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image15.webp)
 
 真正改变游戏规则的是 Figma。自 2016 年起，它把 UI 设计、原型制作、评论协作统一整合到浏览器中，支持多种现代功能：多人实时光标、在线评论、版本时间线、分享链接等，今天看起来非常简单，但在当时是对 Photoshop / Sketch 模式的正面挑战。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image16.webp)
 
 至此，界面设计不再是散落在各自电脑里的文件，而是集中在一份在线、实时更新的云端画布上。围绕这块画布，我们可以想象更进一步，用自动化或 AI 的方式模糊设计和前端代码的边界。
 
@@ -23705,7 +24091,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 或者参考如下教程，进行类似个人作品集简单网页的快速搭建：https://help.figma.com/hc/en-us/sections/35895585621655-Figma-Sites-collectio
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image17.webp)
 
 左侧是项目的新建和资源管理入口，右上角的几个按钮是 Figma 的常见功能。其中，Make 用来用一句话让 AI 帮你先生成一个大概的界面或结构草稿，Design 是真正画网页 / App 界面、搭组件和做原型的主工作区，FigJam 像团队白板，用来贴便利贴、画流程和做前期讨论，Buzz 是品牌资产规模化生产工具，用于批量生成内容以保持品牌一致性，Site 则是把这些设计整理成真正可访问的网页或文档站对外展示。
 
@@ -23718,7 +24104,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 在首页或者右上角的入口里，选择 **Design** ，新建一个文件，你会进入一个空白的设计画布。
 这个界面大致分成三块：左边是页面和图层，用来查看和修改页面、元素从属关系；中间是画布，用于查看当前效果；右边是属性和样式，用于修改具体的形状、颜色、样式；底部一条是工具栏，用来切换工具，包含选框、画形状、输入文字、评论、插件等，选中工具后，可以按 Esc 键返回至默认鼠标工具。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image18.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image18.png)
 
 ##### 2.2 创建你的第一个 Frame（画板）
 
@@ -23730,7 +24116,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 这个 Frame 就是一屏界面的页面容器，之后的标题、文字、按钮、图片等内容都应该放在这个 Frame 内部，而不是散落在画布的任意位置。以 Frame 为边界来组织内容，有助于在后续进行滚动设置、适配不同设备尺寸、导出画面及制作原型时，保持结构可控。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image19.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image19.png)
 
 ##### 2.3 在 Frame 里放文字和简单元素
 
@@ -23742,19 +24128,19 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
    字号可以小一些，行高略放大一点，读起来不那么挤。
 3. 画一个按钮雏形：
    用矩形工具在标题下面画一个大概 `200 × 48` 的矩形，右侧给它一个比较明显的填充颜色，再适当加一点圆角。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image20.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image20.png)
 4. 然后用文字工具在矩形上方输入按钮文字，比如 `Get Started`，把矩形和文字一并选中，用顶部的对齐工具让文字水平、垂直都居中。
 5. 在按钮一侧或下方，再画一个较大的浅灰色矩形作为"图片占位区"，后面可以用来放展示图片。
 
 做到这里，其实你已经有了一个非常简陋但结构完整的"首页草稿"：一个标题、一段话、一个按钮、一个主要展示区域。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image21.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image21.png)
 
 ##### 2.4 善用 Auto Layout 整合元素
 
 如果所有元素只是随手拖拽，页面很快会乱。Figma 里一个很重要的概念就是 **Auto Layout** ，它可以把一组元素变成一个带规则的容器。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image22.png)
 
 你可以选中"主标题 + 副标题 + 按钮"这三样，在右侧属性栏里点击 **Add Auto layout** 。
 
@@ -23764,13 +24150,13 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 - 元素之间的间距是多少。
 - 整个这一块离容器边缘有多少内边距（padding）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image23.png)
 
 同样，按钮内部也可以用 Auto Layout，我们能够实现这样的一个效果：当我调整了文字，按钮的长度也会自动调整。
 
 先把按钮背景的矩形和按钮文字选中，添加 Auto Layout，让这两个东西变成一个"按钮容器"。接着选中这个按钮容器，把宽高都设置成 **Hug contents** 。这样一来，文字会一直保持在按钮正中间，文字多一点、少一点，按钮的宽度都会自动跟着变化。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image24.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image24.png)
 
 ##### 2.5 将按钮变为可复用组件
 
@@ -23778,15 +24164,15 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 1. 选中整个按钮容器。
 2. 右键选择 Create component（创建组件）。
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image25.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image25.png)
 
 这样，这个按钮就从一组普通图层，变成了一个组件母版。之后如果你在其他页面或 Frame 里需要同样风格的按钮，可以直接从左侧的 Assets 面板里拖出来使用。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image26.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image26.png)
 
 此时所有用到的按钮，都是这个母版的同步拷贝。当你修改母版的颜色、圆角或间距时，所有实例都会自动保持同步更新。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image27.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image27.webp)
 
 至此，你已经初步掌握了 Figma 的简单用法。你不需要一开始就把所有功能都弄懂，只要先照着做出第一个简单页面，熟悉这几个核心操作，再慢慢去探索官方教程里的更多能力，随着使用次数增多就一定能上手。
 
@@ -23801,7 +24187,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 1. **进入 MasterGo 后台**
    1. 打开 MasterGo 官网并登录账号。
    2. 进入后，你会看到类似「文件列表 / 项目列表」的首页区域，用来管理你的设计文件。
-      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image28.png)
+      ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image28.webp)
 
 2. **创建新文件**
    1. 在右上角看到 + 设计文件的按钮选项进行点击，或者选择导入 Figma 等文件。
@@ -23810,7 +24196,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 3. **认识基本界面区块**
    当你学会使用 Figma 后，MasterGo 的使用方式大同小异，主要分为几个区域：
 
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image29.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image29.png)
    1. 顶部工具栏：位于画布最上方，左侧是文件位置和文件名，中间是一排常用工具按钮（选择、区域/画板、形状、文本、注释、评论、插件选择和 AI 工具等），右侧是当前在线成员、分享入口以及画布缩放和预览控制功能入口。
    2. 左侧面板：主要分为图层和资源，当前停留在图层标签，可看到页面列表，以及该页面下所有图层的结构和层级。
    3. 中间画布区：具体绘制和排版的工作区，所有 Frame、组件和图形都会展示在这里。
@@ -23833,49 +24219,49 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
    1. 在左侧图层面板里找到这个 Frame。
    2. 双击名称，把它改成你项目的名字，比如：`My First Page`，或者你自己随便起的页面名。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image30.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image30.png)
 
 ##### 3.3 创建画板内容
 
 有了容器，使用与 Figma 中我们已教过的类似方式，很容易可以得到相似的展示页面。（你可以尝试复制 Figma 画板中的文字元素，能够支持文本组件的直接粘贴导入）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image31.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image31.png)
 
 值得注意的是 Auto Layout 功能行为稍微的不一致性，在 MasterGo 中，如果你想实现和 Figma 相似的按钮长度随着文字的长度变化，你需要先在对应矩形元素的基础上创建一个容器或组件，如图所示：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image32.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image32.png)
 
 成功创建容器后，先将按钮文字移动到容器中。此时容器内会暂时同时包含文字和原来的矩形图层，如下图所示：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image33.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image33.png)
 
 这只是调整过程中的中间状态。接下来，将原矩形的填充色和圆角设置到容器本身，再删除容器内的矩形图层，让按钮文字成为容器中唯一的子图层。最后选中容器，在右侧启用 **Auto Layout**，设置水平内边距，并将宽度设置为适应内容。这样修改文字时，按钮宽度就会随文字长度自动变化，最终效果如下图所示：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image34.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image34.png)
 
 ##### 3.4 AI 生成页面
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image35.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image35.png)
 
 在 MasterGo 中，一个值得注意的有趣功能是 AI 生成页面。你可以用一句话或携带参考图，生成对应的 MasterGo 可编辑版组件，并得到可直接使用的代码。你可以使用中文或者英文直接输入需求，页面会根据需求返回结构清晰的页面排布文档，效果如下：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image36.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image36.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image37.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image37.webp)
 
 设计文档生成结束后，点击开始生成，稍作等待便能获取对应的实际网页效果：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image38.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image38.webp)
 
 此时你有两种操作选择：一是点击蓝色按钮将生成结果直接插入画布，二是点击代码预览功能，直接获取当前完整页面的代码，具体操作界面如下：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image39.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image39.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image40.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image40.webp)
 
 将结果插入画布后，你还能对网页的整体布局、元素细节（如字体、颜色、间距等）进行更精细的调整，直至最终效果完全符合你的预期。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image41.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo/images/image41.webp)
 
 ---
 
@@ -23884,7 +24270,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 在前面的内容中，我们已经学习了 Figma 和 MasterGo 的基础操作，能够创建出结构完整的界面原型。接下来的关键步骤是：**如何将这些设计稿转化为真正能在浏览器里运行的前端代码？**
 
 ::: tip 📚 后续教程
-详细的方法介绍请参考 [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code)，你将学习到：
+详细的方法介绍请参考 [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code)，你将学习到：
 
 - **多模态 AI 直接转换**：将设计稿截图发给 AI，直接生成 HTML/React 代码
 - **Figma Make**：使用 Figma 官方 AI 工具高精度还原设计并导出代码
@@ -23916,9 +24302,9 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 现在你已经掌握了前端设计工具的基础使用方法，可以尝试：
 - 为自己设计一个个人作品集页面
 - 为接下来的项目设计界面原型
-- 学习 [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code)，将设计稿转化为可运行的代码
+- 学习 [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code)，将设计稿转化为可运行的代码
 
-如果你在完成 [一起做霍格沃茨画像](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits) 项目，可以先设计界面原型，再导出代码与 AI 对话功能结合。
+如果你在完成 [一起做霍格沃茨画像](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits) 项目，可以先设计界面原型，再导出代码与 AI 对话功能结合。
 :::
 
 ### Project 4: 一起做霍格沃茨画像
@@ -23940,7 +24326,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 本节课的项目主题是 **Hogwarts Portraits** 。顾名思义，它的灵感来自霍格沃茨魔法学校里那些会"活过来"的画像。我们希望用 AI 打造一组"能互动"的魔法画像体验——和画像对话就像在和"本人"对话一样，既保留对话的记忆，又具备角色的背景与历史。通过这个项目，你将把之前学到的智能体与工作流真正融入到一个具体的产品界面中。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image1.webp)
 
 为了真正打造出 Hogwarts Portraits，我们需要亲手搭建出符合魔法画像的前端界面。为此，你将开始接触现代前端设计工具，学习如何把界面设计和代码结合起来，把纸上或画布上的界面草图，变成真正可以操作的网页。
 
@@ -23954,7 +24340,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 2. 认识 Figma 和 MasterGo，掌握它们的基础操作，并学会使用前端代码导出插件。
 3. 利用 Figma AI 和 MasterGo AI 生成网页设计，并导出可用的页面代码。
 4. 理解什么是 GitHub，学会配置 SSH 连接、创建代码仓库并完成代码推送。
-5. 弄清"部署"这一概念，学习如何使用 Zeabur，将代码从 GitHub 或本地环境部署到互联网上。
+5. 弄清"部署"这一概念，学习如何使用 Cloudflare Pages 或 Vercel，将网页从 GitHub 或本地环境部署到互联网上。
 
 属于自己的 Hogwarts Portraits，一个用于展示 **某位明星、历史人物或动画人物** 的网页界面。
 
@@ -23962,7 +24348,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 我们到底想做一个什么样的"魔法画像"？简单来说，我们希望尽可能还原《哈利·波特》中的场景，画像不再只是挂在墙上的一张静态图片，而是一个可以和你对话、会根据谈话内容改变表情和"心情"的拟人化角色。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image2.webp)
 
 要让这个画像看起来不像聊天 AI 机器人，而更接近一位"真实存在的人"，需要解决两个问题：一是记忆与知识：画像需掌握与角色相关的大量背景资料（人物设定、经历故事、相关文章等），这个部分可以通过知识库来实现，将你为角色准备的文本素材接入包含知识库的 Dify ，即可让画像具备一定的背景知识讲解能力。
 
@@ -23970,7 +24356,7 @@ MCP 协议正在快速发展，未来设计工具与开发环境的集成将更�
 
 除了对话功能外，我们还希望让情绪能够真正被看见。为此我们可以构建一个情绪值指标，我们可以设定 Dify 的输出内容，让模型在生成回答文本的同时，额外输出一个"心情值"或情绪标签。当前端拿到情绪的指标后，就可以根据心情值或者标签渲染对应的画像图片。当心情值高，画像看起来很开心，当心情值低落时或者生气时，画像看起来很伤心或者愤怒。通过这种方式，用户看到的不再是一张永远不变的图，而是一个会随内容起伏不断"变化表情"真正的"魔法画像"。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image3.webp)
 
 此外，对于这个画像的内容，它可以是现实中的明星、历史人物，也可以是动漫 IP，甚至是你从零构建的原创角色。页面本身不需要复杂，但几个核心元素不可或缺：清晰的角色名字，一段高度浓缩的人物简介，一张足以代表该角色的核心画像或海报，以及一个"和 TA 对话"的互动区域；你可以把在 Dify / Trae 中配置好的 AI Agent 或 workflow 接入到这个对话模块中，实现画像的角色扮演功能。
 
@@ -23999,7 +24385,7 @@ It's just a model, which is a big file of numbers. When the numbers are right an
 
 本教程中使用的是 [Lovart](https://www.lovart.ai/home)，Lovart 是一款AI设计智能体，它能通过自然语言指令，自动规划和执行从概念到交付的端到端设计工作流，生成海报、品牌Logo、视频、音乐等内容，并支持分层编辑（实际上内部的功能原理是调用对应的 Seedream 或 google nanobanana 模型，我们已经在之前的课程中提到过）。通过 Lovart ，我们能够获得一系列的表情素材，你可以提前获得你喜爱角色的图片信息，将其保存待后续使用。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image4.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image4.webp)
 
 一切准备就绪后，我们能够开始着手于整体页面的设计，我们希望这个页面的风格与该人物是高度绑定的。
 
@@ -24007,15 +24393,15 @@ It's just a model, which is a big file of numbers. When the numbers are right an
 
 我们还可以先构思一下页面的原型，如上述所说，我们希望有一个对话页面和画像，以及一个有趣的个人介绍，在本篇例子中，我们实现了一个类似 X 上的对话界面替代个人介绍，你也可以想到其他符合"该人物特点"的方式，选取新的元素替换个人介绍栏目。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image5.webp)
 
 最简单的，我们可以用 PowerPoint 设计最初的网页呈现原型，我们从网上找到一张魔法画像的图片，并且将画面设定为横向排布，最左侧设定为聊天区域，中间是画像区域，最右侧是 X 的区域。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image6.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image6.webp)
 
 基于上述简单原型，我们能够让大模型生成真正的前端页面设计以及对应的代码结果。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image7.webp)
 
 不过，一般而言在实际中我们并不会用 PowerPoint 进行前端页面的设计。我们会用更好的原型工具，又或者说是前端设计工具来实现这一点。
 
@@ -24024,7 +24410,7 @@ It's just a model, which is a big file of numbers. When the numbers are right an
 #### 2. 使用 Figma 和 MasterGo 设计界面
 
 ::: tip 📚 前置知识
-在开始本节之前，建议你先学习 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo) 教程，掌握前端设计工具的基础操作，包括：
+在开始本节之前，建议你先学习 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo) 教程，掌握前端设计工具的基础操作，包括：
 - 创建 Design 文件和 Frame 画板
 - 使用 Auto Layout 实现自适应布局
 - 从设计稿导出代码的方法
@@ -24094,11 +24480,11 @@ Use dark purple and gold color scheme, magical aesthetic, Harry Potter inspired
 
 通过在从原型到代码中的实践，相信你已经得到 Html 或者 React 格式的原型代码，我们只需要将其复制到本地，在 IDE 中说明"请你帮我运行这个代码并且支持里面的必要的功能"，即可运行初版测试；但值得注意的是，这一步往往会出现不少报错，你需要保持耐心，将所有基础交互与功能调通。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image51.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image51.png)
 
 值得注意的是，由于我们的密钥都需要放在环境变量，而不是写入代码中。我们需要特别强调之后的 DIfy API 相关的内容都需要放入环境变量。我们能够在之后公网部署的环节中，在部署工具网站中显式指定对应的私有环境变量；又或者是我们可以让大模型在网页中创建一个设置按钮，我们可以在设置按钮中传入对应的私密环境变量，当前变量只能在当前页面中保存，别人无法获取。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image52.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image52.webp)
 
 #### 3.2 Dify 工作流设计与 API 对接
 
@@ -24106,7 +24492,7 @@ Use dark purple and gold color scheme, magical aesthetic, Harry Potter inspired
 
 一般而言，魔法画像只需要聊天界面和会变动的画像即可，该处为了展示更多可能选项，在最右侧加入了符合当事人特点的新功能；你可以根据你扮演的角色对象，加入符合对应人物的功能进行展示。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image53.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image53.png)
 
 你可以把任务的信息都加入知识库的节点，并在 RESPONSE 节点设置大模型对应的回复逻辑，我们可以参考一个简单的默认回复逻辑提示词：
 
@@ -24239,17 +24625,17 @@ curl -X POST 'http://xxxxxxxx/v1/chat-messages' \
 
 你需要参考该教程，对如何使用 Github 进行研究，将自己的项目上传至 Github：[什么是 Github](/zh-cn/stage-2/backend/git-workflow/)
 
-此外，你还需要学会如何使用 Zeabur，将其连接到 Github，并成功部署你的项目：[什么是 Zeabur](/zh-cn/stage-2/backend/zeabur-deployment/)
+接下来，选择 Cloudflare Pages 或 Vercel 发布前端网页；如果项目包含独立后端，可使用 Render，并将模型密钥保存在后端。具体步骤见 [如何部署 Web 应用](/zh-cn/stage-2/backend/zeabur-deployment/)。
 
 如果你觉得自己开发一套 Hogwarts Portraits 项目很困难，你可以先从参考别的项目开始进行修改，本节课的官方代码地址为：https://github.com/THU-SIGS-AIID/Project4-Hogwarts-Portraits
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image54.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image54.webp)
 
 #### 4. 尝试不同设计风格
 
 完成第一版设计后，我们不必局限于此，鼓励大家快速探索更多元的视觉风格。你可以在原型部分进行大胆的修改，又或者是基于最后的项目进行全新提示词的修改，从而生成多套风格差异显著的页面。 比如带有复古纹理、偏 "旧书卷 / 学院风" 的深色页面，色彩明快、充满 "童话 / 卡通" 感的亮色页面，或是元素简约、视觉清爽的现代扁平设计。例如下图是一个转换为中国古风诗人设计风格的案例，画像图片未更换，只修改了其他部分：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image55.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/hogwarts-portraits/images/image55.webp)
 
 不用拘泥于前面提到的模式，你可以把魔法画像或是个人资料页面修改至更有特点，匹配"魔法画像"本身的习惯，这会让你的应用更加有趣。期待你的魔法画像成果！
 
@@ -24793,11 +25179,11 @@ npx skills add anthropics/skills/brand-guidelines
 
 为了把流程尽量简化，本教程选择了一个已经具备稳定图像生成与编辑能力的模型作为示例——NanoBanana。它是 Google 推出的图像生成模型，正式名称为  **Gemini 3.1 Flash Image Preview** ，支持通过自然语言直接生成图片，也支持在已有图片基础上进行修改。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image1.png)
 
 在能力层面，它和你可能听说过的其他模型（如 GPT-4o、Claude、Qwen、Midjourney 等）并没有本质区别：**输入描述，模型负责生成结果。**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image2.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image3.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image4.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image2.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image3.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image4.png)
 
 你可以把它理解为一支“画笔”。我们在这一章只关心一件事：
  👉 **这支画笔能不能在你手里画出第一笔。**
@@ -24810,15 +25196,15 @@ npx skills add anthropics/skills/brand-guidelines
 
 1. 在 Trae 中新建一个文件夹
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image5.png)
 
 2. 新建一个 Python 文件
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image6.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image6.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image7.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image8.webp)
 
 3. 将下面的代码完整粘贴进去
 
@@ -25042,7 +25428,7 @@ if __name__ == "__main__":
 
 当 Trae 提示运行成功后，点击它提供的本地链接（通常是 http://127.0.0.1:7860）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image9.webp)
 
 如果一切正常，你会看到一个已经可以工作的 AI 绘图界面。
 
@@ -25056,7 +25442,7 @@ if __name__ == "__main__":
 * **Submit 按钮：** 点击即可发送指令，开始生成。
 * **右侧：展示区 (** **Output** Zone) —— 见证奇迹的地方，生成结果将在此显示。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image10.png)
 
 现在我们可以尝试生成你的第一张图片了！
 
@@ -25076,7 +25462,7 @@ if __name__ == "__main__":
 
 几秒钟后，你会在本地看到生成结果。而模型生成具有随机性，所以相同的prompt会有不同的生成结果，你可以多次生成，选择你心仪的图片。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image11.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image11.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image12.webp)
 
 也可以丰富你的提示词，给予它更多的描述和限定。例如以下提示词，得到的图片就会更加特殊一些。
 
@@ -25085,11 +25471,11 @@ if __name__ == "__main__":
 (一个超写实的带水珠的新鲜红苹果特写，放在深色粗糙木桌上。电影级戏剧光效，轮廓光，浅景深，背景虚化，8k分辨率，微距摄影。)
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image13.webp)
 
 在Output Image区域点击下载图片即可保存到本地。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image14.webp)
 
 ##### 1.3 生图模型常见的素材生成场景
 
@@ -25115,7 +25501,7 @@ if __name__ == "__main__":
 
 （一套 3D 天气图标，毛玻璃风格，磨砂质感，柔和渐变色，影棚光，等轴视图）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image15.webp)
 
 2. ##### 生成 Logo
 
@@ -25128,7 +25514,7 @@ if __name__ == "__main__":
 
 （极简矢量 Logo，结合咖啡杯与代码符号，扁平设计，纯黑线条）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image16.png)
 
 3. ##### 生成官网用户图片
 
@@ -25141,7 +25527,7 @@ if __name__ == "__main__":
 
 （友好的年轻科技从业者，3D Memoji 风格，黏土渲染）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image17.webp)
 
 4. ##### 生成文章配图
 
@@ -25154,7 +25540,7 @@ if __name__ == "__main__":
 
 （远程办公主题扁平插画，企业孟菲斯风格）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image18.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image18.webp)
 
 ###### 二、有图参考生图：保持视觉一致性
 
@@ -25168,7 +25554,7 @@ if __name__ == "__main__":
 
 1. 保存已有的蓝色 “PLAY” 按钮图片
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image19.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image19.png)
 
 2. 将其拖入界面的 **Input**** Image** 区域，作为后续生成的参考母版
 3. 保持 prompt 中的风格描述不变，仅修改主体内容
@@ -25183,7 +25569,7 @@ if __name__ == "__main__":
 
 （胶囊形游戏 UI 按钮，白色暂停图标，蓝色果冻质感）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image20.webp)
 
 **变体 B：设置按钮（复杂图标）**
 
@@ -25191,7 +25577,7 @@ if __name__ == "__main__":
 
 （胶囊形游戏 UI 按钮，白色齿轮图标，蓝色果冻质感）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image21.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image21.webp)
 
 **变体 C：重玩按钮（形状变化）**
 
@@ -25201,7 +25587,7 @@ if __name__ == "__main__":
 
 （圆形游戏 UI 按钮，循环箭头图标，蓝色果冻质感）
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image22.webp)
 
 通过这一组操作，你不仅可以替换按钮功能和图标，甚至改变按钮形状，但所有生成结果在材质、配色和光影上仍保持高度一致。这正是大模型在设计素材裂变场景中的核心价值。
 
@@ -25221,9 +25607,9 @@ if __name__ == "__main__":
 
 Lovart 是一个基于 Agent 的设计工具 Web。相比普通生图工具，它在生成之前多了一层“思考与规划”。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image23.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image24.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image24.webp)
 
 进入 Lovart 后，主要需要了解以下几个控制项：
 
@@ -25233,7 +25619,7 @@ Lovart 是一个基于 Agent 的设计工具 Web。相比普通生图工具，�
 
 为了与前文示例保持一致，本节仍然使用 NanoBanana 作为底层生成模型。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image25.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image25.png)
 
 ###### 思考模式
 
@@ -25242,9 +25628,9 @@ Lovart 是一个基于 Agent 的设计工具 Web。相比普通生图工具，�
 * **Fast Mode（⚡）** ：接近原生 API，响应快，适合单张、明确指令的生成
 * **Thinking Mode（💡）** ：Agent 模式，AI 会先拆解需求、改写 prompt，再执行生成
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image26.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image26.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image27.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image27.png)
 
 ###### 联网能力
 
@@ -25274,11 +25660,11 @@ Lovart 的核心差异在于 Agent 机制。在用户输入与图像生成模型
 
 AI 不会立即画图，而是先去网络上搜索相关的程序员鸭子的设计图。输出一份拆解后的方案，自动生成 Debug、Coffee Break、Panic 等场景，并对应生成多条视觉描述。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image28.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image29.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image28.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image29.png)
 
 这一步，AI 从“执行者”转变为“策划者”。在AI帮你分析完需求后，可以在Lovart的画布区看到多种风格和内容的程序员鸭子图片。可以开始筛选你喜欢的风格。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image30.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image30.webp)
 
 ###### 环节二：一致性（基于参考的视觉锚定）
 
@@ -25289,13 +25675,13 @@ Lovart 中的图片不仅是结果，也参与后续生成。
 * 从草图中选出一张最满意的“标准鸭子”，在画布区点击对应图片
 * 该图将会自动出现在对话区，作为 Reference
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image31.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image31.webp)
 
 * 输入新的动作（如开心）并生成
 
 生成结果会继承母版的配色、比例和细节。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image32.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image32.webp)
 
 ###### 局部参考 / 多图整合
 
@@ -25305,11 +25691,11 @@ Lovart 中的图片不仅是结果，也参与后续生成。
 
 点击画布区左侧tab栏，选择「Mark」键，在目标图像的局部区域标记即可，这部分内容会自动同步到对话框。比如在这里我们可以选择修改背景的颜色。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image33.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image33.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image34.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image34.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image35.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image35.webp)
 
 能看到新生成的图片只改变了背景的颜色，这也跟我们输入的要求一致。
 
@@ -25319,9 +25705,9 @@ Lovart 中的图片不仅是结果，也参与后续生成。
 
 以程序员鸭子为例，我们可以选择保留第一个图中的鸭子形象，并将其替换到第二张图中作为主体元素。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image36.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image36.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image37.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image37.webp)
 
 最后的效果也非常显著。你也可以试着其他的组合！
 
@@ -25329,15 +25715,15 @@ Lovart 中的图片不仅是结果，也参与后续生成。
 
 生成完成后，可以直接执行：放大、移除背景、擦除等操作
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image38.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image38.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image39.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image39.webp)
 
 这些并不是简单滤镜，而是 Agent 自动调度不同工具完成的结果。
 
 而在确定完基调风格后，可以很快速的生成一系列的表情包图像。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image40.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image40.webp)
 
 最终我们得到的是可直接交付的生产级素材，而不仅是一张展示图。
 
@@ -25348,7 +25734,7 @@ Lovart 采用订阅制收费模式，不同套餐对应不同的使用额度与�
 本教程不对任何套餐做推荐或比较；如果在实际使用中有需求，可以根据个人情况选择付费升级。
 目前支持通过**支付宝**等方式完成支付。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image41.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image41.webp)
 
 ###### 小结
 
@@ -25370,7 +25756,7 @@ Lovart 并不是替代底层模型，而是通过 Agent 机制，让图像生成
 
 本质上，图像模型只有“执行”的能力，却缺少对文本进行分析和取舍的过程。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image42.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image42.webp)
 
 ##### 3.2 解决思路：用 Agent 把「理解」和「执行」拆开
 
@@ -25380,7 +25766,7 @@ Lovart 并不是替代底层模型，而是通过 Agent 机制，让图像生成
 
 整体流程可以概括为：**长文本输入 → 语言模型理解与判断 → 生成合适的视觉提示词 → 图像模型执行生成 → 输出图片**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image43.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image43.webp)
 
 那我们构建的 Agent 怎样才能明白用户的意图呢？
 
@@ -25397,7 +25783,7 @@ Lovart 并不是替代底层模型，而是通过 Agent 机制，让图像生成
 4. **Gradio 与后端 ****API**** 作为整体承载层**
    它们负责将界面、模型调用和结果展示串联起来，保证整个 Agent 能够以一个完整 Web 应用的形式稳定运行。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image44.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image44.webp)
 
 ##### 3.3 实战准备 ：获取API
 
@@ -25411,13 +25797,13 @@ Lovart 并不是替代底层模型，而是通过 Agent 机制，让图像生成
 
 我们需要一个大语言模型来承担“思考层”的职责。本教程使用 SiliconFlow 提供的模型服务：[https://cloud.siliconflow.cn](https://cloud.siliconflow.cn/)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image45.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image45.webp)
 
   SiliconFlow 提供了兼容 OpenAI API 规范的接口，可以非常方便地在项目中通过标准网络请求进行调用。在这里我们选择的是免费的Qwen2.5-7B-Instruct模型，调用需要的内容都已经写入下面的Prompt。在开始之前，你只需要在官网注册账号并创建一个 API Key。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image46.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image46.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image47.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image47.webp)
 
   该 Key 将用于后续的模型调用。
 
@@ -25425,7 +25811,7 @@ Lovart 并不是替代底层模型，而是通过 Agent 机制，让图像生成
 
 本次实验主要使用Trae来帮我们编写代码，本教程选用的是Gemini-3-Pro-Preview模型。总思路是，新建项目后将下述完整 Prompt 复制到对话框并输入，逐步替换 API KEY 后运行代码，完成测试即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image48.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image48.png)
 
 ###### 环节1️⃣：Gradio Blocks 基础框架与界面布局
 
@@ -25469,7 +25855,7 @@ result_image：gr.Image，标签「生成结果」，type=pil，height=300，初
 
 在浏览器打开http://127.0.0.1:7860后可看到Trae已经按照我们的要求生成了以下的网页，跟我们的要求大致相当，可以进行到下一步的生成中了。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image49.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image49.png)
 
 ###### 环节2️⃣：LLM 意图识别模块（Siliconflow API）
 
@@ -25530,7 +25916,7 @@ API 异常、解析异常均给出友好提示，不崩溃，组件恢复初始�
 
 1. 无意义内容，可以尝试输入“你好”、“谢谢”等，发现能够正常识别。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image50.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image50.png)
 
 2. 文章/长文本，在这里我们选用了一段豆包生成的描述人工智能的文字。你也可以尝试使用自己的论文段落进行测试。
 
@@ -25544,11 +25930,11 @@ API 异常、解析异常均给出友好提示，不崩溃，组件恢复初始�
 
 同样检测成功～
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image51.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image51.webp)
 
 3. 直接绘图指令，这里输入的是“我要画一只猫”，同样检测准确。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image52.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image52.png)
 
 到这里我们就已经顺利实现了第二个环节——意图识别。
 
@@ -25627,11 +26013,11 @@ API 调用失败：友好提示「提示词生成失败：{具体错误信息}�
 
 如果你想换成其他的预设模版，可以在前面的prompt里修改，或者直接在Trae里通过对话修改。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image53.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image53.webp)
 
 除了修改底层代码，我们在网页上也可以快速编辑。举个例子，我在这里加了一句，“在前面加一句Pic Prompt”，可以看到生成的新的提示词前面也包含了～这样设计是为了方便快速修改生成提示词的System Prompt，帮助我们快速切换风格。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image54.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image54.webp)
 
 ###### 环节4️⃣：Nanobanana 文生图 / 图生图模块
 
@@ -25692,21 +26078,21 @@ Markdown 格式
 完整可运行代码，替换 LLM_API_KEY 和 NANOBANANA_API_KEY 即可直接运行，全流程可用，分支逻辑严格匹配实战版。
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image55.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image55.webp)
 
 太令人激动啦！我们终于顺利地生成出了这个Agent的第一张图，仔细看看生成的图片，跟我们的文本和提示词是匹配的。到这里你已经基本上实现你自己的Agent啦！
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image56.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image56.webp)
 
 我们还添加了图生图功能，上传你喜欢的图片，AI会自动借鉴风格。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image57.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image57.webp)
 
 值得一提的是，前面步骤生成的提示词也是可以在网页上编辑的，并且我们是以最终点击按钮时的提示词为准～哪怕我在这里换成“a cute cat”，最终生成的图片也只会是可爱的小猫。
 
 #### 第 4 章：总结
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets/images/image58.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets/images/image58.webp)
 
 **呜呼！终于写完了。**
 说实话，连我自己写完最后一行的时候都忍不住长舒一口气，更别说一路跟着做到这里的你了。能把这一整套流程完整跑下来，本身就已经很厉害了，这说明你真的把手放到键盘上，把事情一步步做完了。Bravo 🎉 🥳 👏
@@ -26622,7 +27008,7 @@ Fluent: "Only use one primary button in a layout..."
 5. **沉淀设计系统**：把大厂的设计规范，变成你自己的
 
 ::: tip 📚 前置知识
-本教程适合已经会用 AI 编程工具（如 Trae）、想为项目补齐前端视觉能力的开发者。若想先建立生图手感，建议先学 [NanoBanana 素材生产](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/lovart-assets)；若想深入设计工具，可结合 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo) 学习。
+本教程适合已经会用 AI 编程工具（如 Trae）、想为项目补齐前端视觉能力的开发者。若想先建立生图手感，建议先学 [NanoBanana 素材生产](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/lovart-assets)；若想深入设计工具，可结合 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo) 学习。
 :::
 
 ---
@@ -26637,7 +27023,7 @@ Fluent: "Only use one primary button in a layout..."
 - 把一套成熟设计逐像素复刻出来，你就被迫搞懂了它背后的每一个决策
 - 当你"抄到像"了，下一次遇到类似场景，你就知道"该往哪个方向抄"
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/design-reference.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/design-reference.jpg)
 
 > 💡 一句话总结：**能临摹出一款好产品，说明你已经具备了前端设计的基本功；能在此基础上做改动，说明你已经出师了。**
 
@@ -26655,7 +27041,7 @@ Fluent: "Only use one primary button in a layout..."
 
 设计师的工作方式天然包含参考：Pinterest 找灵感、Dribbble 看趋势、竞品分析看结构。AI 时代这件事被放大了——因为工具直接把"参考"变成了可执行的能力：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/design-inspiration.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/design-inspiration.jpg)
 
 - Claude Design 可以导入你收藏的参考网站，按它的风格生成初稿
 - Open Design 内置了 151 套开源设计系统，一键套用到自己的项目
@@ -26679,19 +27065,19 @@ Fluent: "Only use one primary button in a layout..."
 
 这些网站长什么样？先睹为快（点击图片可放大）：
 
-![Awwwards — 网页设计的"奥斯卡"](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-awwwards.jpg)
+![Awwwards — 网页设计的"奥斯卡"](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-awwwards.jpg)
 
-![Recent（原 Godly）— 高质量网页灵感合集](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-godly.jpg)
+![Recent（原 Godly）— 高质量网页灵感合集](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-godly.jpg)
 
-![Landbook — 落地页设计精选](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-landbook.jpg)
+![Landbook — 落地页设计精选](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-landbook.jpg)
 
-![Lapa Ninja — 7300+ 落地页截图库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-lapa.jpg)
+![Lapa Ninja — 7300+ 落地页截图库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-lapa.jpg)
 
-![Mobbin — 真实 App 界面库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-mobbin.jpg)
+![Mobbin — 真实 App 界面库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-mobbin.jpg)
 
-![Dribbble — 设计师社区](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-dribbble.jpg)
+![Dribbble — 设计师社区](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-dribbble.jpg)
 
-![Behance — 完整项目案例库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/site-behance.jpg)
+![Behance — 完整项目案例库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/site-behance.jpg)
 
 ::: tip 💡 建立自己的参考库
 遇到心动的页面，**立刻截图 + 存链接**，按"落地页 / 组件 / 配色 / 动效"分类归档。临摹时直接从这个库里挑目标，比临时上网找快得多。
@@ -26714,7 +27100,7 @@ Fluent: "Only use one primary button in a layout..."
 
 "抄得像"的前提是"看得懂"。这一章教你一套通用的页面拆解框架。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/page-structure.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/page-structure.jpg)
 
 ##### 2.1 看结构：页面由哪些区块组成
 
@@ -26790,7 +27176,7 @@ Fluent: "Only use one primary button in a layout..."
 
 "他们是怎么设计出来的？"答案越来越多元。以下是 2 条典型路线，覆盖从"手动精细控制"到"对话式自动生成"。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/ai-design.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/ai-design.jpg)
 
 ##### 3.1 路线一：Figma / MasterGo——专业设计稿工具
 
@@ -26800,11 +27186,11 @@ Fluent: "Only use one primary button in a layout..."
 - 通过 Figma Make / MasterGo AI 等能力辅助生成与批量调整
 - 最终交给前端按设计稿实现，或通过插件转代码
 
-![Figma 编辑器：左侧图层面板、中间画布、右侧属性面板](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/figma_editor.jpg)
+![Figma 编辑器：左侧图层面板、中间画布、右侧属性面板](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/figma_editor.jpg)
 
-![MasterGo 编辑器：国产云端设计工具，与 Figma 类似的画布布局](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/mastergo_editor.jpg)
+![MasterGo 编辑器：国产云端设计工具，与 Figma 类似的画布布局](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/mastergo_editor.jpg)
 
-> 适合：需要严格设计稿交付、团队协作、复杂交互的场景。工具操作详见 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/figma-mastergo)。
+> 适合：需要严格设计稿交付、团队协作、复杂交互的场景。工具操作详见 [Figma 与 MasterGo 入门](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/figma-mastergo)。
 
 ##### 3.2 路线二：Claude Design / Open Design——对话式设计画布
 
@@ -26832,45 +27218,45 @@ Tone should feel warm, premium, calm, and trustworthy - think a mix of Blue Bott
 Coffee + Apple Store + minimalist lifestyle design.
 ```
 
-![Claude Design 实际生成：雾屿咖啡高保真落地页，左侧对话+进度，右侧画布渲染完整 Hero 区](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_landing.jpg)
+![Claude Design 实际生成：雾屿咖啡高保真落地页，左侧对话+进度，右侧画布渲染完整 Hero 区](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_landing.jpg)
 
 **② 默认产出 3 个设计变体，选方向再精修**
 
 Claude Design 不是只给一个答案，而是默认生成多个方向供你挑选——编辑器风、博物馆风、Zine 风等，点进去再细化。
 
-![实际案例：PCWorld 记者让 Claude 解释 AI Tokens 概念，返回 Editorial / Museum / Field Notes 三种风格供选择](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_variants.jpg)
+![实际案例：PCWorld 记者让 Claude 解释 AI Tokens 概念，返回 Editorial / Museum / Field Notes 三种风格供选择](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_variants.jpg)
 
 **③ 生成可交互原型（不只是静态图）**
 
 生成的页面是真正可点击、可输入的 HTML——按钮有 hover 效果，表单能输入，数据会实时计算。
 
-![实际生成的 Token 科普页：内置实时分词器，输入句子后色块高亮显示每个 token，底部统计字符/词/token 数](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_interactive.jpg)
+![实际生成的 Token 科普页：内置实时分词器，输入句子后色块高亮显示每个 token，底部统计字符/词/token 数](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_interactive.jpg)
 
 **④ 做产品演示文稿/PPT**
 
 不仅能做网页，还能生成完整的幻灯片（多页、带导航、可导出 PDF/PPTX）。
 
-![实际生成：咖啡品牌 Pitch Deck，左侧列出 13 页大纲，右侧渲染当前幻灯片内容，底部可翻页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_slide.jpg)
+![实际生成：咖啡品牌 Pitch Deck，左侧列出 13 页大纲，右侧渲染当前幻灯片内容，底部可翻页](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_slide.jpg)
 
 **⑤ 生成动画视频**
 
 通过 "From template" 可以创建带动画的 HTML 视频——分镜脚本 + 实际渲染的动画画面，有播放控制条。
 
-![实际生成：45秒咖啡制作动画视频，左侧列出分镜时间表，右侧画布播放动画（咖啡豆→烘焙→冲泡）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_video.jpg)
+![实际生成：45秒咖啡制作动画视频，左侧列出分镜时间表，右侧画布播放动画（咖啡豆→烘焙→冲泡）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_video.jpg)
 
 **⑥ 迭代已有设计（直接在画布上评论）**
 
 生成原型后，不用重新写 prompt，直接点 Comment 按钮圈选元素写评论，Claude 会局部修改。
 
-![画布上点击 Comment 按钮，圈选任意元素后弹出评论框，写"Suggest to Claude"即可局部迭代](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_comment.jpg)
+![画布上点击 Comment 按钮，圈选任意元素后弹出评论框，写"Suggest to Claude"即可局部迭代](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_comment.jpg)
 
 **⑦ 移动端 App 页面设计**
 
 支持指定设备尺寸（如 iPhone），生成带设备外框的移动端 UI 原型。
 
-![实际生成：板球计分 App（Tracket）移动端界面——深色 Header + 比分显示 + 操作按钮，针对户外阳光场景做了高对比度设计](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_mobile.jpg)
+![实际生成：板球计分 App（Tracket）移动端界面——深色 Header + 比分显示 + 操作按钮，针对户外阳光场景做了高对比度设计](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_case_mobile.jpg)
 
-![Claude Design 画布总览：左侧对话，右侧 Tweaks 面板可实时调整主题、断点、颜色等参数](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/claude_design_canvas.jpg)
+![Claude Design 画布总览：左侧对话，右侧 Tweaks 面板可实时调整主题、断点、颜色等参数](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/claude_design_canvas.jpg)
 
 > 适合：没有设计背景、想跳过 Figma 学习曲线、快速拿到可交互原型的人。
 
@@ -26898,27 +27284,27 @@ Claude Design 不是只给一个答案，而是默认生成多个方向供你挑
 用 Open Design，套用 Linear 的设计系统，生成一个 SaaS 产品的落地页 HTML
 ```
 
-![Open Design 新建原型对话框：中文界面，可选原型/幻灯片/媒体，切换线框图/高保真，选择设计体系和目标平台](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_create.jpg)
+![Open Design 新建原型对话框：中文界面，可选原型/幻灯片/媒体，切换线框图/高保真，选择设计体系和目标平台](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_create.jpg)
 
-![Open Design 内置 150+ 套设计系统（Agentic、Airbnb、Airtable、Linear、Stripe、Vercel…），按类别分组，每个都有色板预览和说明](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_designsystems.jpg)
+![Open Design 内置 150+ 套设计系统（Agentic、Airbnb、Airtable、Linear、Stripe、Vercel…），按类别分组，每个都有色板预览和说明](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_designsystems.jpg)
 
 **② Studio 工作区：对话驱动，实时生成**
 
 左侧是对话面板（显示 AI 的思考步骤、Todo 列表、Write 操作），右侧是 iframe 画布实时渲染生成结果——和 Claude Design 类似，但底部显示本地正在调用哪个 CLI Agent（如 Claude Code、Codex、deepseek 等）。
 
-![Open Design Studio 工作区：左侧 Chat 面板显示生成计划和进度，右侧画布渲染出"Open Design"大字封面页（幻灯片模式），顶部可切换 Preview/Source/Comment/Edit](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_studio.jpg)
+![Open Design Studio 工作区：左侧 Chat 面板显示生成计划和进度，右侧画布渲染出"Open Design"大字封面页（幻灯片模式），顶部可切换 Preview/Source/Comment/Edit](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_studio.jpg)
 
 **③ 套用设计系统生成幻灯片/PPT**
 
 选择 Slide deck 类型，输入主题即可生成完整多页幻灯片。下图是社区用户用 Open Design 生成的中文演讲幻灯片。
 
-![真实用户案例："一人公司 · 被 AI 折叠的组织"演讲幻灯片封面——深色背景、衬线大字标题、演讲者信息、底部页码导航](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_deck.jpg)
+![真实用户案例："一人公司 · 被 AI 折叠的组织"演讲幻灯片封面——深色背景、衬线大字标题、演讲者信息、底部页码导航](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_deck.jpg)
 
 **④ 生成高保真移动端 App 原型**
 
 支持多屏同时预览，自动生成 iPhone 设备外框，Tab 栏、卡片布局、进度条等组件一应俱全。
 
-![真实生成案例：游戏化生活管理 App（Level）——3 屏并排预览，包含每日任务首页、任务分类仪表盘、任务详情页，浅色模式，彩色卡片](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_mobile.jpg)
+![真实生成案例：游戏化生活管理 App（Level）——3 屏并排预览，包含每日任务首页、任务分类仪表盘、任务详情页，浅色模式，彩色卡片](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/od_case_mobile.jpg)
 
 **⑤ 用 UI design Skill 规范化 AI 输出**
 
@@ -26945,7 +27331,7 @@ opendesign
 # 所有设计文件保存在本地 ~/.open-design/，不经过任何第三方服务器
 ```
 
-![Open Design 主界面：选择 Skill（原型/幻灯片/图片/视频等）+ 输入需求即可生成，本地 CLI Agent 自动作为引擎](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/opendesign_home.jpg)
+![Open Design 主界面：选择 Skill（原型/幻灯片/图片/视频等）+ 输入需求即可生成，本地 CLI Agent 自动作为引擎](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/opendesign_home.jpg)
 
 > 适合：注重数据隐私、已有编码 Agent、想完全掌控设计流程的开发者。
 
@@ -26964,7 +27350,7 @@ opendesign
 **参考 → 设计 → 交付** 全程可以混用：用 Claude Design / Open Design 快速出方向和原型 → 定稿后导入 Figma/MasterGo 精修 → 交接给 Claude Code 写成代码。每条路线取长补短。
 :::
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/design-tools.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/design-tools.jpg)
 
 ---
 
@@ -26972,7 +27358,7 @@ opendesign
 
 目标很具体：**选一个你喜欢的真实网页，临摹到"像"。** 这里以落地页为例。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/design-workspace.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/design-workspace.jpg)
 
 ##### Step 1：选定目标
 
@@ -27032,7 +27418,7 @@ opendesign
 
 临摹出的设计稿/原型，最终要变成产品里的真实页面。两条交接路径：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/design-to-code.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/design-to-code.jpg)
 
 ##### 5.1 路径 A：AI 设计工具 → 前端代码
 
@@ -27044,7 +27430,7 @@ opendesign
 
 最简单：把临摹好的设计截图直接丢给多模态大模型，"还原成 React 组件"，逐区块落地。
 
-> 三种"设计转代码"路径的详细对比，见 [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/design-to-code)。想要组件级的工程化提效，可再看 [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/modern-component-library)。
+> 三种"设计转代码"路径的详细对比，见 [从设计原型到项目代码](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/design-to-code)。想要组件级的工程化提效，可再看 [使用现代组件库更新你的界面](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/modern-component-library)。
 
 ---
 
@@ -27052,7 +27438,7 @@ opendesign
 
 临摹 3 个页面后你会发现：**好看的页面背后都有一套稳定的"设计系统"**。与其自己从 0 造，不如站在巨人肩膀上。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/design-system.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/design-system.jpg)
 
 ##### 6.1 什么是"可移植的设计系统"
 
@@ -27102,7 +27488,7 @@ DESIGN.md  =  颜色 Token + 字体规范 + 间距节奏 + 组件样式 + 使用
 使用 my-brand skill 的设计规范，生成 3 个功能页面的首屏方案
 ```
 
-创建与使用 Skill 的方法，详见 [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)。
+创建与使用 Skill 的方法，详见 [用 LLM 和 Skills 让界面变好看](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/llm-skills-beautiful)。
 
 ---
 
@@ -27110,7 +27496,7 @@ DESIGN.md  =  颜色 Token + 字体规范 + 间距节奏 + 组件样式 + 使用
 
 临摹能力越强，越要守住边界：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-2/frontend/ui-design/images/copyright.jpg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-2/frontend/ui-design/images/copyright.jpg)
 
 **抄规则，不抄结果。** 布局、配色、间距这些"规则"可以学习；Logo、图标、插画、文案等"结果"不要直接复制。
 
@@ -27969,7 +28355,7 @@ LlamaIndex 最适合做的，不是“另一个能聊天的框架”，而是企
 
 检索增强生成（Retrieval-Augmented Generation，RAG）是当前生成式 AI 中非常重要的一种技术方式。它的基本思路是：在让大模型生成回答之前，先从外部知识库中检索出与问题相关的信息，再把这些检索结果连同用户的问题一起交给模型，让模型在参考真实资料的基础上作答。这个外部知识库可以是企业内部的制度与流程文档、产品知识库，也可以是行业数据库、法规标准库等。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image1.webp)
 
 但此时我们会有一个疑问：既然大模型本身已经可以“直接回答问题”，为什么还需要额外增加“检索增强生成”这一层？尤其是现在大模型的上下文窗口越来越大，似乎只要把相关资料都提供给模型，让它先理解再回答，也能解决大部分需求。
 
@@ -27978,7 +28364,7 @@ LlamaIndex 最适合做的，不是“另一个能聊天的框架”，而是企
 1. **成本与效率的问题** ：
    即便大模型的上下文持续扩容，试图将所有文档 “一股脑通通塞进去” 的做法，在实际应用中依然不现实。核心矛盾集中在两点：
 2. 推理成本与上下文长度呈强正相关：上下文越长，推理成本几乎呈线性甚至超线性上升。以单次调用为例，8K Token 与 200K Token 对应的价格、响应延迟，完全处于不同量级，长上下文的成本门槛显著更高；
-   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image2.png)
+   ![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image2.webp)
 
    > 上下文（context）从意义上指模型在回答当前问题时所“参考”的背景信息与对话历史；从技术上则是指一次推理时输入给模型的 Token 序列（如 system/user 指令、历史消息、检索片段等）的总和。
    >
@@ -28019,7 +28405,7 @@ RAG（Retrieval-Augmented Generation，检索增强生成）的核心思路是�
 
 在典型的 RAG 系统中，用户的问题不会被直接丢给大模型，而是先由检索模块从企业知识库中找到最相关的文档片段，再将这些内容与原始提问一起组合成完整的上下文，输入给大模型生成回答。这种"先检索、再生成"的方式，让模型能够基于真实参考资料进行推理，而不是仅凭参数中"记住"的知识进行推测。我们可以参考一个典型案例：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image3.png)
 
 1. **索引阶段**
 
@@ -28236,7 +28622,7 @@ RAG 技术的起源可以追溯到 2017 年的 DrQA 框架，该框架首次尝�
 
 整体来看，RAG 的演进大致可以分为三个阶段：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image4.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image4.png)
 
 #### 4.1 第一代 RAG：Naive RAG（基础检索增强）
 
@@ -28364,11 +28750,11 @@ Naive RAG可以理解为基础的 RAG 形态，它在工程上非常直接，典
 
 MTEB为各类Embedding模型提供了一个统一、客观的评估框架。它通过8大类任务、56个数据集，全面评测模型在检索、聚类、分类、重排序、文本匹配、语义相似度等多种场景下的表现。模型在MTEB上的整体得分，能够反映其向量表示能力的通用性和稳健性，可作为选型的重要数据参考。最新排名和详细结果可通过 [HuggingFace MTEB Leaderboard](https://huggingface.co/spaces/mteb/leaderboard) 查看。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image5.webp)
 
 尽管榜单上存在大量模型，你可以根据实际需求进行选择，并不需要掌握所有的模型（一般来说，选择大模型厂商自带的 Embedding 模型，或者使用云服务平台部署对外使用的模型就大概率不会错，因为这个是大多人检验后的标准），你还可以在侧边栏中选择具体的类别或者语言进行筛选：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image6.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image6.png)
 
 此外，在筛选 Embedding 模型时，需重点关注直接影响 RAG 性能的两个核心参数：维度和上下文长度。其中，维度是指模型输出向量的维度数（如 128 维、768 维），它本质上反映了描述语义信息时所使用的“特征数量”。维度越高，向量能刻画的语义细节越丰富、区分度越强，例如一个 768 维的向量可以从品种、口感、产地等数百个角度精细表征“苹果”，从而更适用于医疗、法律等需要精准检索的专业场景；维度越低，则计算与存储成本越小、检索速度越快，适合千万级文档等高并发、强实时性要求的通用场景。
 
@@ -28625,7 +29011,7 @@ LLM裁判的优势在于能进行更接近人类的整体性判断——它可�
 
 当然，如果团队资源有限或希望快速建立基线，参考业界成熟的公开评测基准也是一个可行的起点。截至2025年，已有诸多涵盖通用领域和垂直行业的基准可供选择（见图表）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image7.webp)
 
 在选择时，应首先明确评测目的：是建立能力基线，还是为上线做最终验证？其次，需评估基准数据是否覆盖了所关心的场景、问题类型和难度。对于新闻、金融等时效性强的场景，必须考察基准是否包含实时数据测试；而对于历史知识处理，静态基准可能已足够。最后，还需权衡标注成本，是直接采用已完整标注的基准，还是使用原始数据自行标注。
 
@@ -28643,7 +29029,7 @@ Hugging Face提供了一个基于Chroma向量数据库的语义缓存实现方�
 
 [https://huggingface.co/learn/cookbook/semantic_cache_chroma_vector_database](https://huggingface.co/learn/cookbook/semantic_cache_chroma_vector_database)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image8.png)
 
 背景：大多数教程搭建的RAG系统只适合单用户测试，当系统部署到生产环境后，面对几十到几千次的重复查询（比如客服场景中用户反复询问"如何退款"），每次都要执行向量数据库检索和LLM调用，响应时间会明显增加，成本也会快速上升。通过引入语义缓存层，可以在保证答案质量的前提下，大幅减少对原始数据源的访问压力。
 
@@ -28659,7 +29045,7 @@ Hugging Face的另一个教程展示了如何使用Unstructured库构建完整�
 
 [https://huggingface.co/learn/cookbook/rag_with_unstructured_data](https://huggingface.co/learn/cookbook/rag_with_unstructured_data)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image9.png)
 
 背景：企业场景中的知识往往分散在PDF、PowerPoint、EPUB、HTML等多种格式中，传统的数据预处理方法要么只能处理单一格式（比如只支持PDF），要么在格式转换过程中丢失关键信息（特别是表格、标题层级等结构化内容），导致RAG系统无法准确理解和检索这些信息。
 
@@ -28693,7 +29079,7 @@ AIOps RAG竞赛的EasyRAG项目专注于运维场景下的问答任务，技术�
 
 [http://blog.csdn.net/hustyichi/article/details/143323746](http://blog.csdn.net/hustyichi/article/details/143323746)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image10.png)
 
 背景：运维工程师日常工作中需要查阅大量技术文档，这些文档不仅包含文字说明，还包含监控图表、系统架构图、性能曲线等图片信息。比如当系统出现性能问题时，工程师需要快速查询"CPU使用率超过80%时应该如何处理"，答案可能分散在文字说明和监控图表中。传统RAG系统只能处理文字，无法理解图表中的趋势和数值，导致答案不完整。该项目最终获得初赛第一、复赛第二的成绩。
 
@@ -28715,7 +29101,7 @@ KDD Cup 2024 Meta RAG挑战赛的冠军方案展示了如何整合非结构化We
 
 https://arxiv.org/pdf/2410.00005
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image11.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image11.png)
 
 背景：任务1要求基于5个网页做检索摘要，比如用户搜索"星际穿越导演是谁"，系统需要从给定的网页中提取答案。任务2在任务1基础上增加了Mock API（模拟访问结构化知识图谱），系统可以调用API查询电影数据库、人物关系等结构化信息。任务3进一步扩大难度，基于50个网页与Mock API处理复杂查询，比如"哪些由诺兰导演的电影票房超过5亿美元"，这需要同时查询知识图谱（导演作品关系）和网页（票房数据）。每个查询需在30秒内完成，核心目标是提升多源数据整合的准确性并减少幻觉。
 
@@ -28741,7 +29127,7 @@ https://arxiv.org/pdf/2410.00005
 
 相关研究：[https://arxiv.org/pdf/2410.05779](https://arxiv.org/pdf/2410.05779)， [https://arxiv.org/pdf/2502.11371](https://arxiv.org/pdf/2502.11371)， https://arxiv.org/pdf/2404.16130
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image12.png)
 
 传统RAG依靠寻找和问题相似的文本段落来工作，这就像在一堆材料里挑出看起来最相关的几段话。对于直接查找某个具体信息，这种方法很有效。但如果一个问题需要联系多份文档、结合不同线索才能回答，它的表现就会打折扣。
 
@@ -28755,7 +29141,7 @@ Graph RAG的做法，就是先主动画出这幅全景图。系统会利用大�
 
 相关研究：https://arxiv.org/pdf/2502.08826
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image13.webp)
 
 现实世界的数据从来不是单一文本。工程师排查服务器故障时，需要同时看温度监控曲线、设备面板截图和系统日志；医生做诊断时，需要把 CT / MRI 影像、检查报告和电子病历放在一起看。传统的文本 RAG 最多只能检索到“温度异常”“怀疑肺结节”这样的文字描述，却难以把这些描述与具体的曲线走势、影像病灶形态对应起来，更做不到用“图/音/视频”去反向检索相关文档和知识。
 
@@ -28767,7 +29153,7 @@ Multimodal RAG（多模态 RAG）解决的是这种“模态之间互相看不�
 
 相关介绍：https://jina.ai/news/late-chunking-in-long-context-embedding-models/
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image14.png)
 
 想象你正在阅读一篇关于柏林的维基百科文章，传统RAG系统会先将其切成独立段落再生成向量。当第一句提到"柏林是德国首都"后，后续段落中的"该城市"、"它的人口"等指代词就失去了与"柏林"的关联。此时若查询"柏林的人口是多少"，系统会因为"柏林"和"人口数据"从未在同一文本块出现而检索失败。这个问题在长文档场景更为严重：一份200页的保险合同中，"免赔额"的定义在第5页，具体适用条件在第30页，传统的固定长度切分（如每512 tokens一块）会将这些相关信息分散到40多个独立文本块中，实验数据显示这种割裂会导致语义相似度从0.85暴跌至0.71。
 
@@ -28783,7 +29169,7 @@ Late Chunking颠覆了"先切后编"的传统流程，改为"先编后切"：利
 
 RAG技术已从最初的检索增强生成工具，发展为构建智能体认知架构的关键部分。 传统RAG系统基于提问、检索、回答的简单模式，本质是被动接受查询，不具备主动行动的能力。为了突破这种被动性并处理更复杂的认知任务，RAG与智能体能力进行了深度融合，由此诞生了Agentic RAG这一新范式。 在此范式中，RAG的角色发生了根本转变：它不再仅仅是外部知识的被动提供者，而是在智能体的主动规划、目标指引和反思能力驱动下，成为支撑智能行为的核心处理单元。这种融合使系统整体具备了目标导向、迭代优化和自主决策的能力，显著提升了人机交互的深度与质量。具体而言，Agentic RAG能够理解复杂任务，自主拆解问题，规划检索策略，并在获取初步信息后评估结果质量，决定是否深入探索，从而胜任传统RAG难以应对的多步骤复杂任务。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/ai-advanced/rag-introduction/images/image15.png)
 
 Agentic RAG实现上述复杂任务处理的关键，在于其建立了一个多层次的主动循环工作机制。 面对复杂查询，智能体首先分析问题本质，将其拆解为子问题，并为每个子问题设计精准的检索策略。获得初步结果后，智能体进行评估与反思，判断信息的完整性和相关性，识别知识缺口，并动态生成更精确的新查询。这种迭代过程常包含多跳检索，即基于前一轮结果发现新的检索方向，形成类似人类研究者的知识探索链条。然而，要支撑这种持续的、迭代的智能行为，尤其是实现长期交互中的个性化和知识积累，仅依赖单次会话的短期上下文（短期记忆）是远远不够的。这引出了对长期、结构化记忆能力的需求。
 
@@ -28894,7 +29280,7 @@ https://www.linkedin.com/posts/richmondalake_100daysofagentmemory-rag-memorizz-a
 
 想象一下，以前你使用 Claude Code，就像是一个项目经理带着一个超级能干的助手工作。无论任务多复杂，只有这一个助手在干活。现在有了 Agent Teams，你可以组建一支完整的 AI 开发团队——有的负责前端，有的负责后端，有的负责测试，它们可以**同时工作、互相交流、协同完成复杂任务**。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/agent-teams/images/home-cover.svg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/agent-teams/images/home-cover.svg)
 
 ##### 从单助手到团队协作
 
@@ -34200,7 +34586,7 @@ Claude Agent SDK 的核心价值是把"模型推理"升级为"可控执行"。�
 
 最后，我们得到了一个名为 **Relationship Compass** 的原生 macOS 应用。它可以搜索和筛选联系人、维护关系档案、导入 CSV、记录互动，并自动算出下一次应该联系谁。
 
-![最终完成的 Relationship Compass 联系人管理界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/contact-profile.jpeg)
+![最终完成的 Relationship Compass 联系人管理界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/contact-profile.jpeg)
 
 你可以直接查看这次实践产生的[公开 GitHub 示例仓库](https://github.com/sanbuphy/relationship-compass-macos)。仓库只使用假数据，里面保留了需求文档、GitHub Issues、提交记录、源代码和测试。
 
@@ -34728,11 +35114,11 @@ swift test
 
 这段代码做了四件事：读取 UTF-8 CSV、检查表头、寻找重复联系人、准备导入结果。它会先在一份候选数据上完成全部处理，只有所有行都合法时才替换当前联系人列表。因此，文件中途出错也不会让应用留下“只导入一半”的状态。
 
-![Xcode 中的 CSV 导入、表头校验与安全去重实现](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/code-csv-import.jpeg)
+![Xcode 中的 CSV 导入、表头校验与安全去重实现](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/code-csv-import.jpeg)
 
 对应的 [`RelationshipStoreTests`](https://github.com/sanbuphy/relationship-compass-macos/blob/main/Tests/RelationshipCompassTests/RelationshipStoreTests.swift#L29-L69) 会把同一份 CSV 连续导入两次，确认第二次只更新已有联系人，而不是再新增一份。测试还覆盖了重复表头和带 UTF-8 BOM 的文件等边界情况。
 
-![Swift Testing 中关于重复导入和异常表头的公开行为测试](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/code-behavior-tests.jpeg)
+![Swift Testing 中关于重复导入和异常表头的公开行为测试](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/code-behavior-tests.jpeg)
 
 ::: tip 完成这一步后，你应该看到什么？
 
@@ -34823,21 +35209,21 @@ GitHub 上的实现 Issues 会按照依赖顺序逐张关闭；仓库里会出�
 
 在右上角输入 `Founder` 后，列表会从 6 位样例联系人缩小到 Maya Chen。左上角还可以继续选择关系强度和圈子。普通联系人列表与待跟进列表使用同一套筛选规则，不会出现一边筛选了、另一边仍显示全部联系人的情况。
 
-![按角色搜索联系人，只保留匹配 Founder 的 Maya Chen](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/search-and-filter.jpeg)
+![按角色搜索联系人，只保留匹配 Founder 的 Maya Chen](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/search-and-filter.jpeg)
 
 ##### 9.2 编辑关系档案
 
 选择联系人后，可以修改组织、角色、邮箱、关系强度、圈子、跟进周期和备注。应用会自动清理重复圈子，并检查跟进周期至少为一天。保存后的内容会立即反映到搜索和筛选结果中。
 
-![Relationship Compass 的联系人关系档案编辑界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/contact-profile.jpeg)
+![Relationship Compass 的联系人关系档案编辑界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/contact-profile.jpeg)
 
 ##### 9.3 记录互动并计算下次跟进
 
 为 Maya 记录一次 2026 年 8 月 9 日的互动后，应用根据 30 天的跟进周期，把下一次联系日期更新为 2026 年 9 月 8 日。互动内容会出现在历史记录中；日期到期后，这位联系人会自动进入“待跟进”区域。
 
-![记录互动后自动计算出的下一次跟进日期](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/interaction-follow-up.jpeg)
+![记录互动后自动计算出的下一次跟进日期](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/interaction-follow-up.jpeg)
 
-![新记录已经出现在 Interaction History 中](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/interaction-history.jpeg)
+![新记录已经出现在 Interaction History 中](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/github-iterative-development/images/interaction-history.jpeg)
 
 这些界面背后的关键行为都有对应测试。例如，同一份 CSV 重复导入不会产生重复联系人；错误表头不会破坏原有数据；保存和重新打开后，所有字段仍然一致；保存文件损坏时，应用会安全回到样例数据；搜索和两个筛选条件也可以一起使用。
 
@@ -34978,7 +35364,7 @@ open "dist/Relationship Compass.app"
 
 本章要解决的核心问题是：如何让 Claude Code 像真正的开发者一样，持续工作直到任务真正完成。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/long-running-tasks/images/home-cover.svg)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/long-running-tasks/images/home-cover.svg)
 
 ---
 
@@ -39038,7 +39424,7 @@ Spec → Plan → Tasks → Implement
 
 每个阶段都会生成 Markdown 工件，并把上一步的结果交给下一步。它还提供 `clarify`、`analyze` 和 `checklist` 等命令，用来发现规格中的模糊点、文档之间的矛盾和遗漏。
 
-![GitHub Spec Kit 官方视频流程封面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/spec-coding/images/spec-kit-workflow.jpg)
+![GitHub Spec Kit 官方视频流程封面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/spec-coding/images/spec-kit-workflow.jpg)
 
 _截图来源：[GitHub Spec Kit 官方仓库](https://github.com/github/spec-kit)。_
 
@@ -39130,11 +39516,11 @@ Kiro 把 Spec 做成了 IDE、CLI 和 Web 中的内置工作流。标准 Feature
 
 下面是 Kiro 官方演示中的 Spec 工作区。顶部可以在 Requirements、Design 和 Task list 之间切换，右侧保留与 Agent 的讨论过程。
 
-![Kiro 官方 Spec 界面：需求与设计阶段](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/spec-coding/images/kiro-requirements.jpg)
+![Kiro 官方 Spec 界面：需求与设计阶段](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/spec-coding/images/kiro-requirements.jpg)
 
 任务阶段会把实现工作拆成有顺序的列表，并把任务重新关联到需求：
 
-![Kiro 官方 Spec 界面：设计和任务拆解](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/core-skills/spec-coding/images/kiro-tasks.jpg)
+![Kiro 官方 Spec 界面：设计和任务拆解](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/core-skills/spec-coding/images/kiro-tasks.jpg)
 
 _两张截图来源：[Kiro 官方产品介绍](https://kiro.dev/blog/introducing-kiro/)。_
 
@@ -40983,7 +41369,7 @@ AI 可能无法解决的问题：
 <div style="margin: 38px 0 28px;">
 </div>
 
-![从一个网页到完整程序，再到 AI 原生产品的成长路线](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ai-native-creator/images/creator-journey.svg)
+![从一个网页到完整程序，再到 AI 原生产品的成长路线](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ai-native-creator/images/creator-journey.svg)
 
 #### 1. 第一站：先做出一个网页
 
@@ -41018,7 +41404,7 @@ AI 可能无法解决的问题：
 
 这里说的“程序”不一定是手机 App。网站、小程序、桌面软件和浏览器插件，只要能可靠完成真实任务，都是完整程序。
 
-可以继续学习[数据库与 Supabase](/zh-cn/stage-2/backend/database-supabase/)，再根据用户场景[选择应用平台](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform)。
+可以继续学习[数据库与 Supabase](/zh-cn/stage-2/backend/database-supabase/)，再根据用户场景[选择应用平台](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform)。
 
 #### 3. 第三站：成为 AI 原生创作者
 
@@ -41115,13 +41501,13 @@ Android 原生应用不是浏览器里的页面，而是可以直接安装到手
 
 Compose 不是只给教学项目使用。Android Developers 的[团队采用页面](https://developer.android.com/develop/ui/compose/adopt)列出了 Airbnb、Lyft、Reddit、Dropbox、SoundCloud、Mercari 和 Play Store 等真实团队。
 
-![Android Developers 面向团队介绍 Compose，并展示 SoundCloud 案例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/android-compose-official-cases.jpg)
+![Android Developers 面向团队介绍 Compose，并展示 SoundCloud 案例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/android-compose-official-cases.jpg)
 
 图片来源：[在团队中使用 Compose](https://developer.android.com/develop/ui/compose/adopt)。页面里的案例重点不是“界面看起来像 Google”，而是团队怎样把 Compose 加进已有的大型 Android 产品。
 
 另一个很直观的例子是 Threads。Android Developers 的官方案例介绍，Meta 团队使用 Jetpack Compose，在五个月内完成了第一版 Android 应用；同一期案例还介绍了 Reddit 用 Compose 重做功能，并减少重复代码。
 
-![Android Developers 展示 Threads 的真实开发案例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/android-threads-reddit-official.jpg)
+![Android Developers 展示 Threads 的真实开发案例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/android-threads-reddit-official.jpg)
 
 图片与案例来源：[Android Developers 2023 年 11 月案例](https://developer.android.com/newsletter/android-dev/2023/content/november?hl=en)。同类案例还有 Dropbox 的首页、文件预览和搜索，以及 SoundCloud 面向更多屏幕尺寸的改造。
 
@@ -41141,17 +41527,17 @@ Compose 不是只给教学项目使用。Android Developers 的[团队采用页�
 
 从 [Android Studio 官网](https://developer.android.com/studio) 下载当前稳定版。第一次启动时，让安装向导配置 Android SDK、Platform Tools 和模拟器。
 
-![Android Studio 安装向导](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image1.png)
+![Android Studio 安装向导](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image1.webp)
 
-![选择 Android SDK 组件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image4.png)
+![选择 Android SDK 组件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image4.webp)
 
 安装完成后，在欢迎页选择 **New Project**，使用一个带 Jetpack Compose 的空白 Activity 模板。
 
-![在 Android Studio 创建新项目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image8.png)
+![在 Android Studio 创建新项目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image8.png)
 
 项目名填写 `ElectronicWoodenFish`，语言选择 Kotlin，最低系统版本保持模板推荐值即可。
 
-![填写 Android 项目名称和 Kotlin 配置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image10.png)
+![填写 Android 项目名称和 Kotlin 配置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image10.png)
 
 等待 Gradle 同步完成。右下角不再显示下载任务，Build 窗口没有红色错误，才继续下一步。
 
@@ -41163,15 +41549,15 @@ Compose 不是只给教学项目使用。Android Developers 的[团队采用页�
 
 在右侧打开 Device Manager，创建一台普通 Phone 模拟器。系统镜像不必追求最新，选择已经下载且与项目兼容的版本。
 
-![在 Device Manager 创建模拟器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image16.png)
+![在 Device Manager 创建模拟器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image16.png)
 
-![选择一台 Android 虚拟设备](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image18.png)
+![选择一台 Android 虚拟设备](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image18.png)
 
 启动模拟器，再点击工具栏运行按钮。
 
-![Android 模拟器启动完成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image21.png)
+![Android 模拟器启动完成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image21.webp)
 
-![空白 Android 应用运行成功](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image22.png)
+![空白 Android 应用运行成功](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image22.webp)
 
 看到空白应用，说明 SDK、Gradle、模拟器和项目已经连通。不要在空白项目都无法运行时让 AI 同时增加业务功能。
 
@@ -41181,11 +41567,11 @@ Compose 不是只给教学项目使用。Android Developers 的[团队采用页�
 
 > 请把 Compose 首页改成电子木鱼。点击中间的木鱼后，次数加一，并播放轻微的缩放动画。
 
-![AI 修改 Android 项目文件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image15.png)
+![AI 修改 Android 项目文件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image15.png)
 
 回到 Android Studio，等待 Gradle 同步，再重新运行。
 
-![电子木鱼第一版在模拟器中运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image23.png)
+![电子木鱼第一版在模拟器中运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image23.png)
 
 这一轮只验证：按钮能点、数字每次加一、快速点击不会漏掉大量操作、旋转屏幕后应用不崩溃。
 
@@ -41197,23 +41583,23 @@ Compose 不是只给教学项目使用。Android Developers 的[团队采用页�
 
 把确认有使用权的木鱼图片放到 `res/drawable`，音效放到 `res/raw`。资源文件名只用小写字母、数字和下划线。
 
-![把图片素材放入 Android 资源目录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image24.png)
+![把图片素材放入 Android 资源目录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image24.png)
 
-![准备短音效文件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image25.png)
+![准备短音效文件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image25.png)
 
 > 请使用 drawable 里的木鱼图片和 raw 里的敲击音效。点击时播放一次，页面离开后释放音频资源。
 
-![AI 接入图片和音频资源](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image26.png)
+![AI 接入图片和音频资源](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image26.png)
 
 重新运行，连续点击十几次。声音不能明显延迟，也不能在切到后台后继续播放。
 
-![带图片和音效的电子木鱼](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image28.png)
+![带图片和音效的电子木鱼](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image28.png)
 
 #### 5. 增加点击动画
 
 > 请给每次点击增加独立的“+1”上浮动画。快速点击时允许多个动画同时存在，结束后自动清理。
 
-![快速点击时出现多个独立动画](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image30.png)
+![快速点击时出现多个独立动画](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image30.png)
 
 不要在提示词里指定复杂状态容器。先描述结果，让 AI 根据当前代码选择实现；只有出现性能或状态问题时，再讨论具体技术。
 
@@ -41243,15 +41629,15 @@ Compose 不是只给教学项目使用。Android Developers 的[团队采用页�
 
 在手机“开发者选项”中打开 USB 调试，用数据线连接电脑；首次连接时，在手机上确认这台电脑的调试授权。
 
-![在 Android 手机开启开发者选项](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image39.png)
+![在 Android 手机开启开发者选项](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image39.png)
 
-![允许电脑进行 USB 调试](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image46.png)
+![允许电脑进行 USB 调试](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image46.png)
 
 Android Studio 顶部设备列表出现手机后，选择它并运行。
 
-![Android Studio 识别到真机](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image47.png)
+![Android Studio 识别到真机](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image47.png)
 
-![应用成功安装到 Android 手机](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image49-sidebar-cropped.png)
+![应用成功安装到 Android 手机](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image49-sidebar-cropped.webp)
 
 真机至少测试：
 
@@ -41268,9 +41654,9 @@ Android Studio 顶部设备列表出现手机后，选择它并运行。
 
 在 Android Studio 中选择 **Build APK**，完成后通过通知中的链接打开输出目录。
 
-![Android Studio 生成测试 APK](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image50.png)
+![Android Studio 生成测试 APK](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image50.png)
 
-![找到 APK 输出文件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image51.png)
+![找到 APK 输出文件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image51.png)
 
 把 APK 安装到另一台没有开发环境的手机，重新完成点击、音效、保存和重置测试。
 
@@ -41278,13 +41664,13 @@ Android Studio 顶部设备列表出现手机后，选择它并运行。
 
 正式分发需要签名。选择 **Generate Signed Bundle / APK**，优先为应用商店生成 Android App Bundle；直接分发时再根据需要生成 APK。
 
-![选择生成签名 Bundle 或 APK](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image52.png)
+![选择生成签名 Bundle 或 APK](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image52.png)
 
-![创建或选择签名密钥](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image53.png)
+![创建或选择签名密钥](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image53.png)
 
 签名文件和密码不能提交到公开仓库，也不要发给 AI。丢失正式签名材料可能影响后续版本更新，应放进团队的受控密钥管理流程并做好备份。
 
-![生成 Release 构建](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image54.png)
+![生成 Release 构建](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image54.png)
 
 #### 11. 发布前检查
 
@@ -41299,9 +41685,9 @@ Android Studio 顶部设备列表出现手机后，选择它并运行。
 - 不同系统版本和真机测试结果；
 - 图片、字体和音效的商业授权。
 
-![准备应用商店图标和截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image59.png)
+![准备应用商店图标和截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image59.png)
 
-![在发布后台填写应用资料](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app/images/image62.png)
+![在发布后台填写应用资料](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app/images/image62.png)
 
 #### 12. 把电子木鱼装到另一台手机
 
@@ -41611,7 +41997,7 @@ AppImage 适合提供单文件下载，`.deb` 和 `.rpm` 更贴近发行版的�
 
 如果需要“安装到桌面”的体验，再补齐 PWA 的 Manifest、图标和 Service Worker。PWA 也可以进一步提交到部分桌面应用商店，但不要为了上架而套壳；先确保浏览器中的安装和更新体验可靠。
 
-相关教程：[开发 PWA 本地应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app)
+相关教程：[开发 PWA 本地应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app)
 
 #### 10. 小程序和浏览器插件怎么发布
 
@@ -41703,7 +42089,7 @@ Chrome Web Store、Microsoft Edge Add-ons 和 Firefox AMO 都有自己的开发�
 
 开发从不联网的本地版本开始，确认扩展结构与页面读取都正常后，再按需要接 Chrome 内置 AI 或企业后端。
 
-![Enterprise Knowledge Copilot 在侧边栏整理客户支持文档](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/extension-enterprise-preview.png)
+![Enterprise Knowledge Copilot 在侧边栏整理客户支持文档](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/extension-enterprise-preview.png)
 
 #### 真正的浏览器助手长什么样
 
@@ -41715,7 +42101,7 @@ Chrome Web Store、Microsoft Edge Add-ons 和 Firefox AMO 都有自己的开发�
 
 Glean 做的是企业知识助手。员工打开制度、项目文档或客户页面时，可以在浏览器侧栏继续提问。回答不只参考当前网页，也会查公司已经接入的文档、对话和人员信息。
 
-![Glean 在浏览器侧栏结合当前页面和企业知识回答问题](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/browser-real-glean.webp)
+![Glean 在浏览器侧栏结合当前页面和企业知识回答问题](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/browser-real-glean.webp)
 
 它的[官方产品页](https://www.glean.com/platform/browser-extension)展示了四个主要入口：发现相关内容、对当前页面提问、搜索公司资料和生成内容。搜索结果仍然遵守原系统的权限，不是装上扩展以后就能看到全公司的文件。
 
@@ -41725,7 +42111,7 @@ Glean 做的是企业知识助手。员工打开制度、项目文档或客户�
 
 Grammarly 没有要求用户每写一句话都打开聊天窗口。它先在 Gmail、在线文档等输入区域旁边工作：发现问题时画出下划线，用户停在文字上方时再显示修改建议。
 
-![Grammarly 在网页输入框里给出局部修改建议](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/browser-real-grammarly.png)
+![Grammarly 在网页输入框里给出局部修改建议](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/browser-real-grammarly.png)
 
 从这张 [Grammarly 官方帮助页](https://support.grammarly.com/hc/en-us/articles/115000091592-Grammarly-s-browser-extension-user-guide)的真实截图可以看出，建议卡片很小，用户可以接受，也可以忽略。需要生成或重写时，再主动打开生成式 AI。
 
@@ -41749,7 +42135,7 @@ Glean 选择侧边栏，Grammarly 把建议放在句子旁边，Edge 则直接�
 - Service Worker 负责接收事件和组织处理流程；
 - Side Panel 展示按钮、加载状态和摘要结果。
 
-![Content Script、Service Worker 和 Side Panel 的消息流](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image2.png)
+![Content Script、Service Worker 和 Side Panel 的消息流](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image2.webp)
 
 Service Worker 会在需要时启动，空闲后可能被浏览器回收，所以不能把必须保留的状态只放在内存里。
 
@@ -41765,7 +42151,7 @@ AI 完成后，项目里至少应有 manifest、service worker、content script 
 
 在地址栏打开 `chrome://extensions`，打开右上角“开发者模式”，点击“加载已解压的扩展程序”，选择刚才的项目文件夹。
 
-![在 Chrome 扩展管理页加载未打包扩展](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image3.png)
+![在 Chrome 扩展管理页加载未打包扩展](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image3.png)
 
 成功时，卡片上能看到扩展名称和版本，没有红色错误。把扩展固定到工具栏，点击图标，确认右侧能打开空白侧边栏。
 
@@ -41794,7 +42180,7 @@ AI 完成后，项目里至少应有 manifest、service worker、content script 
 
 > 请把读取结果整理成“页面主题、关键要点、数字与时间、下一步”四部分。先使用本地规则，不调用网络 API。
 
-![侧边栏的按钮、加载状态和摘要结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image5.png)
+![侧边栏的按钮、加载状态和摘要结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image5.png)
 
 摘要不需要像模型一样聪明，但必须稳定。找一篇有标题、列表和日期的页面，确认每个区域都有内容；再打开空白页，确认不会一直显示加载中。
 
@@ -41824,11 +42210,11 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 如果只是个人本机实验，也可以允许用户填写自己的密钥，但设置页必须明确说明风险，不能把它当成组织部署方案。
 
-![设置页选择摘要方式](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image6-1.png)
+![设置页选择摘要方式](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image6-1.png)
 
-![设置页填写个人测试配置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image6-2.png)
+![设置页填写个人测试配置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image6-2.png)
 
-![设置页保存配置后的状态](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image6-3.png)
+![设置页保存配置后的状态](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image6-3.png)
 
 #### 8. 检查权限
 
@@ -41852,7 +42238,7 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 2. Service Worker：在扩展管理页点击“Service Worker”。
 3. Content Script：在当前网页的开发者工具里查看。
 
-![在 Chrome DevTools 中选择扩展执行上下文](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image9.png)
+![在 Chrome DevTools 中选择扩展执行上下文](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image9.webp)
 
 报错时先确认错误来自哪一层，再交给 AI：
 
@@ -41880,9 +42266,9 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 发布到 Chrome Web Store 前，准备图标、说明、隐私政策、权限用途和真实截图。商店规则会更新，提交时以 Chrome Web Store 后台的当前要求为准。
 
-![Chrome Web Store 后台填写扩展资料](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image10.png)
+![Chrome Web Store 后台填写扩展资料](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image10.png)
 
-![Chrome Web Store 后台上传截图和发布资料](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image10-1.png)
+![Chrome Web Store 后台上传截图和发布资料](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension/images/image10-1.png)
 
 发布前再做一次隐私检查：
 
@@ -41942,7 +42328,7 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 ##### 2.1 网站 / PWA：先让用户点开就能用
 
-![网站与 PWA 架构：浏览器通过 Web 前端访问 API，Service Worker 负责缓存和离线能力](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/web-pwa-architecture.svg)
+![网站与 PWA 架构：浏览器通过 Web 前端访问 API，Service Worker 负责缓存和离线能力](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/web-pwa-architecture.svg)
 
 如果用户只是想打开链接完成一件事，Web 往往是第一版最省力的选择。PWA 仍然是网站，只是增加了安装到桌面、离线缓存等能力。
 
@@ -41950,11 +42336,11 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 如果产品必须长期在后台运行，或者要深度访问蓝牙、系统文件与设备驱动，就不要硬把网页包装成原生软件。
 
-相关教程：[开发 PWA 本地应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app)
+相关教程：[开发 PWA 本地应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app)
 
 ##### 2.2 微信小程序：用户本来就在微信里
 
-![微信小程序架构：微信客户端加载小程序，小程序调用云函数或企业 API，再访问数据库与文件存储](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/wechat-mini-program-architecture.svg)
+![微信小程序架构：微信客户端加载小程序，小程序调用云函数或企业 API，再访问数据库与文件存储](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/wechat-mini-program-architecture.svg)
 
 小程序的优势不是“比 App 高级”，而是用户不用安装。扫码、群分享、公众号和门店入口都能把用户直接带进业务流程。
 
@@ -41962,11 +42348,11 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 它受微信运行环境和审核规则约束。需要长时间后台任务、复杂本地计算或离开微信独立运营时，应当考虑 App 或 Web。
 
-相关教程：[开发微信小程序](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram) · [开发带后端的微信小程序](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend)
+相关教程：[开发微信小程序](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram) · [开发带后端的微信小程序](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend)
 
 ##### 2.3 iOS / Android 原生：直接使用系统能力
 
-![原生移动端架构：iOS 与 Android 分别使用平台 UI 和系统 API，共同连接业务 API](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/native-mobile-architecture.svg)
+![原生移动端架构：iOS 与 Android 分别使用平台 UI 和系统 API，共同连接业务 API](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/native-mobile-architecture.svg)
 
 原生开发离操作系统最近。后台定位、蓝牙、健康数据、音视频、复杂动画和系统级安全能力，原生通常拥有最完整的支持。
 
@@ -41974,11 +42360,11 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 代价也很直接：iOS 和 Android 有各自的工程、发布流程和测试成本。只有一个人做第一版，而且核心功能只是表单与列表时，原生往往太重。
 
-相关教程：[开发 iOS 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app) · [开发 Android 应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/android-app)
+相关教程：[开发 iOS 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app) · [开发 Android 应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/android-app)
 
 ##### 2.4 Flutter / React Native：共享业务，分别落到两端
 
-![跨端移动架构：共享代码生成 iOS 与 Android 应用，平台差异通过插件或原生模块补齐](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/cross-platform-mobile-architecture.svg)
+![跨端移动架构：共享代码生成 iOS 与 Android 应用，平台差异通过插件或原生模块补齐](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/cross-platform-mobile-architecture.svg)
 
 团队明确需要 iOS 和 Android，又不想维护两套完整业务代码时，可以选择 Flutter 或 React Native。大部分界面和业务逻辑共享，平台能力再通过插件或原生模块接入。
 
@@ -41986,11 +42372,11 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 跨端不是按一下按钮就自动适配。通知、支付、地图、权限和商店发布仍然要在两端分别验证；重度 3D、复杂音视频或大量平台专属能力，也可能需要回到原生。
 
-相关教程：[开发 React Native + Expo 跨平台应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo) · [开发 Flutter 跨平台应用](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app)
+相关教程：[开发 React Native + Expo 跨平台应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo) · [开发 Flutter 跨平台应用](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app)
 
 ##### 2.5 Electron / Tauri：用 Web 技术做桌面软件
 
-![Web 技术桌面端架构：Web 界面通过安全桥接调用桌面进程，再访问文件、通知与系统能力](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/web-desktop-architecture.svg)
+![Web 技术桌面端架构：Web 界面通过安全桥接调用桌面进程，再访问文件、通知与系统能力](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/web-desktop-architecture.svg)
 
 如果团队熟悉 Vue、React 或普通前端，又需要独立窗口、托盘、文件读写和桌面通知，Electron 或 Tauri 会比从头学习原生桌面开发更快。
 
@@ -41998,11 +42384,11 @@ Chrome 官方目前要求由用户操作触发模型创建。首次下载需要�
 
 如果软件需要极低内存、复杂图形、设备驱动或严格实时响应，仅靠 Web 桌面方案可能不合适。
 
-相关教程：[开发 Electron 桌面程序](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text)
+相关教程：[开发 Electron 桌面程序](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text)
 
 ##### 2.6 Qt / 原生桌面端：业务软件直接连接设备与系统
 
-![Qt 与原生桌面架构：桌面界面连接 C++ 业务层，再访问设备协议、本地数据和企业服务](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/qt-native-desktop-architecture.svg)
+![Qt 与原生桌面架构：桌面界面连接 C++ 业务层，再访问设备协议、本地数据和企业服务](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/qt-native-desktop-architecture.svg)
 
 Qt 不只是“工厂大屏”。在工业界和企业软件中，它常被用于设备控制台、医疗影像、汽车诊断、实验室软件、交易终端、工程设计工具和长期运行的桌面客户端。
 
@@ -42010,11 +42396,11 @@ Qt 不只是“工厂大屏”。在工业界和企业软件中，它常被用�
 
 如果产品只是一个普通信息管理后台，Web 会更容易部署和维护；只有真的需要本地设备、离线运行或长期桌面交互时，才值得选择更重的桌面架构。
 
-相关教程：[开发 Qt 企业设备与运营客户端](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi)
+相关教程：[开发 Qt 企业设备与运营客户端](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi)
 
 ##### 2.7 浏览器插件：功能就发生在网页旁边
 
-![浏览器插件架构：内容脚本读取当前网页，后台服务协调任务，侧边栏展示结果并调用企业 API](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/browser-extension-architecture.svg)
+![浏览器插件架构：内容脚本读取当前网页，后台服务协调任务，侧边栏展示结果并调用企业 API](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/browser-extension-architecture.svg)
 
 如果用户的工作本来就在网页里，就别再让他复制内容、打开另一个系统、粘贴并提交。浏览器插件可以直接读取当前页面，在侧边栏或右键菜单里完成下一步。
 
@@ -42022,21 +42408,21 @@ Qt 不只是“工厂大屏”。在工业界和企业软件中，它常被用�
 
 插件权限很敏感。只申请真正需要的站点和能力，并把共享密钥放在企业后端；需要脱离浏览器独立运行时，插件也不是合适的容器。
 
-相关教程：[开发浏览器 AI 插件](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/browser-ai-extension)
+相关教程：[开发浏览器 AI 插件](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/browser-ai-extension)
 
 ##### 2.8 VS Code 插件 / CLI：把工具放进开发流程
 
-![开发者工具架构：编辑器或终端触发插件与命令行工具，再连接代码仓库、构建系统和服务 API](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/developer-tool-architecture.svg)
+![开发者工具架构：编辑器或终端触发插件与命令行工具，再连接代码仓库、构建系统和服务 API](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/developer-tool-architecture.svg)
 
 面向开发者的工具，最好出现在他们已经工作的地方。需要读取当前文件、展示诊断和提供编辑器交互时做 VS Code 插件；需要进入脚本、CI 和批处理流程时做 CLI。
 
 企业通常用它做代码规范、依赖升级、项目脚手架、发布检查、数据库迁移、内部平台接入和 AI 编程助手。很多工具最后会同时提供插件和 CLI：一个负责交互，一个负责自动化。
 
-相关教程：[开发 VS Code 插件](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension)
+相关教程：[开发 VS Code 插件](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension)
 
 ##### 2.9 多端企业系统：不同角色使用不同入口
 
-![多端企业系统架构：用户小程序、员工移动端、运营后台和桌面客户端共享统一身份、API 与数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/multi-client-enterprise-architecture.svg)
+![多端企业系统架构：用户小程序、员工移动端、运营后台和桌面客户端共享统一身份、API 与数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/multi-client-enterprise-architecture.svg)
 
 企业业务很少永远停在单个平台。消费者、现场员工、运营人员和管理者的工作环境不同，强迫所有人使用同一种客户端，体验通常会很差。
 
@@ -42046,13 +42432,13 @@ Qt 不只是“工厂大屏”。在工业界和企业软件中，它常被用�
 
 ##### 2.10 Godot 等游戏引擎：场景、角色和交互围绕实时画面组织
 
-![游戏引擎架构：场景与节点组织玩法，脚本和物理系统驱动实时画面，再导出到桌面、移动端或 Web](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/game-engine-architecture.svg)
+![游戏引擎架构：场景与节点组织玩法，脚本和物理系统驱动实时画面，再导出到桌面、移动端或 Web](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/game-engine-architecture.svg)
 
 横版动作、像素游戏和 3D 游戏都需要持续更新画面、处理输入、碰撞、动画、声音和关卡。Godot 这类游戏引擎已经把这些常用能力放进同一个编辑器，比从普通网页或原生 UI 框架里重新搭一套游戏循环更合适。
 
 独立游戏、教学游戏、互动展览、产品演示和轻量 3D 体验都可以使用这条路线。真正准备发布时，桌面、Android、iOS 和 Web 仍然要分别导出并在目标设备上测试；选择游戏引擎也不代表像素美术、关卡设计和性能优化会自动完成。
 
-相关教程：[用 Godot 开发横版、像素与 3D 游戏](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development)
+相关教程：[用 Godot 开发横版、像素与 3D 游戏](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development)
 
 #### 3. 一张表先选出第一版
 
@@ -42089,7 +42475,7 @@ Qt 不只是“工厂大屏”。在工业界和企业软件中，它常被用�
 
 #### 5. 决策时按这个顺序走
 
-![平台选型流程：先判断入口，再判断系统权限、工作时长与是否需要多个角色](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/choose-platform/images/platform-decision-map.svg)
+![平台选型流程：先判断入口，再判断系统权限、工作时长与是否需要多个角色](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/choose-platform/images/platform-decision-map.svg)
 
 如果几个答案同时成立，不必硬选唯一平台。先确定最重要的用户和最频繁的任务，把第一条完整链路做通，再决定第二个入口。
 
@@ -42144,7 +42530,7 @@ CRM、审批、排班、售后、知识库和零售会员都属于企业使用�
 
 Electron 官网有一个很大的 [Showcase](https://www.electronjs.org/apps)，收录了数百个已经发布的产品。里面既有 Asana、Notion 和 Microsoft Teams 这类协作工具，也有 Figma、Visual Studio Code、GitHub Desktop、Postman 和 Docker Desktop 这类设计与开发工具。
 
-![Electron 官网展示的真实生产应用](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/electron-official-showcase.jpg)
+![Electron 官网展示的真实生产应用](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/electron-official-showcase.jpg)
 
 图片来源：[Electron Showcase](https://www.electronjs.org/apps)。这张图里的 Asana、Discord 和 Figma 只是第一页的一小部分。
 
@@ -42170,7 +42556,7 @@ Electron 官方在“[为什么选择 Electron](https://www.electronjs.org/docs/
 
 用户录一段现场说明，应用生成文字，再整理成问题、处理过程、风险和后续动作。企业里类似的软件会用在维修工单、保险查勘、物业巡检、客户拜访和护理记录中。
 
-![Field Voice Log 将现场语音整理成业务记录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/electron-field-voice-log.jpg)
+![Field Voice Log 将现场语音整理成业务记录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/electron-field-voice-log.jpg)
 
 开发从演示文本和桌面界面开始，接着连接麦克风与识别服务，最后制作安装包。共享密钥不会写进桌面客户端。
 
@@ -42178,13 +42564,13 @@ Electron 官方在“[为什么选择 Electron](https://www.electronjs.org/docs/
 
 Electron 把网页界面和桌面系统能力放在同一个应用中，但两者不能随便混在一起。
 
-![Electron 由 Chromium 界面和 Node.js 系统能力组成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image1.png)
+![Electron 由 Chromium 界面和 Node.js 系统能力组成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image1.webp)
 
 - Main Process 管理窗口、文件和应用生命周期；
 - Renderer Process 显示页面，不直接开放 Node.js；
 - Preload 只暴露页面真正需要的少量能力。
 
-![Main、Preload 和 Renderer 之间通过 IPC 通信](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image2.png)
+![Main、Preload 和 Renderer 之间通过 IPC 通信](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image2.webp)
 
 录音按钮在页面里，保存临时文件和调用本地模型放在主进程里，中间通过 Preload 传递有限的数据。
 
@@ -42196,7 +42582,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 依赖安装完成后运行项目。看到 Electron 默认窗口，并且终端没有红色错误，说明基础环境正常。
 
-![Electron Forge 项目第一次启动](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image4.png)
+![Electron Forge 项目第一次启动](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image4.png)
 
 如果启动失败：
 
@@ -42208,7 +42594,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 这一轮只看布局。窗口缩窄以后，按钮和文字不能重叠；空白状态要告诉用户下一步做什么。
 
-![语音记录工具的首页布局](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image3.png)
+![语音记录工具的首页布局](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image3.webp)
 
 如果界面太复杂：
 
@@ -42220,7 +42606,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 > 请给录音按钮接入麦克风。开始后显示时长和录音状态，停止后把音频交给 Preload，不要在 Renderer 开启 Node 集成。
 
-![录音中状态和实时计时](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image6.png)
+![录音中状态和实时计时](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image6.webp)
 
 第一次点击时，系统会询问麦克风权限。拒绝后应用应显示“没有麦克风权限”，不能一直停在加载中。
 
@@ -42241,7 +42627,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 > 请增加演示识别模式。主进程收到音频后返回一段固定的现场记录，让我先验证 IPC、加载状态和报告页面。
 
-![IPC 把音频请求交给主进程，再把结果返回页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image5.png)
+![IPC 把音频请求交给主进程，再把结果返回页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image5.webp)
 
 成功时，停止录音后先显示“处理中”，随后出现演示文字；快速开始第二次录音时，第一次结果不能覆盖新任务。
 
@@ -42255,7 +42641,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 > 请把演示识别替换为本地 whisper.cpp。录音先转成 16 kHz、单声道 PCM WAV，再交给模型；失败时保留原音频和错误提示。
 
-![本地模型在离线状态下返回文字](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image9.png)
+![本地模型在离线状态下返回文字](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image9.png)
 
 先用小模型验证流程，再根据电脑性能选择更大的模型。模型大小、速度和硬件加速会随绑定库变化，不要把某个速度写成固定承诺。
 
@@ -42267,7 +42653,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 > 请把音频发送到企业后端完成转写。客户端不保存模型密钥，要有上传进度、取消、超时和重试。
 
-![云端识别完成后显示原始文字](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image7.png)
+![云端识别完成后显示原始文字](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image7.webp)
 
 不要把 API Key 放在 Renderer、`localStorage`、配置页或打包产物里。即使放在主进程，桌面安装包仍然能被用户读取；组织共享密钥必须留在服务器。
 
@@ -42281,7 +42667,7 @@ Electron 把网页界面和桌面系统能力放在同一个应用中，但两�
 
 设置页只保存语言、识别方式和下载目录等非敏感选项。
 
-![设置页切换识别方式和语言](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image8.png)
+![设置页切换识别方式和语言](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image8.png)
 
 #### 8. 调试时看三个地方
 
@@ -42316,7 +42702,7 @@ npm run make
 
 Forge 只会生成已经配置、并且当前操作系统支持的格式。一次命令不会自动在任意电脑上同时生成所有平台安装包。
 
-![Electron Forge 的安装包输出目录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image10.png)
+![Electron Forge 的安装包输出目录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/electron-voice-to-text/images/image10.png)
 
 拿生成物到一台没有 Node.js、没有项目源码的干净电脑测试：
 
@@ -42378,7 +42764,7 @@ BMW、Google Pay 和 Nubank 面向的用户完全不同，却都在正式产品�
 
 BMW 曾经发现 iOS 和 Android 车主应用之间的功能与设计差距越来越大，同时还要维护不同品牌、系统和四十多个市场的版本。团队后来用 Flutter 建立统一移动平台，My BMW App 于 2020 年发布，并扩展到 47 个国家。它的流水线每天会自动构建、测试和部署多个变体，而不是让一套源码替代发布工程。
 
-![My BMW App 在车辆旁边显示车况与服务入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-real-bmw.png)
+![My BMW App 在车辆旁边显示车况与服务入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-real-bmw.webp)
 
 图片与数据来源：[Flutter 官方 BMW 案例](https://flutter.dev/showcase/bmw)。
 
@@ -42390,7 +42776,7 @@ BMW 曾经发现 iOS 和 Android 车主应用之间的功能与设计差距越�
 
 Google Pay 原来的 Android 和 iOS 实现合计约 170 万行代码。迁移前，团队先让三名资深工程师做首页、聊天和支付的纵向原型，把关键原生插件也放进去验证；得到团队反馈以后，才逐步扩大到正式重写。官方案例记录的新代码库约 110 万行，工程投入减少约 60% 到 70%，但安全审查和平台接入并没有因此消失。
 
-![Google Pay 的奖励反馈与付款状态界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-real-google-pay.png)
+![Google Pay 的奖励反馈与付款状态界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-real-google-pay.webp)
 
 图片与数据来源：[Flutter 官方 Google Pay 案例](https://flutter.dev/showcase/google-pay)。
 
@@ -42402,7 +42788,7 @@ Google Pay 原来的 Android 和 iOS 实现合计约 170 万行代码。迁移�
 
 巴西数字银行 Nubank 没有因为 Flutter 热门就直接迁移。官方案例介绍，团队先用 11 项标准比较 Kotlin Native、React Native 和 Flutter，还让不同经验的开发者完成一小时任务并收集反馈。选定 Flutter 后，新功能逐步采用，旧功能再按计划迁移。团队随后建立了自己的设计系统，并把单元、组件和端到端测试纳入开发方式。
 
-![Nubank 账户与帮助入口的真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-real-nubank.png)
+![Nubank 账户与帮助入口的真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-real-nubank.png)
 
 图片与数据来源：[Flutter 官方 Nubank 案例](https://flutter.dev/showcase/nubank)。案例还记录了合并成功率、合并时间和新人上手速度等实际指标。
 
@@ -42482,7 +42868,7 @@ flutter run -d chrome
 
 下面是本页实际构建并打开的版本。顶部写着最后同步时间和待同步数量，费用行也标记了待同步，而不是只在控制台打印一条日志。
 
-![Flutter 门店费用簿实际运行首页，新增的打印纸记录仍在](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-home.png)
+![Flutter 门店费用簿实际运行首页，新增的打印纸记录仍在](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-home.png)
 
 这张图来自 Chrome 中运行的 Flutter Web 生产构建。页面刷新以后，“打印纸 ¥56”仍然存在，所以它也记录了本机恢复测试的结果；它不是 Android 或 iOS 截图。
 
@@ -42494,7 +42880,7 @@ flutter run -d chrome
 
 > 点击“记一笔”时打开底部表单，只填写费用说明和金额。
 
-![实际运行的新增费用底部表单](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-form.png)
+![实际运行的新增费用底部表单](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-form.png)
 
 底部表单适合短任务，因为用户还能看见原来的页面。字段变多、需要拍照或审批信息时，就应该换成完整页面，不要把所有内容硬塞进一个弹层。
 
@@ -42508,7 +42894,7 @@ Flutter 官方的[表单教程](https://docs.flutter.dev/cookbook/forms)列出�
 
 实际点击空表单的“保存到本机”以后，两个字段会变红，并分别说明缺少什么：
 
-![空费用表单显示字段级错误提示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-validation.png)
+![空费用表单显示字段级错误提示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-validation.png)
 
 这里没有只写“参数错误”，也没有弹出一个马上消失的统一提示。用户能在出错的位置直接修改。需要自己实现时，可对照 Flutter 官方的[表单校验示例](https://docs.flutter.dev/cookbook/forms/validation)。
 
@@ -42518,7 +42904,7 @@ Flutter 官方的[表单教程](https://docs.flutter.dev/cookbook/forms)列出�
 
 本页实测输入“打印纸”和 `56` 后，金额从 ¥890.50 变为 ¥946.50，待同步数量从 1 变为 2，列表顶部出现新记录，底部同时显示“已保存在本机，联网后再同步”。
 
-![保存费用后同时更新汇总、列表和成功提示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-saved.png)
+![保存费用后同时更新汇总、列表和成功提示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/flutter-app/images/flutter-expense-saved.png)
 
 这类反馈看起来只是文案，却能避免用户因为不确定而连续点五次。以后接真实后端，还要让服务端识别重复提交，不能只靠按钮暂时禁用。
 
@@ -42708,7 +43094,7 @@ Godot 编辑器左边最重要的区域叫“场景树”。里面的每一项�
 
 下面这张图是本篇横版原型在 Godot 4.7.1 中的真实编辑器窗口。左边能看到 `World`、`Platforms`、`GoalBeacon`、`Player` 和 `HUD`；中间是 2D 场景；下方文件系统里是场景和 GDScript。截图只保留了 Godot 窗口，没有桌面、Finder 目录或个人文件。
 
-![Godot 编辑器中的横版原型场景树与 2D 工作区](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-editor-platformer.png)
+![Godot 编辑器中的横版原型场景树与 2D 工作区](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-editor-platformer.png)
 
 先记住一个简单的拆法：玩家、关卡、HUD 和可收集物尽量各自负责一件事。原型很小时全部塞在主场景里确实也能运行，但功能一多就会互相牵连。
 
@@ -42740,7 +43126,7 @@ Godot 能打开项目后，先按 F6 运行当前场景或按 F5 运行主场景
 
 《Primal Light》是 Fat Gem 制作的线性 2D 动作平台游戏，已经发行到 Windows、macOS、Linux 和 Nintendo Switch。Godot 官方 Showcase 的开发者访谈特别提到，开发者看重 Godot 以像素为原生单位、信号系统和动画工具。
 
-![Godot Showcase 中的 Primal Light 官方展示图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-case-primal-light.webp)
+![Godot Showcase 中的 Primal Light 官方展示图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-case-primal-light.webp)
 
 图片与案例来源：[Godot Showcase — Primal Light](https://godotengine.org/showcase/primal-light/)。
 
@@ -42784,7 +43170,7 @@ Godot 能打开项目后，先按 F6 运行当前场景或按 F5 运行主场景
 
 这是本机实际运行后的画面。角色可以左右移动和跳跃，平台具有碰撞，右上角信标提供清楚的终点方向。
 
-![Godot 4.7.1 实际运行的 Skyline Courier 横版原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-run-platformer.png)
+![Godot 4.7.1 实际运行的 Skyline Courier 横版原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-run-platformer.png)
 
 这张图不是效果稿。项目在 Godot 4.7.1 中加载了 `main.tscn`，`CharacterBody2D` 接收移动与跳跃输入，`StaticBody2D` 负责平台碰撞，运行窗口真实渲染后截取了这一帧。
 
@@ -42811,7 +43197,7 @@ Godot 能打开项目后，先按 F6 运行当前场景或按 F5 运行主场景
 
 《Dome Keeper》由 Bippinbits 制作，是一款已经正式发行的像素风生存采矿游戏。玩家在攻击间隙向地下挖掘资源，再回到穹顶抵御怪物，并用资源升级装备。
 
-![Godot Showcase 中的 Dome Keeper 官方展示图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-case-dome-keeper.webp)
+![Godot Showcase 中的 Dome Keeper 官方展示图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-case-dome-keeper.webp)
 
 图片与案例来源：[Godot Showcase — Dome Keeper](https://godotengine.org/showcase/dome-keeper/)。
 
@@ -42851,7 +43237,7 @@ Godot 能打开项目后，先按 F6 运行当前场景或按 F5 运行主场景
 
 这是本机实际运行的结果。内部画布是 320×180，显示窗口按 4 倍整数放大；角色、树木、路径和光晶都对齐到像素网格，画面没有使用平滑缩放。
 
-![Godot 4.7.1 实际运行的 Lantern Woods 像素原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-run-pixel.png)
+![Godot 4.7.1 实际运行的 Lantern Woods 像素原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-run-pixel.png)
 
 原型中的三颗光晶会检查玩家距离并更新 `LIGHT 0/3`。截图停在第一次收集前，因此三颗仍然都在场景里；实际操作时可以依次走近它们验证计数。
 
@@ -42876,7 +43262,7 @@ Godot 能打开项目后，先按 F6 运行当前场景或按 F5 运行主场景
 
 《Wrought Flesh》由 Miziziziz 制作，是已经正式发行的 3D 生物朋克动作 RPG。Godot 官方 Showcase 列出了器官属性系统、武器、敌人、Boss、任务和多个生态区域。
 
-![Godot Showcase 中的 Wrought Flesh 官方展示图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-case-wrought-flesh.webp)
+![Godot Showcase 中的 Wrought Flesh 官方展示图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-case-wrought-flesh.webp)
 
 图片与案例来源：[Godot Showcase — Wrought Flesh](https://godotengine.org/showcase/wrought-flesh/)。
 
@@ -42918,7 +43304,7 @@ Godot 能打开项目后，先按 F6 运行当前场景或按 F5 运行主场景
 
 这是本机实际运行的 3D 场景。地面和悬浮平台仍然是简单几何体，所以它诚实地说只是灰盒原型；但方向光、投影、环境颜色、发光材质和目标门都已经真实生效。
 
-![Godot 4.7.1 实际运行的 Signal Garden 3D 灰盒原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-run-3d.png)
+![Godot 4.7.1 实际运行的 Signal Garden 3D 灰盒原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/godot-game-development/images/godot-run-3d.png)
 
 图中角色是带碰撞体的 `CharacterBody3D`，摄像机跟随玩家；两个晶体会旋转，悬浮平台会上下移动。阴影能帮助判断物体离地高度，发光门则告诉玩家移动方向。这些反馈在正式模型进场以前就应该跑通。
 
@@ -43006,13 +43392,13 @@ Apple Developer 的团队文章很适合看真实产品怎样采用 SwiftUI，�
 
 Tiimo 是一款面向神经多样性人群的计划工具，提供 iPhone、iPad 和 Apple Watch 版本。团队没有为了追新技术一次重写全部应用，而是结合产品路线逐步迁移，让无障碍、动画和多设备支持更容易维护。
 
-![Apple Developer 展示 Tiimo 在 iPhone 上的真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/apple-tiimo-swiftui-case.jpg)
+![Apple Developer 展示 Tiimo 在 iPhone 上的真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/apple-tiimo-swiftui-case.jpg)
 
 图片与案例来源：[Tiimo 团队为什么迁移到 SwiftUI](https://developer.apple.com/articles/tiimo/)。Apple 的文章还列出了团队规模、支持设备和实际迁移考虑，很适合小团队参考。
 
 Copilot Money 是另一个完全不同的产品：它会整理账户、交易和现金流。这个应用最初使用 Swift 和 UIKit，后来把新的 Cash Flow 功能用 SwiftUI 与 Swift Charts 做出来，并让 iOS 和 macOS 版本共享更多实现。
 
-![Copilot Money 用 Swift Charts 展示真实现金流数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/apple-copilot-money-case.jpg)
+![Copilot Money 用 Swift Charts 展示真实现金流数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/apple-copilot-money-case.jpg)
 
 图片与案例来源：[Copilot Money 如何采用 Swift Charts](https://developer.apple.com/articles/copilot-money/)。它说明成熟 App 不必在 UIKit 和 SwiftUI 之间二选一，新页面和新功能可以逐步采用 SwiftUI。
 
@@ -43030,45 +43416,45 @@ Apple 的[企业开发入口](https://developer.apple.com/business/get-started/)
 
 用户输入现有食材，应用生成一份菜谱，并把确认过的结果保存在本机。教程从 Xcode 空项目开始，依次完成模拟器运行、AI 修改、后端接口、本地存储、真机测试和 App Store 发布准备。
 
-![冰箱大厨 iOS 应用成品](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image47.png)
+![冰箱大厨 iOS 应用成品](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image47.webp)
 
 #### 1. 准备设备和工具
 
 iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPhone 和 Apple ID；只有模拟器测试时，可以暂时不接手机。
 
-![Mac 与 iPhone 开发环境](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image1.png)
+![Mac 与 iPhone 开发环境](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image1.png)
 
 从 Mac App Store 安装 Xcode，第一次启动时等待开发组件安装完成。
 
-![Xcode 欢迎界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image12.png)
+![Xcode 欢迎界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image12.png)
 
 如果后面要连接 iPhone，在手机“隐私与安全”里开启开发者模式。菜单位置可能随 iOS 版本变化，以手机当前提示为准。
 
-![在 iPhone 开启开发者模式](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image9.png)
+![在 iPhone 开启开发者模式](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image9.webp)
 
 #### 2. 创建并运行空白项目
 
 在 Xcode 欢迎页选择 **Create New Project**。
 
-![在 Xcode 创建新项目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image14.png)
+![在 Xcode 创建新项目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image14.png)
 
 模板选择 iOS App，界面使用 SwiftUI，语言使用 Swift。
 
-![选择 iOS App 模板](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image15.png)
+![选择 iOS App 模板](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image15.png)
 
 项目名填写 `FridgeChef`，Organization Identifier 使用自己的反向域名。需要本地历史记录时，可以选择 SwiftData；如果模板提供的选项不同，也可以稍后再增加。
 
-![填写项目名称、团队和 Bundle Identifier](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image16-private-redacted.png)
+![填写项目名称、团队和 Bundle Identifier](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image16-private-redacted.webp)
 
 选择保存位置并创建项目。
 
-![选择 Xcode 项目保存位置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image17-cropped.png)
+![选择 Xcode 项目保存位置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image17-cropped.webp)
 
 先不要改代码。顶部选择一台 iPhone 模拟器，点击 Run。
 
-![在 Xcode 选择模拟器并运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image19.png)
+![在 Xcode 选择模拟器并运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image19.png)
 
-![空白 SwiftUI 应用在模拟器中运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image21.png)
+![空白 SwiftUI 应用在模拟器中运行](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image21.webp)
 
 空白应用能启动，才说明 Xcode、SDK、签名和模拟器已经连通。
 
@@ -43080,11 +43466,11 @@ iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPho
 
 > 请把当前 SwiftUI 首页改成冰箱大厨。首页显示食材输入框、生成菜谱按钮和历史记录空状态，先使用演示数据。
 
-![AI 读取 iOS 项目并开始修改](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image23-terminal-cropped.png)
+![AI 读取 iOS 项目并开始修改](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image23-terminal-cropped.webp)
 
 回到 Xcode 重新运行。第一轮只看输入框、按钮和空状态，不接网络。
 
-![SwiftUI 首页第一版](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image25.png)
+![SwiftUI 首页第一版](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image25.png)
 
 如果布局不适合小屏幕：
 
@@ -43120,7 +43506,7 @@ iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPho
 
 在 Xcode 中创建 SwiftData 模型或当前项目使用的本地数据模型。
 
-![在 Xcode 配置本地菜谱数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image29.png)
+![在 Xcode 配置本地菜谱数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image29.webp)
 
 > 请把用户确认的菜谱保存到本机，并在首页按时间倒序显示。删除前需要确认，空数据库显示空状态。
 
@@ -43136,13 +43522,13 @@ iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPho
 
 图标应为自己创作或确认有权使用的素材。生成 1024×1024 原图后，拖入 Assets 中对应的 App Icon 资源。
 
-![准备冰箱大厨图标](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image31.png)
+![准备冰箱大厨图标](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image31.png)
 
-![把图标放入 Xcode Assets](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image34.png)
+![把图标放入 Xcode Assets](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image34.webp)
 
 重新运行，确认模拟器桌面和应用切换器里都显示新图标。
 
-![带正式图标的冰箱大厨](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image36.png)
+![带正式图标的冰箱大厨](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image36.webp)
 
 #### 8. 做一次完整模拟器验收
 
@@ -43160,7 +43546,7 @@ iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPho
 
 > 我执行【操作】后出现【现象】。Xcode 错误是【内容】。请只修复这一项，并告诉我怎样复测。
 
-![在 Xcode 查看编译和运行错误](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image42.png)
+![在 Xcode 查看编译和运行错误](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image42.webp)
 
 日志里不要写完整菜谱输入、用户 Token、联系方式或服务器密钥。
 
@@ -43168,17 +43554,17 @@ iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPho
 
 用数据线连接 iPhone，首次连接时在手机上选择信任。
 
-![将 iPhone 连接到 Mac](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image39.png)
+![将 iPhone 连接到 Mac](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image39.png)
 
-![在 iPhone 上信任这台电脑](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image40-device-redacted.png)
+![在 iPhone 上信任这台电脑](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image40-device-redacted.webp)
 
 回到 Xcode，在顶部设备列表选择自己的 iPhone，确认 Signing & Capabilities 中选择了正确团队，再点击 Run。
 
-![冰箱大厨安装到真实 iPhone](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image41.png)
+![冰箱大厨安装到真实 iPhone](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image41.webp)
 
 个人 Apple ID 可以用于开发调试，但签名有效期和能力有限。系统要求信任开发者时，根据手机当前提示操作。
 
-![在 iPhone 设备管理中信任开发应用](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image45.png)
+![在 iPhone 设备管理中信任开发应用](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image45.png)
 
 真机重点测试键盘、网络切换、后台恢复、深色模式、动态字体和真实触摸区域。
 
@@ -43186,7 +43572,7 @@ iOS 应用需要一台能运行当前 Xcode 的 Mac。真机测试还需要 iPho
 
 准备上架时，需要加入 Apple Developer Program，在 App Store Connect 创建 App 条目，并通过 Xcode 上传归档构建。
 
-![App Store Connect 发布入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/ios-app/images/image46.png)
+![App Store Connect 发布入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/ios-app/images/image46.png)
 
 账号费用、SDK 要求、隐私清单和审核规则会变化，提交时以 Apple 当前后台和官方文档为准。
 
@@ -43304,7 +43690,7 @@ NFT 也不等于图片。图片、名称和说明通常放在 metadata（内容�
 
 Ticketmaster 曾把 NFT 数字藏品直接接入活动体验。用户购票或入场后，可以领取一份与活动相关的数字纪念品，不需要先理解复杂的链上操作。
 
-![Ticketmaster 官方展示的 NFT 数字藏品界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-real-ticketmaster.png)
+![Ticketmaster 官方展示的 NFT 数字藏品界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-real-ticketmaster.png)
 
 Ticketmaster 在 2023 年发布的 [AFLW 数字藏品案例](https://business.ticketmaster.com/digital-collectibles-go-global-with-the-aflw/)中写到，当时这套能力已经在 4,000 场活动中铸造超过 1,450 万份数字藏品。这里值得参考的不是交易，而是它把领取入口放进原有票务流程，普通用户看到的是活动纪念品，不是一串合约调用。
 
@@ -43314,7 +43700,7 @@ POAP 是 Proof of Attendance Protocol 的缩写。活动组织者可以给到场
 
 下面这枚 WNBA Commissioner’s Cup 徽章来自 POAP 官方首页展示的真实案例：
 
-![POAP 官方展示的 WNBA 活动参与徽章](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-real-poap-wnba.webp)
+![POAP 官方展示的 WNBA 活动参与徽章](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-real-poap-wnba.webp)
 
 图片与产品说明来源：[POAP 官方网站](https://poap.xyz/)和 [POAP Help Center](https://help.poap.xyz/hc/en-us/articles/9494654007437-What-is-POAP-)。POAP 的官方说明把这类徽章定义为 ERC-721 Token，用来记录参加线下或线上活动、社区治理和协作项目等经历。
 
@@ -43329,7 +43715,7 @@ POAP 是 Proof of Attendance Protocol 的缩写。活动组织者可以给到场
 - 应用负责领取、查看、转移和展示；
 - 后端负责发行资格、运营规则、密钥托管、监控和用户支持。
 
-![NFT 合约、metadata 和应用界面的关系](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-architecture.svg)
+![NFT 合约、metadata 和应用界面的关系](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-architecture.svg)
 
 NFT 并不是把整张图片直接塞进链上。常见做法是由合约保存 `tokenURI`，应用再通过这个地址读取 metadata。Token 的所有权也不自动等于图片版权，品牌授权和使用范围仍然需要单独写清楚。
 
@@ -43360,7 +43746,7 @@ NFT 并不是把整张图片直接塞进链上。常见做法是由合约保存 
 
 这次实际运行的链 ID 是 `31337`，Solidity 编译器是 `0.8.30`：
 
-![本地模拟链与编译环境的实际运行结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-environment.jpg)
+![本地模拟链与编译环境的实际运行结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-environment.jpg)
 
 这些账户和余额只存在于本地实验中，不是真实资产。公开教程里也不要展示真实钱包的私钥或助记词。
 
@@ -43392,7 +43778,7 @@ NFT 并不是把整张图片直接塞进链上。常见做法是由合约保存 
 
 调整到双方支持的 EVM 版本以后，合约成功部署，管理员也铸造了 Token `0`：
 
-![合约编译、部署和第一次铸造的实际结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-deploy-mint.jpg)
+![合约编译、部署和第一次铸造的实际结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-deploy-mint.jpg)
 
 #### 5. 把写入结果读回来
 
@@ -43420,7 +43806,7 @@ NFT 并不是把整张图片直接塞进链上。常见做法是由合约保存 
 
 实际结果是普通账户被拒绝，没有生成新 Token；管理员再次铸造后得到 Token `1`，下一个编号变成 `2`。
 
-![普通账户失败和管理员再次铸造的实际结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-permission-test.jpg)
+![普通账户失败和管理员再次铸造的实际结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-permission-test.jpg)
 
 这里失败才是正确结果。权限测试如果只验证管理员成功，没有验证普通账户失败，就只完成了一半。
 
@@ -43428,7 +43814,7 @@ NFT 并不是把整张图片直接塞进链上。常见做法是由合约保存 
 
 最后重新启动本地实验，从编译一直跑到第二次铸造。下面是这次完整运行结果：
 
-![Vibe Certificate 本地编译、部署、铸造与权限验证结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-run-result.jpg)
+![Vibe Certificate 本地编译、部署、铸造与权限验证结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/nft-minting/images/nft-local-run-result.jpg)
 
 合约地址和账户地址都是模拟链生成的测试地址。重启本地链以后，地址和状态可以全部重置。
 
@@ -43504,7 +43890,7 @@ Token 编号重复：
 
 PWA 适合轻量工具、门店表单、活动应用、内部门户和离线采集页面。它仍然是网站，不等于所有系统能力都和原生 App 一样。
 
-![番茄农场 PWA 成品界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image0.png)
+![番茄农场 PWA 成品界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image0.webp)
 
 #### 别人把 PWA 做成了什么
 
@@ -43516,7 +43902,7 @@ PWA 这个名字听起来像一种新的 App，其实它首先还是网页。用
 
 Starbucks 把点单、菜单、会员入口和门店选择放进了 PWA。用户在手机浏览器里就能打开，也可以把它加到主屏幕。下面这张真实界面里，地址栏显示的是网页地址，底部已经出现“添加到主屏幕”的入口。
 
-![Starbucks PWA 的主屏幕安装入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/pwa-real-starbucks.jpg)
+![Starbucks PWA 的主屏幕安装入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/pwa-real-starbucks.jpg)
 
 它适合咖啡点单，是因为用户的目标很短：看菜单、选门店、下单，然后离开。菜单和购物车可以尽量在弱网时继续使用，真正提交订单和付款时再明确要求联网。
 
@@ -43528,7 +43914,7 @@ Microsoft 的 [PWA 企业案例汇总](https://learn.microsoft.com/en-us/microso
 
 Pinterest 的情况不一样。它本来就有成熟的网站，希望 Windows 用户能从开始菜单和任务栏直接打开，同时继续复用网页团队已经维护的功能。
 
-![Pinterest PWA 在桌面和手机上的界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/pwa-real-pinterest.jpg)
+![Pinterest PWA 在桌面和手机上的界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/pwa-real-pinterest.jpg)
 
 Pinterest 工程团队在[发布 Windows 应用时](https://medium.com/pinterest-engineering/building-the-pinterest-app-for-windows-10-5e29f2146f7d)明确说明，这个应用建立在 PWA 之上，并使用 Manifest、Service Worker、缓存和通知能力。这样既保留了熟悉的网页体验，也能进入 Microsoft Store，像普通桌面应用一样启动。界面图来自 [Codica 的 PWA 产品展示](https://www.codica.com/blog/codica-named-top-pwa-development-firm/)。
 
@@ -43538,7 +43924,7 @@ Pinterest 工程团队在[发布 Windows 应用时](https://medium.com/pinterest
 
 微软还做了一个真实工具 [PWABuilder](https://www.pwabuilder.com/)。输入网站地址后，它会检查 Manifest、Service Worker、安全配置和应用信息，告诉你还缺什么。
 
-![PWABuilder 对真实网站给出的检查报告](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/pwa-real-pwabuilder-report.png)
+![PWABuilder 对真实网站给出的检查报告](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/pwa-real-pwabuilder-report.png)
 
 报告通过以后，还可以继续生成不同应用商店需要的包。它不是把任何网站一键变成优秀 App，而是把“检查配置、补资料、生成商店包”这段重复工作做成了工具。微软官方的 [PWA 打包说明](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/pwa/turn-your-website-pwa)给出了完整流程。
 
@@ -43556,7 +43942,7 @@ PWA 也不只用来做面向消费者的产品。Microsoft Power Pages 可以把
 
 PWA 不是一种新的编程语言，也不是把网页套进一个安装包就结束了。它仍然从普通网页开始，再由 Manifest 告诉系统“安装后叫什么、用哪个图标”，由 Service Worker 处理缓存和离线访问。
 
-![网页、Manifest、Service Worker 和本地数据的关系](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image1.png)
+![网页、Manifest、Service Worker 和本地数据的关系](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image1.png)
 
 图里的四部分各管一件事：
 
@@ -43581,11 +43967,11 @@ PWA 不是一种新的编程语言，也不是把网页套进一个安装包就�
 
 准备两张正方形图标，放进公开资源目录。
 
-![PWA 的 192 像素应用图标](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/icon-192.png)
+![PWA 的 192 像素应用图标](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/icon-192.png)
 
-![PWA 的 512 像素应用图标](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/icon-512.png)
+![PWA 的 512 像素应用图标](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/icon-512.png)
 
-![在 Vite 配置中增加 PWA 插件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image2.png)
+![在 Vite 配置中增加 PWA 插件](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image2.png)
 
 开发服务器里不一定能完整表现生产 Service Worker。先确认配置能编译，离线测试放到生产预览阶段。
 
@@ -43593,13 +43979,13 @@ PWA 不是一种新的编程语言，也不是把网页套进一个安装包就�
 
 > 请把首页改成番茄农场。包含 25 分钟计时器、积分、三块菜地和种子商店；先用本机数据，不做登录和云同步。
 
-![AI 修改番茄农场页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image3.png)
+![AI 修改番茄农场页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image3.webp)
 
 运行后应看到计时器、积分、菜地和商店。
 
-![番茄农场首页与计时器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image10.png)
+![番茄农场首页与计时器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image10.png)
 
-![番茄农场的菜地和商店](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image11.png)
+![番茄农场的菜地和商店](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image11.png)
 
 不要为了测试等 25 分钟。增加仅在开发环境可见的“立即完成一次”按钮，生产构建不显示。
 
@@ -43609,7 +43995,7 @@ PWA 不是一种新的编程语言，也不是把网页套进一个安装包就�
 
 > 请给作物增加幼苗、生长和成熟三种状态。收获后增加积分，并阻止同一块地重复种植。
 
-![不同生长阶段的作物](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image4.png)
+![不同生长阶段的作物](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image4.webp)
 
 验证：积分不足不能购买；空地才能种植；未成熟不能收获；收获后积分只增加一次。
 
@@ -43617,7 +44003,7 @@ PWA 不是一种新的编程语言，也不是把网页套进一个安装包就�
 
 > 请给种植和收获增加轻微动画，并尊重系统的“减少动态效果”设置。
 
-![番茄农场的操作反馈](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image5.png)
+![番茄农场的操作反馈](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image5.webp)
 
 #### 6. 保存本机数据
 
@@ -43652,7 +44038,7 @@ npm run preview
 
 支持安装的桌面浏览器可能在地址栏或菜单里显示“安装应用”。安装入口由浏览器、系统和站点状态共同决定，不要只检查某一个图标。
 
-![在桌面浏览器安装番茄农场 PWA](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image6.png)
+![在桌面浏览器安装番茄农场 PWA](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image6.webp)
 
 安装后从系统应用列表启动，确认它以独立窗口打开，名称和图标正确。
 
@@ -43660,7 +44046,7 @@ npm run preview
 
 先在线打开一次生产预览，让 Service Worker 完成缓存。然后在开发者工具 Network 面板切换 Offline，再刷新。
 
-![在开发者工具检查 Service Worker 和离线缓存](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image7.png)
+![在开发者工具检查 Service Worker 和离线缓存](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image7.webp)
 
 成功标准：
 
@@ -43698,7 +44084,7 @@ Service Worker 在生产环境需要安全上下文，常见托管平台会提�
 
 在 Android 浏览器中打开 HTTPS 地址，从浏览器菜单选择“安装应用”或“添加到主屏幕”。不同品牌菜单文字可能不同。
 
-![在 Android 手机上安装 PWA](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image8.png)
+![在 Android 手机上安装 PWA](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image8.webp)
 
 在 iPhone 上打开页面，通过浏览器分享菜单选择“添加到主屏幕”。系统和浏览器版本会影响入口位置，以当前界面为准。
 
@@ -43708,7 +44094,7 @@ Service Worker 在生产环境需要安全上下文，常见托管平台会提�
 
 打开 Chrome DevTools 的 Lighthouse，检查性能、可访问性和最佳实践。新版 Lighthouse 的分类可能调整，不要把“PWA 必须满分”当成验收条件。
 
-![使用 Lighthouse 检查番茄农场](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image9.png)
+![使用 Lighthouse 检查番茄农场](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/pwa-local-app/images/image9.png)
 
 重点修复会影响真实用户的问题：图标缺失、离线白屏、按钮不可访问、资源过大和首屏加载慢。
 
@@ -43770,11 +44156,11 @@ Qt 不是一套买来就能用的 SCADA 或 PLC 软件，而是企业拿来开�
 
 BOMAG 的 myCOCKPIT 用在压路机等工程机械上。屏幕要让驾驶员快速看到作业参数、车速、温度和设备状态，常用操作也要足够大，戴着手套仍然容易点击。
 
-![BOMAG myCOCKPIT 真实 HMI 界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-enterprise-bomag-mycockpit.png)
+![BOMAG myCOCKPIT 真实 HMI 界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-enterprise-bomag-mycockpit.webp)
 
 单独看界面还不容易理解它为什么属于工业软件。装进驾驶室以后就清楚了：中间的 Qt 显示屏只是整台机器的一部分，它要和控制器、摄像头、传感器及车辆总线一起工作。
 
-![BOMAG 工程机械驾驶室中的 myCOCKPIT 显示终端](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-enterprise-bomag-in-vehicle.jpg)
+![BOMAG 工程机械驾驶室中的 myCOCKPIT 显示终端](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-enterprise-bomag-in-vehicle.jpg)
 
 Qt 官方案例提到，BOMAG 使用 Qt 已经超过十年，同一套 HMI 思路还要适应不同尺寸和不同设备。图片与案例来源：[BOMAG Built with Qt](https://www.qt.io/development/bomag-built-with-qt)。
 
@@ -43782,7 +44168,7 @@ Qt 官方案例提到，BOMAG 使用 Qt 已经超过十年，同一套 HMI 思�
 
 机器人示教器是操作员配置动作、查看程序和排查问题的手持终端。它不能只追求“好看”，还要让工程师在生产现场很快找到当前步骤、执行结果和故障原因。
 
-![Agile Robots 真实机器人示教终端](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-enterprise-agile-robots-interface.jpg)
+![Agile Robots 真实机器人示教终端](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-enterprise-agile-robots-interface.jpg)
 
 Agile Robots 的官方案例介绍了它们怎样用一套 Qt 代码同时服务 Windows 和 Linux，并让研发测试界面与生产现场保持一致。图片与案例来源：[Agile Robots Built with Qt](https://www.qt.io/agile-robots-built-with-qt)。
 
@@ -43794,7 +44180,7 @@ Agile Robots 的官方案例介绍了它们怎样用一套 Qt 代码同时服务
 
 Parker Application Designer 是给设备制造商使用的 HMI 设计工具。它不是某一台机器的固定页面，而是让工程机械厂商自己安排按钮、仪表和应用，再部署到 Parker Pro Display 上。
 
-![Parker Pro Display 上的真实应用入口界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-reference-parker-hmi.png)
+![Parker Pro Display 上的真实应用入口界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-reference-parker-hmi.png)
 
 这个案例值得看的不是图标样式，而是“平台化”：同一块显示终端可以装入不同应用，设备厂商不需要为每款机器重新做一整套界面。Parker 的工程师也在案例中介绍了 QML 在这套软件中的作用。图片与案例来源：[Parker Hannifin Built with Qt](https://www.qt.io/development/parker-hannifin-built-with-qt)。
 
@@ -43802,7 +44188,7 @@ Parker Application Designer 是给设备制造商使用的 HMI 设计工具。�
 
 船上的电力、推进、压载水和报警来自不同系统，操作员却需要在一套界面里看到它们。Blue Ctrl 的 X-CONNECT 把设备配置、实时状态、报警和趋势放进同一套船舶自动化平台。
 
-![Blue Ctrl X-CONNECT 船舶自动化平台的真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-reference-blue-ctrl.jpg)
+![Blue Ctrl X-CONNECT 船舶自动化平台的真实界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-reference-blue-ctrl.jpg)
 
 这张图很适合观察企业上位机的信息层级：总览页只放最重要的状态，报警页面强调异常，详细参数再进入下一层查看。图片与案例来源：[Blue Ctrl Built with Qt](https://www.qt.io/blue-ctrl-built-with-qt)。
 
@@ -43810,7 +44196,7 @@ Parker Application Designer 是给设备制造商使用的 HMI 设计工具。�
 
 Precision Planting 的 20|20 显示终端安装在农业机械上。播种或收获时，它会把多行作业数据、速度、覆盖情况和异常位置持续显示给驾驶员。
 
-![Precision Planting 20|20 农业设备实时监视器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-reference-precision-planting.webp)
+![Precision Planting 20|20 农业设备实时监视器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-reference-precision-planting.webp)
 
 它和普通数据大屏的区别很明显：驾驶员正在操作机器，不能停下来阅读长段文字，所以颜色、位置和报警必须一眼就能看懂。图片与案例来源：[Precision Planting Built with Qt](https://www.qt.io/precision-planting-built-with-qt)。
 
@@ -43832,7 +44218,7 @@ Precision Planting 的 20|20 显示终端安装在农业机械上。播种或收
 
 下位机直接靠近生产设备和现场信号，常见的有 PLC、MCU、运动控制器、机器人控制器、数据采集板和远程 I/O。它会按照固定周期读取温度、压力、限位开关等输入，再控制电机、阀门、继电器等输出。
 
-![下位机读取现场输入、执行控制逻辑并驱动设备](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-lower-computer-explained.svg)
+![下位机读取现场输入、执行控制逻辑并驱动设备](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-lower-computer-explained.svg)
 
 它负责的是设备真正的控制动作，包括运行顺序、速度控制、条件判断、安全联锁和故障保护。即使上位机突然退出、网络断开或操作界面卡住，下位机仍然应该让设备保持安全，而不是等上位机回来以后才处理。
 
@@ -43842,7 +44228,7 @@ Precision Planting 的 20|20 显示终端安装在农业机械上。播种或收
 
 上位机是人观察和管理设备的入口，通常运行在工业电脑、工程师站、控制室工作站或设备触摸屏上。HMI、SCADA 客户端和设备运营平台都可以属于上位机软件，Qt 最常出现在这一层。
 
-![Qt 上位机把设备数据整理成状态、趋势、报警和操作入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-upper-computer-explained.svg)
+![Qt 上位机把设备数据整理成状态、趋势、报警和操作入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-upper-computer-explained.svg)
 
 它把下位机传来的原始数据变成操作员能看懂的状态、趋势和报警，也负责配方管理、参数下发、历史记录和报表。上位机可以发出“启动设备”“切换配方”或“把目标温度改为 80℃”这样的请求，但最终能不能执行，仍然要由下位机检查现场条件。
 
@@ -43856,7 +44242,7 @@ Precision Planting 的 20|20 显示终端安装在农业机械上。播种或收
 
 一句话记忆就是：**下位机负责把设备控制正确，上位机负责让人看得懂、管得住、查得到。**
 
-![传感器、下位机、通信协议和 Qt 上位机之间的关系](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-upper-lower-architecture.svg)
+![传感器、下位机、通信协议和 Qt 上位机之间的关系](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-upper-lower-architecture.svg)
 
 放到这篇教程里就很容易理解了：本地 TCP 设备模拟器扮演一个简化的下位机，持续发送压力、温度和振动；PySide6 客户端就是上位机，负责连接设备、显示趋势、触发报警并保存记录。这个模拟器只用于学习通信和断线处理，并不具备真实 PLC 的实时控制与安全联锁能力。
 
@@ -43924,7 +44310,7 @@ Qt 最常见的语言组合不是只有一种，通常要看软件运行在哪�
 
 这是最后从打包目录启动的成品：
 
-![从 macOS 独立应用包启动的 Plant Operations Console，历史报警仍然存在](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-packaged-app.jpg)
+![从 macOS 独立应用包启动的 Plant Operations Console，历史报警仍然存在](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-packaged-app.jpg)
 
 本篇使用 Qt 官方的 Python 绑定 **PySide6**。它仍然是 Qt 6，只是比第一次就配置 C++、CMake 和编译器更容易跟着做。等界面和数据链路稳定后，再根据团队情况决定要不要迁移到 C++。
 
@@ -43952,7 +44338,7 @@ AI 完成后，按它给出的方式启动程序。第一版不需要登录、�
 
 我本机运行后的结果如下。右上角显示“模拟运行中”，底部数据源是 `SIMULATOR`：
 
-![Qt 客户端使用模拟数据运行，压力、温度、振动和趋势持续更新](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-simulator.jpg)
+![Qt 客户端使用模拟数据运行，压力、温度、振动和趋势持续更新](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-simulator.jpg)
 
 如果文字被遮住或窗口缩放后布局错乱，只改布局：
 
@@ -43970,11 +44356,11 @@ AI 完成后，按它给出的方式启动程序。第一版不需要登录、�
 
 客户端连接成功后，状态变成“设备已连接”，数据来源变成 `TCP`，页面数值也开始跟着模拟器变化：
 
-![Qt 客户端成功连接本机 TCP 设备模拟器，数据来源显示为 127.0.0.1:50200](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-device-connected.jpg)
+![Qt 客户端成功连接本机 TCP 设备模拟器，数据来源显示为 127.0.0.1:50200](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-device-connected.jpg)
 
 接着直接关闭设备模拟器。客户端不能卡住，也不能继续假装在线。我本机关闭以后，状态立即变成了“设备已断开”：
 
-![关闭设备模拟器后，Qt 客户端显示设备已断开并保留最后一次数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-device-disconnected.jpg)
+![关闭设备模拟器后，Qt 客户端显示设备已断开并保留最后一次数据](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-device-disconnected.jpg)
 
 重新启动模拟器，再点一次“连接设备”，连接也恢复成功。
 
@@ -43992,7 +44378,7 @@ AI 完成后，按它给出的方式启动程序。第一版不需要登录、�
 
 点击“测试报警”后，温度升到测试值，趋势出现尖峰，右侧出现红色报警卡片：
 
-![点击测试报警后，Qt 客户端显示高温报警、趋势尖峰和待确认记录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-alarm.jpg)
+![点击测试报警后，Qt 客户端显示高温报警、趋势尖峰和待确认记录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-alarm.jpg)
 
 报警至少要写清楚时间、内容和状态。只显示一句“温度过高”，以后很难追查什么时候发生、有没有处理。
 
@@ -44008,11 +44394,11 @@ AI 完成后，按它给出的方式启动程序。第一版不需要登录、�
 
 我先确认了刚才的报警，列表状态从“待确认”变成“已确认”：
 
-![确认报警后，SQLite 列表中的状态更新为已确认](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-sqlite-saved.jpg)
+![确认报警后，SQLite 列表中的状态更新为已确认](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-sqlite-saved.jpg)
 
 然后关闭整个应用，再重新启动。刚才那条报警仍然在列表里，说明这不是只存在页面内存里的假数据：
 
-![完全关闭并重启 Qt 应用后，SQLite 中的已确认报警记录仍然存在](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-restart-persisted.jpg)
+![完全关闭并重启 Qt 应用后，SQLite 中的已确认报警记录仍然存在](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-restart-persisted.jpg)
 
 如果重启以后记录消失，直接说：
 
@@ -44034,7 +44420,7 @@ AI 完成后，按它给出的方式启动程序。第一版不需要登录、�
 
 最后使用 macOS 自带的磁盘映像工具生成 DMG，并完成完整性校验。Finder 里可以看到 105.2 MB 的独立应用和 44.5 MB 的磁盘映像：
 
-![Finder 列表中显示实际生成的 PlantOperationsConsole 应用和 DMG 文件及大小](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-package-files-cropped.png)
+![Finder 列表中显示实际生成的 PlantOperationsConsole 应用和 DMG 文件及大小](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/qt-industrial-hmi/images/qt-run-package-files-cropped.webp)
 
 本次生成的 DMG 校验结果是 `VALID`。它还没有做开发者证书签名和 Apple 公证，所以这里只适合本机和内部测试。准备公开发布时再补签名、公证和升级策略。
 
@@ -44135,7 +44521,7 @@ Shopify POS、Discord 和 MTA TrainTime 面向零售、社区交流和公共交�
 
 Shopify POS 通常放在收银台，或者拿在店员手里。顾客结账时要用它收款，找商品时要用它查库存，退换货时还要调出订单和顾客资料。门店忙起来以后，这些操作必须连得上、找得到，也不能让店员在几个系统之间来回切换。
 
-![Shopify POS 官方产品页展示的库存和门店界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/shopify-pos-product.jpg)
+![Shopify POS 官方产品页展示的库存和门店界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/shopify-pos-product.jpg)
 
 图片来自 [Shopify POS 官方产品页](https://apps.shopify.com/shopify-pos)。
 
@@ -44147,7 +44533,7 @@ Shopify 在正式采用 React Native 以前，专门用性能较低的 Android �
 
 Discord 是一个社区交流平台。用户会在里面聊天、加入语音频道、管理成员和设置不同角色。下面是 Discord 官方展示的手机端角色管理页面。
 
-![Discord 官方展示的 Android 角色页面改版前后](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/discord-react-native-roles.png)
+![Discord 官方展示的 Android 角色页面改版前后](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/discord-react-native-roles.png)
 
 图片来源：[Discord 官方博客：Android 切换到 React Native](https://discord.com/blog/android-react-native-framework-update)。
 
@@ -44159,7 +44545,7 @@ Discord 原来分别维护 Android 和 iPhone 应用，新功能经常不能同�
 
 纽约大都会运输署 MTA 用 Expo 开发 TrainTime 等出行应用。乘客可能在赶车时查下一班列车，在站台上买票，上车后再向工作人员出示车票。这些操作都发生在时间紧、网络环境不断变化的通勤途中。
 
-![Expo 官方案例展示的 MTA TrainTime 应用](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-mta-case.png)
+![Expo 官方案例展示的 MTA TrainTime 应用](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-mta-case.webp)
 
 图片来源：[Expo 官方 MTA 案例](https://expo.dev/customers/mta)。
 
@@ -44171,7 +44557,7 @@ MTA 的团队使用 Expo 提供的打包和更新服务。“打包”就是把�
 
 下面这张图展示三个部分的关系：中间是要创建的项目；React Native 负责把页面显示到手机上；Expo 负责启动项目，并在以后把它制作成测试应用。
 
-![React Native 与 Expo 的项目结构](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/react-native-expo-architecture.svg)
+![React Native 与 Expo 的项目结构](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/react-native-expo-architecture.svg)
 
 中间的项目保存页面和功能。React Native 负责把页面显示到 Android 和 iPhone，Expo 帮助项目启动和打包；同一套页面也可以在浏览器中打开。
 
@@ -44228,11 +44614,11 @@ Expo 官方的[创建项目教程](https://docs.expo.dev/tutorial/create-your-fi
 
 下面的截图来自本次创建的 Expo 项目，页面实际运行在浏览器中。
 
-![门店巡检应用真实运行在 Expo Web](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-web-running.png)
+![门店巡检应用真实运行在 Expo Web](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-web-running.png)
 
 浏览器窗口变窄后，内容应该变成手机宽度，按钮和文字不能挤在一起。
 
-![同一个 Expo Web 应用的窄屏布局](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-web-mobile-layout.png)
+![同一个 Expo Web 应用的窄屏布局](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-web-mobile-layout.png)
 
 这张窄屏图只用于检查页面在较窄窗口中的排列。Android 和 iPhone 的运行结果仍要在对应设备中验证。
 
@@ -44272,7 +44658,7 @@ Expo 官方的[创建项目教程](https://docs.expo.dev/tutorial/create-your-fi
 
 实际操作时，勾选“检查安全出口”以后，进度从 `1/4` 变成 `2/4`；输入“消防通道有纸箱，已通知值班员移走”并保存，记录出现在页面，输入框也恢复为空。
 
-![真实点击和保存后的巡检记录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-web-record-saved.png)
+![真实点击和保存后的巡检记录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/react-native-expo/images/expo-web-record-saved.png)
 
 文字记录完成后，可以使用 Expo 的拍照和相册工具 [ImagePicker](https://docs.expo.dev/versions/latest/sdk/imagepicker/)增加照片记录。
 
@@ -44438,7 +44824,7 @@ Android 跑通以后，再处理 iOS：
 
 下面是 VS Code 官方文档展示的真实评审页面。左边是待评审 PR 和改动文件，右边是 PR 描述、评审人、负责人和讨论：
 
-![GitHub Pull Requests 插件在 VS Code 中展示真实评审信息](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-github-pr.png)
+![GitHub Pull Requests 插件在 VS Code 中展示真实评审信息](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-github-pr.png)
 
 图片与功能说明来源：[VS Code 官方 GitHub 协作指南](https://code.visualstudio.com/docs/sourcecontrol/github)。
 
@@ -44452,7 +44838,7 @@ Android 跑通以后，再处理 iOS：
 
 下面是微软 Dev Containers 插件的真实命令面板。它没有重新设计一套窗口，而是把“在容器中重新打开项目”做成普通 VS Code 命令：
 
-![Dev Containers 插件在 VS Code 命令面板中的真实入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-dev-containers.png)
+![Dev Containers 插件在 VS Code 命令面板中的真实入口](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-dev-containers.png)
 
 图片与功能说明来源：[VS Code 官方 Dev Containers 文档](https://code.visualstudio.com/docs/devcontainers/containers)。
 
@@ -44466,7 +44852,7 @@ Salesforce 的例子更完整。[Salesforce Extension Pack](https://marketplace.
 
 下面是 Salesforce 官方文档提供的真实运行录屏。左侧是 Salesforce 项目和 Org Browser，底部可以看到 Salesforce CLI 正在读取组织中的对象定义：
 
-![Salesforce Extension Pack 在 VS Code 中连接组织并读取对象](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-salesforce.gif)
+![Salesforce Extension Pack 在 VS Code 中连接组织并读取对象](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-salesforce.gif)
 
 图片与功能说明来源：[Salesforce Extensions for Visual Studio Code](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/vscode-overview.html)。
 
@@ -44478,7 +44864,7 @@ Ansible Playbook 是描述服务器自动化任务的配置文件，会用来安
 
 Red Hat 的 [Ansible VS Code Extension](https://marketplace.visualstudio.com/items?itemName=redhat.ansible) 提供语法高亮、自动补全、实时校验、`ansible-lint` 和模块文档提示，也支持多根工作区和容器化执行环境。开发者不用先切到浏览器搜索模块参数，鼠标停在模块上就能看到它的作用和注意事项。
 
-![Ansible 插件在 Playbook 代码旁显示官方模块说明](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-ansible.png)
+![Ansible 插件在 Playbook 代码旁显示官方模块说明](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-ansible.png)
 
 图片来源：[Ansible VS Code Extension 官方仓库](https://github.com/ansible/vscode-ansible)；功能说明可参考 [Red Hat Ansible VS Code 指南](https://docs.ansible.com/projects/vscode-ansible/)。
 
@@ -44490,7 +44876,7 @@ Red Hat 的 [Ansible VS Code Extension](https://marketplace.visualstudio.com/ite
 
 下面的真实界面来自 VS Code 官方文档。开发者在 Container Explorer 中找到仓库镜像以后，可以从右键菜单拉取、复制摘要、查看清单，或者部署到 Azure 服务：
 
-![Container Tools 在 VS Code 中管理镜像仓库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-container-tools.png)
+![Container Tools 在 VS Code 中管理镜像仓库](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-real-container-tools.png)
 
 图片与功能说明来源：[VS Code Container Tools 文档](https://code.visualstudio.com/docs/containers/overview)。
 
@@ -44522,7 +44908,7 @@ Red Hat 的 [Ansible VS Code Extension](https://marketplace.visualstudio.com/ite
 
 这是 Engineering Guard 在 Extension Development Host 中的运行画面：
 
-![Engineering Guard 展示代码风险、合并门禁和负责人](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/engineering-guard-vscode.jpg)
+![Engineering Guard 展示代码风险、合并门禁和负责人](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/engineering-guard-vscode.jpg)
 
 先把边界说清楚：这不是一套真正的企业安全平台，也不能替代专业的 SAST、依赖扫描和代码审查。它只是用一个容易验证的小例子，带你跑通命令、规则、侧边栏、菜单、状态栏和 VSIX 打包。
 
@@ -44534,7 +44920,7 @@ Red Hat 的 [Ansible VS Code Extension](https://marketplace.visualstudio.com/ite
 
 微软官方的 Tree View 示例就是这种结构。下面是真实的 References 结果视图：文件是父节点，具体命中位置是子节点，点击后回到代码。
 
-![VS Code 官方 References Tree View 示例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-official-references-tree.png)
+![VS Code 官方 References Tree View 示例](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-official-references-tree.png)
 
 图片来源：[VS Code Tree View API](https://code.visualstudio.com/api/extension-guides/tree-view)。Engineering Guard 的问题列表也采用同样的原生交互，不需要为了显示几行结果就先做复杂 Web 页面。
 
@@ -44582,13 +44968,13 @@ Red Hat 的 [Ansible VS Code Extension](https://marketplace.visualstudio.com/ite
 
 VS Code 官方 Tree View 指南给出了独立活动栏入口的真实效果：
 
-![VS Code 官方 Tree View 独立活动栏与侧边栏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-official-tree-view.png)
+![VS Code 官方 Tree View 独立活动栏与侧边栏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-official-tree-view.png)
 
 图片来源：[VS Code Tree View API](https://code.visualstudio.com/api/extension-guides/tree-view)。
 
 Engineering Guard 的实际界面中，左侧保留检查入口，右侧显示命中的规则和风险等级：
 
-![Engineering Guard 侧边栏和检查结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/engineering-guard-sidebar.jpg)
+![Engineering Guard 侧边栏和检查结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/engineering-guard-sidebar.jpg)
 
 #### 5. 增加菜单和状态栏
 
@@ -44602,7 +44988,7 @@ Engineering Guard 的实际界面中，左侧保留检查入口，右侧显示�
 
 VS Code 的原生菜单可以出现在视图标题、列表项和右键菜单中。官方示例把这些位置标得很清楚：
 
-![VS Code 官方 View Actions 与右键菜单位置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-official-view-actions.png)
+![VS Code 官方 View Actions 与右键菜单位置](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/vscode-official-view-actions.png)
 
 图片来源：[VS Code Tree View API：View Actions](https://code.visualstudio.com/api/extension-guides/tree-view#view-actions)。
 
@@ -44616,7 +45002,7 @@ VS Code 的原生菜单可以出现在视图标题、列表项和右键菜单中
 
 现在从测试文件触发三条规则，确认文件名、行号、严重程度和建议都正确。最终结果应该类似下面这样：
 
-![Engineering Guard 的真实风险检查结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/engineering-guard-findings.jpg)
+![Engineering Guard 的真实风险检查结果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/vscode-extension/images/engineering-guard-findings.jpg)
 
 这里最重要的不是风险分数，而是每一条结果都能回答三个问题：哪里有问题、为什么有风险、下一步应该做什么。点击问题还要回到对应代码，不能让用户自己搜索行号。
 
@@ -44722,7 +45108,7 @@ Engineering Guard 还不是企业级代码安全产品，不过它的命令、�
 
 上一节看到的 Uber 小程序也是这样。用户看到的是地图、路线、叫车状态和付款页面，后端还要负责行程、司机匹配、订单状态和支付结果。
 
-![Uber 微信小程序中的路线、订单和支付页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/wechat-uber-mini-program.png)
+![Uber 微信小程序中的路线、订单和支付页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/wechat-uber-mini-program.png)
 
 图片与案例来源：[Uber 携手微信上线官方小程序](https://www.tencent.com/en-us/articles/2202137.html)。另外，2026 夏季达沃斯的官方小程序把会议信息、直播和互动服务放进了微信，可以参考腾讯的[夏季达沃斯微信小程序案例](https://www.tencent.com/en-us/articles/2202375.html)。
 
@@ -44754,7 +45140,7 @@ Engineering Guard 还不是企业级代码安全产品，不过它的命令、�
 
 如果你现在打开腾讯云最新版文档，会看到一个新的入口——**CloudBase AI 插件**。你可以把它理解成一个打包好的 AI 开发工具，一次帮你接上 MCP Server、Agent Skills 和 Hooks。你的 AI 工具如果已经支持一键安装，就优先选择这个入口。
 
-![腾讯云当前推荐的 CloudBase AI 一键插件页面（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-ai-plugin-current.jpg)
+![腾讯云当前推荐的 CloudBase AI 一键插件页面（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-ai-plugin-current.jpg)
 
 你可以把这套插件理解成专门给 AI 准备的“云开发说明书和操作工具”。接好以后，AI 不只是知道怎样写页面，还能按照 CloudBase 当前的规范理解云函数、微信身份、数据库权限和部署流程。
 
@@ -44777,9 +45163,9 @@ Northstar Service Hub 会同时用到四个工具，它们各自负责不同的�
 
 后面如果一时分不清该看哪个窗口，就按这个办法找：代码在 Trae，构建在 HBuilderX，小程序页面在微信开发者工具，云端数据和日志在 CloudBase 控制台。
 
-![在微信开发者工具中扫码登录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image5.png)
+![在微信开发者工具中扫码登录](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image5.png)
 
-![在 Trae 中打开真实项目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image6.png)
+![在 Trae 中打开真实项目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image6.png)
 
 ##### 2.2 确认小程序账号和 AppID
 
@@ -44787,7 +45173,7 @@ Northstar Service Hub 会同时用到四个工具，它们各自负责不同的�
 
 这一步和上一节完全相同：打开[微信公众平台](https://mp.weixin.qq.com/)，进入“开发管理 → 开发设置”，找到小程序唯一的 AppID。
 
-![在微信公众平台查看小程序 AppID](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image3.png)
+![在微信公众平台查看小程序 AppID](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image3.png)
 
 接着检查 HBuilderX 项目里的 AppID 是否和它一致，再确认微信开发者工具登录的是有这个小程序开发权限的账号。
 
@@ -44799,7 +45185,7 @@ CloudBase 整体优先推荐一键插件。Trae 当前仍按照腾讯云的专�
 
 打开腾讯云官方的 [Trae 配置指南](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/ide-setup/trae)，按照页面说明在 Trae 的 MCP 设置中加入 CloudBase。第一次使用时，优先选择官方的登录和环境选择流程，不要为了省一步把 SecretID、SecretKey 或 CloudBase API Key 粘贴进提示词。
 
-![腾讯云当前的 Trae 配置指南（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-trae-guide-current.jpg)
+![腾讯云当前的 Trae 配置指南（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-trae-guide-current.jpg)
 
 连接完成以后，我先没有急着让 AI 做页面，而是对它说：
 
@@ -44817,11 +45203,11 @@ CloudBase 整体优先推荐一键插件。Trae 当前仍按照腾讯云的专�
 
 腾讯云当前的创建环境指南会先让你根据场景选择入口。微信小程序从微信开发者工具里创建，环境会自动和当前小程序关联。
 
-![腾讯云当前的创建云开发环境指南（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-create-env-guide-current.jpg)
+![腾讯云当前的创建云开发环境指南（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-create-env-guide-current.jpg)
 
 如果你从 CloudBase 控制台进入，会先看到下面的登录页。这里可以使用腾讯云账号，也可以使用当前小程序所属的微信公众平台账号登录。
 
-![CloudBase 控制台当前登录页（本次实际打开并截图，未代替用户登录）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-console-current.jpg)
+![CloudBase 控制台当前登录页（本次实际打开并截图，未代替用户登录）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-console-current.jpg)
 
 第一次点击时，开发者工具会引导你创建环境。环境名称可以写成容易辨认的名字，例如 `northstar-dev`。
 
@@ -44843,7 +45229,7 @@ CloudBase 整体优先推荐一键插件。Trae 当前仍按照腾讯云的专�
 
 环境创建完成以后，回到 HBuilderX 和 Trae，打开上一节已经能运行的小程序项目。确认你修改的是源项目，而不是 HBuilderX 自动生成的 `unpackage` 编译结果。
 
-![在 Trae 中确认小程序基础文件已经准备好](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image11.png)
+![在 Trae 中确认小程序基础文件已经准备好](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image11.png)
 
 然后先运行一次原项目：
 
@@ -44875,15 +45261,15 @@ Trae 收到这条指令以后，会先阅读当前项目结构，判断应该增
 
 你可以在对话区看到它的计划，也可以看到每一次文件变更。
 
-![Trae 读取项目并说明修改计划](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image12.png)
+![Trae 读取项目并说明修改计划](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image12.png)
 
-![Trae 修改完成后提供变更摘要](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image13.png)
+![Trae 修改完成后提供变更摘要](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image13.png)
 
 如果你发现 AI 准备新建另一个项目，可以马上告诉它：“不要另建项目，只修改当前工作区。”
 
 如果这一轮结果不满意，也不用紧张。Trae 仍然提供回退能力，可以把工程恢复到本次修改之前。
 
-![使用回退恢复到 AI 修改之前](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image14.png)
+![使用回退恢复到 AI 修改之前](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image14.png)
 
 ##### 3.3 在 HBuilderX 和微信开发者工具中查看效果
 
@@ -44891,13 +45277,13 @@ AI 完成第一轮开发之后，代码已经落在项目里，但还没有看�
 
 回到 HBuilderX，选择“运行 → 运行到小程序模拟器 → 微信开发者工具”。
 
-![从 HBuilderX 运行到微信小程序模拟器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image16.png)
+![从 HBuilderX 运行到微信小程序模拟器](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image16.png)
 
 底部输出窗口会显示编译过程。如果最终没有报错，就可以切到微信开发者工具查看首页、创建工单和我的工单页面。
 
-![等待项目编译完成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image17.png)
+![等待项目编译完成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image17.png)
 
-![在微信开发者工具中查看运行效果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image18.png)
+![在微信开发者工具中查看运行效果](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image18.png)
 
 这一轮先只看界面：按钮好不好点、表单清不清楚、空状态有没有告诉用户下一步做什么。后端还没有真正接上，所以暂时看到演示数据是正常的。
 
@@ -44921,7 +45307,7 @@ AI 一开始生成的页面不一定刚好符合你的想法。在我这次尝�
 
 下面是 Northstar Service Hub 的页面效果：
 
-![Northstar Service Hub 企业客户服务小程序：会员、快速服务与售后工单](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/wechat-enterprise-service-hub.png)
+![Northstar Service Hub 企业客户服务小程序：会员、快速服务与售后工单](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/wechat-enterprise-service-hub.png)
 
 页面完成后，里面的工单仍然只是演示数据。下一步才让它真正保存到云端。
 
@@ -44973,7 +45359,7 @@ AI 修改完成后，再确认部署位置：
 
 部署完成后，打开 CloudBase 的文档型数据库，在“集合管理”中找到或创建工单集合。腾讯云当前的入口说明如下：
 
-![腾讯云当前的文档型数据库操作页（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-database-guide-current.jpg)
+![腾讯云当前的文档型数据库操作页（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-database-guide-current.jpg)
 
 接着在模拟器里提交一张工单。页面如果显示了工单编号，同时数据库里出现了一条记录，就说明第一张工单已经真正保存成功。
 
@@ -45025,7 +45411,7 @@ AI 生成的后端也不一定第一次就能完全跑通。有时候页面看�
 
 CloudBase 当前也提供日志检索。你可以按时间、资源和关键词找到刚才那一次调用，而不是在几百行输出里盲找。当前操作入口如下：
 
-![腾讯云当前的日志检索操作页（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-log-guide-current.jpg)
+![腾讯云当前的日志检索操作页（本次实际打开并截图）](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram-backend/images/cloudbase-log-guide-current.jpg)
 
 让 AI 输出日志时，可以保留请求编号、动作、工单编号、结果、耗时和错误码，但不要记录完整 OpenID、手机号、Token、密钥和工单敏感正文。
 
@@ -45061,15 +45447,15 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 确认 AppID、云环境和云函数版本都正确以后，在微信开发者工具中点击“上传”，填写版本号和项目备注。
 
-![在微信开发者工具中填写上传版本信息](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image27.png)
+![在微信开发者工具中填写上传版本信息](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image27.png)
 
-![等待小程序代码上传完成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image29.png)
+![等待小程序代码上传完成](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image29.png)
 
 上传完成后，回到微信公众平台的“版本管理”，把刚上传的开发版本设为体验版。
 
-![在公众平台查看开发版本](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image31.png)
+![在公众平台查看开发版本](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image31.png)
 
-![将上传版本设置为体验版](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image32.png)
+![将上传版本设置为体验版](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image32.png)
 
 注意：小程序前端上传成功，不代表云函数也自动更新了。每次修改后端以后，都要单独确认云函数已经部署到体验版正在使用的环境。
 
@@ -45109,7 +45495,7 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 #### 参考资料
 
-- [上一节：如何构建一个最简单的微信小程序](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram)
+- [上一节：如何构建一个最简单的微信小程序](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram)
 - [CloudBase 快速开始](https://docs.cloudbase.net/quick-start/)
 - [创建 CloudBase 云开发环境](https://docs.cloudbase.net/quick-start/create-env)
 - [CloudBase AI Toolkit](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/)
@@ -45146,7 +45532,7 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 真实产品不只是在微信里放几个网页。Uber 的微信小程序允许出境用户查询路线、叫车并使用微信支付，不需要另外下载 Uber App 或重新准备当地支付方式。
 
-![Uber 微信小程序中的真实叫车页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/wechat-uber-mini-program.png)
+![Uber 微信小程序中的真实叫车页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/wechat-uber-mini-program.png)
 
 图片与案例来源：[Uber 携手微信上线官方小程序](https://www.tencent.com/en-us/articles/2202137.html)。从这张图可以看到，地图、路线、车辆状态和支付都留在微信里的同一段流程中。
 
@@ -45198,13 +45584,13 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 1. 在浏览器地址栏输入 https://mp.weixin.qq.com ，打开微信公众平台网页，用你的微信扫码登录。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image1.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image1.webp)
 
 2. 在首页选择「小程序」，按照页面提示完成注册流程，填写邮箱、手机号以及主体类型（个人或企业）。
-   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image2.png)
+   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image2.png)
 3. 注册成功并进入后台后，找到「开发管理」或「开发设置」页面，就能看到一个唯一的编号，名字叫 AppID 。这个编号后面会用在项目配置里，相当于你这个小程序在微信里的身份证。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image3.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image3.png)
 
 把 AppID 保存在团队的项目配置记录里，不要把 AppSecret 截图、提交到公开仓库或发给 AI。
 
@@ -45214,7 +45600,7 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 2. 下载完成后，双击安装包，按照安装向导一步步点击下一步。如果你不清楚要改什么设置，保持默认选项就可以。
 3. 安装结束后，从桌面或开始菜单启动微信开发者工具。首次启动时，它会在屏幕上显示一个二维码，提示你用手机微信扫码登录。用自己的微信扫码并确认授权后，就可以进入主界面。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image4.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image5.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image4.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image5.png)
 
 登录后先停在主界面。项目构建完成以后，再回到这里查看运行效果。
 
@@ -45222,11 +45608,11 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 打开 [Trae 官网](https://www.trae.cn)，安装与当前系统匹配的版本。安装完成后先确认它能打开一个本地文件夹。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image6.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image6.png)
 
 接着从 [HBuilderX 官网](https://www.dcloud.io/hbuilderx.html) 下载对应版本。安装后能进入欢迎页即可，暂时不用研究其他功能。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image7.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image7.png)
 
 小程序账号、AppID、Trae、HBuilderX 和微信开发者工具都准备好以后，就可以创建项目了。
 
@@ -45234,19 +45620,19 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 1. 在 HBuilderX 中点击“新建项目”。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image8.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image8.png)
 
 2. 选择 uni-app 默认模板，填写项目名和保存位置，然后点击右下角“创建”。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image9.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image9.png)
 
 3. 等待 HBuilderX 创建项目。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image10.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image10.png)
 
 4. 在 Trae 中打开刚才创建的项目文件夹。左侧能看到项目文件，说明准备完成。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image11.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image11.png)
 
 #### 3. 小程序开发
 
@@ -45266,26 +45652,26 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 1. 对话区会说明准备增加哪些页面和游戏逻辑。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image12.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image13.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image12.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image13.png)
 
 2. 修改会直接落到当前项目文件。
 3. 完成后检查修改摘要，确认没有删除与任务无关的内容。
 
 如果方向明显不对，可以使用 Trae 的回退功能恢复这一轮修改。回退以后重新描述问题，不要在错误版本上继续叠加功能。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image14.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image14.png)
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image15.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image15.png)
 
 ##### 3.3 在 HBuilderX 和微信开发者工具中查看效果
 
 回到 HBuilderX，选择“运行 → 运行到小程序模拟器 → 微信开发者工具”。HBuilderX 会先构建项目，再把结果交给微信开发者工具。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image16.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image16.png)
 
 底部输出窗口出现 `ready` 且没有红色错误后，再切到微信开发者工具。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image17.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image17.png)
 
 如果没有自动打开微信开发者工具：
 
@@ -45295,7 +45681,7 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 看到首页以后，先点击开始，确认蛇能移动、吃到食物、增加分数并重新开始。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image18.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image18.png)
 
 ##### 3.4 把方向按钮改成摇杆
 
@@ -45305,11 +45691,11 @@ CloudBase 当前也提供日志检索。你可以按时间、资源和关键词�
 
 AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆三个情况。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image19.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image19.png)
 
 修改完成后重新运行。没有看到变化时，先停止 HBuilderX 当前任务，再执行一次“运行到小程序模拟器”，不要只反复刷新旧构建。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image20.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image20.png)
 
 ##### 3.5 出现问题时怎样描述
 
@@ -45325,13 +45711,13 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 功能稳定以后，可以提供一张有权使用的风格参考图，让 AI 只调整颜色、背景和按钮：
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image21.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image21.png)
 
 ##### 3.6 最终成品
 
 最后得到首页、游戏页和结束状态。蛇能移动、吃食物和计分，摇杆松开后仍会沿最后方向继续移动。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image22.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image23.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image24.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image22.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image23.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image24.png)
 
 不要只看截图判断完成。至少连续玩三局，测试快速转向、撞墙、吃到食物、重新开始和小屏显示。都正常以后再上传体验版。
 
@@ -45358,7 +45744,7 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 项目中的 AppID 必须和后台一致。截图时像下面这样遮住具体值，也不要展示 AppSecret。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image25.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image25.png)
 
 ###### 4.1.2 在项目中填写 AppID
 
@@ -45366,7 +45752,7 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 2. 在左侧文件树中找到 `manifest.json`，双击打开。
 3. 下拉到「微信小程序配置」这一栏，你会看到一个输入框，提示类似「微信小程序 AppID（请在微信开发者工具中获取）」。
 4. 把刚才在公众平台上看到的 AppID 原样粘贴进来，保存文件。
-   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image26.png)
+   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image26.png)
 
 保存后重新构建项目，微信开发者工具会按这个 AppID 识别上传目标。
 
@@ -45378,11 +45764,11 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
    2. 项目备注：写一段简短说明，比如「完成基本功能的开发」。
 3. 检查无误后，点击「上传」按钮。下面的输出区域会显示编译过程，所有步骤变成绿色并提示上传完成，就说明这一版已经成功提交到了微信服务器。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image27.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image27.png)
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image28.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image28.png)
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image29.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image30.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image29.png)![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image30.png)
 
 ###### 4.1.4 在管理后台中把版本设为体验版
 
@@ -45391,9 +45777,9 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 3. 在页面的「开发版本」一栏，你应该能看到刚刚上传的那个版本：版本号是 `1.0.0`，备注是你写的那一段说明，时间是刚刚的上传时间。
 4. 在这一行右侧选择「设为体验版」。如果后台要求先补充主营类目，按实际功能选择后再回来操作。
 
-   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image31.png)
+   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image31.png)
 
-   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image32.png)
+   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image32.png)
 
 完成后生成体验二维码，把测试同事加入体验成员。至少用两台不同尺寸的手机测试摇杆、重新开始、前后台切换和分享入口。
 
@@ -45414,7 +45800,7 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 一开始进度会显示 0%，随着你完成每一步，系统会自动把进度向前推进。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image33.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image33.png)
 
 ###### 4.2.2 填写小程序基本信息
 
@@ -45422,7 +45808,7 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 图标和截图的尺寸以后台当前提示为准，图片、字体和音效也要确认有权公开使用。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image34.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image34.png)
 
 全部填写完毕后，点击保存或下一步，发布流程中的第一步就完成了。
 
@@ -45430,17 +45816,17 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 类目决定平台按什么业务审核，也会影响需要提交的资质。它必须和实际功能一致。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image35.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image35.png)
 
 点击“添加类目”后，后台会显示当前账号可以选择的分类：
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image36.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image36.png)
 
 下面的截图只展示类目选择界面，不代表贪吃蛇应该选择“教育器具”。如果准备公开运营游戏，应先确认是否需要使用微信小游戏账号、对应类目和额外规则；不要为了通过审核把游戏描述成教育工具。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image37.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image37.png)
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image38.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image38.png)
 
 确认类目后，点击保存。如果页面提示「创建类目成功」，并在列表中显示你刚刚添加的那一项，就说明这一步已经完成。
 
@@ -45448,16 +45834,16 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 发布流程还会要求完成运营信息和小程序备案，用来确认主体与负责人。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image39.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image39.png)
 
 1. 选择与注册账号一致的主体类型。
 2. 按后台提示填写主体和负责人信息。
 3. 上传当前页面要求的证明材料并完成核验。
-   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image40.png)
+   ![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image40.png)
 
 身份证、手机号、验证码和证件照片都不要发给 AI，也不要出现在教程截图里。提交后回到后台查看实际状态；需要短信或工信部核验时，按收到的官方通知在有效期内完成。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image41.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image41.png)
 
 ###### 4.2.5 提交审核并等待正式发布
 
@@ -45467,7 +45853,7 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 审核如果要求补充操作视频、页面截图或资质，就按退回原因修改后重新提交。通过以后，仍要在版本管理中确认是否需要手动点击“发布”。不要只看到“审核通过”就以为用户已经能搜索到。
 
-![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image42.png)
+![微信小程序操作截图](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/cross-platform/wechat-miniprogram/images/image42.png)
 
 #### 5. 从贪吃蛇走到第一个真实小程序
 
@@ -45544,7 +45930,7 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
 与微信朋友圈、知乎或 LinkedIn 不同，它不依赖于任何社交平台的算法推荐，也不会因为平台倒闭而消失。它是一个长期稳定、可被 Google/Google Scholar 索引的 **个人展示空间** 。它通常包含你的简介 (Bio)、发表的论文 (Publications)、参与的项目 (Projects) 以及技术博客 (Blog)。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image1.webp)
 
 #### 1.2 为什么要构建自己的网页
 
@@ -45566,19 +45952,19 @@ AI 修改完成后，重点验证快速转向、反方向操作和松开摇杆�
 
  **第一种方式：从零手写 (**  **HTML**  **/**  **CSS**  **/**  **JS** **)** 这是计算机专业的传统路线。你需要一个字一个字地敲代码。优点是极其灵活，想做什么样都行；缺点是门槛极高，容易在调样式（CSS）中崩溃，不适合专注于内容的我们。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image2.png)
 
  **第二种方式：可视化建站 (**  **Wix**  **/**  **WordPress** **)** 类似“搭积木”。优点是简单拖拽；缺点是通常需要付费，且生成的代码臃肿，不具备“学术极客感”，很难做深度定制。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image3.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image3.png)
 
 **第三种方式：基于 ****GitHub**** 模板 (Static Site Generator)** 这是学术界和极客圈**最推荐**的主流路线。我们直接复刻（Fork）别人写好的成熟模版（如 Jekyll 或 Hugo 框架），然后只修改配置文件和内容。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image4.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image4.png)
 
  **第四种方式：Vibe Coding（AI 视觉生成流）** 依托于具备强大多模态视觉理解能力的 AI Agent，你只需要在网上看到一个喜欢的网页风格，直接截一张图发给 AI：“照着这个图给我写一个网页”。AI 就能瞬间将图片中的视觉元素解析并生成对应的底层代码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image5.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image5.png)
 
  **本教程的选择：** **GitHub Pages + 学术模板 + AI 修改。** 原因很简单：
 
@@ -45620,7 +46006,7 @@ Elon Musk 虽然不是大学教授，但他也有不少公开的“技术白皮�
 
 准备好这个工具后，在接下来的实战中，我们就不需要面对枯燥的代码框发呆了，而是直接在这里打开项目，通过右侧的对话框用自然语言（中文）指挥 AI 帮我们写代码、改 Bug、甚至重构整个页面。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image6.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image6.png)
 
 #### 2.3 Git 下载
 
@@ -45639,7 +46025,7 @@ Elon Musk 虽然不是大学教授，但他也有不少公开的“技术白皮�
 * **情况 A（已安装）** ：如果你看到类似 `git version 2.xx.x` 的回复，恭喜你，你可以直接跳过下载步骤！
 * **情况 B（未安装）** ：如果你看到“命令未找到”或一系列红色报错信息，请继续往下看。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image7.png)
 
 **第二步：AI 辅助安装**
 
@@ -45677,7 +46063,7 @@ Trae 会给你一段代码（通常是 `winget install --id Git.Git`）。
 
  *新手特别提醒* ：实际情况是，如果直接去官网下载，往往会卡住或者下载失败。因此，我们强烈建议直接访问 [RubyInstaller for Windows - 国内镜像](https://rubyinstaller.cn/) 网站进行下载 ，速度会快很多。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image8.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image8.png)
 
 **第二步：执行安装**
 
@@ -45685,13 +46071,13 @@ Trae 会给你一段代码（通常是 `winget install --id Git.Git`）。
 
 勾选后，一路按提示默认点击“Next”完成安装。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image9.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image9.png)
 
 **第三步：配置开发套件**
 
 安装进度条走完后，会自动弹出如下的黑色的命令行窗口。不要慌张，直接在光标处输入数字 `3`（代表安装 MSYS2 基础环境和 MINGW 工具链），然后按下回车键。耐心等待屏幕上的代码跑完，窗口自动关闭即可。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image10.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image10.png)
 
 **第四步：验收成果**
 
@@ -45703,7 +46089,7 @@ Trae 会给你一段代码（通常是 `winget install --id Git.Git`）。
 
 如果你看到 Trae 回复了类似 `ruby 3.x.x` 的版本号，恭喜你，Windows 下的 Ruby 环境配置彻底成功！
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image11.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image11.png)
 
 ##### 2.4.2 Mac安装
 
@@ -45748,7 +46134,7 @@ Mac 系统的配置相对更具有“极客范”，通常需要敲黑客一样�
 1. **访问官网** ：打开 [https://github.com/](https://github.com/)。
 2. **点击注册** ：点击右上角的  **"Sign up"** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image12.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image12.webp)
 
 3. **填写信息** ：
 4. **Email** ：输入你的真实邮箱。
@@ -45756,11 +46142,11 @@ Mac 系统的配置相对更具有“极客范”，通常需要敲黑客一样�
 6. **Username（关键！）** ：**请慎重起名！** 因为你的个人主页网址将是 **`https://你的用户名.github.io`**。建议使用你的英文名拼音、常用 ID 或者由字母数字组成的简洁名称，**不要**起类似 `a1b2c3d4` 这种乱码，否则你的个人主页链接会很难记。
 7. **验证与启动** ：完成人机验证（通常是旋转图片或选出螺旋星系），去邮箱查收验证码。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image13.png)
 
 注册完成后，你就拥有了一块属于自己的互联网“地皮”，接下来的章节，我们将开始在这块地皮上动工了！
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image14.png)
 
 #### 3 从模板到第一个可访问页面
 
@@ -45792,7 +46178,7 @@ Mac 系统的配置相对更具有“极客范”，通常需要敲黑客一样�
 
 * 解释 ：这步操作相当于把别人的“代码仓库”完整复制了一份钥匙到你自己的 GitHub 账号下。现在，你拥有了这个网站的所有权。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image15.png)
 
 **第三步：重命名仓库（最关键的一步）**
 
@@ -45800,7 +46186,7 @@ Mac 系统的配置相对更具有“极客范”，通常需要敲黑客一样�
 
  **⚠️ 新手必读** ：这是 GitHub Pages 的铁律！ 例如，如果你的 GitHub 用户名是 `musk-fan`，那么仓库名**必须**叫 `musk-fan.github.io`。只有这样，GitHub 才会自动为你分配免费的域名。如果名字不对，后续网页将无法打开。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image16.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image16.png)
 
 #### 3.2 获取 Github 项目URL
 
@@ -45811,7 +46197,7 @@ Mac 系统的配置相对更具有“极客范”，通常需要敲黑客一样�
 3. 确保选择 **HTTPS** 选项卡。
 4. 点击复制按钮，复制那个以 `.git` 结尾的URL（例如 `https://github.com/musk-fan/musk-fan.github.io.git`）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image17.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image17.png)
 
 #### 3.3 将项目拉到本地
 
@@ -45821,7 +46207,7 @@ Mac 系统的配置相对更具有“极客范”，通常需要敲黑客一样�
 
 在你的电脑上新建一个文件夹（例如命名为 `MyWebsite`），然后右键选择 “用 Trae 打开”（或者打开 Trae 后选择 Open Folder）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image18.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image18.png)
 
 **第二步，下达克隆命令**
 
@@ -45837,7 +46223,7 @@ Trae 打开后，呼出右侧的 AI 对话框（Chat），输入以下自然语�
 
 Trae 会自动调起底部的终端并执行命令。等待几秒钟，当你看到左侧的文件目录里多出了 `_config.yml`、`index.html` 等文件时，说明项目已经成功“搬”到了你的电脑上！
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image19.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image19.png)
 
 #### 3.4 本地预览网页
 
@@ -45870,7 +46256,7 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
 接下来，我们更改的内容，只要按 `Ctrl+S` 保存，再刷新一下浏览器，你会发现**网页内容就会随之而变**
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image20.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image20.png)
 
 确认本地没问题后，我们就可以进入下一章，开始大刀阔斧地把这个网站变成“马斯克”的形状了。
 
@@ -45906,7 +46292,7 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
 将我提供给你的图片素材（`University_of_Pennsylvania.jpg`、`Queen_University.jpg`）放入项目文件夹的对应位置（通常是 `/assets/images/badges/`）。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image21.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image22.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image21.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image22.webp)
 
 **第二步：下达****指令**
 
@@ -45942,13 +46328,13 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
 我们可以看到此时Trae已经完成了我们的所有修改要求
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image23.png)
 
 **第三步，刷新本地浏览器**
 
 此时我们刷新本地浏览器，看到均正确更换
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image24.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image24.png)
 
 ##### 4.2.2 优化迭代：添加“论文”与项目
 
@@ -45956,13 +46342,13 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
 在学术主页的语境下，我们可以把“Publications”（出版物）的概念重新定义为 **`“Technical White Papers & Visionary Plans”`** （技术白皮书与愿景规划）。这不仅不违和，反而非常符合他“实干派”的人设。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image25.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image25.png)
 
 **第一步：准备素材**
 
 将我提供给你的封面图片（ 分别为 `Hyperloop_Alpha_sketch.jpg` 、`SpaceX_Starship.jpg`、`Neuralink_sewing_machine_robot.jpg`）下载下来，放入 `/assets/images/covers/` 文件夹中（并将文件夹中原有的示例图片删除）。
 
-![img](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image26.png)![img](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image27.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image28.png)
+![img](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image26.png)![img](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image27.webp)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image28.webp)
 
 **第二步：下达****指令**
 
@@ -46026,7 +46412,7 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
 等待构建完成后，你会发现原本枯燥的论文列表，已经变成了充满未来感的“黑科技展示”。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image33.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image33.png)
 
 ##### 4.2.3 最后打磨：社交链接与头像
 
@@ -46061,7 +46447,7 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
 此时在本地，你已经拥有了一个完整、专业、且充满“马斯克风格”的个人学术主页。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image34.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image34.png)
 
 #### 4.3 注入灵魂的 UI 定制（风格篇）
 
@@ -46069,7 +46455,7 @@ Jekyll 网站需要依赖很多插件（Gems）才能运行。这步操作就像
 
  **场景示例** ：如果你觉得灰色背景太沉闷，想改成“火星红”。 直接问 Trae：*“我想把侧边栏的背景颜色改成暗红色（#8B0000），体现火星的感觉。请问我应该修改哪个 **CSS** 或 SCSS 文件？请直接给我代码。”*
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image35.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image35.png)
 
 如果你喜欢上述图片中的“SpaceX Dashboard”风格，可以直接复制下面这段“设计师级”Prompt：
 
@@ -46152,7 +46538,7 @@ Abstract: 一句话摘要。
 
 拿到这份整理好的**纯净文本**后，再喂给 Trae，准确率会提升 100%。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image36.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image37.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image36.png)![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image37.png)
 
 **第三步：替换核心内容（两条路径）**
 
@@ -46170,7 +46556,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 
 你需要自己在左侧文件栏找到并点击打开这个文件，然后参考 Trae 的提示，像做填空题一样，把 ChatGPT 帮你整理好的内容填进去。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image38.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image38.png)
 
 2. **模式 B：全自动托管（适合追求效率的你）**
 
@@ -46192,7 +46578,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 2. 在左侧侧边栏找到并点击  **Pages** 。
 3. 在 **Build and deployment** 下方，将 **Source** 选项从 `Deploy from a branch` 切换为  **`GitHub Actions`** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image39.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image39.png)
 
 **第二步：自动配置 Jekyll****工作流**
 
@@ -46201,7 +46587,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 1. 找到 **Jekyll** (By GitHub Actions) 的卡片。
 2. 点击卡片上的 **Configure** 按钮。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image40.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image40.png)
 
 **第三步：提交配置文件**
 
@@ -46211,9 +46597,9 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 2. 直接点击页面右上角的绿色按钮  **`Commit changes...`** 。
 3. 在弹出的确认框里再次点击  **`Commit changes`** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image41.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image41.png)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image42.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image42.png)
 
 **第四步：等待并验收**
 
@@ -46223,7 +46609,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 2. 你会看到一个名为 `Deploy Jekyll site to Pages` 的任务正在转圈。
 3. 耐心等待 1-2 分钟，直到那个黄色的圆圈变成  **绿色的对号 (✅)** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image43.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image43.png)
 
 **第五步：访问你的网站**
 
@@ -46241,11 +46627,11 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 4. 点击  **Sync Changes (**  **Push** **)** 推送到 main 分支。
 5. 稍等片刻，等到 **Actions** 标签下所有的进程均完成。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image44.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image44.png)
 
 现在，恭喜你！打开你的 **`https://你的用户名.github.io/`**，你已经拥有了一个完整、专业、且充满“马斯克风格”的个人学术主页。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image45.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image45.png)
 
 #### 6 进阶玩法：从零手写个人主页
 
@@ -46289,7 +46675,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 技术要求： 请把所有 CSS 样式和 HTML 结构都写在一个 index.html 文件里。请直接生成完整代码。
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image46.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image46.png)
 
 **第三步，生成和预览**
 
@@ -46303,11 +46689,11 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 
 你会收到一个类似 `http://localhost:8000` 的链接，在浏览器上复制并打开该链接，你就会看到一个酷炫的、背景可能有星星在闪烁的“火星主页”。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image47.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image47.png)
 
 但我们发现当前页面目前只是一个非常酷炫的“着陆页”或“引导屏”，作为一个完整的个人主页来说，它的信息量太少了，缺乏学术主页应有的深度。因此基于这个框架风格，我们开始补充和完善里面关于 Elon Musk 的学术信息。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image48.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image48.png)
 
 **第四步，进一步完善信息**
 
@@ -46348,7 +46734,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 
 返回浏览器刷新一下页面，这个赛博朋克风的学术页面，就大功告成了！当然，你也可以根据自己的喜好继续完善，只需要像上述过程一样，明确地把目标需求告诉 Trae，它自然会帮你实现繁琐的编码过程。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image49.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image49.png)
 
 #### 6.3 如何部署“手搓”的网站
 
@@ -46359,7 +46745,7 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 1. 登录 GitHub 网页端。
 2. 点击右上角的 **+** 号 -> **New** **repository** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image50.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image50.png)
 
 3. **Repository** **name**：填入 `mars-profile`（或者任何你喜欢的名字）。
 
@@ -46369,13 +46755,13 @@ Trae 会在**对话框里**告诉你： “你需要修改的文件是 `_pages/a
 5. **⚠️ 千万不要勾选 "Add a README file"！** （其余选项保持默认即可）
 6. 点击 **Create  repository** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image51.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image51.png)
 
 **第二步：把本地代码推送到云端**
 
 创建完成后，GitHub 会跳转到一个页面，上面有一堆乱七八糟的代码。别慌，我们在复制下面图片中的这个仓库链接
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image52.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image52.png)
 
 回到 Trae，在 Chat 框中输入：
 
@@ -46393,7 +46779,7 @@ Trae 通常会帮你执行以下“标准三连招”（你可能只需要点击
 
 等 Trae 完成提交任务后，我们回到 GitHub 刷新网页，点击顶部的  **Code** ，就可以看到我们在 Trae 上编写的代码已经成功传到 GitHub 仓库中了。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image53.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image53.png)
 
 **第三步：开启 ****GitHub**** Pages**
 
@@ -46406,17 +46792,17 @@ Trae 通常会帮你执行以下“标准三连招”（你可能只需要点击
    2. **Branch** : 选择 `main` 分支，文件夹选 `/(root)`。
 4. 点击  **Save** 。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image54.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image54.png)
 
 当你点击 Save 之后，网页并不会在一秒钟内“变”出来。GitHub 的后台就像一个小机器人工厂，它需要花大概 **1 到 2 分钟**的时间，把你上传的代码打包、编译，然后发布到全球的服务器上。
 
 耐心等待后刷新页面，你会在 **GitHub** Pages这个大标题的正下方，看到一行带网址的提示，通常写着：**"Your site is live at `https://你的用户名.github.io/mars-link/`"**。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image55.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image55.png)
 
 点开它，你的“火星指挥中心”就上线了！
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image56.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image56.png)
 
 #### 7 把示例主页换成你自己
 
@@ -46426,7 +46812,7 @@ Trae 通常会帮你执行以下“标准三连招”（你可能只需要点击
 
 个人主页不需要第一次就做得很满。先让名字、简介、代表作品和联系方式保持最新，以后每完成一个项目再补一条。这样维护几个月以后，它才会慢慢变成一份比模板更像你的长期记录。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image57.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/stage-3/personal-brand/personal-website-blog/images/image57.webp)
 
 现在打开线上地址，从首页到项目和文章页重新点一遍。确认手机上也能阅读、链接没有失效，就可以把这个网址放进简历、邮件签名或个人资料里了。
 
@@ -48008,8 +48394,8 @@ CPU 执行一条指令需要经历一个完整的**指令周期**，通常包括
 
 现在你已经掌握了计算机组成原理的专业知识。接下来可以继续学习：
 
-- **[操作系统](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/1-computer-fundamentals/operating-systems.md)**：了解程序是如何在操作系统上运行的，进程、线程、内存管理是如何实现的
-- **[数据的编码、存储与传输](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/1-computer-fundamentals/data-encoding-storage.md)**：深入理解数据在计算机中的表示方式
+- **[操作系统](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/1-computer-fundamentals/operating-systems.md)**：了解程序是如何在操作系统上运行的，进程、线程、内存管理是如何实现的
+- **[数据的编码、存储与传输](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/1-computer-fundamentals/data-encoding-storage.md)**：深入理解数据在计算机中的表示方式
 
 ### 数据表示原理：编码、存储与传输
 
@@ -48539,8 +48925,8 @@ CPU 执行一条指令需要经历一个完整的**指令周期**，通常包括
 
 现在你已经掌握了数据结构的核心知识。接下来可以继续学习：
 
-- **[算法导论](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/1-computer-fundamentals/algorithm-thinking.md)**：学会用排序、搜索、递归、动态规划等算法设计范式解决问题
-- **[编程语言](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/1-computer-fundamentals/programming-languages.md)**：了解不同编程语言如何实现这些数据结构
+- **[算法导论](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/1-computer-fundamentals/algorithm-thinking.md)**：学会用排序、搜索、递归、动态规划等算法设计范式解决问题
+- **[编程语言](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/1-computer-fundamentals/programming-languages.md)**：了解不同编程语言如何实现这些数据结构
 
 ### 操作系统原理：进程、内存与文件系统
 
@@ -52227,9 +52613,9 @@ Python 解释器（或编译器）执行完代码，将结果（或错误信息�
 
 为了方便大家理解每个选项的含义，在这里我们对菜单栏进行深入解析：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/2-development-tools/editors-and-ai/images/index-2026-01-09-11-35-55.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/2-development-tools/editors-and-ai/images/index-2026-01-09-11-35-55.webp)
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/2-development-tools/editors-and-ai/images/index-2026-01-09-11-36-23.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/2-development-tools/editors-and-ai/images/index-2026-01-09-11-36-23.png)
 
 <details class="custom-block details" id="vscode-file-menu">
   <summary>File（文件）：项目与文件的打开/保存/工作区管理</summary>
@@ -52755,7 +53141,7 @@ winget 默认安装到系统目录（需要管理员）或 `%LOCALAPPDATA%\Micro
 在开始之前，建议你先补两块"基础砖"：
 
 - **网络基础**：如果你不太清楚 IP 地址和 HTTP 的概念，可以先看 [计算机基础 - 网络通信](../1-computer-fundamentals/network-fundamentals.md) 部分。
-- **终端基础**：如果你还不熟悉终端命令行，可以先看 [命令行与 Shell 脚本导论](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/2-development-tools/command-line-shell.md)。
+- **终端基础**：如果你还不熟悉终端命令行，可以先看 [命令行与 Shell 脚本导论](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/2-development-tools/command-line-shell.md)。
 
 ---
 
@@ -55280,8 +55666,8 @@ export default defineConfig(({ mode }) => ({
 
 在开始之前，先确认你知道这两个基础概念。如果不确定，可以先看对应章节：
 
-- **HTML**：网页的骨架，定义页面上有哪些元素（标题、段落、按钮、图片……）。参见 [HTML 与 CSS 布局](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/3-browser-and-frontend/html-css-layout.md)。
-- **JavaScript**：让网页"动起来"的编程语言，可以修改页面内容、响应用户操作。参见 [JavaScript 原理](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/3-browser-and-frontend/javascript-deep-dive.md)。
+- **HTML**：网页的骨架，定义页面上有哪些元素（标题、段落、按钮、图片……）。参见 [HTML 与 CSS 布局](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/3-browser-and-frontend/html-css-layout.md)。
+- **JavaScript**：让网页"动起来"的编程语言，可以修改页面内容、响应用户操作。参见 [JavaScript 原理](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/3-browser-and-frontend/javascript-deep-dive.md)。
 
 还有一个概念会在后面频繁出现，这里先做一个完整的说明。
 
@@ -68507,7 +68893,7 @@ Robert C. Martin 提出,将系统分为四个同心圆层,依赖只能从外向�
 
 ##### 8.4 推荐阅读
 
-- **单体架构**: 查看本文的姐妹篇 [`backend-project-architecture.md`](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/4-server-and-backend/backend-project-architecture.md),了解从脚本到单体的演进
+- **单体架构**: 查看本文的姐妹篇 [`backend-project-architecture.md`](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/4-server-and-backend/backend-project-architecture.md),了解从脚本到单体的演进
 - **微服务架构**: 查看 [单体到微服务演进导论](/zh-cn/appendix/6-architecture-and-system-design/monolith-to-microservices)
 - **整洁架构**: Robert C. Martin 的《Clean Architecture》— 提出依赖规则和四层同心圆模型的经典著作
 - **企业架构模式**: Martin Fowler 的《Patterns of Enterprise Application Architecture》— 分层架构、领域逻辑组织的权威参考
@@ -78236,8 +78622,8 @@ tail -f /var/log/nginx/error.log
 
 在开始之前，建议你先补两块"基础砖"：
 
-- **Token 是什么**：可以先阅读 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md) 的「分词 & Token」部分。
-- **Prompt 是什么**：如果你还不熟悉 System / User / Assistant 的基本结构，可以先看 [提示词工程](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering)。
+- **Token 是什么**：可以先阅读 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md) 的「分词 & Token」部分。
+- **Prompt 是什么**：如果你还不熟悉 System / User / Assistant 的基本结构，可以先看 [提示词工程](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering)。
 
 ---
 
@@ -84631,7 +85017,7 @@ Agent 可能被诱导执行危险操作。
 > - OpenAI 系列：GPT-4、GPT-4.1、GPT-4o、GPT-5.1 等
 > - Google 系列：Gemini 1.5 Pro、Gemini 1.5 Flash 等
 > - Anthropic 系列：Claude 3.5 Sonnet、Claude 3.5 Haiku 等
-> - 国内模型：通义千问 Qwen 系列、文心一言 ERNIE Bot 系列、GLM/智谱清言、腾讯混元、讯飞星火、月之暗面的 Kimi 背后的大模型、MiniMax MiniMax-M2.7 系列等
+> - 国内模型：通义千问 Qwen 系列、文心一言 ERNIE Bot 系列、GLM/智谱清言、腾讯混元、讯飞星火、月之暗面的 Kimi 背后的大模型、MiniMax MiniMax-M3.1-Flash / MiniMax-M3 系列等
 >
 > 更偏视觉和视频方向的大模型和服务，包括：
 >
@@ -88508,8 +88894,8 @@ MCP 和 A2A **不是竞争关系，而是互补关系**：
 
 在开始之前，建议你先补两块“基础砖”：
 
-- **Token 是什么**：可以先阅读 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md) 的「分词 & Token」部分。
-- **Prompt 是什么**：如果你还不熟悉 System / User / Assistant 的基本结构，可以先看 [提示词工程](https://github.com/datawhalechina/easy-vibe/tree/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering)。
+- **Token 是什么**：可以先阅读 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md) 的「分词 & Token」部分。
+- **Prompt 是什么**：如果你还不熟悉 System / User / Assistant 的基本结构，可以先看 [提示词工程](https://github.com/datawhalechina/easy-vibe/tree/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering)。
 
 ---
 
@@ -89870,7 +90256,7 @@ LoRA（Low-Rank Adaptation）提供了一个优雅的解决方案：**冻结原�
 
 #### 0. 引言：给大脑装上眼睛
 
-在 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md) 中，我们知道 LLM 本质上是一个被关在黑盒子里、只能通过**文字**来了解世界的“大脑”。
+在 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md) 中，我们知道 LLM 本质上是一个被关在黑盒子里、只能通过**文字**来了解世界的“大脑”。
 
 **多模态大模型 (VLM)** 的出现，相当于给这个大脑装上了一双**眼睛**。
 
@@ -90397,7 +90783,7 @@ AI 本质上是一个**概率预测机器**（Next Token Predictor），它不�
 
 当我们谈论“工程”时，我们强调的是：**可复现、可验证、可转移**。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image7.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image7.png)
 
 AI 模型像一个**黑盒子**：我们知道输入（提示词）和输出（回答），但很难完全掌控中间发生了什么。
 
@@ -90409,7 +90795,7 @@ AI 模型像一个**黑盒子**：我们知道输入（提示词）和输出（�
 2.  **更准确**：符合你的特定格式和逻辑要求。
 3.  **更高效**：一步到位，不需要反复纠正。
 
-> ℹ️ **背景知识**：如果你对模型是如何训练出来的感兴趣（预训练 vs 微调），可以阅读附录中的 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md)。或者查看下方的详细原理解析。
+> ℹ️ **背景知识**：如果你对模型是如何训练出来的感兴趣（预训练 vs 微调），可以阅读附录中的 [大语言模型入门](https://github.com/datawhalechina/easy-vibe/blob/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/llm-principles.md)。或者查看下方的详细原理解析。
 
 ##### 深度解析：从训练数据看模型行为
 
@@ -90443,7 +90829,7 @@ AI 模型像一个**黑盒子**：我们知道输入（提示词）和输出（�
 
 大多数传统大模型（如 GPT-3.5, Llama 2）属于此类。它们**直觉式地反应**，说完上句接下句，不做深层逻辑推演。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image14.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image14.png)
 
 - **特点**：快，但容易在复杂逻辑上犯错。
 - **策略**：需要你把步骤拆解得非常细（Chain of Thought），一步步喂给它。
@@ -90452,7 +90838,7 @@ AI 模型像一个**黑盒子**：我们知道输入（提示词）和输出（�
 
 新一代模型（如 o1, R1）在回答前会进行“隐式推理”。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image13.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image13.png)
 
 - **特点**：慢，但逻辑能力强，能自我纠错。
 - **策略**：通常不需要复杂的 Prompt 技巧，直接说清楚目标即可，过多的“指手画脚”反而可能干扰它。
@@ -90724,7 +91110,7 @@ AI 最容易犯的毛病就是**不懂装懂**。
 
 我们推荐使用 [SiliconFlow Playground](https://cloud.siliconflow.com/me/playground/chat)（或任何你习惯的 LLM 平台），按照下面的**3 个挑战**来验证你学到的技巧。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image15.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/appendix/8-artificial-intelligence/prompt-engineering/images/image15.webp)
 
 > **💡 操作提示**：点击右侧侧边栏的 "Add Model for Comparison"，可以左右分屏对比两个模型（比如 Qwen-Max vs Llama-3）对同一个 Prompt 的反应。
 
@@ -92966,19 +93352,19 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 小浩，是一位小学三年级的乡村代课老师。曾经的他做过运营，搞过商业数据分析，也敲过代码，月入过万。在旁人眼里，这个从农村走出来的年轻人算是“混得不错”。但他放弃了令人羡慕的工作，辞职回到老家，只为带农村孩子们去看更大的世界。
 
-![小浩老师和孩子们](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image1.jpeg)
+![小浩老师和孩子们](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image1.jpeg)
 
 #### 01 当“人工智能”第一次出现在课堂
 
 刚来村里教书的时候，小浩老师的心里是堵着的。“村里条件有限，孩子们很难有机会看到外面的世界，他们的世界很小，小到只有翻旧的课本和脚下的泥土。”他想让孩子们看看更大的世界，也想告诉他们，这个世界上有一个东西叫“人工智能”。它能画画，会写诗，还能回答脑袋里所有天马行空的问题。
 
-![乡村课堂里的日常](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image2.jpeg)
+![乡村课堂里的日常](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image2.jpeg)
 
 刚开始推进的时候并不顺利。让孩子们自己带手机来学校，通过手机接触 AI，这个想法一度遭到了校领导的坚决反对：“你这是让孩子抄答案！这叫不务正业！”但他没有放弃，三天两头想办法去说服校领导。最后双方各退一步，可以学 AI，但是不能违反学校规定，学生不能自己带手机到课堂上。
 
 于是，小浩老师就自掏腰包，收了几部二手手机，把自己的“豆包”账号登录到这些手机上给孩子们用。就这样，孩子们第一次摸上了“高科技”。他们很快学会了用 AI 搜资料、学舞蹈，甚至玩文生图。AI 第一次帮这些孩子打开了新世界的大门。
 
-![孩子们在机房里接触 AI 的样子](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image3.png)
+![孩子们在机房里接触 AI 的样子](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image3.webp)
 
 #### 02 农村课堂的“特产”：苍蝇与误触
 
@@ -92986,7 +93372,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 电子屏发热发光，苍蝇尤其喜欢往上扑。屏幕无法识别是正常操作还是误触，经常造成课件乱跳、视频暂停，甚至中途关机的问题。一节课 40 分钟，得花 20 分钟在讲台上赶苍蝇，好好的课上得稀碎，小浩老师和孩子们都苦不堪言。
 
-![被误触困扰的教室电子屏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image4.png)
+![被误触困扰的教室电子屏](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image4.webp)
 
 突然有一天，一个学生举手对小浩老师说：“老师，我们能不能一起做一个程序，把苍蝇‘关’在外面？”
 
@@ -93001,7 +93387,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 这一问，还真问出了门道。AI 告诉他们要区分 `RawInput`，要识别 `ExtraInfo`。孩子们虽然听不懂这些专业术语，但他们可以通过数据观察和小组讨论，发现不同输入的 `ExtraInfo` 值确实有差别。
 
-![“小浩触屏锁”的输入识别界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image5.png)
+![“小浩触屏锁”的输入识别界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image5.webp)
 
 就这样，小浩老师和孩子们你一句我一句，和 AI 硬生生“聊”出了现在的【小浩触屏锁】。它的原理很简单：通过识别输入信号的特征，精准拦截掉屏幕的触控信号，只保留鼠标操作。这样一来，不管苍蝇在屏幕上怎么开派对，课件都能稳如泰山。
 
@@ -93023,7 +93409,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 那个提议做软件的孩子，以前最调皮，现在上课听得最认真。因为他知道，他参与创造的东西，正在帮大家解决问题。这种“我也能行”的自信，比考一百分更珍贵。
 
-![孩子们的笑脸和课堂合影](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image6.jpeg)
+![孩子们的笑脸和课堂合影](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image6.jpeg)
 
 他也坦白说，自己带孩子们用手机、搞 AI，没少挨批评，也没少听流言蜚语。很多人说他不务正业，带坏风气。但看着孩子们因为 AI 变得更好奇、更善良，他觉得一切都是值得的。
 
@@ -93031,17 +93417,17 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 小浩老师真挚地呼吁大家，多多关注公立教育里真实可落地的 AI 电子数字化课堂。农村娃的小小世界，其实更需要 AI 的帮助。AI 不只是工具，更是帮孩子们链接大千世界的一扇窗。
 
-![孩子们写给老师的祝福](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image7.png)
+![孩子们写给老师的祝福](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image7.webp)
 
-![“老师您辛苦了”](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image8.png)
+![“老师您辛苦了”](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image8.webp)
 
-![孩子们手写的小纸条](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image9.png)
+![孩子们手写的小纸条](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image9.webp)
 
-![生活里的孩子们](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image10.png)
+![生活里的孩子们](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image10.webp)
 
-![教室里的孩子们](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image11.png)
+![教室里的孩子们](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image11.webp)
 
-![小浩的自拍](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-1/image12.png)
+![小浩的自拍](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-1/image12.webp)
 
 ### 期末考试周，我偷偷用AI造了个“校园闲鱼”
 
@@ -93061,7 +93447,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 3 小时？我盯着屏幕，感觉 CPU 都快被干烧了。这大佬的速度再次刷新了我的认知。他随后又发来一堆资料，我打开一看，每个字都认识，连起来却像天书。想问他，又怕暴露自己的“菜”，于是只能：他抛术语，我默默复制给豆包，等豆包解释完，我再小心翼翼地回他。我的学习，从“人传人”变成了“人传 AI 传人”。
 
-![毛小驴做出的初版网站](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-2/image1.png)
+![毛小驴做出的初版网站](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-2/image1.webp)
 
 #### 02 进群第一天，我选择闭嘴
 
@@ -93069,7 +93455,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 后来我和毛小驴，还有一位新认识的朋友组队，建了一个三人小群，我的状态终于松弛下来了。群里开放平等的氛围让我特别开心：没人管你多大、什么职业、厉不厉害，遇到问题就平等交流，一起琢磨。虽然平时都是各忙各的，话不多，但能感受到大家有在默默努力，有种莫名的踏实感。不被标签定义、只凭兴趣一起往前冲，这种感觉我在学校里很少遇到。
 
-![独自探索的晚自习](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-2/image2.png)
+![独自探索的晚自习](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-2/image2.webp)
 
 #### 03 在期末周“摸鱼”，反而学得更起劲
 
@@ -93077,7 +93463,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 每天的任务打卡就像打怪升级一样，学习变得更主动，也让我学到了更多东西。
 
-![期末复习时的学习现场](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-2/image3.png)
+![期末复习时的学习现场](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-2/image3.webp)
 
 #### 04 脑子一热，给自己挖了个“大坑”
 
@@ -93095,7 +93481,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 一下子，我的方向就清晰了。AI 功能就加在商品描述上。后来，智能定价的功能也跟着落了地。
 
-![校园闲鱼网站展示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-2/image4.png)
+![校园闲鱼网站展示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-2/image4.webp)
 
 #### 05 直播当“差生”，却收获了最宝贵的肯定
 
@@ -93105,7 +93491,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 可没想到，现场的老师不但没有否定我，还给了很多具体可落地的建议。那一刻我才意识到，原来不完美也可以被认真对待。这种安心展示一个还不成熟作品的机会，之前几乎从未有过。
 
-![项目开发与 Builder 协作现场](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-2/image5.png)
+![项目开发与 Builder 协作现场](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-2/image5.webp)
 
 #### 06 我得到的，远不止一个 Demo
 
@@ -93135,7 +93521,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 50 个学生，1 个老师。每个学生卡住的点都不一样：有人不明白 `input()` 是干什么的，有人不知道 `if` 语句怎么写，有人根本搞不懂数据类型转换。一节课 45 分钟，我像个不停拧螺丝的工人，这边刚拧紧一颗，扭头一看，旁边又松了三颗。
 
-![那节 Python 实践课上的 BMI 题目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-3/image1.png)
+![那节 Python 实践课上的 BMI 题目](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-3/image1.webp)
 
 虽然一刻都没有停下来，但举手提问的同学好像一点都没少。有的学生等了几分钟还等不到我，就开始自己折腾电脑；还有的学生索性直接趴下睡觉了。下课铃响起的那一刻，我站在机房里，看着眼前一片混乱，突然觉得特别无力。
 
@@ -93151,7 +93537,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 现有的 AI 编程工具虽然可以直接给答案，但还不能做到真正的学习引导。所以我决定自己做一个新的应用，一个会教学、会引导、会陪着学生把问题想清楚的 AI 助教。
 
-![信息科技课程中心的首页原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-3/image2.png)
+![信息科技课程中心的首页原型](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-3/image2.png)
 
 #### 03 从梦想到现实：编程学伴
 
@@ -93161,7 +93547,7 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 
 我还记得第一次在应用里集成 AI，输入“input 函数怎么用”，看到它真的返回了示例代码和讲解时，那种兴奋和欣慰到现在都记得。我给这个应用起名叫“信息科技课程中心”，核心模块是“编程学伴”。
 
-![编程学伴的代码审查界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-3/image3.png)
+![编程学伴的代码审查界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-3/image3.png)
 
 它能做三件事：
 
@@ -93185,11 +93571,11 @@ AI 生成的测试要检查断言是否有意义——避免 `expect(true).toBe(
 - 老师可以课下批阅作业，不合格的打回重做；
 - 当学生通过某门课的所有作业，系统会自动发一份课程完成证书。
 
-![课程与班级管理界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-3/image4.png)
+![课程与班级管理界面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-3/image4.png)
 
 这个“证书”是我特意加的。因为我知道，对于高中生来说，一个小小的认可和仪式感，足以让他觉得“我真的学会了什么”。
 
-![课程完成证书示意](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-3/image5.png)
+![课程完成证书示意](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-3/image5.png)
 
 编程学伴加上课程管理，形成了一个完整的学习闭环，也让学生的学习更有始有终、更有成就感。
 
@@ -93223,7 +93609,7 @@ AI 可能就是那个答案。不是用 AI 替代老师，而是用 AI 帮助老
 
 老黄是一位自动售货机货物运输员。DeepSeek 的爆火让他意识到：“时代的列车要开了，不管是在写字楼里喝咖啡的人，还是在货车里啃馒头的人，都会受到 AI 浪潮的冲击。不迎头赶上，就只能被甩在原地吃灰。”
 
-![老黄故事里的家乡旧影](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image1.png)
+![老黄故事里的家乡旧影](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image1.webp)
 
 于是，这个彻头彻尾的门外汉决定认真学一学。他想看看，“一个原来只会开车的手，能不能敲响 AI 编程的门。”
 
@@ -93238,11 +93624,11 @@ AI 可能就是那个答案。不是用 AI 替代老师，而是用 AI 帮助老
 - “帮我做个贪吃蛇，要好看点，有开始按钮！”
 - “生成个动态地图，展示货物从中国发往全球的酷炫效果！”
 
-![老黄最开始做出的贪吃蛇 demo](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image2.png)
+![老黄最开始做出的贪吃蛇 demo](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image2.png)
 
 嗖的一声，应用就出来了。这种奇妙的感觉让他深受震撼。编程从一种枯燥的“手工业”，变成了指挥若定的“艺术”。这双握了半辈子方向盘的手，竟然也能握住数字世界的方向盘。
 
-![货运动态地图 demo](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image3.png)
+![货运动态地图 demo](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image3.webp)
 
 #### 03 在崩溃和坚持里，硬跑通“商业闭环”
 
@@ -93252,13 +93638,13 @@ AI 可能就是那个答案。不是用 AI 替代老师，而是用 AI 帮助老
 
 刚开始复刻网站原型还算顺利。但到了第二步，实现“核心功能图生图”时，系统就开始疯狂报错。作为一个小白，老黄只能一边和 AI 对话调试，一边补基础知识。连续四五天，他白天开车补货，晚上回来就和 AI 展开“车轮战”，反复对话、调试、学习。最崩溃的时候，他守在屏幕前，对着 F12 开发者文档一坐就是一个通宵。
 
-![AI 编辑器的初版页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image4.png)
+![AI 编辑器的初版页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image4.png)
 
 他也想过放弃。是学习群里的积极解答、知识分享会的专业分享，把他又拉了回来。这些都成了他坚持下来的力量。后来他用上了国产编程工具 Trae 的免费大模型，报错减少了，沟通也更顺畅了。老黄一口气把文生图、文生视频、老照片修复都接了进去。
 
-![老照片修复功能展示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image7.png)
+![老照片修复功能展示](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image7.webp)
 
-![Nano Banana 的编辑工作流页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image6.png)
+![Nano Banana 的编辑工作流页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image6.webp)
 
 最难啃的骨头，其实是设置域名邮箱、配置谷歌登录，以及接入支付系统（Paypal 和 Creem）。老黄对着官方文档，一边问 AI，一边自己做设计和配置。就这样，他一个人完成了从 0 到 1 的支付接口对接。
 
@@ -93273,13 +93659,13 @@ AI 可能就是那个答案。不是用 AI 替代老师，而是用 AI 帮助老
 - **学会偷师**：别光复制粘贴，尽量理解 AI 为什么这么写。
 - **调整心态**：报错了别怕，那是在教你避坑。
 
-![图生图工作流页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image5.png)
+![图生图工作流页面](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image5.png)
 
 #### 05 时代列车，人人可上
 
 现在，老黄还是那个在郑州跑货车的司机。但和以前不同的是，现在的他多了一个身份：AI 应用开发者。最近他又给公司开发了一个“速便利校园零食购”小程序，极大提升了老师和同学们的购物体验。
 
-![老黄后来做的“速便利校园零食购”](https://raw.githubusercontent.com/datawhalechina/easy-vibe/130e9b75b28b524e8cc74e615fd9733a4e2b330d/docs/zh-cn/vibe-stories/images/story-4/image8.png)
+![老黄后来做的“速便利校园零食购”](https://raw.githubusercontent.com/datawhalechina/easy-vibe/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64/docs/zh-cn/vibe-stories/images/story-4/image8.png)
 
 正如老黄所说：“只要有解决问题的冲动，代码就不再是门槛。”
 

@@ -27,8 +27,8 @@ updated_at: "2026-09-22"
 | 文档标题 | Hello-Agents：从零开始构建智能体 |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [datawhalechina/hello-agents](https://github.com/datawhalechina/hello-agents) |
-| 锁定提交 | [623d8148f83d](https://github.com/datawhalechina/hello-agents/commit/623d8148f83d53365e39c21cb592b62b0f8e7b1b) |
-| 提交时间 | 2026-10-08T19:17:22+11:00 |
+| 锁定提交 | [36f583c233ea](https://github.com/datawhalechina/hello-agents/commit/36f583c233ea5cee4537ef93455702b55053af18) |
+| 提交时间 | 2026-10-14T09:28:54+11:00 |
 | 生成器版本 | `hello_agents@1;engine@9` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
@@ -119,7 +119,7 @@ updated_at: "2026-09-22"
 因此，在本章，让我们回到原点，一起探讨几个问题：智能体是什么？它有哪些主要的类型？它又是如何与我们所处的世界进行交互的？通过这些讨论，希望能为你未来的学习和探索打下坚实的基础。
 
 
-![图 1.1 智能体与环境的基本交互循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-0.png)
+![图 1.1 智能体与环境的基本交互循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-0.png)
 图 1.1 智能体与环境的基本交互循环
 
 
@@ -143,7 +143,7 @@ updated_at: "2026-09-22"
 这种智能体完全依赖于当前的感知输入，不具备记忆或预测能力。它像一种数字化的本能，可靠且高效，但也因此无法应对需要理解上下文的复杂任务。它的局限性引出了一个关键问题：如果环境的当前状态不足以作为决策的全部依据，智能体该怎么办？
 
 
-![图 1.2 简单反射智能体的决策逻辑示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-1.png)
+![图 1.2 简单反射智能体的决策逻辑示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-1.png)
 图 1.2 简单反射智能体的决策逻辑示意图
 
 
@@ -169,7 +169,7 @@ updated_at: "2026-09-22"
 
 
 表 1.1 传统智能体与 LLM 驱动智能体的核心对比
-![图片描述](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-2.png)
+![图片描述](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-2.png)
 
 
 这种差异使得 LLM 智能体可以直接处理高层级、模糊且充满上下文信息的自然语言指令。让我们以一个“智能旅行助手”为例来说明。
@@ -195,7 +195,7 @@ updated_at: "2026-09-22"
 除了内部架构的复杂性，还可以从智能体处理决策的时间维度进行分类。这个视角关注智能体是在接收到信息后立即行动，还是会经过深思熟虑的规划再行动。这揭示了智能体设计中一个核心权衡：追求速度的**反应性（Reactivity）**与追求最优解的**规划性（Deliberation）**之间的平衡，如图 1.3 所示。
 
 
-![图 1.3 智能体决策时间与质量关系图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-3.png)
+![图 1.3 智能体决策时间与质量关系图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-3.png)
 图 1.3 智能体决策时间与质量关系图
 
 
@@ -249,7 +249,7 @@ updated_at: "2026-09-22"
 - **神经符号主义 AI**则将系统 1 的模式识别与系统 2 的逻辑推理结合起来，使二者协同工作。
 
 
-![亚符号主义、符号主义与神经符号主义的关系示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-4.png)
+![亚符号主义、符号主义与神经符号主义的关系示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-4.png)
 图 1.4 亚符号主义、符号主义与神经符号混合主义的知识表示范式
 
 
@@ -265,7 +265,7 @@ updated_at: "2026-09-22"
 
 
 表 1.2 智能旅行助手的 PEAS 描述
-![图片描述](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-6.png)
+![图片描述](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-6.png)
 
 
 
@@ -284,7 +284,7 @@ updated_at: "2026-09-22"
 在定义了智能体所处的任务环境后，我们来探讨其核心的运行机制。智能体并非一次性完成任务，而是通过一个持续的循环与环境进行交互，这个核心机制被称为 **智能体循环 (Agent Loop)**。如图 1.5 所示，该循环描述了智能体与环境之间的动态交互过程，构成了其自主行为的基础。
 
 
-![图 1.5 智能体与环境交互的基本循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-5.png)
+![图 1.5 智能体与环境交互的基本循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-5.png)
 图 1.5 智能体与环境交互的基本循环
 
 
@@ -507,7 +507,7 @@ class OpenAICompatibleClient:
             return "错误:调用语言模型服务时出错。"
 ```
 
-要实例化此类，您需要提供三个信息：`API_KEY`、`BASE_URL` 和 `MODEL_ID`，具体值取决于您使用的服务商（如 OpenAI 官方、Azure、或 Ollama 等本地模型），如果暂时没有渠道获取，可以参考 [环境配置](https://github.com/datawhalechina/hello-agents/blob/623d8148f83d53365e39c21cb592b62b0f8e7b1b/Extra-Chapter/Extra07-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md)。
+要实例化此类，您需要提供三个信息：`API_KEY`、`BASE_URL` 和 `MODEL_ID`，具体值取决于您使用的服务商（如 OpenAI 官方、Azure、或 Ollama 等本地模型），如果暂时没有渠道获取，可以参考 [环境配置](https://github.com/datawhalechina/hello-agents/blob/36f583c233ea5cee4537ef93455702b55053af18/Extra-Chapter/Extra07-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md)。
 
 ##### 1.3.3 执行行动循环
 
@@ -663,7 +663,7 @@ Action: Finish[今天北京的天气是晴朗的，气温26摄氏度，非常适
 简单来说，**Workflow 是让 AI 按部就班地执行指令，而 Agent 则是赋予 AI 自由度去自主达成目标。**
 
 
-![图 1.6 Workflow 和 Agent 的差异](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/1-figures/1757242319667-18.png)
+![图 1.6 Workflow 和 Agent 的差异](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/1-figures/1757242319667-18.png)
 图 1.6 Workflow 和 Agent 的差异
 
 
@@ -782,7 +782,7 @@ Action: Finish[今天北京的天气是晴朗的，气温26摄氏度，非常适
 为了深刻理解现代智能体为何呈现出如今的形态，以及其核心设计思想的由来，本章将回溯历史：从人工智能领域的古典时代出发，探寻最早的“智能”如何在逻辑与符号的规则体系中被定义；继而见证从单一、集中的智能模型到分布式、协作式智能思想的重大转折；最终理解“学习”范式如何彻底改变了智能体获取能力的方式，并催生出我们今天所见的现代智能体。
 
 
-![图 2.1 AI智能体的演进阶梯](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-00.png)
+![图 2.1 AI智能体的演进阶梯](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-00.png)
 图 2.1 AI智能体的演进阶梯
 
 
@@ -806,7 +806,7 @@ Action: Finish[今天北京的天气是晴朗的，气温26摄氏度，非常适
 这里的物理符号系统指的是一个能够在物理世界中存在的系统，它由一组可被区分的符号和一系列对这些符号进行操作的过程组成，其构成元素如图2.2所示。这些符号可以组合成更复杂的结构（例如表达式），而过程则可以创建、修改、复制和销毁这些符号结构。
 
 
-![图 2.2 物理符号系统的构成元素](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-0.png)
+![图 2.2 物理符号系统的构成元素](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-0.png)
 图 2.2 物理符号系统的构成元素
 
 
@@ -821,7 +821,7 @@ Action: Finish[今天北京的天气是晴朗的，气温26摄氏度，非常适
 一个典型的专家系统通常由知识库、推理机、用户界面等几个核心部分构成，其通用架构如图2.3所示。
 
 
-![图 2.3 专家系统的通用架构](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-1.png)
+![图 2.3 专家系统的通用架构](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-1.png)
 图 2.3 专家系统的通用架构
 
 
@@ -844,7 +844,7 @@ MYCIN是历史上最著名、最具影响力的专家系统之一，由斯坦福
 - **工作原理**：MYCIN通过与医生进行问答式交互来收集病人的症状、病史和化验结果。其知识库包含了约600条由医学专家提供的“IF-THEN”规则。推理机主要采用反向链的方式工作：从“确定致病菌”这一最高目标出发，反向推导需要哪些证据和条件，然后向医生提问以获取这些信息。其简化的工作流程如图2.4所示。
 
 
-![图 2.4 MYCIN反向链推理流程示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-2.png)
+![图 2.4 MYCIN反向链推理流程示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-2.png)
 图 2.4 MYCIN反向链推理流程示意图
 
 
@@ -856,7 +856,7 @@ MYCIN是历史上最著名、最具影响力的专家系统之一，由斯坦福
 如果说专家系统展示了符号AI在专业领域的“深度”，那么由**特里·威诺格拉德（Terry Winograd）**于1968-1970年开发的SHRDLU项目<sup>[3]</sup>，则在“广度”上实现了革命性的突破。如图2.5所示，SHRDLU旨在构建一个能在“积木世界”这一微观环境中，通过自然语言与人类流畅交互的综合性智能体。“积木世界”是一个模拟的三维虚拟空间，其中包含不同形状、颜色和大小的积木，以及一个可以抓取和移动它们的虚拟机械臂。用户通过自然语言向SHRDLU下达指令或提问，SHRDLU则在虚拟世界中执行动作或给出文字回答。
 
 
-![图 2.5 SHRDLU的“积木世界”交互界面](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-3.png)
+![图 2.5 SHRDLU的“积木世界”交互界面](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-3.png)
 图 2.5 SHRDLU的“积木世界”交互界面
 
 
@@ -1100,7 +1100,7 @@ ELIZA的实践清晰地揭示了符号主义方法的核心矛盾：系统看似
 在这个过程中，没有任何一个智能体或机构拥有整个任务的全局规划。`GRASP`只负责抓握，它不知道什么是塔；`BUILDER`只负责循环，它不知道如何控制手臂。然而，当这个由无数“无心”的智能体组成的社会，通过简单的激活和抑制规则相互作用时，一个看似高度智能的行为，搭建积木塔，就自然而然地涌现了出来。
 
 
-![图 2.6 “心智社会”中搭建积木塔行为的涌现机制示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-4.png)
+![图 2.6 “心智社会”中搭建积木塔行为的涌现机制示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-4.png)
 图 2.6 “心智社会”中搭建积木塔行为的涌现机制示意图
 
 
@@ -1137,7 +1137,7 @@ ELIZA的实践清晰地揭示了符号主义方法的核心矛盾：系统看似
 在这种范式下，智能体不再是一个被动执行规则的逻辑推理机，而是一个能够通过经验自我优化的适应性系统。如图2.7所示，这代表了构建智能体核心思想的根本性转变。符号主义试图将人类的知识显式地编码给机器，而联结主义则试图创造出能够像人类一样学习知识的机器。
 
 
-![图 2.7 符号主义与联结主义范式对比](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-5.png)
+![图 2.7 符号主义与联结主义范式对比](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-5.png)
 图 2.7 符号主义与联结主义范式对比
 
 
@@ -1162,7 +1162,7 @@ ELIZA的实践清晰地揭示了符号主义方法的核心矛盾：系统看似
 基于上述核心要素，强化学习智能体在一个“感知-行动-学习”的闭环中持续迭代，其工作模式如图2.8所示。
 
 
-![图 2.8 强化学习的核心交互循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-6.png)
+![图 2.8 强化学习的核心交互循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-6.png)
 图 2.8 强化学习的核心交互循环
 
 
@@ -1190,7 +1190,7 @@ ELIZA的实践清晰地揭示了符号主义方法的核心矛盾：系统看似
 如图2.9所示，直观地展示了这一预训练与微调的完整流程：通用文本数据经过自监督学习形成基础模型，随后通过特定任务数据进行微调，最终适应各项下游任务。
 
 
-![图 2.9 “预训练-微调”范式示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-7.png)
+![图 2.9 “预训练-微调”范式示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-7.png)
 图 2.9 “预训练-微调”范式示意图
 
 
@@ -1210,7 +1210,7 @@ ELIZA的实践清晰地揭示了符号主义方法的核心矛盾：系统看似
 随着大型语言模型技术的飞速发展，以LLM为核心的智能体已成为人工智能领域的新范式。它不仅能够理解和生成人类语言，更重要的是，能够通过与环境的交互，自主地感知、规划、决策和执行任务。
 
 
-![图 2.10 LLM驱动的智能体核心组件架构](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-8.png)
+![图 2.10 LLM驱动的智能体核心组件架构](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-8.png)
 图 2.10 LLM驱动的智能体核心组件架构
 
 
@@ -1242,14 +1242,14 @@ ELIZA的实践清晰地揭示了符号主义方法的核心矛盾：系统看似
 进入21世纪20年代，这些思想流派以前所未有的方式深度融合。以GPT系列为代表的大语言模型，其本身是联结主义的产物，却成为了执行符号推理、进行工具调用和规划决策的核心“大脑”，形成了神经-符号结合的现代智能体架构。为了系统性地回顾这一发展脉络，下图2.11梳理了从20世纪50年代至今，人工智能体发展史上的关键理论、项目与事件，为读者提供一个清晰的全局概览，作为本章知识的沉淀。
 
 
-![图 2.11 智能体发展演进时间线（未完全版）](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-9.png)
+![图 2.11 智能体发展演进时间线（未完全版）](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-9.png)
 图 2.11 智能体发展演进时间线（未完全版）
 
 
 得益于大语言模型的突破，智能体技术栈呈现出前所未有的活跃度和多样性。图2.12展示了当前AI Agent领域的一个典型技术栈全貌，涵盖了从底层模型到上层应用的各个环节。
 
 
-![图 2.12 AI Agent 技术栈概览](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/2-figures/1757246501849-10.png)
+![图 2.12 AI Agent 技术栈概览](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/2-figures/1757246501849-10.png)
 图 2.12 AI Agent 技术栈概览
 
 
@@ -1367,7 +1367,7 @@ $$P(S)=P(w_1,w_2,…,w_m)=P(w_1)⋅P(w_2∣w_1)⋅P(w_3∣w_1,w_2)⋯P(w_m∣w_1
 这个公式被称为概率的链式法则。然而，直接计算这个公式几乎是不可能的，因为像 $P(w_m∣w_1,\cdots,w_{m−1})$ 这样的条件概率太难从语料库中估计了，词序列 $w_1,\cdots,w_{m−1}$ 可能从未在训练数据中出现过。
 
 
-![图 3.1 马尔可夫假设示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/3-figures/1757249275674-0.png)
+![图 3.1 马尔可夫假设示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/3-figures/1757249275674-0.png)
 图 3.1 马尔可夫假设示意图
 
 
@@ -1464,7 +1464,7 @@ N-gram 模型的根本缺陷在于它将词视为孤立、离散的符号。为�
 2. **学习从上下文到下一个词的映射**：利用神经网络的强大拟合能力，来学习一个函数。这个函数的输入是前 $n−1$ 个词的词向量，输出是词汇表中每个词在当前上下文后出现的概率分布。
 
 
-![图 3.2 神经网络语言模型架构示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/3-figures/1757249275674-1.png)
+![图 3.2 神经网络语言模型架构示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/3-figures/1757249275674-1.png)
 图 3.2 神经网络语言模型架构示意图
 
 
@@ -1521,7 +1521,7 @@ king - man + woman 的结果向量: [0.9 0.2]
 如图3.3所示，RNN 的设计引入了一个**隐藏状态 (hidden state)** 向量，我们可以将其理解为网络的短期记忆。在处理序列的每一步，网络都会读取当前的输入词，并结合它上一刻的记忆（即上一个时间步的隐藏状态），然后生成一个新的记忆（即当前时间步的隐藏状态）传递给下一刻。这个循环往复的过程，使得信息可以在序列中不断向后传递。
 
 
-![图 3.3 RNN 结构示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/3-figures/1757249275674-2.png)
+![图 3.3 RNN 结构示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/3-figures/1757249275674-2.png)
 图 3.3 RNN 结构示意图
 
 
@@ -1542,7 +1542,7 @@ king - man + woman 的结果向量: [0.9 0.2]
 最初的 Transformer 模型是为端到端任务机器翻译而设计的。如图3.4所示，它在宏观上遵循了一个经典的**编码器-解码器 (Encoder-Decoder)** 架构。
 
 
-![图 3.4 Transformer 整体架构图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/3-figures/1757249275674-3.png)
+![图 3.4 Transformer 整体架构图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/3-figures/1757249275674-3.png)
 图 3.4 Transformer 整体架构图
 
 
@@ -1662,7 +1662,7 @@ $$\text{Attention}(Q,K,V)=\text{softmax}\left(\frac{QK^{T}}{\sqrt{d_{k}}}\right)
 它将原始的 Q, K, V 向量在维度上切分成 h 份（h 就是“头”数），每一份都独立地进行一次单头注意力的计算。这就好比让 h 个不同的“专家”从不同的角度去审视句子，每个专家都能捕捉到一种不同的特征关系。最后，将这 h 个专家的“意见”（即输出向量）拼接起来，再通过一个线性变换进行整合，就得到了最终的输出。
 
 
-![图 3.5 多头注意力机制](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/3-figures/1757249275674-4.png)
+![图 3.5 多头注意力机制](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/3-figures/1757249275674-4.png)
 图 3.5 多头注意力机制
 
 
@@ -2040,7 +2040,7 @@ How are you?
 
 
 表 3.1  BPE 算法合并过程示例
-![图片描述](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/3-figures/1757249275674-5.png)
+![图片描述](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/3-figures/1757249275674-5.png)
 
 
 训练结束后，词表大小达到 10，我们就得到了新的分词规则。现在，对于一个未见过的词 "bug"，分词器会先查找 "bug" 是否在词表中，发现不在；然后查找 "bu"，发现不在；最后查找 "b" 和 "ug"，发现都在，于是将其切分为 `['b', 'ug']`。
@@ -2407,7 +2407,7 @@ pip install openai python-dotenv
 
 1. 在你的项目根目录下，创建一个名为 `.env` 的文件。
 2. 在该文件中，添加以下内容。你可以根据自己的需要，将其指向 OpenAI 官方服务，或任何兼容 OpenAI 接口的本地/第三方服务。
-3. 如果实在不知道如何获取，可以参考 [环境配置](https://github.com/datawhalechina/hello-agents/blob/623d8148f83d53365e39c21cb592b62b0f8e7b1b/Extra-Chapter/Extra07-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md)
+3. 如果实在不知道如何获取，可以参考 [环境配置](https://github.com/datawhalechina/hello-agents/blob/36f583c233ea5cee4537ef93455702b55053af18/Extra-Chapter/Extra07-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md)
 
 ```bash
 # .env file
@@ -2535,7 +2535,7 @@ $$o_t = T(a_t)$$
 这个循环不断进行，将新的 $(a_t,o_t)$ 对追加到历史中，直到模型在思考 $th_t$ 中判断任务已完成。
 
 
-![ReAct范式中的“思考-行动-观察”协同循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/4-figures/4-1.png)
+![ReAct范式中的“思考-行动-观察”协同循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/4-figures/4-1.png)
 图 4.1 ReAct 范式中的“思考-行动-观察”协同循环
 
 
@@ -2990,7 +2990,7 @@ $$
 最终的答案就是最后一个步骤的执行结果 $s_n$。
 
 
-![Plan-and-Solve范式的两阶段工作流](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/4-figures/4-2.png)
+![Plan-and-Solve范式的两阶段工作流](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/4-figures/4-2.png)
 图 4.2 Plan-and-Solve 范式的两阶段工作流
 
 
@@ -3264,7 +3264,7 @@ $$
 
 
 
-![Reflection机制中的“执行-反思-优化”迭代循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/4-figures/4-3.png)
+![Reflection机制中的“执行-反思-优化”迭代循环](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/4-figures/4-3.png)
 图 4.3 Reflection 机制中的“执行-反思-优化”迭代循环
 
 
@@ -3612,7 +3612,7 @@ def find_primes(n):
 
 
 表 4.1 不同 Agent Loop 的选择策略
-![4-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/4-figures/4-4.png)
+![4-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/4-figures/4-4.png)
 
 
 至此，我们已经掌握了构建单个智能体的核心技术。为了过渡知识，以及对实际应用更加深入。下一节我们将会探索不同低代码平台的使用方式以及轻代码构建agent的方案。
@@ -3747,7 +3747,7 @@ def find_primes(n):
 整体布局介绍：最近扣子又又更新了他的UI界面了，如图5.1所示。现在最左边的侧边栏是扣子平台主页的开发工作区，包括核心的项目开发、资源库、效果评测和空间配置。下面的区域是扣子开发的配套资料空间包括官方模板一键复制、扣子最大的优势丰富多样的插件商店、最大的智能体社区琳琅满目、api管理就是api测试用的、以及详细的教程文档和面向企业的通用管理。右边这一块有四个模板，最上面是扣子最新的更新公告告诉你扣子的最新进展方便你了解最新的工具和功能。接着下面是新手教程，点开就是新手教程文档啦，分分钟开始智能体搭建。其次是你的关注和智能体推荐，在这里你也可以关注喜欢的AI开发者，和收藏他们的智能体为自己所用。
 
 
-![图 5.1 扣子智能智能体平台整体示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-01.png)
+![图 5.1 扣子智能智能体平台整体示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-01.png)
 图 5.1 扣子智能智能体平台整体示意图
 
 
@@ -3756,22 +3756,22 @@ def find_primes(n):
 首先我们点击左边侧栏的加号就可以看到创建智能体的入口了，这里目前有两类AI应用，一种是创建智能体，另一种叫应用。其中智能体又分为单智能体自主规划模式、单智能体对话流模式和多智能体模式。AI应用也分两种不仅能设计桌面网页端的用户界面，还能轻松搭建小程序和 H5 端的界面，如图5.2所示。
 
 
-![图 5.2 扣子智能体创建入口](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-02.png)
+![图 5.2 扣子智能体创建入口](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-02.png)
 图 5.2 扣子智能体创建入口
 
 项目空间里是你的智能体仓库，这里放着你所有开发的智能体或复制的智能体/应用，也是在扣子进行智能体开发你最经常来到的地方，如图5.3所示。
 
-![图 5.3 扣子智能体项目空间](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-03.png)
+![图 5.3 扣子智能体项目空间](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-03.png)
 图 5.3 扣子智能体项目空间
 
 资源库是你开发扣子智能体的核心武器库，资源库就会存放你的工作流，知识库，卡片，提示词库等等一系列开发智能体的工具。你能做出什么样的智能体，首先取决于模型的能力，但是最重要的还是要看你怎么给智能体搭配“出装和技能”。模型决定了智能体的下限，但是扣子资源库给了你智能体的能力的无穷上限，让你能够按照自己的想法，开发想象力和脑洞进行智能体的开发，如图5.4所示。
 
-![图 5.4 扣子智能体资源库](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-04.png)
+![图 5.4 扣子智能体资源库](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-04.png)
 图 5.4 扣子智能体资源库
 
 空间配置包含智能体、插件、工作流和发布渠道的一个统一的管理频道，以及模型管理就是你可以在这里看到你调用的各种大模型，如图5.5所示。
 
-![图 5.5 扣子智能体发布渠道](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-05.png)
+![图 5.5 扣子智能体发布渠道](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-05.png)
 图 5.5 扣子智能体发布渠道
 
 如果让我对扣子的智能体开发做一个简单的总结的话，我会把他比喻成一个游戏的各个组成部分，各部分配合组合出一个一个精彩的智能体像极了打“游戏”，每做完一个智能体都像是打完了一个boss并且收获满满，不管是“经验”还是“装备”。
@@ -3804,7 +3804,7 @@ def find_primes(n):
 访问 [Coze 国内官网](https://www.coze.cn/home) 时，页面可能会自动重定向至新版首页https://www.coze.cn   在新版界面中，可通过如下入口进入旧版工作空间并继续进行智能体搭建，如图 5.6 所示。
 
 
-![Coze新版首页进入旧版工作空间入口](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-06.jpg)
+![Coze新版首页进入旧版工作空间入口](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-06.jpg)
 图 5.6 Coze新版首页进入旧版工作空间入口
 
 
@@ -3815,7 +3815,7 @@ def find_primes(n):
 在资源库界面，选择 `+资源`——`工作流`，创建工作流，如图 5.7 所示。
 
 
-![创建工作流页面](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-07.png)
+![创建工作流页面](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-07.png)
 图 5.7 创建工作流页面
 
 
@@ -3826,17 +3826,17 @@ def find_primes(n):
 1. **插件集成:** 在 Coze 的插件库中，搜索并添加所需的插件。例如，通过 **RSS** 插件订阅媒体平台的 RSS 源（如图5.8所示），通过 **GitHub** 插件追踪开源项目（如图5.9所示），以及通过 **arXiv** 插件获取最新的学术研究成果（如图5.10所示）。
 
 
-![媒体平台RSS源插件](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-08.png)
+![媒体平台RSS源插件](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-08.png)
 图 5.8 媒体平台的RSS源插件
 
 
 
-![GitHub插件](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-09.png)
+![GitHub插件](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-09.png)
 图 5.9 GitHub插件
 
 
 
-![Arxiv插件](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-10.png)
+![Arxiv插件](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-10.png)
 图 5.10 Arxiv插件
 
 2. **个性化配置:** 对每一个插件进行精细化配置，以确保其能精准地获取所需数据。例如，在 RSS 插件中，输入36氪、虎嗅等网站的特定RSS订阅链接；在 GitHub 插件中，设置需监控的关键词查询数量以及最新更新设置；在 arXiv 插件中，定义感兴趣的领域关键词，如“LLM”、“AI”等，定义数量以及最新更新设置。
@@ -3865,7 +3865,7 @@ sort_by：2
 3. **编排连接:** 在智能体的可视化编排界面中，将这些已配置的信息源插件（例如 `rss_24Hbj`、`searchRepository`、`arxiv` 等）作为数据输入节点，并将其连接至后续的逻辑处理模块（例如**大模型**模块），以构建完整的数据处理路径，如图5.11所示。
 
 
-![每日AI简报编排流程图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-11.png)
+![每日AI简报编排流程图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-11.png)
 图 5.11 每日AI简报编排流程图
 
 
@@ -3960,31 +3960,31 @@ sort_by：2
 多渠道发布: Coze 提供了将智能体一键发布到多个主流应用平台（如微信、豆包、飞书等）的能力，极大地扩展了智能体的应用场景，如图5.13所示。
 
 
-![扣子平台的多元发布渠道](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-13.png)
+![扣子平台的多元发布渠道](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-13.png)
 图 5.13 扣子平台的多元发布渠道
 
 
 智能体发布后，可以在扣子商店中看到我们创建的AI智能体，同时也可以将其集成到AI应用中为用户提供服务，如图5.14和图5.15所示。在这里也附上[每日AI新闻智能体体验链接](https://www.coze.cn/store/agent/7506052197071962153?bot_id=true&bid=6hkt3je8o2g16)
 
 
-![AI智能体-每日AI新闻](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-14.png)
+![AI智能体-每日AI新闻](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-14.png)
 图 5.14 AI智能体-每日AI新闻
 
 
 
-![AI应用中的每日AI新闻](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-15.png)
+![AI应用中的每日AI新闻](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-15.png)
 图 5.15 AI应用中的每日AI新闻
 
 
 **发布配置：**如果想要发布自己的智能体，还需在发布前，为智能体配置恰当的名称、头像及欢迎语，以提供更友好的用户体验，如图5.16和图5.17所示。
 
 
-![为智能体配置基础信息](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-16.png)
+![为智能体配置基础信息](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-16.png)
 图 5.16 为智能体配置基础信息
 
 
 
-![为智能体配置开场白和预设问题](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/coze-17.png)
+![为智能体配置开场白和预设问题](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/coze-17.png)
 图 5.17 为智能体配置开场白和预设问题
 
 
@@ -4014,14 +4014,14 @@ Dify 对模型高度中立且兼容性强：无论开源或商业模型，用户
 同时，Dify 支持本地部署（官方提供 Docker Compose 一键启动）和云端部署。用户可以选择将 Dify 自建部署在本地/私有环境（保障数据隐私），也可以使用官方 SaaS 云服务（下述商业模式部分详述）。这种部署灵活性使其适用于对安全性有要求的企业内网环境或对运维便利性有要求的开发者群体。
 
 
-![图 5.18 Dify官网](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-01.png)
+![图 5.18 Dify官网](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-01.png)
 图 5.18 Dify官网
 
 
 Marketplace 插件生态：Dify Marketplace 提供了一站式插件管理和一键部署功能，使开发者能够发现、扩展或提交插件，为社区带来更多可能，如图5.19所示。
 
 
-![图 5.19 Dify Marketplace插件生态](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-02.png)
+![图 5.19 Dify Marketplace插件生态](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-02.png)
 图 5.19 Dify Marketplace插件生态
 
 Marketplace 包含：
@@ -4043,28 +4043,28 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 
 ##### 5.3.2 构建一个超级智能体个人助手
 
-> **✨✨ 详细操作指南**：请参考 **[Dify智能体创建保姆级操作流程](https://github.com/datawhalechina/hello-agents/blob/623d8148f83d53365e39c21cb592b62b0f8e7b1b/Extra-Chapter/Extra03-Dify%E6%99%BA%E8%83%BD%E4%BD%93%E5%88%9B%E5%BB%BA%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B.md)**
+> **✨✨ 详细操作指南**：请参考 **[Dify智能体创建保姆级操作流程](https://github.com/datawhalechina/hello-agents/blob/36f583c233ea5cee4537ef93455702b55053af18/Extra-Chapter/Extra03-Dify%E6%99%BA%E8%83%BD%E4%BD%93%E5%88%9B%E5%BB%BA%E4%BF%9D%E5%A7%86%E7%BA%A7%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B.md)**
 
 在上一节 Coze 的案例中，我们搭建了一个每日AI简报智能体。虽然功能明确，但其单一的简报生成能力略显局限。本节将使用 Dify 构建一个功能全面的超级智能体个人助手，涵盖日常问答、文案优化、多模态生成、数据分析等多个场景。在开始之前，我们先简要了解 Dify 的主要界面和功能模块。
 
 
-![图 5.20 Dify 智能体搭建主页](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-14.png)
+![图 5.20 Dify 智能体搭建主页](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-14.png)
 图 5.20 Dify 智能体搭建主页
 
 
-![图 5.21 Dify 官方模板库](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-18.png)
+![图 5.21 Dify 官方模板库](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-18.png)
 图 5.21 Dify 官方模板库
 
 
-![图 5.22 Dify 知识库](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-15.png)
+![图 5.22 Dify 知识库](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-15.png)
 图 5.22 Dify 知识库
 
 
-![图 5.23 Dify 插件市场](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-16.png)
+![图 5.23 Dify 插件市场](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-16.png)
 图 5.23 Dify 插件市场
 
 
-![图 5.24 Dify 大模型配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-17.png)
+![图 5.24 Dify 大模型配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-17.png)
 图 5.24 Dify 大模型配置
 
 
@@ -4073,7 +4073,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 在构建智能体之前，需要先完成必要的插件安装和 MCP 配置。如图5.25所示，这些是本案例所需的核心插件。
 
 
-![图 5.25 Dify 插件安装配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-19.png)
+![图 5.25 Dify 插件安装配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-19.png)
 图 5.25 Dify 插件安装配置
 
 
@@ -4082,14 +4082,14 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 接下来配置 MCP（Model Context Protocol）。关于 MCP 的详细原理这里不展开，我们重点演示如何使用云端部署的 MCP 服务。本案例使用国内的魔搭社区 MCP 市场进行演示，如图5.26所示。
 
 
-![图 5.26 魔搭社区mcp市场](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-20.png)
+![图 5.26 魔搭社区mcp市场](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-20.png)
 图 5.26 魔搭社区mcp市场
 
 
 打开魔搭社区 MCP 市场，选择 hosted 类型。以高德 MCP 为例，进入其主页后，在右侧选择 SSE 模式并点击连接配置，即可生成专属的 MCP 配置 JSON，如图5.27所示。MCP 支持多种通信模式，但在 Dify 中使用 SSE 模式通信更加流畅稳定，因此推荐选择 SSE 模式。
 
 
-![图 5.27 高德mcp配置示例](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-21.png)
+![图 5.27 高德mcp配置示例](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-21.png)
 图 5.27 高德mcp配置示例
 
 
@@ -4106,7 +4106,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 整个智能体的编排架构如图5.28所示。
 
 
-![图 5.28 智能体编排](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-12.png)
+![图 5.28 智能体编排](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-12.png)
 图 5.28 智能体编排
 
 
@@ -4181,7 +4181,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 效果演示如图5.29所示：
 
 
-![图 5.29 日常助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-03.png)
+![图 5.29 日常助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-03.png)
 图 5.29 日常助手
 
 
@@ -4222,7 +4222,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 效果演示如图5.30所示：
 
 
-![图 5.30 文案助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-04.png)
+![图 5.30 文案助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-04.png)
 图 5.30 文案助手
 
 
@@ -4241,18 +4241,18 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 生图配置和效果如图5.31和图5.32所示。
 
 
-![图 5.31 生图设置](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-13.png)
+![图 5.31 生图设置](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-13.png)
 图 5.31 生图设置
 
 
-![图 5.32 生图助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-05.png)
+![图 5.32 生图助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-05.png)
 图 5.32 生图助手
 
 
 视频生成的效果如图5.33所示。
 
 
-![图 5.33 视频助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-06.png)
+![图 5.33 视频助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-06.png)
 图 5.33 视频助手
 
 **数据查询与分析模块**
@@ -4267,7 +4267,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 配置数据库连接信息（IP地址、数据库名称、端口、账号、密码等），如图5.34所示。查询结果需要通过大模型节点进行整理，转换为易于理解的自然语言输出。
 
 
-![图 5.34 数据库配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-22.png)
+![图 5.34 数据库配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-22.png)
 图 5.34 数据库配置
 
 
@@ -4300,7 +4300,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 效果展示如图5.35所示：
 
 
-![图 5.35 数据查询助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-07.png)
+![图 5.35 数据查询助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-07.png)
 图 5.35 数据查询助手
 
 
@@ -4335,7 +4335,7 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 ```
 
 
-![图 5.36 数据分析助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-08.png)
+![图 5.36 数据分析助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-08.png)
 图 5.36 数据分析助手
 
 
@@ -4353,24 +4353,24 @@ Dify 为插件开发者提供了强大的开发支持，包括远程调试功能
 配置界面如图5.37所示。
 
 
-![图 5.37 智能体的mcp配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-23.png)
+![图 5.37 智能体的mcp配置](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-23.png)
 图 5.37 智能体的mcp配置
 
 
 高德助手、饮食助手和新闻助手的效果分别如图5.38、图5.39和图5.40所示。
 
 
-![图 5.38 高德助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-09.png)
+![图 5.38 高德助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-09.png)
 图 5.38 高德助手
 
 
 
-![图 5.39 饮食助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-10.png)
+![图 5.39 饮食助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-10.png)
 图 5.39 饮食助手
 
 
 
-![图 5.40 新闻助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/dify-11.png)
+![图 5.40 新闻助手](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/dify-11.png)
 图 5.40 新闻助手
 
 
@@ -4405,49 +4405,49 @@ FastGPT 是一个开源的、基于大语言模型的知识库问答平台与 Ag
 进入 FastGPT 官网，首先映入眼帘的是其简洁有力的产品宣言——"企业级 AI 生产力引擎"，强调构建安全、可控的企业级 AI Agent，如图5.41所示。
 
 
-![图 5.41 FastGPT 官网首页](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-01.png)
+![图 5.41 FastGPT 官网首页](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-01.png)
 图 5.41 FastGPT 官网首页
 
 
 登录平台后，可以看到其清晰的工作台布局。左侧导航栏将核心功能划分为 对话门户、工作台、知识库和账号四大模块。其中 Agent 模块又细分为工作流、对话 Agent 和对话 Agent V2(Beta) 三种类型，方便用户根据业务场景选择合适的构建模式。主区域则提供了"从模板新建"的快捷入口，内置了销售陪练大师、文档翻译助手、行业趋势洞察简报等官方模板；下方是用户自己创建的 Agent 列表，如图5.42所示。
 
 
-![图 5.42 FastGPT 平台主界面](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-02.png)
+![图 5.42 FastGPT 平台主界面](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-02.png)
 图 5.42 FastGPT 平台主界面
 
 
 在账号与套餐方面，FastGPT 提供了免费版供个人开发者体验。免费版包含 100 积分、600 条知识库索引、1 个团队成员、10 个 Agent、3 个知识库、30 天对话记录保留、30 QPM 的调用速率，以及单次可上传 5 个 50MB 文件的权限，如图5.43所示。对于中小企业和团队，平台也提供了付费升级方案以满足更高的并发和存储需求。
 
 
-![图 5.43 FastGPT 免费版套餐与用量](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-03.png)
+![图 5.43 FastGPT 免费版套餐与用量](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-03.png)
 图 5.43 FastGPT 免费版套餐与用量
 
 
 FastGPT 最核心的竞争力在于其强大的知识库能力。平台支持多种文件格式的导入，包括 Word、Markdown、PDF 等常见文档类型。如图5.44所示，在"test 通用知识库"中，我们可以上传深度学习简介、机器学习入门、招标文件正文等多个文件，系统会自动对文件进行分块处理并建立索引，状态显示为"已就绪"后即可在对话中被检索引用。
 
 
-![图 5.44 FastGPT 知识库文件管理](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-12.png)
+![图 5.44 FastGPT 知识库文件管理](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-12.png)
 图 5.44 FastGPT 知识库文件管理
 
 
 在文件处理层面，FastGPT 提供了精细化的参数配置。如图5.45所示，用户可以选择"分块存储"或"问答对提取"两种处理方式，设置分块条件（如原文长度大于 1000 字符时触发分块），并开启多种索引增强选项，包括将标题加入索引、自动生成补充索引以及图片自动索引等。对于包含大量图文混排内容的文档（如教材、研报），图片自动索引功能尤为重要，它能让大模型在回答时理解并引用文档中的视觉信息。
 
 
-![图 5.45 知识库数据处理参数设置](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-14.png)
+![图 5.45 知识库数据处理参数设置](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-14.png)
 图 5.45 知识库数据处理参数设置
 
 
 上传完成后，用户可以查看文件被分块后的具体内容。如图5.46所示，以"英语四年级下册全册电子书.pdf"为例，平台展示了每个分块的文本预览，同时右侧元数据面板显示了文件大小（62MB）、原文长度（37797 字符）、处理模式（分块存储）、图片索引状态等关键信息。这种透明化的分块展示，方便开发者进行知识库的调试与优化。
 
 
-![图 5.46 知识库文件分块详情与元数据](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-13.png)
+![图 5.46 知识库文件分块详情与元数据](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-13.png)
 图 5.46 知识库文件分块详情与元数据
 
 
 除了知识库，FastGPT 在工具集成方面也紧跟生态趋势。平台原生支持 MCP（Model Context Protocol）工具，用户可以在"我的工具"模块中统一管理各类 MCP 服务。如图5.47所示，在"ai 金融"文件夹下，我们已经配置了中文趋势聚合、实时股票 MCP、且慢基金 MCP、Minimax-MCP、BI 画图工具等多个 MCP 工具，这些工具将赋予智能体调用外部实时数据和专业服务的能力。
 
 
-![图 5.47 FastGPT MCP 工具管理](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-04.png)
+![图 5.47 FastGPT MCP 工具管理](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-04.png)
 图 5.47 FastGPT MCP 工具管理
 
 
@@ -4467,14 +4467,14 @@ FastGPT 最核心的竞争力在于其强大的知识库能力。平台支持多
 如图5.48所示，我们可以在魔搭社区（ModelScope）的 MCP 市场中找到"可视化图表 MCP Server"。该服务基于 TypeScript 开发，兼容 MCP 协议，提供了生成面积图、柱状图、饼图等多种图表的能力，能够将枯燥的数据转化为直观的可视化结果。
 
 
-![图 5.48 魔搭社区可视化图表 MCP Server](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-05.png)
+![图 5.48 魔搭社区可视化图表 MCP Server](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-05.png)
 图 5.48 魔搭社区可视化图表 MCP Server
 
 
 另外，如图5.49所示，阿里云百炼平台也提供了丰富的官方 MCP 服务。在 MCP 管理页面中，我们可以找到"今日投资-金融实..."和"且慢"等金融类 MCP 服务，以及股票实时行情查询、万相-视频生成等工具。将这些服务添加到 FastGPT 的 MCP 工具库后，智能体便能在对话中按需调用它们。
 
 
-![图 5.49 阿里云百炼 MCP 管理](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-06.png)
+![图 5.49 阿里云百炼 MCP 管理](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-06.png)
 图 5.49 阿里云百炼 MCP 管理
 
 
@@ -4487,7 +4487,7 @@ FastGPT 最核心的竞争力在于其强大的知识库能力。平台支持多
 如图5.50所示，"智能投顾助手"的完整工作流包含了多个处理分支：用户意图识别、知识库检索、风险问卷收集、MCP 工具调用、报告生成等。整个工作流呈现出清晰的模块化结构，数据在不同节点间有序流转。这种可视化的编排方式，让开发者能够直观地理解和调试智能体的决策路径。
 
 
-![图 5.50 智能投顾助手工作流编排](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-07.png)
+![图 5.50 智能投顾助手工作流编排](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-07.png)
 图 5.50 智能投顾助手工作流编排
 
 
@@ -4536,7 +4536,7 @@ FastGPT 最核心的竞争力在于其强大的知识库能力。平台支持多
 完成工作流和提示词配置后，我们可以在 FastGPT 的对话界面中进行测试。如图5.51所示，智能投顾助手的开场白清晰地介绍了自身的三大功能特色：精通金融投资理论、提供实时市场新闻及数据、根据风险画像评估提供资产配置建议。界面下方还提供了快捷操作按钮，方便用户一键触发常见任务。
 
 
-![图 5.51 智能投顾助手对话界面](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-08.png)
+![图 5.51 智能投顾助手对话界面](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-08.png)
 图 5.51 智能投顾助手对话界面
 
 
@@ -4550,21 +4550,21 @@ FastGPT 最核心的竞争力在于其强大的知识库能力。平台支持多
 - **再平衡策略**：提供定期调仓的建议方案，包括调仓周期和触发条件。
 
 
-![图 5.52 投资策略分析报告](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-09.png)
+![图 5.52 投资策略分析报告](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-09.png)
 图 5.52 投资策略分析报告
 
 
 对于实时数据查询场景，如图5.53所示，当用户询问"查询现在贵州茅台的股价信息"时，智能体会自动调用 MCP 工具（`get_stock_quote_realtime`）获取实时行情数据。返回结果包含标题、数据来源、关键要点（开盘价、最高价、日内价格区间、成交量、总市值、流通市值等），以及潜在影响分析和建议行动。这种结构化、专业化的输出，体现了 Agent 工具调用能力的实际价值。
 
 
-![图 5.53 实时股票行情查询](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-10.png)
+![图 5.53 实时股票行情查询](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-10.png)
 图 5.53 实时股票行情查询
 
 
 在概念解释方面，如图5.54所示，当用户询问"市盈率和市净率有什么区别"时，助手基于知识库和大模型的理解，给出了系统性的对比分析：从定义出发，详细解释了市盈率（P/E Ratio）和市净率（P/B Ratio）的计算方式；从四个维度（计算基础、适用行业、反映信息、局限性）进行对比；最后给出实际应用建议，说明何时应重点关注市盈率、何时应关注市净率。这种层次分明、逻辑严谨的输出，正是 RAG 增强后的大模型在垂直领域问答中的典型优势。
 
 
-![图 5.54 市盈率与市净率概念解析](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/fastgpt-11.png)
+![图 5.54 市盈率与市净率概念解析](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/fastgpt-11.png)
 图 5.54 市盈率与市净率概念解析
 
 
@@ -4609,7 +4609,7 @@ n8n 的真正威力在于其强大的“连接”能力。它可以将原本孤�
 整个过程模拟了一个更高级的决策逻辑：`接收 -> AI Agent (思考 -> 决策 -> 工具调用) -> 回复`，如图5.55所示。
 
 
-![图 5.55 一体化智能邮件 Agent 架构示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-01.png)
+![图 5.55 一体化智能邮件 Agent 架构示意图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-01.png)
 图 5.55 一体化智能邮件 Agent 架构示意图
 
 
@@ -4634,7 +4634,7 @@ n8n 的真正威力在于其强大的“连接”能力。它可以将原本孤�
 - **内容**：将您的知识以 JSON 格式写入。
 
 
-![Code 节点中填写了知识库 JSON 文本的截图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-02.png)
+![Code 节点中填写了知识库 JSON 文本的截图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-02.png)
 图 5.56 在 Code 节点中定义知识源
 
 
@@ -4663,7 +4663,7 @@ return [
 - **配置**：将其连接到 `Code` 节点之后，它会自动将上游传入的文本转换为向量数据。
 
 
-![n8n-03](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-03.png)
+![n8n-03](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-03.png)
 图 5.57 对 Code 中数据进行向量化
 
 
@@ -4677,14 +4677,14 @@ return [
   - **Memory Key**: 为这个知识库起一个唯一的名字，例如 `my-dailytime`。这个 Key 相当于数据库的“表名”，后续 Agent 将通过它来查找信息。
 
 
-![n8n-04](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-04.png)
+![n8n-04](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-04.png)
 图 5.58 对 Code 中数据存入向量存储
 
 
 完成配置后，**手动执行一次**这个流程。成功后，您的私有知识就加载到 n8n 的内存中了，如图5.59所示。
 
 
-![n8n-05](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-05.png)
+![n8n-05](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-05.png)
 图 5.59 完整的知识库加载工作流
 
 
@@ -4697,21 +4697,21 @@ return [
 新建一个工作流，命名为 `Agent: Customer Support`。使用 `Gmail` 节点作为触发器，将其 **Event** 设置为 `Message Received`，并配置好你的邮箱账号。这样，每当有新邮件进入收件箱时，该工作流就会被自动触发，如图5.60所示。
 
 
-![n8n-06](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-06.png)
+![n8n-06](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-06.png)
 图 5.60 新建Gmail节点图
 
 
 配置过程可参考[n8n官方文档](https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/?utm_source=n8n_app&utm_medium=credential_settings&utm_campaign=create_new_credentials_modal#enable-apis)。Gmail的api在这里[配置](https://console.cloud.google.com/apis/library/gmail.googleapis.com?project=apt-entropy-471905-b9)，需要创建凭证，选择Web 应用类型，最后即得到所需的客户端ID和客户端密钥。并且需要在已获授权的重定向 URI 将n8n刚给的OAuth Redirect URL给添加上。同时，还需要在[目标对象](https://console.cloud.google.com/auth/audience?project=apt-entropy-471905-b9)的Add users加上自己的邮箱地址。最终配置完成的页面如图5.61所示。
 
 
-![n8n-07](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-07.png)
+![n8n-07](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-07.png)
 图 5.61 Gmail账号加载成功图
 
 
 现在我们可以点击`Fetch Test Event`获取邮件了，如图5.62所示！
 
 
-![n8n-08](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-08.png)
+![n8n-08](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-08.png)
 图 5.62 获取实时邮件图
 
 
@@ -4726,7 +4726,7 @@ return [
   2. `Simple Vector Store`: 让 Agent 拥有查询我们第一部分中创建的私有知识库的能力。
 
 
-![n8n-09](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-09.png)
+![n8n-09](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-09.png)
 图 5.63 AI Agent节点设置图
 
 
@@ -4735,7 +4735,7 @@ return [
 其中，对于AI Agent节点，我们需要填的主要是`User Message`和`System Message`部分，如图5.64所示。
 
 
-![n8n-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-10.png)
+![n8n-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-10.png)
 图 5.64 AI Agent 节点详解图
 
 
@@ -4803,7 +4803,7 @@ return [
 只有 `Memory Key` 和 `Embeddings` 模型完全一致，Agent 才能用正确的“钥匙”和“语言”来访问知识库,如图5.65所示。
 
 
-![n8n-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-11.png)
+![n8n-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-11.png)
 图 5.65 Simple Vector Store工具配置
 
 
@@ -4824,14 +4824,14 @@ Description参数即AI Agent调用该工具时，对该工具的描述定义，�
 - **Message**: `{{ $json.output }}`
 
 
-![n8n-12](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-12.png)
+![n8n-12](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-12.png)
 图 5.66 最终回复工具图示
 
 
 并且发送成功的同时，也能在个人邮箱收到真实的返回邮件信息，如图5.67所示。
 
 
-![n8n-13](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-13.png)
+![n8n-13](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-13.png)
 图 5.67 个人邮箱返回邮件格式
 
 
@@ -4843,7 +4843,7 @@ Description参数即AI Agent调用该工具时，对该工具的描述定义，�
 
 
 表 5.1 n8n 平台的优势与局限性总结
-![n8n-14](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/5-figures/n8n-14.png)
+![n8n-14](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/5-figures/n8n-14.png)
 
 
 首先，n8n 最显著的优势在于其**开发效率**。它将复杂的逻辑抽象为直观的可视化工作流，无论是邮件的接收、AI 的决策，还是工具的调用和最终的回复，整个数据流和处理链路都在画布上一目了然。这种低代码的特性极大地降低了技术门槛，让开发者能够快速搭建和验证 Agent 的核心逻辑，极大地缩短了从想法到原型的距离。
@@ -4989,7 +4989,7 @@ Description参数即AI Agent调用该工具时，对该工具的描述定义，�
 
 
 表 6.1 四种智能体框架对比
-![01](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/6-figures/01.png)
+![01](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/6-figures/01.png)
 
 
 
@@ -5009,7 +5009,7 @@ Description参数即AI Agent调用该工具时，对该工具的描述定义，�
 `0.7.4` 版本的发布是 AutoGen 发展的一个重要节点，它标志着框架在底层设计上的一次根本性革新。这次更新并非简单的功能叠加，而是对整体架构的重新思考，旨在提升框架的模块化、并发性能和开发者体验。
 
 
-![02](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/6-figures/02.png)
+![02](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/6-figures/02.png)
 图 6.1 AutoGen架构图
 
 
@@ -5365,7 +5365,7 @@ model_client = OpenAIChatCompletionClient(
 如图6.2所示，AgentScope 采用了清晰的分层模块化设计，从底层的基础组件到上层的应用编排，形成了一个完整的智能体开发生态。
 
 
-![03](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/6-figures/03.png)
+![03](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/6-figures/03.png)
 图 6.2 AgentScope架构图
 
 
@@ -5689,7 +5689,7 @@ CAMEL 实现自主协作的基石是两大核心概念：**角色扮演 (Role-Pl
 这些约束条件确保了对话不会偏离主题、不会陷入无效循环，而是以一种高度结构化、任务驱动的方式向前推进，如图6.3所示。
 
 
-![04](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/6-figures/04.png)
+![04](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/6-figures/04.png)
 图 6.3 CAMEL创建股票机器人交易
 
 
@@ -6764,7 +6764,7 @@ for chunk in llm.think(messages):
 
 
 表 7.1 HelloAgentLLM不同版本特性对比
-![table-01](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/7-figures/table-01.png)
+![table-01](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/7-figures/table-01.png)
 
 
 如上表7.1所示，这种演进体现了框架设计的重要原则：**从简单开始，逐步完善**。我们在保持接口简洁的同时，增强了功能的完整性。
@@ -7591,7 +7591,7 @@ print(f"数学专用Agent结果: {math_result}")
 
 
 表 7.2 Agent不同章节实现对比
-![table-02](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/7-figures/table-02.png)
+![table-02](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/7-figures/table-02.png)
 
 
 ##### 7.4.5 FunctionCallAgent
@@ -7971,7 +7971,7 @@ if __name__ == "__main__":
 通过这个简化的数学计算工具案例，我们学会了如何快速开发自定义工具：编写一个简单的计算函数，通过ToolRegistry注册，然后与SimpleAgent集成使用。为了更直观的观察，这里提供了图7.1，可以清晰理解代码的运行逻辑。
 
 
-![01](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/7-figures/01.png)
+![01](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/7-figures/01.png)
 图 7.1 基于Helloagents的SimpleAgent运行工作流
 
 
@@ -8460,7 +8460,7 @@ async def test_parallel_execution():
 
 #### 7.6 本章小结
 
-在正式总结之前，我们想告诉大家一个好消息：对于本章实现的所有方法和功能，都在GitHub仓库中提供了完整的测试案例。你可以访问[这个链接](https://github.com/datawhalechina/hello-agents/tree/623d8148f83d53365e39c21cb592b62b0f8e7b1b/code/chapter7)查看和运行这些测试代码。该目录包含了四种Agent范式的演示、工具系统的集成测试、高级功能的使用示例，以及交互式的Agent体验。如果你想验证自己的实现是否正确，或者想深入了解框架的实际使用方式，这些测试案例将是有价值的参考。
+在正式总结之前，我们想告诉大家一个好消息：对于本章实现的所有方法和功能，都在GitHub仓库中提供了完整的测试案例。你可以访问[这个链接](https://github.com/datawhalechina/hello-agents/tree/36f583c233ea5cee4537ef93455702b55053af18/code/chapter7)查看和运行这些测试代码。该目录包含了四种Agent范式的演示、工具系统的集成测试、高级功能的使用示例，以及交互式的Agent体验。如果你想验证自己的实现是否正确，或者想深入了解框架的实际使用方式，这些测试案例将是有价值的参考。
 
 回顾本章，我们完成了一项富有挑战的任务：一步步构建了一个基础的智能体框架——HelloAgents。这个过程始终遵循着“分层解耦、职责单一、接口统一”的核心原则。
 
@@ -8475,7 +8475,7 @@ async def test_parallel_execution():
 
 1. 本章构建了 `HelloAgents` 框架，并阐述了"为何需要自建Agent框架"。请分析：
 
-   - 在7.1.1节中提到了当前主流框架的四个主要局限性。结合你在[第六章习题](https://github.com/datawhalechina/hello-agents/blob/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/chapter6/%E7%AC%AC%E5%85%AD%E7%AB%A0%20%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5.md#习题)或实际项目中使用过的某个框架的实际经验，说明这些问题是如何影响开发效率的。
+   - 在7.1.1节中提到了当前主流框架的四个主要局限性。结合你在[第六章习题](https://github.com/datawhalechina/hello-agents/blob/36f583c233ea5cee4537ef93455702b55053af18/docs/chapter6/%E7%AC%AC%E5%85%AD%E7%AB%A0%20%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5.md#习题)或实际项目中使用过的某个框架的实际经验，说明这些问题是如何影响开发效率的。
    - `HelloAgents` 提出了"万物皆为工具"的设计理念，将 `Memory`、`RAG`、`MCP` 等模块都抽象为工具。这种设计有什么优势？是否存在局限性？请举例说明。
    - 对比第四章从零实现的智能体代码和本章的框架化实现，框架化带来了哪些具体的改进？如果让你设计一个框架，你会优先考虑哪些设计原则？
 
@@ -8529,7 +8529,7 @@ async def test_parallel_execution():
 在构建智能体的记忆系统之前，让我们先从认知科学的角度理解人类是如何处理和存储信息的。人类记忆是一个多层级的认知系统，它不仅能存储信息，还能根据重要性、时间和上下文对信息进行分类和整理。认知心理学为理解记忆的结构和过程提供了经典的理论框架<sup>[1]</sup>，如图8.1所示。
 
 
-![人类记忆系统结构图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-1.png)
+![人类记忆系统结构图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-1.png)
 图 8.1 人类记忆系统的层次结构
 
 
@@ -8593,7 +8593,7 @@ print(response2)  # "抱歉，我不知道您的学习进度..."
 
 基于第七章建立的框架基础和认知科学的启发，我们设计了一个分层的记忆与RAG系统架构，如图8.2所示。这个架构不仅借鉴了人类记忆系统的层次结构，还充分考虑了工程实现的可扩展性。在实现上，我们将记忆和RAG设计为两个独立的工具：`memory_tool`负责存储和维护对话过程中的交互信息，`rag_tool`则负责从用户提供的知识库中检索相关信息作为上下文，并可将重要的检索结果自动存储到记忆系统中。
 
-![HelloAgents记忆与RAG系统架构图](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-2.png)
+![HelloAgents记忆与RAG系统架构图](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-2.png)
 图 8.2 HelloAgents记忆与RAG系统整体架构
 
 
@@ -8804,7 +8804,7 @@ INFO:hello_agents.memory.storage.qdrant_store:✅ 使用现有Qdrant集合: rag_
 在进入代码实现阶段前，我们需要先定义记忆系统的工作流程。该流程参考了认知科学中的记忆模型，并将每个认知阶段映射为具体的技术组件和操作。理解这一映射关系，有助于我们后续的代码实现。
 
 
-![记忆形成过程](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-3.png)
+![记忆形成过程](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-3.png)
 图 8.3 记忆形成的认知过程
 
 
@@ -8820,7 +8820,7 @@ INFO:hello_agents.memory.storage.qdrant_store:✅ 使用现有Qdrant集合: rag_
 基于该启发，我们为 HelloAgents 设计了一套完整的记忆系统。其核心思想是模仿人类大脑处理不同类型信息的方式，将记忆划分为多个专门的模块，并建立一套智能化的管理机制。图8.4详细展示了这套系统的工作流程，包括记忆的添加、检索、整合和遗忘等关键环节。
 
 
-![记忆系统工作流程](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-4.png)
+![记忆系统工作流程](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-4.png)
 图 8.4 HelloAgents记忆系统的完整工作流程
 
 
@@ -9630,7 +9630,7 @@ def _calculate_recency_score(self, timestamp: str) -> float:
 在深入实现细节之前，可以通过流程图来梳理Helloagents的RAG系统完整工作流程：
 
 
-![RAG系统核心原理](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-5.png)
+![RAG系统核心原理](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-5.png)
 图 8.5 RAG系统的核心工作原理
 
 
@@ -10193,7 +10193,7 @@ def search_vectors_expanded(
 为了更清晰地展示整个系统的工作流程，图8.6展示了五个步骤之间的关系和数据流动。五个步骤形成了一个完整的闭环：步骤1将PDF文档处理后的信息记录到记忆系统，步骤2的检索结果也会记录到记忆系统，步骤3展示记忆系统的完整功能（添加、检索、整合、遗忘），步骤4整合RAG和Memory提供智能路由，步骤5收集所有统计信息生成学习报告。
 
 
-![8-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-6.png)
+![8-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-6.png)
 图 8.6 智能问答助手的五步执行流程
 
 
@@ -10493,28 +10493,28 @@ def generate_report(self, save_to_file: bool = True) -> Dict[str, Any]:
 接下来是运行效果展示，如图8.7所示，进入主页面后需要先初始化助手，也就是加载我们的数据库，模型，API之类的载入操作。后传入PDF文档，并点击加载文档。
 
 
-![8-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-7.png)
+![8-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-7.png)
 图 8.7 问答助手主页面
 
 
 第一个功能是智能问答，将可以基于上传的文档进行检索，并返回参考来源和相关资料的相似度计算，这是RAG tool能力的体现，如图8.8所示。
 
 
-![8-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-8.png)
+![8-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-8.png)
 图 8.8 问答助手主页面
 
 
 第二个功能是学习笔记，如图8.9所示，可以对于相关概念进行勾选，以及撰写笔记内容，这一部分运用到Memory tool，将会存放你的个人笔记在数据库内，方便统计和后续返回整体的学习报告。
 
 
-![8-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-9.png)
+![8-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-9.png)
 图 8.9 问答助手主页面
 
 
 最后是学习进度的统计和报告的生成，如图8.10所示，我们将可以看到使用助手期间加载的文档数量，提问次数，和笔记数量，最终将我们的问答结果和笔记整理为一个JSON文档返回。
 
 
-![8-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-10.png)
+![8-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-10.png)
 图 8.10 问答助手主页面
 
 
@@ -10545,7 +10545,7 @@ def generate_report(self, save_to_file: bool = True) -> Dict[str, Any]:
 最后，让我们通过一个思维导图来总结本章的完整知识体系，如图8.11所示：
 
 
-![8-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/8-figures/8-11.png)
+![8-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/8-figures/8-11.png)
 图 8.11 Hello-agents第八章知识总结
 
 
@@ -10626,7 +10626,7 @@ pip install "hello-agents[all]==0.2.8"
 所谓“上下文”，是指在对大语言模型（LLM）进行采样时所包含的那组 tokens。手头的工程问题，是在 LLM 的固有约束之下，**优化这些 tokens 的效用**，以便稳定地得到预期结果。想要有效驾驭 LLM，往往需要“在上下文中思考”——也就是说：在任何一次调用时，都要审视 LLM 可见的整体状态，并预判这种状态可能诱发的行为。
 
 
-![9-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/9-figures/9-1.webp)
+![9-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/9-figures/9-1.webp)
 图 9.1 Prompt engineering vs Context engineering
 
 
@@ -10672,7 +10672,7 @@ pip install "hello-agents[all]==0.2.8"
 总的指导思想是：**信息充分但紧致**。如图9.2所示，是进入运行时的动态检索。
 
 
-![9-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/9-figures/9-2.webp)
+![9-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/9-figures/9-2.webp)
 图 9.2 Calibrating the system prompt
 
 
@@ -12648,7 +12648,7 @@ context = context_builder.build(
 我们的代码库维护助手采用三层架构，如图9.3所示：
 
 
-![9-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/9-figures/9-3.png)
+![9-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/9-figures/9-3.png)
 图 9.3 代码库维护助手三层架构
 
 
@@ -13506,7 +13506,7 @@ MCP（Model Context Protocol）由 Anthropic 团队提出<sup>[1]</sup>，其核
 MCP 的设计哲学是"上下文共享"。它不仅仅是一个 RPC（远程过程调用）协议，更重要的是它允许智能体和工具之间共享丰富的上下文信息。如图 10.1 所示，当智能体访问一个代码仓库时，MCP 服务器不仅能提供文件内容，还能提供代码结构、依赖关系、提交历史等上下文信息，让智能体能够做出更智能的决策。
 
 
-![10-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-1.png)
+![10-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-1.png)
 图 10.1 MCP 设计思想
 
 
@@ -13517,7 +13517,7 @@ A2A（Agent-to-Agent Protocol）协议由 Google 团队提出<sup>2</sup>，其�
 A2A 的设计哲学是"对等通信"。如图 10.2 所示，在 A2A 网络中，每个智能体既是服务提供者，也是服务消费者。智能体可以主动发起请求，也可以响应其他智能体的请求。这种对等的设计避免了中心化协调器的瓶颈，让智能体网络更加灵活和可扩展。
 
 
-![10-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-2.png)
+![10-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-2.png)
 图 10.2 A2A 设计思想
 
 
@@ -13528,7 +13528,7 @@ ANP（Agent Network Protocol）是一个概念性的协议框架<sup>3</sup>，�
 ANP 的设计哲学是"去中心化服务发现"。在一个包含成百上千个智能体的网络中，如何让智能体能够找到它需要的服务？如图 10.3 所示，ANP 提供了服务注册、发现和路由机制，让智能体能够动态地发现网络中的其他服务，而不需要预先配置所有的连接关系。
 
 
-![10-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-3.png)
+![10-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-3.png)
 图 10.3 ANP 设计思想
 
 
@@ -13536,7 +13536,7 @@ ANP 的设计哲学是"去中心化服务发现"。在一个包含成百上千�
 
 
 表 10.1 三种协议对比
-![10-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-1.png)
+![10-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-1.png)
 
 
 **（4）如何选择合适的协议？**
@@ -13556,7 +13556,7 @@ ANP 的设计哲学是"去中心化服务发现"。在一个包含成百上千�
 如图 10.4 所示，HelloAgents 的通信协议架构采用三层设计，从底层到上层分别是：协议实现层、工具封装层和智能体集成层。
 
 
-![10-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-4.png)
+![10-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-4.png)
 图 10.4 HelloAgents 通信协议设计
 
 
@@ -13653,7 +13653,7 @@ MCP 协议采用 Host、Client、Servers 三层架构设计，让我们通过图
 假设你正在使用 Claude Desktop 询问："我桌面上有哪些文档？"
 
 
-![10-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-5.png)
+![10-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-5.png)
 图 10.5 MCP 案例演示
 
 
@@ -13675,7 +13675,7 @@ MCP 协议采用 Host、Client、Servers 三层架构设计，让我们通过图
 
 
 表 10.2 MCP 核心能力
-![10-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-2.png)
+![10-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-2.png)
 
 
 这三种能力的区别在于：**Tools 是主动的**（执行操作），**Resources 是被动的**（提供数据），**Prompts 是指导性的**（提供模板）。
@@ -13685,7 +13685,7 @@ MCP 协议采用 Host、Client、Servers 三层架构设计，让我们通过图
 让我们通过一个具体例子来理解 MCP 的完整工作流程，如图 10.6 所示：
 
 
-![10-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-6.png)
+![10-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-6.png)
 图 10.6 MCP 案例演示
 
 
@@ -13716,7 +13716,7 @@ MCP 协议采用 Host、Client、Servers 三层架构设计，让我们通过图
 
 
 表 10.3 Function Calling 与 MCP 对比
-![10-table-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-3.png)
+![10-table-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-3.png)
 
 
 这里我们以智能体需要访问 GitHub 仓库和本地文件系统为例子来详细对比同一个任务的两种实现
@@ -14018,7 +14018,7 @@ HelloAgents 的`MCPClient`支持五种传输方式，每种都有不同的使用
 
 
 表 10.4 MCP 传输方式对比
-![10-table-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-4.png)
+![10-table-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-4.png)
 
 
 **（2）传输方式使用示例**
@@ -14467,12 +14467,12 @@ MCP 协议的一个巨大优势是**丰富的社区生态**。Anthropic 和社�
 
 
 表 10.5 常用官方 MCP 服务器
-![10-table-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-5.png)
+![10-table-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-5.png)
 
 
 
 表 10.6 社区热门 MCP 服务器
-![10-table-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-6.png)
+![10-table-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-6.png)
 
 
 以下是一些特别有趣的案例 TODO 可供参考：
@@ -14539,13 +14539,13 @@ A2A 协议采用点对点（P2P）架构（网状拓扑），允许智能体直�
 
 
 表 10.7 A2A 核心概念
-![10-table-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-7.png)
+![10-table-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-7.png)
 
 
 为实现对协作过程的管理，A2A 为任务定义了标准化的生命周期，包括创建、协商、代理、执行中、完成、失败等状态，可见图 10.7。
 
 
-![10-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-7.png)
+![10-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-7.png)
 图 10.7 A2A 任务周期
 
 
@@ -14555,7 +14555,7 @@ A2A 协议采用点对点（P2P）架构（网状拓扑），允许智能体直�
 A2A 请求生命周期是一个序列，详细说明了请求遵循的四个主要步骤：代理发现、身份验证、发送消息 API 和发送消息流 API。下图 10.8 借鉴了官网的流程图，用来展示了操作流程，说明了客户端、A2A 服务器和身份验证服务器之间的交互。
 
 
-![10-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-8.png)
+![10-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-8.png)
 图 10.8 A2A 请求生命周期
 
 
@@ -15088,13 +15088,13 @@ ANP 的设计目标就是提供一套标准化的机制，来解决上述的服�
 
 
 表 10.8 ANP 核心概念
-![10-table-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-table-8.png)
+![10-table-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-table-8.png)
 
 
 我们同样借用官方的[入门指南](https://github.com/agent-network-protocol/AgentNetworkProtocol/blob/main/docs/chinese/ANP入门指南.md)来介绍 ANP 的架构设计，如图 10.9 所示
 
 
-![10-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-9.png)
+![10-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-9.png)
 图 10.9 ANP 整体流程
 
 
@@ -15708,7 +15708,7 @@ Dockerfile 配置说明：
 一旦发布完成，可以看到类似这样的页面，如图 10.10 所示：
 
 
-![10-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-10.png)
+![10-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-10.png)
 图 10.10 Smithery 发布成功页面
 
 
@@ -15759,7 +15759,7 @@ response = agent.run("北京今天天气怎么样？")
 当然，这里只是举例，还有更多的用法可以自行探索，下图 10.11 展示了当 MCP 工具发布成功会包含的信息，显示服务的名称“天气”，其唯一标识符 `@jjyaoao/weather-mcp-server`，以及状态信息。Tools 区域就是我们刚刚实现的方法，Connect 区则提供了连接和使用此服务所需的技术信息，包括服务的**接入 URL 地址**和多种语言/环境下的**配置代码片段**。如果想要更加深入了解可以点击这个[链接](https://smithery.ai/server/@jjyaoao/weather-mcp-server)。
 
 
-![10-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/10-figures/10-11.png)
+![10-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/10-figures/10-11.png)
 图 10.11 Smithery 发布成功的 MCP 工具
 
 
@@ -15899,7 +15899,7 @@ duck egg. How much in dollars does she make every day at the farmers' market?
 在深入 Agentic RL 之前，我们需要先理解 LLM 训练的完整流程。一个强大的 LLM(如 GPT、Claude、Qwen)的诞生，通常要经历两个主要阶段:预训练(Pretraining)和后训练(Post-training)。如图 11.1 所示，这两个阶段构成了 LLM 从"语言模型"到"对话助手"的完整演化路径。
 
 
-![11-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-1.png)
+![11-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-1.png)
 图 11.1 LLM 训练全景图
 
 
@@ -15957,7 +15957,7 @@ $$
 
 
 表 11.1 PBRFT 与 Agentic RL 对比
-![11-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-1.png)
+![11-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-1.png)
 
 
 在状态方面，PBRFT 的状态 $s_0$ 仅由用户提示构成，时间跨度 $T=1$(单步)，状态不变化，可以表示为 $s_0 = \text{prompt}$。而 Agentic RL 的状态 $s_t$ 包含历史观察和上下文，时间跨度 $T \gg 1$(多步)，状态随行动演化，可以表示为 $s_t = (\text{prompt}, o_1, o_2, ..., o_t)$，其中 $o_t$ 是第 $t$ 步的观察(如工具返回结果、环境反馈等)。
@@ -15993,7 +15993,7 @@ $$
 Agentic RL 的目标是赋予 LLM 智能体六大核心能力，如图 11.2 所示。
 
 
-![11-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-2.png)
+![11-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-2.png)
 图 11.2 Agentic RL 的六大核心能力
 
 
@@ -16018,7 +16018,7 @@ Agentic RL 的目标是赋予 LLM 智能体六大核心能力，如图 11.2 所�
 HelloAgents 的 Agentic RL 模块采用四层架构设计，如图 11.3 所示。
 
 
-![11-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-3.png)
+![11-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-3.png)
 图 11.3 HelloAgents Agentic RL 架构
 
 
@@ -16114,7 +16114,7 @@ GSM8K(Grade School Math 8K)<sup>[4]</sup>是一个高质量的小学数学应用
 
 
 表 11.2 GSM8K 数据集统计
-![11-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-2.png)
+![11-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-2.png)
 
 让我们看一个典型的 GSM8K 问题:
 
@@ -16135,7 +16135,7 @@ GSM8K(Grade School Math 8K)<sup>[4]</sup>是一个高质量的小学数学应用
 GSM8K 数据集需要转换为不同的格式，以适应不同的训练方法，如图 11.4 所示。
 
 
-![11-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-4.png)
+![11-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-4.png)
 图 11.4 GSM8K 数据格式转换
 
 
@@ -16166,7 +16166,7 @@ RL 格式用于强化学习，只提供问题和正确答案，不提供解题�
 
 
 表 11.3 数据格式对比
-![11-table-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-3.png)
+![11-table-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-3.png)
 
 HelloAgents 提供了便捷的数据集加载函数。让我们通过代码来加载和查看数据集:
 
@@ -16227,7 +16227,7 @@ $$
 HelloAgents 提供了三种内置奖励函数，可以单独使用或组合使用，如图 11.5 所示。
 
 
-![11-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-5.png)
+![11-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-5.png)
 图 11.5 奖励函数设计
 
 **（1）准确率奖励**
@@ -16423,7 +16423,7 @@ print("步骤奖励:", json.loads(step_result)['description'])
 
 
 表 11.4 奖励函数对比
-![11-table-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-4.png)
+![11-table-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-4.png)
 
 
 ##### 11.2.3 自定义数据集和奖励函数
@@ -16780,7 +16780,7 @@ Final Answer: 72<|im_end|>
 如图 11.6 所示，SFT 是从预训练模型到强化学习的桥梁。
 
 
-![11-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-6.png)
+![11-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-6.png)
 图 11.6 SFT 在训练流程中的作用
 
 
@@ -16814,7 +16814,7 @@ $$
 
 
 表 11.5 LoRA vs 全量微调对比
-![11-table-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-5.png)
+![11-table-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-5.png)
 
 
 LoRA 的关键超参数包括:秩(rank，r)，控制 LoRA 矩阵的秩，越大表达能力越强，但参数量也越多，典型值为 4-64，默认 8;Alpha($\alpha$)，LoRA 的缩放因子，实际更新为 $\Delta W = \frac{\alpha}{r} BA$，控制 LoRA 的影响强度，典型值等于 rank;目标模块(target_modules)，指定哪些层应用 LoRA，通常选择注意力层(q_proj， k_proj， v_proj， o_proj)，也可以包括 MLP 层(gate_proj， up_proj， down_proj)。
@@ -17038,7 +17038,7 @@ $$
 如图 11.7 所示，PPO 和 GRPO 的训练流程对比。
 
 
-![11-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-7.png)
+![11-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-7.png)
 图 11.7 PPO vs GRPO 训练流程
 
 
@@ -17048,7 +17048,7 @@ $$
 
 
 表 11.6 PPO vs GRPO 对比
-![11-table-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-6.png)
+![11-table-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-6.png)
 
 
 
@@ -17428,7 +17428,7 @@ $$
 
 
 表 11.7 评估指标对比
-![11-table-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-7.png)
+![11-table-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-7.png)
 
 
 
@@ -17615,7 +17615,7 @@ for group_name, results in step_groups.items():
 基于评估和分析结果，我们可以确定模型的改进方向，如图 11.8 所示。
 
 
-![11-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-8.png)
+![11-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-8.png)
 图 11.8 模型改进迭代流程
 
 
@@ -17630,7 +17630,7 @@ for group_name, results in step_groups.items():
 一个完整的 Agentic RL 训练流程包括以下阶段:数据准备、SFT 训练、SFT 评估、GRPO 训练、GRPO 评估、模型部署。如图 11.9 所示。
 
 
-![11-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-9.png)
+![11-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-9.png)
 图 11.9 端到端训练流程
 
 
@@ -18068,7 +18068,7 @@ print(f"最佳准确率: {study.best_value:.2%}")
 
 
 表 11.8 超参数调优方法对比
-![11-table-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-8.png)
+![11-table-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-8.png)
 
 
 ##### 11.6.3 分布式训练
@@ -18217,7 +18217,7 @@ accelerate launch --config_file deepspeed_zero3.yaml train_script.py
 
 
 表 11.9 显存对比 (Qwen3-0.6B 模型)
-![11-table-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/11-figures/11-table-9.png)
+![11-table-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/11-figures/11-table-9.png)
 
 
 **（4）多节点训练**
@@ -18659,7 +18659,7 @@ print(f"\n回答：{response}")
 通过这三个评估场景，我们将构建一个完整的评估体系，如图 12.1 展示了我们的评估系统构建思路。
 
 
-![12-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-1.png)
+![12-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-1.png)
 图 12.1 HelloAgents 评估体系架构图
 
 
@@ -18724,12 +18724,12 @@ BFCL 基准包含四个评估类别，难度递增。从最基础的单函数调
 
 
 表 12.1 BFCL 基准中的四个评估类别
-![12-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-table-1.png)
+![12-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-table-1.png)
 
 BFCL 的评估流程遵循标准的基准测试流程：首先加载数据集并选择评估类别，然后运行智能体获取预测结果，接着将预测结果解析为抽象语法树（AST），最后通过 AST 匹配算法判断预测是否正确。整个流程会遍历所有测试样本，最终计算出准确率等评估指标并生成评估报告。完整的评估流程如图 12.2 所示：
 
 
-![12-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-2.png)
+![12-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-2.png)
 图 12.2 BFCL 评估流程图
 
 **（1）BFCL 数据集结构**
@@ -18956,7 +18956,7 @@ print(f"✅ 加载了 {len(dataset.ground_truth)} 个ground truth")
 
 
 表 12.2 BFCL 基准中的四个评估类别
-![12-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-table-2.png)
+![12-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-table-2.png)
 
 
 当然也可以通过代码查看可用类别：
@@ -19170,7 +19170,7 @@ evaluator.export_to_bfcl_format(
 整个评估流程包括四个步骤：首先从 BFCL v4 数据集加载测试数据，然后使用 HelloAgents 运行评估获取智能体的预测结果，接着将结果导出为 BFCL 官方格式（JSONL），最后使用官方评估脚本计算最终分数。这个流程确保了评估结果与 BFCL 排行榜完全一致，如图 12.3 所示：
 
 
-![12-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-3.png)
+![12-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-3.png)
 图 12.3 Helloagents 载入 BFCL 评估过程
 
 使用`BFCLEvaluationTool`时，官方评估会**自动运行**（默认启用）：
@@ -19554,7 +19554,7 @@ GAIA 的设计理念是：**真实世界的问题往往需要多种能力的综�
 
 
 表 12.3 GAIA 数据集难度级别分布
-![12-table-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-table-3.png)
+![12-table-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-table-3.png)
 
 关于 GAIA 数据集的样本示例可以参考下面的代码片段：
 
@@ -19681,7 +19681,7 @@ $$
 
 
 表 12.4 GAIA 数据集难度级别分布
-![12-table-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-table-4.png)
+![12-table-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-table-4.png)
 
 
 如果要计算这个案例的指标的话，可以参考下面的 Python 脚本。
@@ -20043,7 +20043,7 @@ https://huggingface.co/spaces/gaia-benchmark/leaderboard
 如图 12.4 所示，提交表单中填写信息即可：
 
 
-![12-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-4.png)
+![12-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-4.png)
 图 12.4 GAIA 评估流程图
 
 
@@ -20393,7 +20393,7 @@ AIME 是美国数学协会（MAA）主办的中等难度数学竞赛，介于 AM
 下面我们详细介绍这三种评估方法的具体实现。整个案例的实现流程如图 12.5 所示：
 
 
-![12-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-5.png)
+![12-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-5.png)
 图 12.5 数据生成质量评估流程图
 
 **（1）LLM Judge 评估**
@@ -20404,7 +20404,7 @@ AIME 是美国数学协会（MAA）主办的中等难度数学竞赛，介于 AM
 
 
 表 12.5 LLM Judge 评估 AIME 题目的维度
-![12-table-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-table-5.png)
+![12-table-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-table-5.png)
 
 
 有了四个维度的评分后，我们需要将这些评分汇总成整体的评估指标。我们定义了三个关键指标来衡量生成题目的质量水平：
@@ -20442,7 +20442,7 @@ $$
 在我们的实现中，Win Rate 评估通过以下图 12.6 所示流程进行评估：
 
 
-![12-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-6.png)
+![12-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-6.png)
 图 12.6 数据生成质量评估流程图
 
 
@@ -20916,7 +20916,7 @@ http://127.0.0.1:7860
 
 最终效果可以参考图 12.7 所示，对于题目的正确性，最好人工打标 Review：
 
-![12-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/12-figures/12-7.png)
+![12-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/12-figures/12-7.png)
 图 12.7 AIME 试题人工验证页面
 
 
@@ -21329,7 +21329,7 @@ AI 技术为解决这些问题提供了新的可能。想象一下，你只需�
 系统采用经典的**前后端分离架构**，分为四个层次，如图 13.1 所示：
 
 
-![13-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-1.png)
+![13-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-1.png)
 图 13.1 智能旅行助手技术架构
 
 
@@ -21427,26 +21427,26 @@ npm run dev
 首先需在首页表单中填写目的地城市、旅行日期、偏好、预算、交通及住宿类型等信息。点击“开始规划”按钮后，系统会显示加载进度条，并很快生成结果页面，如图 13.2 所示。
 
 
-![13-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-2.png)
+![13-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-2.png)
 图 13.2 旅行助手规划进行页面
 
 
 随后加载成功，该页面会清晰展示行程概览、预算明细、景点地图、每日行程详情和天气信息，如图 13.3，13.4 所示。
 
 
-![13-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-3.png)
+![13-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-3.png)
 图 13.3 旅行助手规划完成页面
 
 
 
-![13-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-4.png)
+![13-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-4.png)
 图 13.4 旅行助手规划完成页面
 
 
 如果用户需要个性化调整，可以点击“编辑行程”按钮，自由调整景点顺序或删除某个景点，如图 13.5 所示。规划完成后，通过“导出行程”下拉菜单，即可将最终方案轻松保存为图片或 PDF 文件，方便随时查阅。
 
 
-![13-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-5.png)
+![13-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-5.png)
 图 13.5 旅行助手规划完成页面
 
 
@@ -21768,7 +21768,7 @@ COMPLEX_PROMPT = """你是旅行规划助手。你需要：
 基于任务分解原则，我们设计了四个专门的 Agent，如图 13.6 所示:
 
 
-![13-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-6.png)
+![13-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-6.png)
 图 13.6 多智能体协作流程
 
 
@@ -21973,7 +21973,7 @@ def search_poi(keywords: str,city: str,api_key: str):
 MCP(Model Context Protocol)是 Anthropic 提出的标准化协议，用于连接 LLM 和外部工具。本节将介绍如何在项目中集成高德地图 MCP 服务器。我们的项目用的是`amap-mcp-server`，这是一个用 Node.js 实现的 MCP 服务器：
 
 
-![13-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-7.png)
+![13-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-7.png)
 图 13.7 amap-mcp-server 工具
 
 
@@ -21981,7 +21981,7 @@ MCP(Model Context Protocol)是 Anthropic 提出的标准化协议，用于连接
 
 
 表 13.1 高德地图 MCP 工具分类
-![13-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-table-1.png)
+![13-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-table-1.png)
 
 
 通过 MCP 协议，我们可以很方便地在 HelloAgents 中集成:
@@ -22023,7 +22023,7 @@ print(list(agent.tools.keys()))
 如图 13.8 所示，假设用户想搜索北京的景点，AttractionSearchAgent 接收到查询"请搜索北京的历史文化景点"。Agent 分析这个查询，决定调用`amap_maps_text_search`工具，参数是`keywords=景点，city=北京`。
 
 
-![13-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-8.png)
+![13-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-8.png)
 图 13.8 MCP 工具调用流程
 
 
@@ -22215,7 +22215,7 @@ async def create_trip_plan(request: TripPlanRequest) -> TripPlan:
 
 
 表 13.2 前端技术栈
-![13-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/13-figures/13-table-2.png)
+![13-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/13-figures/13-table-2.png)
 
 
 项目的目录结构是这样的：
@@ -22907,7 +22907,7 @@ const scrollToSection = ({ key }: { key: string }) => {
 此次系统仍然采用经典的**前后端分离架构**，如图 14.1 所示。
 
 
-![14-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-1.png)
+![14-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-1.png)
 图 14.1 深度研究助手技术架构
 
 
@@ -22924,7 +22924,7 @@ const scrollToSection = ({ key }: { key: string }) => {
 让我们看看一个完整的研究请求是如何在系统中流转的，如图 14.2 所示：
 
 
-![14-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-2.png)
+![14-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-2.png)
 图 14.2 深度研究助手数据流转过程
 
 
@@ -23049,14 +23049,14 @@ npm run dev
 打开浏览器访问 `http://localhost:5174`，你会看到一个居中的输入卡片，如图 14.3 所示。输入研究主题，例如`Datawhale是一个什么样的组织？`，选择搜索引擎（如果配置了多个），点击"开始研究"按钮。
 
 
-![14-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-3.png)
+![14-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-3.png)
 图 14.3 深度研究助手搜索页面
 
 
 如图 14.4 所示，系统会自动展开为全屏，左侧显示研究信息，右侧实时显示研究进度和结果。整个研究过程大约需要 1-3 分钟，取决于主题的复杂度和搜索引擎的响应速度。
 
 
-![14-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-4.png)
+![14-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-4.png)
 图 14.4 深度研究助手展开研究
 
 
@@ -23126,7 +23126,7 @@ npm run dev
 在我们的案例里，TODO 驱动的研究流程如图 14.5 所示：
 
 
-![14-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-5.png)
+![14-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-5.png)
 图 14.5 TODO 驱动的研究流程
 
 
@@ -23315,7 +23315,7 @@ Datawhale发布了多个高质量的开源教程，包括Hello-Agents、Joyful-P
 
 
 表 14.1 三个 Agent 的职责划分
-![14-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-table-1.png)
+![14-table-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-table-1.png)
 
 
 让我们详细介绍每个 Agent 的设计。
@@ -23716,7 +23716,7 @@ class DeepResearchAgent:
 三个 Agent 之间是**顺序协作**的关系，如图 14.6 所示。
 
 
-![14-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-6.png)
+![14-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-6.png)
 图 14.6 Agent 协作流程
 
 
@@ -23776,7 +23776,7 @@ class DeepResearchAgent:
 
 
 表 14.2 多搜索引擎对比
-![14-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-table-2.png)
+![14-table-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-table-2.png)
 
 
 我们不再单独讨论如何扩展，可以参考源码以及第七章的拓展案例实现。`SearchTool`提供了统一的搜索接口，无论使用哪个搜索引擎，调用方式都是一样的。
@@ -23956,7 +23956,7 @@ agent = ToolAwareSimpleAgent(
 当 Agent 需要调用工具时，它会生成工具调用指令，如图 14.7 所示。
 
 
-![14-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-7.png)
+![14-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-7.png)
 图 14.7 工具调用流程
 
 
@@ -24484,7 +24484,7 @@ class SearchService:
 根据配置选择搜索引擎，如图 14.8 所示：
 
 
-![14-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-8.png)
+![14-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-8.png)
 图 14.8 搜索引擎调度流程
 
 
@@ -24564,7 +24564,7 @@ class SearchService:
 如图 14.9 所示，全屏模态对话框包含以下部分：
 
 
-![14-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-9.png)
+![14-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-9.png)
 图 14.9 全屏模态对话框 UI
 
 
@@ -24722,7 +24722,7 @@ watch(() => props.isOpen, (isOpen) => {
 如图 14.10 所示，SSE 流程包括以下步骤：
 
 
-![14-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/14-figures/14-10.png)
+![14-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/14-figures/14-10.png)
 图 14.10 SSE 流程
 
 
@@ -25056,7 +25056,7 @@ const renderedHtml = marked(markdownContent.value)
 赛博小镇采用**游戏引擎+后端服务**的分离架构，分为四个层次，如图 15.1 所示。
 
 
-![15-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-1.png)
+![15-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-1.png)
 图 15.1 赛博小镇技术架构
 
 
@@ -25065,7 +25065,7 @@ const renderedHtml = marked(markdownContent.value)
 数据流转过程如图 15.2 所示：
 
 
-![15-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-2.png)
+![15-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-2.png)
 图 15.2 数据流转过程
 
 
@@ -25164,14 +25164,14 @@ Godot 的安装非常简单，Windows 提供了直接打开的`.exe`文件，Mac
 游戏启动后，你会看到一个像素风格的 Datawhale 办公室场景，如图 15.3 所示。
 
 
-![15-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-3.png)
+![15-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-3.png)
 图 15.3 赛博小镇游戏场景
 
 
 使用 WASD 键移动玩家角色，走到 NPC 附近时，屏幕上会显示"按 E 键交互"的提示。按下 E 键后，会弹出对话框，你可以输入任何想说的话，如图 15.4 所示。
 
 
-![15-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-4.png)
+![15-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-4.png)
 图 15.4 与 NPC 对话界面
 
 
@@ -25244,7 +25244,7 @@ def create_npc_agent(npc_id: str, name: str, role: str, personality: str):
 NPC Agent 的工作流程如图 15.5 所示：
 
 
-![15-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-5.png)
+![15-5](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-5.png)
 图 15.5 NPC Agent 工作流程
 
 
@@ -25305,7 +25305,7 @@ npc_wang = {
 记忆系统的架构如图 15.6 所示：
 
 
-![15-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-6.png)
+![15-6](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-6.png)
 图 15.6 记忆系统架构
 
 
@@ -25350,7 +25350,7 @@ def process_dialogue(agent, player_message):
 批量生成的工作流程如图 15.7 所示：
 
 
-![15-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-7.png)
+![15-7](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-7.png)
 图 15.7 批量生成 vs 传统模式
 
 
@@ -25518,7 +25518,7 @@ async def background_dialogue_update():
 我们将好感度分为五个等级，每个等级对应一个分数范围，如图 15.8 所示：
 
 
-![15-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-8.png)
+![15-8](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-8.png)
 图 15.8 好感度等级划分
 
 
@@ -25543,7 +25543,7 @@ async def background_dialogue_update():
 好感度计算流程如图 15.9 所示：
 
 
-![15-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-9.png)
+![15-9](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-9.png)
 图 15.9 好感度计算流程
 
 
@@ -25677,7 +25677,7 @@ def create_npc_agent_with_affinity(npc_id: str, name: str, role: str,
 我们的 FastAPI 应用采用模块化设计，将不同的功能分离到不同的文件中，如图 15.10 所示:
 
 
-![15-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-10.png)
+![15-10](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-10.png)
 图 15.10 后端应用结构
 
 
@@ -25866,7 +25866,7 @@ async def get_affinity(npc_id: str, player_name: str):
 API 路由的调用流程如图 15.11 所示：
 
 
-![15-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-11.png)
+![15-11](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-11.png)
 图 15.11 API 调用流程
 
 
@@ -26076,7 +26076,7 @@ Player (CharacterBody2D)  ← 根节点,负责物理移动
 让我们先看看四个核心场景的结构，如图 15.12 所示：
 
 
-![15-12](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-12.png)
+![15-12](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-12.png)
 图 15.12 赛博小镇的四个核心场景
 
 
@@ -26629,7 +26629,7 @@ func _on_npcs_request_completed(_result: int, response_code: int, _headers: Pack
 对话 UI 的结构如图 15.13 所示：
 
 
-![15-13](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-13.png)
+![15-13](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-13.png)
 图 15.13 对话 UI 结构
 
 
@@ -26841,7 +26841,7 @@ func get_npc_node(npc_name: String) -> Node2D:
 整个前后端通信流程如图 15.14 所示：
 
 
-![15-14](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-14.png)
+![15-14](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-14.png)
 图 15.14 前后端通信完整流程
 
 
@@ -26878,7 +26878,7 @@ func get_npc_node(npc_name: String) -> Node2D:
 整个项目的技术栈如图 15.15 所示：
 
 
-![15-15](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/15-figures/15-15.png)
+![15-15](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/15-figures/15-15.png)
 图 15.15 赛博小镇技术栈
 
 
@@ -27073,7 +27073,7 @@ jupyter lab
 3. 选择你的 GitHub 账号，创建 Fork
 
 
-![16-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/16-figures/16-1.png)
+![16-1](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/16-figures/16-1.png)
 图 16.1 Fork 仓库步骤
 
 
@@ -27094,7 +27094,7 @@ git remote -v
 ```
 
 
-![16-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/16-figures/16-2.png)
+![16-2](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/16-figures/16-2.png)
 图 16.2 克隆仓库到本地
 
 
@@ -27554,7 +27554,7 @@ git push origin feature/你的项目名称
 3. 点击"New pull request"按钮
 
 
-![16-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/16-figures/16-3.png)
+![16-3](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/16-figures/16-3.png)
 图 16.3 创建 Pull Request
 
 
@@ -27628,7 +27628,7 @@ git push origin feature/你的项目名称
 如图 16.4 所示，点击"Create pull request"按钮提交。
 
 
-![16-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/623d8148f83d53365e39c21cb592b62b0f8e7b1b/docs/images/16-figures/16-4.png)
+![16-4](https://raw.githubusercontent.com/datawhalechina/hello-agents/36f583c233ea5cee4537ef93455702b55053af18/docs/images/16-figures/16-4.png)
 图 16.4 提交 Pull Request
 
 
