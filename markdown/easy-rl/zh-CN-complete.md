@@ -21,8 +21,8 @@ updated_at: "2025-12-30"
 | 文档标题 | EasyRL：强化学习完整教程 |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [datawhalechina/easy-rl](https://github.com/datawhalechina/easy-rl) |
-| 锁定提交 | [6b7df8451f74](https://github.com/datawhalechina/easy-rl/commit/6b7df8451f74f16d5efb6abc1b94a8746890a0ad) |
-| 提交时间 | 2025-12-30T23:48:17+08:00 |
+| 锁定提交 | [384edfea9787](https://github.com/datawhalechina/easy-rl/commit/384edfea97870facddc43d7110f2fb398f528cb4) |
+| 提交时间 | 2026-10-23T21:56:13+08:00 |
 | 生成器版本 | `easy_rl@1;engine@9` |
 
 > 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
@@ -81,7 +81,7 @@ updated_at: "2025-12-30"
 **强化学习（reinforcement learning，RL）**讨论的问题是智能体（agent）怎么在复杂、不确定的环境（environment）中最大化它能获得的奖励。如图 1.1 所示，强化学习由两部分组成：智能体和环境。在强化学习过程中，智能体与环境一直在交互。智能体在环境中获取某个状态后，它会利用该状态输出一个动作 （action），这个动作也称为决策（decision）。然后这个动作会在环境中被执行，环境会根据智能体采取的动作，输出下一个状态以及当前这个动作带来的奖励。智能体的目的就是尽可能多地从环境中获取奖励。
 
 
-![1.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.1.png)
+![1.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.1.png)
 
 图 1.1 强化学习示意
 
@@ -90,7 +90,7 @@ updated_at: "2025-12-30"
 我们可以把强化学习与监督学习做一个对比。以图片分类为例，如图 1.2 所示，**监督学习（supervised learning）**假设我们有大量被标注的数据，比如汽车、飞机、椅子这些被标注的图片，这些图片都要满足独立同分布，即它们之间是没有关联关系的。假设我们训练一个分类器，比如神经网络。为了分辨输入的 图片中是汽车还是飞机，在训练过程中，需要把正确的标签信息传递给神经网络。 当神经网络做出错误的预测时，比如输入汽车的图片，它预测出来是飞机，我们就会直接告诉它，该预测是错误的，正确的标签应该是汽车。最后我们根据类似错误写出一个损失函数（loss function），通过反向传播（back propagation）来训练神经网络。
 
 
-![1.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.2.png)
+![1.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.2.png)
 
 图 1.2 监督学习
 
@@ -103,14 +103,14 @@ updated_at: "2025-12-30"
 在强化学习中，监督学习的两个假设其实都不能得到满足。以雅达利（Atari） 游戏 Breakout 为例，如图 1.3 所示，这是一个打砖块的游戏，控制木板左右移动从而把球反弹到上面来消除砖块。在玩游戏的过程中，我们可以发现智能体得到的观测（observation）不是独立同分布的，上一帧与下一帧间其实有非常强的连续性。我们得到的数据是相关的时间序列数据，不满足独立同分布。另外，我们并没有立刻获得反馈，游戏没有告诉我们哪个动作是正确动作。比如现在把木板往右移，这只会使得球往上或者往左一点儿，我们并不会得到即时的反馈。因此，强化学习之所以困难，是因为智能体不能得到即时的反馈，然而我们依然希望智能体在这个环境中学习。
 
 
-![1.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.3.png)
+![1.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.3.png)
 
 图 1.3 雅达利游戏Breakout
 
 如图 1.4 所示，强化学习的训练数据就是一个玩游戏的过程。我们从第 1 步开始，采取一个动作，比如我们把木板往右移，接到球。第 2 步我们又做出动作，得到的训练数据是一个玩游戏的序列。比如现在是在第 3 步，我们把这个序列放进网络，希望网络可以输出一个动作，即在当前的状态应该输出往右移或 者往左移。这里有个问题，我们没有标签来说明现在这个动作是正确还是错误的，必须等到游戏结束才可能知道，这个游戏可能 10s 后才结束。现在这个动作到底对最后游戏是否能赢有无帮助，我们其实是不清楚的。这里我们就面临**延迟奖励（delayed reward）**的问题，延迟奖励使得训练网络非常困难。
 
 
-![1.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.4.png)
+![1.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.4.png)
 
 图 1.4 强化学习：玩Breakout
 
@@ -149,21 +149,21 @@ updated_at: "2025-12-30"
 图 1.5 所示为强化学习的一个经典例子，即雅达利的 Pong 游戏。游戏中右边的选手把球拍到左边， 然后左边的选手需要把球拍到右边。训练好的强化学习智能体和正常的选手有区别：强化学习的智能体会一直做无意义的振动，而正常的选手不会做出这样的动作。
 
 
-![1.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.9.png)
+![1.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.9.png)
 
 图 1.5 Pong游戏
 
 在 Pong 游戏里面，其实只有两个动作：往上或者往下。如图 1.6 所示，如果强化学习通过学习一个策略网络来进行分类，那么策略网络会输入当前帧的图片，输出所有决策的可能性，比如往上移动的概率。
 
 
-![1.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.10.png)
+![1.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.10.png)
 
 图 1.6 强化学习玩 Pong
 
 如图 1.7 所示，对于监督学习，我们可以直接告诉智能体正确动作的标签是什么。但在 Pong 游戏中， 我们并不知道它的正确动作的标签是什么。
 
 
-![1.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.11.png)
+![1.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.11.png)
 
 图 1.7 监督学习玩 Pong
 
@@ -174,7 +174,7 @@ $$
 最后结束时，我们会知道到底有没有把这个球拍到对方区域，对方有没有接住，我们是赢了还是输了。我们可以通过观测序列以及最终奖励（eventual reward）来训练智能体，使它尽可能地采取可以获得最终奖励的动作。一场游戏称为一个**回合（episode）**或者**试验（trial）**。
 
 
-![1.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.13.png)
+![1.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.13.png)
 
 图 1.8 可能的预演序列
 
@@ -190,11 +190,11 @@ $$
 
 
 
-![1.14a](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.14a.png)
+![1.14a](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.14a.png)
 
 （a）传统的计算机视觉
 
-![1.14b](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.14b.png)
+![1.14b](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.14b.png)
 
 （b）深度计算机视觉
 
@@ -210,11 +210,11 @@ $$
 * 深度强化学习：自从我们有了深度学习，有了神经网络，就可以把智能体玩游戏的过程改进成一个端到端训练（end-to-end training）的过程，如图 1.10b 所示。我们不需要设计特征，直接输入状态就可以输出动作。我们可以用一个神经网络来拟合价值函数或策略网络，省去特征工程（feature engineering）的过程。
 
 
-![1.15a](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.15a.png)
+![1.15a](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.15a.png)
 
 （a）标准强化学习
 
-![1.15b](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.15b.png)
+![1.15b](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.15b.png)
 
 （b）深度强化学习
 图 1.10 标准强化学习与深度强化学习的区别
@@ -234,7 +234,7 @@ $$
 （4）[穿衣服的智能体](https://www.youtube.com/watch?v=ixmE5nt2o88)。很多时候我们要在电影或者一些动画中实现人穿衣服的场景，通过手写执行命令让机器人穿衣服非常困难，穿衣服也是一种非常精细的操作。我们可以训练强化学习智能体来实现穿衣 服功能。我们还可以在里面加入一些扰动，智能体可以抵抗扰动。可能会有失败的情况（failure case）出 现，这样智能体就穿不进去衣服。
 
 
-![1.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.17.png)
+![1.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.17.png)
 
 图 1.11 强化学习例子
 
@@ -245,7 +245,7 @@ $$
 接下来我们介绍**序列决策（sequential decision making）**过程。强化学习研究的问题是智能体与环境交互的问题，图 1.12 左边的智能体一直在与图 1.12 右边的环境进行交互。智能体把它的动作输出给环境，环境取得这个动作后会进行下一步，把下一步的观测与这个动作带来的奖励返还给智能体。这样的交互会产生很多观测，智能体的目的是从这些观测之中学到能最大化奖励的策略。
 
 
-![1.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.18.png)
+![1.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.18.png)
 
 图 1.12 智能体和环境
 
@@ -275,7 +275,7 @@ S_{t}=f\left(H_{t}\right)
 $$
 
 
-![1.21](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.21.png)
+![1.21](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.21.png)
 
 图 1.13 玩Pong游戏
 
@@ -316,7 +316,7 @@ A：**状态**是对世界的完整描述，不会隐藏世界的信息。**观�
 如图 1.14 所示，从雅达利游戏来看，策略函数的输入就是游戏的一帧，它的输出决定智能体向左移动或者向右移动。
 
 
-![1.26](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.26.png)
+![1.26](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.26.png)
 
 图 1.14 策略函数
 
@@ -352,7 +352,7 @@ $$
 当我们有了策略、价值函数和模型3个组成部分后，就形成了一个**马尔可夫决策过程（Markov decision process）**。如图 1.15 所示，这个决策过程可视化了状态之间的转移以及采取的动作。
 
 
-![1.29](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.29.png)
+![1.29](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.29.png)
 
 图 1.15 马尔可夫决策过程
 
@@ -360,7 +360,7 @@ $$
 
 
 
-![1.30](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.30.png)
+![1.30](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.30.png)
 
 图 1.16 走迷宫的例子
 
@@ -370,7 +370,7 @@ $$
 
 
 
-![1.31](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.31.png)
+![1.31](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.31.png)
 
 图 1.17 使用基于策略的强化学习方法得到的结果
 
@@ -379,7 +379,7 @@ $$
 当我们快接近终点的时候，这个数字变得越来越大。在拐角的时候，比如现在在第二格，价值是$-$15，智能体会看上、下两格，它看到上面格子的价值变大了，变成 $-$14 了，下面格子的价值是 $-$16，那么智能体就会采取一个往上走的动作。所以通过学习的价值的不同，我们可以抽取出现在最佳的策略。
 
 
-![1.32](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.32.png)
+![1.32](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.32.png)
 
 图 1.18 使用基于价值的强化学习方法得到的结果
 
@@ -409,7 +409,7 @@ A: 对于一个状态转移概率已知的马尔可夫决策过程，我们可�
 
 
 
-![1.35](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.35.png)
+![1.35](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.35.png)
 
 图 1.19 有模型强化学习流程
 
@@ -431,7 +431,7 @@ A：针对是否需要对真实环境建模，强化学习可以分为有模型�
 
 
 
-![1.36](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.36.png)
+![1.36](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.36.png)
 
 图 1.20 强化学习智能体的类型
 
@@ -441,7 +441,7 @@ A：针对是否需要对真实环境建模，强化学习可以分为有模型�
 如图 1.21 所示，在强化学习中，环境初始时是未知的，智能体不知道环境如何工作，它通过不断地与环境交互，逐渐改进策略。
 
 
-![learning](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/learning.png)
+![learning](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/learning.png)
 
 图 1.21 学习
 
@@ -453,7 +453,7 @@ A：针对是否需要对真实环境建模，强化学习可以分为有模型�
 
 
 
-![planning](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/planning.png)
+![planning](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/planning.png)
 
 图 1.22 规划
 
@@ -485,7 +485,7 @@ A：针对是否需要对真实环境建模，强化学习可以分为有模型�
 事实上，探索（估计摇臂的优劣）和利用（选择当前最优摇臂)这两者是矛盾的，因为尝试次数（总投币数）有限，加强了一方则自然会削弱另一方，这就是强化学习所面临的**探索-利用窘境（exploration-exploitation dilemma）**。显然，想要累积奖励最大，则必须在探索与利用之间达成较好的折中。
 
 
-![1.39](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.39.png)
+![1.39](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.39.png)
 
 图 1.23 *K*-臂赌博机图示
 
@@ -499,7 +499,7 @@ OpenAI是一家非营利性的人工智能研究公司，其公布了非常多�
 
 
 
-![1.44](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.44.png)
+![1.44](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.44.png)
 
 图 1.24 OpenAI 的 Gym 库
 
@@ -539,7 +539,7 @@ for step in range(100):
 如图 1.25 所示，Gym 库里面有很多经典的控制类游戏。比如 Acrobot需要让一个双连杆机器人立起来；CartPole需要通过控制一辆小车，让杆立起来；MountainCar需要通过前后移动车，让它到达旗帜的位置。在刚开始测试强化学习的时候，我们可以选择这些简单环境，因为强化学习在这些环境中可以在一两分钟之内见到效果。
 
 
-![1.46](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.46.png)
+![1.46](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.46.png)
 
 图1.25 经典控制问题
 
@@ -551,7 +551,7 @@ for step in range(100):
 
 
 
-![1.47](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch1/1.47.png)
+![1.47](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch1/1.47.png)
 
 图 1.26 CartPole-v0的例子
 
@@ -710,7 +710,7 @@ print('平均回合奖励 = {}'.format(np.mean(episode_rewards)))
 平均回合奖励 = -106.63
 ```
 
-SimpleAgent 类对应策略的平均回合奖励在 $-$110 左右，而对于小车上山任务，只要连续 100 个回合的平均回合奖励大于 $-$110，就可以认为该任务被解决了。完整代码实现可参考[小车上山代码](https://github.com/datawhalechina/easy-rl/blob/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter1/RL_example.py)。
+SimpleAgent 类对应策略的平均回合奖励在 $-$110 左右，而对于小车上山任务，只要连续 100 个回合的平均回合奖励大于 $-$110，就可以认为该任务被解决了。完整代码实现可参考[小车上山代码](https://github.com/datawhalechina/easy-rl/blob/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter1/RL_example.py)。
 
 测试智能体在 Gym 库中某个任务的性能时，出于习惯使然，学术界一般最关心 100 个回合的平均回合奖励。对于有些任务，还会指定一个参考的回合奖励值，当连续 100 个回合的奖励大于指定的值时，则认为该任务被解决了。而对于没有指定值的任务，就无所谓任务被解决了或没有被解决。
 
@@ -861,7 +861,7 @@ SimpleAgent 类对应策略的平均回合奖励在 $-$110 左右，而对于小
 图 2.1 介绍了强化学习里面智能体与环境之间的交互，智能体得到环境的状态后，它会采取动作，并把这个采取的动作返还给环境。环境得到智能体的动作后，它会进入下一个状态，把下一个状态传给智能体。在强化学习中，智能体与环境就是这样进行交互的，这个交互过程可以通过马尔可夫决策过程来表示，所以马尔可夫决策过程是强化学习的基本框架。
 
 
-![2.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.1.png)
+![2.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.1.png)
 
 图 2.1 智能体与环境之间的交互
 
@@ -887,7 +887,7 @@ $$
 
 
 
-![2.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.2.png)
+![2.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.2.png)
 
  图 2.2 马尔可夫链示例
 
@@ -913,7 +913,7 @@ $$
 
 
 
-![2.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.3.png)
+![2.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.3.png)
 
 图 2.3 马尔可夫过程的例子
 
@@ -947,7 +947,7 @@ $$
 $$
 
 
-![2.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.4.png)
+![2.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.4.png)
 
  图 2.4 马尔可夫奖励过程的例子
 
@@ -1056,7 +1056,7 @@ $$
 
 
 
-![2.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.5.png)
+![2.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.5.png)
 
 图 2.5 状态转移
 
@@ -1111,7 +1111,7 @@ $$
 首先我们用蒙特卡洛方法来计算价值。如图 2.6  所示，蒙特卡洛方法就是当得到一个马尔可夫奖励过程后，我们可以从某个状态开始，把小船放到状态转移矩阵里面，让它“随波逐流”，这样就会产生一个轨迹。产生一个轨迹之后，就会得到一个奖励，那么直接把折扣的奖励即回报 $g$ 算出来。算出来之后将它积累起来，得到回报$G_t$。 当积累了一定数量的轨迹之后，我们直接用 $G_t$ 除以轨迹数量，就会得到某个状态的价值。
 
 
-![2.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.6.png)
+![2.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.6.png)
 
  图 2.6 计算马尔可夫奖励过程价值的蒙特卡洛方法
 
@@ -1126,7 +1126,7 @@ $$
 
 
 
-![2.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.7.png)
+![2.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.7.png)
 
  图 2.7 计算马尔可夫奖励过程价值的动态规划算法
 
@@ -1143,7 +1143,7 @@ $$
 我们通过一个形象的例子来理解马尔可夫奖励过程。我们把一艘纸船放到河流之中，它就会随着水流而流动，它自身是没有动力的。所以我们可以把马尔可夫奖励过程看成一个随波逐流的例子，当我们从某一个点开始的时候，纸船就会随着事先定义好的状态转移进行流动，它到达每个状态后，我们都有可能获得一些奖励。
 
 
-![2.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.8.png)
+![2.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.8.png)
 
  图 2.8 马尔可夫奖励过程的例子
 
@@ -1181,7 +1181,7 @@ $$
 
 
 
-![2.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.9.png)
+![2.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.9.png)
 
  图 2.9 马尔可夫决策过程与马尔可夫过程/马尔可夫奖励过程的状态转移的对比
 
@@ -1268,7 +1268,7 @@ $$
 
 
 
-![2.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.10.png)
+![2.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.10.png)
 
 
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;图 2.10 $V_{\pi}$备份图
@@ -1301,7 +1301,7 @@ $$
 
 
 
-![2.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.11.png)
+![2.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.11.png)
 
 图 2.11 状态价值函数的计算分解
 
@@ -1318,7 +1318,7 @@ $$
 
 
 
-![2.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.12.png)
+![2.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.12.png)
 
 
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;图 2.12 $Q^{\pi}$的备份图
@@ -1337,7 +1337,7 @@ $$
 
 
 
-![q_function_backup](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/q_function_backup.png)
+![q_function_backup](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/q_function_backup.png)
 
  图 2.13 Q函数的计算分解
 
@@ -1349,7 +1349,7 @@ $$
 
 
 
-![2.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.14.png)
+![2.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.14.png)
 
  图 2.14 马尔可夫决策过程与马尔可夫过程/马尔可夫奖励过程的区别
 
@@ -1357,7 +1357,7 @@ $$
 
 
 
-![2.29](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.29.png)
+![2.29](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.29.png)
 
 图 2.15 策略评估示例
 
@@ -1390,7 +1390,7 @@ $$
 
 
 
-![2.16](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.16.png)
+![2.16](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.16.png)
 
  图 2.16 网格世界例子：预测
 
@@ -1401,7 +1401,7 @@ $$
 
 
 
-![2.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.17.png)
+![2.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.17.png)
 
 
  图 2.17 网格世界例子：控制
@@ -1441,7 +1441,7 @@ $$
 
 
 
-![2.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.18.png)
+![2.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.18.png)
 
  图 2.18 小网格世界环境
 
@@ -1456,14 +1456,14 @@ $$
 
 
 
-![2.19](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.19.png)
+![2.19](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.19.png)
 
  图 2.19 网格世界：动态规划示例
 
 如图 2.20a 所示，我们再迭代一次，之前有值的状态的周围状态也开始有值。因为周围状态与之前有值的状态是临近的，所以这就相当于把周围的状态转移过来。如图 2.20b 所示，我们逐步迭代，值是一直在变换的。
 
 
-![2.20](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.20.png)
+![2.20](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.20.png)
 
  图 2.20 网格世界：策略评估过程示例
 
@@ -1518,7 +1518,7 @@ $$
 
 
 
-![2.21](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.21.png)
+![2.21](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.21.png)
 
  图 2.21 策略迭代
 
@@ -1538,7 +1538,7 @@ $$
 
 
 
-![2.46](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.46.png)
+![2.46](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.46.png)
 
  图 2.22 Q表格
 
@@ -1652,7 +1652,7 @@ $$
  让我们回忆一下最优性原理定理：如果我们某次迭代求解的某个状态 $s$ 的价值函数 $V_{k+1}(s)$ 是最优解，它的前提是能够从该状态到达的所有状态 $s^{\prime}$ 都已经得到了最优解；如果不是，它所做的只是一个类似传递价值函数的过程。
 
 
-![2.52](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.52.png)
+![2.52](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.52.png)
 
 图 2.23 例子：最短路径
 
@@ -1662,14 +1662,14 @@ $$
 我们来看一个马尔可夫决策过程控制的动态演示，图 2.24  所示为网格世界的初始化界面。
 
 
-![2.54](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.54.png)
+![2.54](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.54.png)
 
 图 2.24 网格世界：初始化界面
 
 首先我们来看看策略迭代，之前的例子在每个状态都采取固定的随机策略，每个状态都以 0.25 的概率往上、下、左、右，没有策略的改变。但是我们现在想进行策略迭代，每个状态的策略都进行改变。如图 2.25a 所示，我们先执行一次策略评估，得到价值函数，每个状态都有一个价值函数。如图 2.25b 所示，我们接着进行策略改进，单击“策略更新（policy update）”，这时有些格子里面的策略已经产生变化。比如对于中间 $-$1 的这个状态，它的最佳策略是往下走。当我们到达 $-$1 状态后，我们应该往下走，这样就会得到最佳的价值。绿色右边的格子的策略也改变了，它现在选取的最佳策略是往左走，也就是在这个状态的时候，最佳策略应该是往左走。
 
 
-![2.25](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.25.png)
+![2.25](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.25.png)
 
  图 2.25 马尔可夫决策过程控制：策略迭代示例
 
@@ -1678,7 +1678,7 @@ $$
 如图 2.27a 所示，我们再执行下一轮的策略评估，格子里面的值又被改变了。多次之后，格子里面的值会收敛。如图 2.27b 所示，我们再次执行策略更新，每个状态里面的值基本都改变了，它们不再上、下、左、右随机改变，而是会选取最佳的策略进行改变。
 
 
-![2.26](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.26.png)
+![2.26](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.26.png)
 
 图 2.26 马尔可夫决策过程控制：策略迭代示例
 
@@ -1686,7 +1686,7 @@ $$
 如图 2.27a 所示，我们再次执行策略评估，格子的值又在不停地变化，变化之后又收敛了。如图 2.27b 所示，我们再执行一次策略更新。现在格子的值又会有变化，每一个状态中格子的最佳策略也会产生一些改变。如图 2.28a 所示，我们再执行一遍策略更新，格子的值没有发生变化，这说明整个马尔可夫决策过程已经收敛了。所以现在每个状态的值就是当前最佳的价值函数的值，当前状态对应的策略就是最佳的策略。
 
 
-![2.27](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.27.png)
+![2.27](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.27.png)
 
  图 2.27 马尔可夫决策过程控制：策略迭代示例
 
@@ -1696,7 +1696,7 @@ $$
 如图 2.28b 所示，我们再用价值迭代来解马尔可夫决策过程，单击“切换成价值迭代”。 当格子的值确定后，就会产生它的最佳状态，最佳状态提取的策略与策略迭代得出的最佳策略是一致的。在每个状态，我们使用最佳策略，就可以到达得到最多奖励的状态。
 
 
-![2.28](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/2.28.png)
+![2.28](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/2.28.png)
 
 图 2.28 马尔可夫决策过程控制：策略迭代示例
 
@@ -1709,7 +1709,7 @@ $$
 
 表 2.1 动态规划算法
 
-![table_1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch2/table_1.png)
+![table_1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch2/table_1.png)
 
 
 #### 参考文献
@@ -1850,7 +1850,7 @@ $$
 
 
 
-![3.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.1.png)
+![3.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.1.png)
 
 图 3.1 马尔可夫决策过程四元组
 
@@ -1862,7 +1862,7 @@ $$
 
 
 
-![3.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.2.png)
+![3.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.2.png)
 
 图 3.2 状态转移与序列决策
 
@@ -1879,7 +1879,7 @@ $$
 如图 3.3 所示，强化学习可以应用于完全未知的和随机的环境。强化学习像人类一样学习，人类通过尝试不同的路来学习，通过尝试不同的路，人类可以慢慢地了解哪个状态会更好。强化学习用价值函数 $V(S)$ 来表示状态是好的还是坏的，用 Q 函数来判断在什么状态下采取什么动作能够取得最大奖励，即用 Q 函数来表示状态-动作值。
 
 
-![3.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.3.png)
+![3.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.3.png)
 
 图 3.3 免模型试错探索
 
@@ -1890,7 +1890,7 @@ $$
 
 
 
-![model_free_1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/model_free_1.png)
+![model_free_1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/model_free_1.png)
 
 图 3.4 有模型强化学习方法
 
@@ -1899,7 +1899,7 @@ $$
 
 
 
-![model_free_2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/model_free_2.png)
+![model_free_2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/model_free_2.png)
 
 图 3.5 免模型强化学习方法
 
@@ -1911,7 +1911,7 @@ $$
 这张表格里面 Q 函数的意义就是我们选择了某个动作后，最后能不能成功，就需要我们去计算在某个状态下选择某个动作，后续能够获得多少总奖励。如果可以预估未来的总奖励的大小，我们就知道在当前的状态下选择哪个动作价值更高。我们选择某个动作是因为这样未来可以获得的价值会更高。所以强化学习的目标导向性很强，环境给出的奖励是非常重要的反馈，它根据环境的奖励来做选择。
 
 
-![3.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.4.png)
+![3.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.4.png)
 
 图 3.6 Q表格
 
@@ -1920,7 +1920,7 @@ Q: 为什么我们可以用未来的总奖励来评价当前动作是好是坏?
 A: 例如，如图 3.7 所示，假设一辆车在路上，当前是红灯，我们直接闯红灯的奖励就很低，因为这违反了交通规则，我们得到的奖励是当前的单步奖励。可是如果我们的车是一辆救护车，我们正在运送病人，把病人快速送达医院的奖励非常高，而且越快奖励越高。在这种情况下，我们可能要闯红灯，因为未来的远期奖励太高了。这是因为在现实世界中奖励往往是延迟的，所以强化学习需要学习远期的奖励。我们一般会从当前状态开始，把后续有可能会收到的所有奖励加起来计算当前动作的 Q 值，让 Q 值可以真正代表当前状态下动作的真正价值。
 
 
-![3.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.5.png)
+![3.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.5.png)
 
 图 3.7 未来的总奖励示例
 
@@ -1928,7 +1928,7 @@ A: 例如，如图 3.7 所示，假设一辆车在路上，当前是红灯，我
 股票就是一个典型的例子，如图 3.8 所示，我们关注的是累积的股票奖励，可是如果10年之后股票才有一次大涨大跌，我们肯定不会把10年后的奖励也作为当前动作的考虑因素。这个时候，我们就可以引入折扣因子 $\gamma$ 来计算未来总奖励，$\gamma \in [0,1]$，越往后 $\gamma^n$ 就会越小，越后面的奖励对当前价值的影响就会越小。
 
 
-![3.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.6.png)
+![3.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.6.png)
 
 图 3.8 股票的例子
 
@@ -1937,7 +1937,7 @@ A: 例如，如图 3.7 所示，假设一辆车在路上，当前是红灯，我
 为了到达目的地，智能体可以沿着例如蓝线和红线的路线行走。
 
 
-![3.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.7.png)
+![3.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.7.png)
 
 图 3.9 悬崖行走问题
 
@@ -1958,7 +1958,7 @@ G_{8}=r_{9}+\gamma G_{9}=-1+0.6 \times(-2.176)=-2.3056 \approx-2.3 \\
 $$
 
 
-![3.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.8.png)
+![3.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.8.png)
 
 图 3.10 折扣因子
 
@@ -1968,7 +1968,7 @@ $$
 
 
 
-![3.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.9.png)
+![3.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.9.png)
 
 图 3.11 Q表格
 
@@ -2045,7 +2045,7 @@ $$
 
 
 
-![MC_4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/MC_4.png)
+![MC_4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/MC_4.png)
 
 图 3.12 贝尔曼期望备份
 
@@ -2062,7 +2062,7 @@ $$
 
 
 
-![MC_5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/MC_5.png)
+![MC_5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/MC_5.png)
 
 图 3.13 蒙特卡洛方法更新
 
@@ -2076,7 +2076,7 @@ $$
 
 
 
-![3.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.10.png)
+![3.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.10.png)
 
 图 3.14 强化概念：巴甫洛夫的条件反射实验
 
@@ -2089,7 +2089,7 @@ $$
 
 
 
-![3.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.11.png)
+![3.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.11.png)
 
 图 3.15 强化示例
 
@@ -2100,7 +2100,7 @@ $$
 反复训练之后，有奖励的格子周围的格子的状态就会慢慢被强化。强化就是价值最终收敛到最优的情况之后，小黄球就会自动往价值高的格子走，就可以走到能够拿到奖励的格子。
 
 
-![3.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.13.png)
+![3.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.13.png)
 
 图 3.16 时序差分学习网格世界演示
 
@@ -2139,7 +2139,7 @@ $$
 
 
 
-![TD_3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/TD_3.png)
+![TD_3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/TD_3.png)
 
 图 3.17 时序差分方法相比蒙特卡洛方法的优势
 
@@ -2167,7 +2167,7 @@ $$
 
 
 
-![TD_5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/TD_5.png)
+![TD_5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/TD_5.png)
 
 
 $\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad$ 图 3.18 $n$步时序差分
@@ -2214,7 +2214,7 @@ $$
 
 
 
-![comparison_2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/comparison_2.png)
+![comparison_2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/comparison_2.png)
 
 图 3.19 统一视角：动态规划方法备份
 
@@ -2225,7 +2225,7 @@ $$
 
 
 
-![comparison_3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/comparison_3.png)
+![comparison_3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/comparison_3.png)
 
 图 3.20 统一视角：蒙特卡洛备份
 
@@ -2237,7 +2237,7 @@ $$
 
 
 
-![comparison_4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/comparison_4.png)
+![comparison_4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/comparison_4.png)
 
 图 3.21 统一视角：时序差分方法备份
 
@@ -2245,7 +2245,7 @@ $$
 如图 3.22 所示，如果 时序差分方法需要更广度的更新，就变成了 动态规划方法（因为动态规划方法是把所有状态都考虑进去来进行更新）。如果时序差分方法需要更深度的更新，就变成了蒙特卡洛方法。图 3.22 右下角是穷举搜索的方法（exhaustive search），穷举搜索的方法不仅需要很深度的信息，还需要很广度的信息。
 
 
-![comparison_5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/comparison_5.png)
+![comparison_5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/comparison_5.png)
 
 图 3.22 强化学习的统一视角
 
@@ -2270,7 +2270,7 @@ $$
 
 
 
-![model_free_control_1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/model_free_control_1.png)
+![model_free_control_1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/model_free_control_1.png)
 
 图 3.23 策略迭代
 
@@ -2284,7 +2284,7 @@ $$
 $$
 
 
-![model_free_control_3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/model_free_control_3.png)
+![model_free_control_3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/model_free_control_3.png)
 
 图 3.24 广义策略迭代
 
@@ -2297,7 +2297,7 @@ $$
 
 
 
-![model_free_control_4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/model_free_control_4.png)
+![model_free_control_4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/model_free_control_4.png)
 
 图 3.25 基于探索性开始的蒙特卡洛方法
 
@@ -2319,7 +2319,7 @@ $$
 基于 $\varepsilon$-贪心探索的蒙特卡洛方法如图 3.26 所示。
 
 
-![model_free_control_7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/model_free_control_7.png)
+![model_free_control_7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/model_free_control_7.png)
 
 
 $\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad$ 图 3.26 基于 $\varepsilon$-贪心探索的蒙特卡洛方法
@@ -2333,7 +2333,7 @@ $\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad$ 图 3.26 基于 $\varep
 
 
 
-![bias_variance](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/bias_variance.png)
+![bias_variance](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/bias_variance.png)
 
 图 3.27 偏差-方差
 
@@ -2356,7 +2356,7 @@ Sarsa 直接估计 Q 表格，得到 Q 表格后，就可以更新策略。
 如图 3.28 所示，我们先把 $r_{t+1}+\gamma Q\left(s_{t+1}, a_{t+1}\right.)$ 当作目标值，即 $Q(s_t,a_t)$ 想要逼近的目标值。$r_{t+1}+\gamma Q\left(s_{t+1}, a_{t+1}\right.)$ 就是时序差分目标。
 
 
-![3.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.14.png)
+![3.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.14.png)
 
 图 3.28 时序差分单步更新
 
@@ -2387,7 +2387,7 @@ $$
 
 
 
-![3.15](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.15.png)
+![3.15](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.15.png)
 
 图 3.29 Sarsa算法
 
@@ -2420,7 +2420,7 @@ $$
 
 
 
-![3.16](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.16.png)
+![3.16](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.16.png)
 
 图 3.30 Sarsa代码实现示意
 
@@ -2436,7 +2436,7 @@ Q学习是一种**异策略（off-policy）**算法。如图 3.31 所示，异�
 
 
 
-![3.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.17.png)
+![3.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.17.png)
 
 图 3.31 异策略
 
@@ -2446,7 +2446,7 @@ Q学习是一种**异策略（off-policy）**算法。如图 3.31 所示，异�
 
 
 
-![off_policy_learning](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/off_policy_learning.png)
+![off_policy_learning](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/off_policy_learning.png)
 
 图 3.32 异策略例子
 
@@ -2486,7 +2486,7 @@ Q学习默认的下一个动作不是通过行为策略来选取的，Q学习直
 
 
 
-![3.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.18.png)
+![3.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.18.png)
 
 图 3.33 Sarsa与Q学习的伪代码
 
@@ -2504,7 +2504,7 @@ Q学习 是 $r_{t+1}+\gamma  \underset{a}{\max} Q\left(s_{t+1}, a\right)$ 。
 
 
 
-![3.19](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.19.png)
+![3.19](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.19.png)
 
 图 3.34 Sarsa与Q学习的区别
 
@@ -2522,7 +2522,7 @@ Q学习 是 $r_{t+1}+\gamma  \underset{a}{\max} Q\left(s_{t+1}, a\right)$ 。
 表格型方法总结如图 3.35 所示。
 
 
-![3.21](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch3/3.21.png)
+![3.21](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch3/3.21.png)
 
 图 3.35 表格型方法总结
 
@@ -2665,7 +2665,7 @@ $$
 
 首先对该环境做一个简介，该环境中文名称叫悬崖寻路问题（CliffWalking），是指在一个4 x 12的网格中，智能体以网格的左下角位置为起点，以网格的右下角位置为终点，目标是移动智能体到达终点位置，智能体每次可以在上、下、左、右这4个方向中移动一步，每移动一步会得到-1单位的奖励。
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter3/assets/cliffwalking_1.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter3/assets/cliffwalking_1.png)
 
 如图，红色部分表示悬崖，数字代表智能体能够观测到的位置信息，即observation，总共会有0-47等48个不同的值，智能体再移动中会有以下限制：
 
@@ -2677,7 +2677,7 @@ $$
 
 实际的仿真界面如下：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter3/assets/cliffwalking_2.png)
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter3/assets/cliffwalking_2.png)
 
 **由于从起点到终点最少需要13步，每步得到-1的reward，因此最佳训练算法下，每个episode下reward总和应该为-13**。所以我们的目标也是要通过RL训练出一个模型，使得该模型能在测试中一个episode的reward能够接近于-13左右。
 
@@ -2719,9 +2719,9 @@ for i_ep in range(cfg.train_eps): # train_eps: 训练的最大episodes数
 
 基于以上的目标，本次任务即使训练并绘制reward以及滑动平均后的reward随episode的变化曲线图并记录超参数写成报告，示例如下：
 
-![rewards](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter3/assets/rewards.png)
+![rewards](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter3/assets/rewards.png)
 
-![moving_average_rewards](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter3/assets/moving_average_rewards.png)
+![moving_average_rewards](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter3/assets/moving_average_rewards.png)
 
 #### 备注
 
@@ -2737,14 +2737,14 @@ for i_ep in range(cfg.train_eps): # train_eps: 训练的最大episodes数
 如图 4.1 所示，强化学习有 3 个组成部分：**演员（actor）**、**环境**和**奖励函数**。智能体玩视频游戏时，演员负责操控游戏的摇杆， 比如向左、向右、开火等操作；环境就是游戏的主机，负责控制游戏的画面、负责控制怪兽的移动等；奖励函数就是当我们做什么事情、发生什么状况的时候，可以得到多少分数， 比如打败一只怪兽得到 20 分等。同样的概念用在围棋上也是一样的，演员就是 Alpha Go，它要决定棋子落在哪一个位置；环境就是对手；奖励函数就是围棋的规则，赢就是得一分，输就是负一分。在强化学习里，环境与奖励函数不是我们可以控制的，它们是在开始学习之前给定的。我们唯一需要做的就是调整演员里面的策略，使得演员可以得到最大的奖励。演员里面的策略决定了演员的动作，即给定一个输入，它会输出演员现在应该要执行的动作。
 
 
-![4.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.1.png)
+![4.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.1.png)
 
 图 4.1 强化学习的组成部分
 
 策略一般记作 $\pi$。假设我们使用深度学习来做强化学习，策略就是一个网络。网络里面有一些参数，我们用 $\theta$ 来代表 $\pi$ 的参数。网络的输入是智能体看到的东西，如果让智能体玩视频游戏，智能体看到的东西就是游戏的画面。智能体看到的东西会影响我们训练的效果。例如，在玩游戏的时候， 也许我们觉得游戏的画面是前后相关的，所以应该让策略去看从游戏开始到当前这个时间点之间所有画面的总和。因此我们可能会觉得要用到循环神经网络（recurrent neural network，RNN）来处理它，不过这样会比较难处理。我们可以用向量或矩阵来表示智能体的观测，并将观测输入策略网络，策略网络就会输出智能体要采取的动作。图 4.2 就是具体的例子，策略是一个网络；输入是游戏的画面，它通常是由像素组成的；输出是我们可以执行的动作，有几个动作，输出层就有几个神经元。假设我们现在可以执行的动作有 3 个，输出层就有 3 个神经元，每个神经元对应一个可以采取的动作。输入一个东西后，网络会给每一个可以采取的动作一个分数。我们可以把这个分数当作概率，演员根据概率的分布来决定它要采取的动作，比如 0.7 的概率向左走、0.2 的概率向右走、0.1的概率开火等。概率分布不同，演员采取的动作就会不一样。
 
 
-![4.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.2.png)
+![4.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.2.png)
 
 图 4.2 演员的策略
 
@@ -2754,21 +2754,21 @@ for i_ep in range(cfg.train_eps): # train_eps: 训练的最大episodes数
 我们把游戏初始的画面记作 $s_1$， 把第一次执行的动作记作 $a_1$，把第一次执行动作以后得到的奖励记作 $r_1$。不同的人有不同的记法，有人觉得在 $s_1$ 执行 $a_1$ 得到的奖励应该记为 $r_2$，这两种记法都可以。演员决定一个动作以后，就会看到一个新的游戏画面$s_2$。把 $s_2$ 输入给演员，演员决定要开火，它可能打败了一只怪兽，就得到五分。这个过程反复地持续下去，直到在某一个时间点执行某一个动作，得到奖励之后，环境决定这个游戏结束。例如，如果在这个游戏里面，我们控制宇宙飞船去击杀怪兽，如果宇宙飞船被毁或是把所有的怪兽都清空，游戏就结束了。
 
 
-![4.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.3.png)
+![4.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.3.png)
 
 图 4.3 玩视频游戏的例子
 
 如图 4.4 所示，一场游戏称为一个回合。将这场游戏里面得到的所有奖励都加起来，就是**总奖励（total reward）**，也就是**回报**，我们用$R$来表示它。演员要想办法来最大化它可以得到的奖励。
 
 
-![4.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.4.png)
+![4.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.4.png)
 
 图 4.4 回报的例子
 
 如图 4.5 所示，首先，环境是一个函数，我们可以把游戏的主机看成一个函数，虽然它不一定是神经网络，可能是基于规则的（rule-based）模型，但我们可以把它看作一个函数。这个函数一开始先“吐”出一个状态（游戏画面 $s_1$），接下来演员看到游戏画面 $s_1$ 以后，它“吐”出动作 $a_1$。环境把动作 $a_1$ 当作它的输入，再“吐”出新的游戏画面 $s_2$。演员看到新的游戏画面$s_2$，再采取新的动作 $a_2$。环境看到 $a_2$，再“吐”出 $s_3$ ......这个过程会一直持续下去，直到环境觉得应该要停止为止。
 
 
-![4.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.5.png)
+![4.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.5.png)
 
 图 4.5 演员和环境
 
@@ -2800,7 +2800,7 @@ $$
 
 
 
-![4.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.6.png)
+![4.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.6.png)
 
 图 4.6 期望的奖励
 
@@ -2883,7 +2883,7 @@ $$
 $$
 
 
-![4.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.8.png)
+![4.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.8.png)
 
 图 4.7 策略梯度
 
@@ -2896,7 +2896,7 @@ $$
 在解决分类问题时，我们要有输入和正确的输出，要有训练数据。但在强化学习中，我们通过采样来获得训练数据。假设在采样的过程中，在某个状态下，我们采样到要采取动作 $a$， 那么就把动作 $a$ 当作标准答案（ground truth）。比如，我们在某个状态下，采样到要向左。因为是采样，所以向左这个动作不一定概率最高。假设我们采样到向左，在训练的时候，让智能体调整网络的参数， 如果看到某个状态，我们就向左。在一般的分类问题里面，我们在实现分类的时候，目标函数都会写成最小化交叉熵（cross entropy），最小化交叉熵就是最大化对数似然（log likelihood）。
 
 
-![4.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.9.png)
+![4.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.9.png)
 
 图 4.8 策略梯度实现细节
 
@@ -2913,7 +2913,7 @@ $$
 我们要把每一笔训练数据，都使用 $R(\tau)$ 进行加权。如图 4.9 所示，我们使用 PyTorch 或 TensorFlow 之类的深度学习框架计算梯度就结束了，与一般分类问题差不多。
 
 
-![4.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.10.png)
+![4.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.10.png)
 
 图 4.9 自动求梯度
 
@@ -2929,7 +2929,7 @@ $$
 
 ​
 
-![4.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.12.png)
+![4.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.12.png)
 
 图 4.10 动作的概率的例子
 
@@ -2943,7 +2943,7 @@ $$
 
 
 
-![4.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.13.png)
+![4.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.13.png)
 
 图 4.11 采样动作的问题
 
@@ -2973,7 +2973,7 @@ $$
 
 
 
-![4.15](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.15.png)
+![4.15](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.15.png)
 
 图 4.12 分配合适的分数
 
@@ -3003,7 +3003,7 @@ $$
 
 
 
-![4.20](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.20.png)
+![4.20](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.20.png)
 
 图 4.13 蒙特卡洛方法与时序差分方法
 
@@ -3032,7 +3032,7 @@ $$
 
 
 
-![4.22](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.22.png)
+![4.22](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.22.png)
 
 图 4.14 REINFORCE算法
 
@@ -3046,7 +3046,7 @@ $$
 
 ​
 
-![4.23](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.23.png)
+![4.23](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.23.png)
 
    图 4.15 监督学习例子：手写数字识别
 
@@ -3055,7 +3055,7 @@ $$
 如图 4.16 所示，我们所要做的就是提高输出 9 的概率，降低输出其他数字的概率，让神经网络输出的概率分布能够更贴近真实值的概率分布。我们可以用交叉熵来表示两个概率分布之间的差距。
 
 
-![4.24](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.24.png)
+![4.24](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.24.png)
 
 图 4.16 提高数字9的概率
 
@@ -3064,7 +3064,7 @@ $$
 
 
 
-![4.25](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.25.png)
+![4.25](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.25.png)
 
 图 4.17 优化流程
 
@@ -3074,7 +3074,7 @@ $$
 
 
 
-![4.26](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.26.png)
+![4.26](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.26.png)
 
 图 4.18 策略梯度损失
 
@@ -3083,7 +3083,7 @@ $$
 
 
 
-![4.27](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.27.png)
+![4.27](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.27.png)
 
 图 4.19 损失计算
 
@@ -3092,7 +3092,7 @@ $$
 
 
 
-![4.28](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch4/4.28.png)
+![4.28](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch4/4.28.png)
 
 图 4.20 REINFORCE算法示意
 
@@ -3295,7 +3295,7 @@ $\operatorname{Var}_{x \sim p}[f(x)]$ 和 $\operatorname{Var}_{x \sim q}\left[f(
 我们这边采样到这些点，去计算它们的 $f(x) \frac{p(x)}{q(x)}$ 都是正的。我们采样到这些点都是正的，取期望值以后也都是正的，这是因为采样的次数不够多。假设我们采样次数很少，只能采样到右边。左边虽然概率很低，但也有可能被采样到。假设我们好不容易采样到左边的点，因为左边的点的$p(x)$ 和 $q(x)$ 是差很多的， 这边 $p(x)$ 很大，$q(x)$ 很小。 $f(x)$ 好不容易终于采样到一个负的，这个负的就会被乘上一个非常大的权重，这样就可以平衡刚才那边一直采样到正的值的情况。最终我们算出这一项的期望值，终究还是负的。但前提是我们要采样足够多次，这件事情才会发生。但有可能采样次数不够多，$\mathbb{E}_{x \sim p}[f(x)]$ 与 $\mathbb{E}_{x \sim q}\left[f(x) \frac{p(x)}{q(x)}\right]$ 可能就有很大的差距。这就是重要性采样的问题。
 
 
-![5.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch5/5.1.png)
+![5.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch5/5.1.png)
 
 图 5.1 重要性采样的问题
 
@@ -3451,7 +3451,7 @@ $$
 * 如果介于 $1-\varepsilon \sim 1+\varepsilon$，输出等于输入。
 
 
-![5.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch5/5.2.png)
+![5.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch5/5.2.png)
 
 图 5.2 裁剪函数
 
@@ -3459,7 +3459,7 @@ $$
 如图 5.3a 所示，$\frac{p_{\theta}\left(a_{t} | s_{t}\right)}{p_{\theta^{k}}\left(a_{t} | s_{t}\right)}$ 是绿色的线；$\operatorname{clip}\left(\frac{p_{\theta}\left(a_{t} | s_{t}\right)}{p_{\theta^{k}}\left(a_{t} | s_{t}\right)}, 1-\varepsilon, 1+\varepsilon\right)$ 是蓝色的线；在绿色的线与蓝色的线中间，我们要取一个最小的结果。假设前面乘上的项 $A$ 大于 0，取最小的结果，就是红色的这条线。如图 5.3b 所示，如果 $A$ 小于 0 ，取最小结果的以后，就得到红色的这条线。
 
 
-![5.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch5/5.3.png)
+![5.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch5/5.3.png)
 
 
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; 图 5.3 $A$对裁剪函数输出的影响
@@ -3476,7 +3476,7 @@ $$
 图 5.4 所示为 PPO 与其他算法的比较。优势演员-评论员和优势演员-评论员+信任区域（trust region）算法是基于演员-评论员的方法。PPO 算法是用紫色线表示，图 5.4 中每张子图表示某一个强化学习的任务，在多数情况中，PPO 都是不错的，即使不是最好的，也是第二好的。
 
 
-![5.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch5/5.4.png)
+![5.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch5/5.4.png)
 
 图 5.4 PPO与其他算法的比较
 
@@ -3558,7 +3558,7 @@ $$
 深度Q网络 是基于价值的算法，在基于价值的算法里面，我们学习的不是策略，而是**评论员（critic）**。评论员的任务是评价现在的动作有多好或有多不好。假设有一个演员，其要学习一个策略来得到尽量高的回报。评论员就是评价演员的策略 $\pi$  好还是不好，即策略评估。例如，有一种评论员称为**状态价值函数**$V_{\pi}$。状态价值函数是指，假设演员的策略是 $\pi$，用 $\pi$  与环境交互，假设 $\pi$  看到了某一个状态 $s$，例如在玩雅达利游戏，状态 $s$ 是某一个画面，$\pi$ 看到某一个画面，接下来一直到游戏结束，期望的累积奖励有多大。如图 6.1a 所示，$V_{\pi}$ 是一个函数，输入一个状态，它会输出一个标量。这个标量代表演员的策略$\pi$ 看到状态 $s$ 的时候，预期到游戏结束的时候，它可以获得多大的奖励。例如，假设我们在玩太空侵略者，图 6.1b 所示的状态 $s$，这个游戏画面，$V_{\pi}(s)$  也许会很大，因为这时还有很多的怪兽可以击杀， 所以我们会得到很高的分数。一直到游戏结束的时候，我们仍然有很多的分数可以获得。图 6.1c 所示的情况我们得到的 $V_{\pi}(s)$ 可能就很小，因为剩下的怪兽也不多，并且红色的防护罩已经消失了，所以我们可能很快就会“死掉”。因此接下来得到预期的奖励，就不会太大。
 
 
-![6.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.1.png)
+![6.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.1.png)
 
 图 6.1 玩太空侵略者
 
@@ -3569,7 +3569,7 @@ $$
 怎么衡量状态价值函数 $V_{\pi}(s)$ 呢？有两种不同的方法：基于蒙特卡洛的方法和基于时序差分的方法。基于蒙特卡洛的方法就是让演员与环境交互，我们要看演员好不好，就让演员与环境交互，让评论员评价。评论员就统计，演员如果看到状态 $s_a$，接下来的累积奖励有多大；如果它看到状态 $s_b$，接下来的累积奖励有多大。但是实际上，我们不可能看到所有的状态。如果我们在玩雅达利游戏，状态是图像，那么无法看到所有的状态。所以实际上 $V_{\pi}(s)$ 是一个网络。对一个网络来说，就算输入状态是从来都没有看过的，它也可以想办法估测一个值。怎么训练这个网络呢？如图 6.2 所示，如果在状态 $s_a$，接下来的累积奖励就是 $G_a$。也就是对这个价值函数，如果输入是状态 $s_a$，正确的输出应该是 $G_a$；如果输入状态是 $s_b$，正确的输出应该是 $G_b$。所以在训练的时候， 它就是一个回归问题（regression problem）。网络的输出就是一个值，我们希望在输入 $s_a$ 的时候，输出的值与 $G_a$ 越接近越好；输入 $s_b$ 的时候，输出的值与 $G_b$ 越接近越好。接下来继续训练网络，这是基于蒙特卡洛的方法。
 
 
-![6.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.2.png)
+![6.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.2.png)
 
 图 6.2 基于蒙特卡洛的方法
 
@@ -3583,14 +3583,14 @@ $$
 
 
 
-![6.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.3.png)
+![6.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.3.png)
 
 图 6.3 基于时序差分的方法
 
 蒙特卡洛方法与时序差分方法有什么差别呢？如图 6.4 所示，蒙特卡洛方法最大的问题就是方差很大。因为我们在玩游戏的时候，游戏本身是有随机性的，所以我们可以把 $G_a$ 看成一个随机变量。因为我们每次到 $s_a$ 的时候，最后得到的 $G_a$ 其实是不一样的。我们看到同样的状态 $s_a$，最后到游戏结束的时候，因为游戏本身是有随机性的，玩游戏的模型可能也有随机性，所以我们每次得到的 $G_a$ 是不一样的，每一次得到的 $G_a$ 的差别其实会很大。为什么会很大呢？因为 $G_a$ 是很多个不同的步骤的奖励的和。假设我们每一个步骤都会得到一个奖励，$G_a$ 是从状态 $s_a$ 开始一直到游戏结束，每一个步骤的奖励的和。
 
 
-![6.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.4.png)
+![6.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.4.png)
 
 图 6.4 蒙特卡洛方法的问题
 
@@ -3633,7 +3633,7 @@ $$
 
 
 
-![6.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.6.png)
+![6.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.6.png)
 
 图 6.5 时序差分方法与蒙特卡洛方法的差别
 
@@ -3653,7 +3653,7 @@ Q函数有两种写法：
 
 
 
-![6.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.7.png)
+![6.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.7.png)
 
 图 6.6 Q函数
 
@@ -3662,7 +3662,7 @@ Q函数有两种写法：
 
 
 
-![6.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.8.png)
+![6.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.8.png)
 
 图 6.7 乒乓球例子
 
@@ -3679,7 +3679,7 @@ $\pi'$ 一定比 $\pi$ 好。假设我们已经学习出 $\pi$ 的Q函数，在�
 
 
 
-![6.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.9.png)
+![6.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.9.png)
 
 图 6.8 使用Q函数进行策略改进
 
@@ -3776,7 +3776,7 @@ $$
 
 
 
-![6.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.12.png)
+![6.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.12.png)
 
 图 6.9 目标网络
 
@@ -3784,7 +3784,7 @@ $$
 如图 6.10a 所示，我们可以通过猫追老鼠的例子来直观地理解固定目标网络的目的。猫是 Q 估计，老鼠是 Q 目标。一开始，猫离老鼠很远，所以我们想让猫追上老鼠。如图 6.10b 所示，因为 Q 目标也是与模型参数相关的，所以每次优化后，Q 目标也会动。这就导致一个问题，猫和老鼠都在动。如图 6.10c 所示，猫和老鼠会在优化空间里面到处乱动，这会产生非常奇怪的优化轨迹，使得训练过程十分不稳定。所以我们可以固定 Q 网络，让老鼠动得不那么频繁，可能让它每 5 步动一次，猫则是每一步都在动。如果老鼠每 5 次动一步，猫就有足够的时间来接近老鼠，它们之间的距离会随着优化过程越来越小，最后它们就可以拟合，拟合后就可以得到一个最好的Q 网络。
 
 
-![6.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.10.png)
+![6.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.10.png)
 
 图 6.10 固定目标网络
 
@@ -3807,7 +3807,7 @@ $$
 但是如图 6.11 所示，假设我们在状态 $s$采取动作 $a_{2}$ ，它得到的值是正的奖励，$Q(s, a_2)$ 就会比其他动作的Q值要大。在采取动作的时候，谁的 Q 值 最大就采取谁，所以之后永远都只会采取 $a_{2}$，其他的动作就再也不会被采取了，这就会有问题。比如我们去一个餐厅吃饭。假设我们点了某一样菜，比如椒麻鸡，我们觉得还可以。接下来我们每次去就都会点椒麻鸡，再也不点别的菜了，那我们就不知道别的菜是不是会比椒麻鸡好吃，这是一样的问题。
 
 
-![6.16](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.16.png)
+![6.16](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.16.png)
 
 图 6.11 探索
 
@@ -3839,7 +3839,7 @@ $$
 
 
 
-![6.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.17.png)
+![6.17](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.17.png)
 
 图 6.12 经验回放
 
@@ -3850,7 +3850,7 @@ $$
 
 
 
-![6.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.18.png)
+![6.18](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.18.png)
 
 图 6.13 使用回放缓冲区训练Q函数
 
@@ -3873,7 +3873,7 @@ $$
 
 
 
-![6.19](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch6/6.19.png)
+![6.19](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch6/6.19.png)
 
 图 6.14 深度Q网络算法
 
@@ -4005,7 +4005,7 @@ A：整体来说，深度Q网络与Q学习的目标价值以及价值的更新�
 
 
 
-![7.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.1.png)
+![7.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.1.png)
 
 图 7.1 被高估的Q值
 
@@ -4025,7 +4025,7 @@ $$
 
 
 
-![7.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.2.png)
+![7.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.2.png)
 
 图 7.2 Q值被高估的问题
 
@@ -4051,7 +4051,7 @@ DDQN相较于原来的深度Q网络的更改是最少的，它几乎没有增加
 
 ​
 
-![7.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.4.png)
+![7.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.4.png)
 
 图 7.3 竞争深度Q网络的网络结构
 
@@ -4070,7 +4070,7 @@ $$
 
 ​
 
-![7.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.5.png)
+![7.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.5.png)
 
 图 7.4 竞争深度Q网络训练
 
@@ -4094,7 +4094,7 @@ $$
 
 
 
-![7.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.6.png)
+![7.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.6.png)
 
 图 7.5 竞争深度Q网络约束
 
@@ -4105,7 +4105,7 @@ $$
 第三个技巧称为**优先级经验回放（prioritized experience replay，PER）**。如图 7.6 所示，我们原来在采样数据训练 Q 网络的时候，会均匀地从回放缓冲区里面采样数据。这样不一定是最好的， 因为也许有一些数据比较重要。假设有一些数据，我们之前采样过，发现这些数据的时序差分误差特别大（时序差分误差就是网络的输出与目标之间的差距），这代表我们在训练网络的时候，这些数据是比较不好训练的。既然比较不好训练，就应该给它们比较大的概率被采样到，即给它**优先权（priority）**。这样在训练的时候才会多考虑那些不好训练的数据。实际上在做 PER 的时候，我们不仅会更改采样的过程，还会因为更改了采样的过程，而更改更新参数的方法。所以PER不仅改变了采样数据的分布，还改变了训练过程。
 
 
-![7.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.7.png)
+![7.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.7.png)
 
 图 7.6 优先级经验回放
 
@@ -4119,7 +4119,7 @@ $$
 多步方法就是蒙特卡洛方法与时序差分方法的结合，因此它不仅有蒙特卡洛方法的好处与坏处，还有时序差分方法的好处与坏处。我们先看看多步方法的好处，之前只采样了某一个步骤，所以得到的数据是真实的，接下来都是 Q 值估测出来的。现在采样比较多的步骤，采样 $N$ 个步骤才估测值，所以估测的部分所造成的影响就会比较小。当然多步方法的坏处就与蒙特卡洛方法的坏处一样，因为 $r$ 有比较多项，所以我们把 $N$ 项的 $r$ 加起来，方差就会比较大。但是我们可以调整 $N$ 的值，在方差与不精确的 Q 值之间取得一个平衡。$N$ 就是一个超参数，我们可以对其进行调整。
 
 
-![7.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.8.png)
+![7.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.8.png)
 
 图 7.7 在蒙特卡洛方法和时序差分方法中取得平衡
 
@@ -4142,7 +4142,7 @@ $$
 
 ​
 
-![7.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.11.png)
+![7.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.11.png)
 
 图 7.8 奖励分布
 
@@ -4151,7 +4151,7 @@ $$
 分布式Q函数是对分布（distribution）建模，怎么做呢？如图 7.12a 所示，在原来的Q函数里面，假设我们只能采取 $a_1$、$a_2$、$a_3$ 这3 个动作，我们输入一个状态，输出 3 个值。这3 个值分别代表 3 个动作的 Q 值，但是这些 Q 值是一个分布的期望值。所以分布式Q函数就是直接输出分布。实际上的做法如图 7.12b 所示，假设分布的值就分布在某一个范围里面，比如 $-$10 ~ 10，把 $-$10 ~ 10 拆成一个一个的长条。例如，每一个动作的奖励空间拆成 5 个长条。假设奖励空间可以拆成 5 个长条，Q函数的输出就是要预测我们在某一个状态采取某一个动作得到的奖励，其落在某一个长条里面的概率。所以绿色长条概率的和应该是 1，其高度代表在某一个状态采取某一个动作的时候，它落在某一个长条内的概率。绿色的代表动作 $a_1$，红色的代表动作 $a_2$，蓝色的代表动作 $a_3$。所以我们就可以用Q函数去估计 $a_1$ 的分布、$a_2$ 的分布、$a_3$ 的分布。实际上在做测试的时候，我们选平均值最大的动作执行。
 
 
-![7.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.12.png)
+![7.12](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.12.png)
 
 图 7.12 分布式Q函数
 
@@ -4165,7 +4165,7 @@ $$
 
 ​
 
-![7.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.13.png)
+![7.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.13.png)
 
 图 7.10 彩虹方法
 
@@ -4178,7 +4178,7 @@ $$
 
 
 
-![7.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch7/7.14.png)
+![7.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch7/7.14.png)
 
 图 7.11 彩虹：去掉其中一种方法
 
@@ -4256,7 +4256,7 @@ CartPole-v0是OpenAI gym中的一个经典环境，通过向左(action=0)或向�
 
 **理想状态下，每个episode至少能进行200个step，也就是说每个episode的reward总和至少为200，step数目至少为200**。
 
-![p1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/img/p1.png)
+![p1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/img/p1.png)
 
 环境建立如下：
 
@@ -4304,23 +4304,23 @@ for i_episode in range(1, cfg.max_episodes+1): # cfg.max_episodes为最大训练
 
 训练并绘制reward以及滑动平均后的reward随episode的变化曲线图并记录超参数写成报告，图示如下：
 
-![rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/rewards_train.png)
+![rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/rewards_train.png)
 
-![moving_average_rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/moving_average_rewards_train.png)
+![moving_average_rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/moving_average_rewards_train.png)
 
-![steps_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/steps_train.png)
+![steps_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/steps_train.png)
 
 同时也可以绘制测试(eval)模型时的曲线：
 
-![rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/rewards_eval.png)
+![rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/rewards_eval.png)
 
-![moving_average_rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/moving_average_rewards_eval.png)
+![moving_average_rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/moving_average_rewards_eval.png)
 
-![steps_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/steps_eval.png)
+![steps_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/steps_eval.png)
 
 也可以[tensorboard](https://pytorch.org/docs/stable/tensorboard.html)查看结果，如下：
 
-![image-20201015221032985](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter7/assets/image-20201015221032985.png)
+![image-20201015221032985](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter7/assets/image-20201015221032985.png)
 
 ### 第 8 章 针对连续动作的深度 Q 网络
 
@@ -4357,7 +4357,7 @@ $$
 >如果 $n$阶对称矩阵$\boldsymbol{A}$ 对于任意非零的$n$维向量$\boldsymbol{x}$都有 $\boldsymbol{x}^\mathrm{T}\boldsymbol{A}\boldsymbol{x}>0$，则称矩阵$\boldsymbol{A}$为正定矩阵。
 
 
-![8.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch8/8.2.png)
+![8.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch8/8.2.png)
 
 图 8.1 方案 3：设计网络架构
 
@@ -4367,7 +4367,7 @@ $$
 
 
 
-![8.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch8/8.3.png)
+![8.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch8/8.3.png)
 
 图 8.2 方案 4：不使用深度Q网络
 
@@ -4711,7 +4711,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.1.png)
+![10.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.1.png)
 
 图 10.1 设计奖励
 
@@ -4722,7 +4722,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 设计奖励是有问题的，因为我们需要领域知识（domain knowledge）。例如，如图 10.2 所示，机器人想要学会把蓝色的板子从柱子穿过。机器人很难学会，我们可以设计奖励。一个貌似合理的说法是，蓝色的板子离柱子越近，奖励越大。但是机器人靠近的方式会有问题，它会用蓝色的板子打柱子。而机器人要把蓝色板子放在柱子上面，才能让蓝色板子穿过柱子。因此，这种设计奖励的方式是有问题的。至于哪种设计奖励的方式有问题，哪种设计奖励的方式没问题，会变成一个领域知识，是我们要去调整的。
 
 
-![10.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.2.png)
+![10.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.2.png)
 
 图 10.2 设计奖励的问题
 
@@ -4733,7 +4733,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 在好奇心驱动的技术里面，我们会加上一个新的奖励函数------**内在好奇心模块（intrinsic curiosity module，ICM）**，它用于给智能体加上好奇心。内在好奇心模块需要 3 个输入：状态$s_1$、动作 $a_1$ 和状态$s_2$。根据输入，它会输出另外一个奖励$r_1^i$。对智能体来说，总奖励并不是只有 $r$，还有 $r^i$。它不是只把所有的 $r$ 都加起来，它还把所有 $r^i$ 加起来当作总奖励。所以在与环境交互的时候，它不是只希望 $r$ 越大越好，它还同时希望 $r^i$ 越大越好，它希望从内在好奇心模块里面得到的奖励越大越好。内在好奇心模块代表一种好奇心。
 
 
-![10.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.3.png)
+![10.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.3.png)
 
 图 10.3 好奇心
 
@@ -4744,7 +4744,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.4.png)
+![10.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.4.png)
 
 图 10.4 内在好奇心模块设计
 
@@ -4755,7 +4755,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.5.png)
+![10.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.5.png)
 
 图 10.5 好奇心模块
 
@@ -4768,7 +4768,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 再例如，对于把蓝色的板子穿过柱子的任务，怎么让机器人一直从简单学到难呢？如图 10.6（左）所示，也许一开始，板子就已经在柱子上了。这时候，机器人只要把蓝色的板子压下去就可以了。这种情况比较简单，机器人应该很快就能学会。因为机器人只有往上与往下这两个选择，往下就得到奖励，任务就结束了，所有它也不知道学的是什么。如图 10.6（中）所示，我们把板子放高一点儿，机器人有时候会笨拙地往上拉板子，然后把板子拿出来。如果机器人可以学会压板子，拿板子也有很大的可能可以学会。假设机器人现在已经学到，只要板子接近柱子，它就可以把板子压下去。接下来，我们再让它学更一般的情况。如图 10.6（右）所示，一开始，让板子离柱子远一点儿。然后，板子放到柱子上面的时候，机器人就知道把板子压下去，这就是课程学习的概念。当然课程学习有点儿特别，它需要人去为智能体设计课程。
 
 
-![10.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.6.png)
+![10.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.6.png)
 
 图 10.6 课程学习
 
@@ -4778,7 +4778,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.7.png)
+![10.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.7.png)
 
 图 10.7 逆向课程生成
 
@@ -4790,7 +4790,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.8.png)
+![10.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.8.png)
 
 图 10.8 逆课程学习
 
@@ -4806,13 +4806,13 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.9a](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.9a.png)
+![10.9a](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.9a.png)
 
 图 10.9 分层强化学习例子
 
 
 
-![10.9b](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.9b.png)
+![10.9b](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.9b.png)
 
 图 10.10 改变愿景
 
@@ -4822,7 +4822,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![10.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch10/10.10.png)
+![10.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch10/10.10.png)
 
 图 10.11 走迷宫和单摆的例子
 
@@ -4878,7 +4878,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 怎么让智能体学会与专家一模一样的行为呢？我们可以把它当作一个监督学习的问题，先收集很多行车记录器的数据，再收集人在具体情境下会采取什么样的行为（训练数据）。我们知道人在状态$s_1$ 会采取动作$a_1$，人在状态$s_2$ 会采取动作$a_2$，人在状态 $s_3$ 会采取动作$a_3$.......接下来，我们就学习一个网络。这个网络就是演员，输入$s_i$ 的时候，我们希望它的输出 是$a_i$。
 
 
-![11.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.2.png)
+![11.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.2.png)
 
 图 11.1 自动驾驶汽车例子
 
@@ -4886,7 +4886,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![11.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.3.png)
+![11.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.3.png)
 
 图 11.2 行为克隆的问题
 
@@ -4894,7 +4894,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 我们希望收集更多样的数据，而不是只收集专家所看到的观测。我们希望能够收集专家在各种极端的情况下所采取的行为。如图 11.3 所示，以自动驾驶汽车为例，一开始我们有演员 $\theta_1$，并且让其去驾驶这辆车，同时车上坐了一个专家。这个专家会不断地告诉智能体，如果在这个情境里面，我会怎么样开。所以 $\theta_1$ 自己开自己的，但是专家会不断地表达它的想法。比如，一开始的时候，专家可能说往前走。在拐弯的时候，专家可能就会说往右转。但 $\theta_1$ 是不管专家的指令的，所以它会继续撞墙。虽然专家说往右转，但是不管他怎么下指令都是没有用的，$\theta_1$ 会做自己的事情，因为我们要做的记录的是说，专家在 $\theta_1$ 看到这种观测的情况下，它会做什么样的反应。这个方法显然是有一些问题的，因为我们每开一次自动驾驶汽车就会牺牲一个专家。我们用这个方法，牺牲一个专家以后，就会知道，人类在快要撞墙的时候，会采取什么样的行为。再用这些数据训练新的演员 $\theta_2$，并反复进行这个过程，这个方法称为数据集聚合。
 
 
-![11.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.4.png)
+![11.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.4.png)
 
 图 11.3 数据集聚合
 
@@ -4903,7 +4903,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 例如，如图 11.4 所示，在学习中文的时候，老师有语音和手势，但只有语音部分是重要的，手势部分是不重要的。也许智能体只能学一件事，如果它只学到了语音，没有问题。如果它只学到了手势，这样就有问题了。所以让智能体学习什么东西是需要模仿的、什么东西是不需要模仿的，这件事情是很重要的。而单纯的行为克隆没有学习这件事情，因为智能体只是复制专家所有的行为而已，它不知道哪些行为是重要的，是对接下来有影响的，哪些行为是不重要的、是对接下来没有影响的。
 
 
-![11.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.5.png)
+![11.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.5.png)
 
 图 11.4 智能体学习中文
 
@@ -4921,7 +4921,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![11.7a](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.7a.png)
+![11.7a](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.7a.png)
 
 图 11.5 强化学习的学习过程
 
@@ -4931,7 +4931,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![11.7b](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.7b.png)
+![11.7b](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.7b.png)
 
 图 11.6 逆强化学习的学习过程
 
@@ -4953,7 +4953,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![11.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.8.png)
+![11.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.8.png)
 
 图 11.7 逆强化学习的框架
 
@@ -4962,7 +4962,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 我们可以把逆强化学习与 生成对抗网络 详细地比较一下。如图 11.8 所示，在生成对抗网络 里面，我们有一系列很好的图、一个生成器和一个判别器。一开始，生成器不知道要产生什么样的图，它就会乱画。判别器的工作就是给画的图打分，专家画的图得高分，生成器画的图得低分。生成器会想办法去骗过判别器，生成器希望判别器也给它画的图打高分。整个过程与逆强化学习是一模一样的。专家画的图就是专家的示范。生成器就是 演员，生成器画很多图，演员与环境交互，产生很多轨迹。演员与环境交互的记录其实就等价于 生成对抗网络 里面的这些图。然后我们学习一个奖励函数。奖励函数就是判别器。奖励函数要给专家的示范打高分，给演员交互的结果打低分。接下来，演员会想办法，从已经学习出的奖励函数中得到高分，然后迭代地循环。
 
 
-![11.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.9.png)
+![11.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.9.png)
 
 图 11.8 生成对抗网络与逆强化学习的区别
 
@@ -4975,7 +4975,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![11.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.11.png)
+![11.11](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.11.png)
 
 图 11.9 自动驾驶汽车停车例子
 
@@ -4989,7 +4989,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![11.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.13.png)
+![11.13](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.13.png)
 
 图 11.10 第三人称视角模仿学习例子
 
@@ -4998,7 +4998,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 这怎么做呢？第三人称视角模仿学习技术其实不只用到了模仿学习，它还用到了**领域对抗训练（domain-adversarial training）**。领域对抗训练也是一种 生成对抗网络 的技术。如图 11.11 所示，我们希望有一个特征提取器，有两幅不同领域（domain）的图像，通过特征提取器以后，无法分辨出图像来自哪一个领域。第一人称视角和第三人称视角模仿学习用的技术是一样的，希望学习一个特征提取器，智能体在第三人称的时候与它在第一人称的时候的视角其实是一样的，就是把最重要的东西抽出来就好了。
 
 
-![11.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.14.png)
+![11.14](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.14.png)
 
 图 11.11 第三人称视角模仿学习框架
 
@@ -5010,7 +5010,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 如果我们单纯用最大似然（maximum likelihood）这个技术来最大化会得到似然（likelihood），这其实就是行为克隆。行为克隆就是看到一个状态，接下来预测我们会得到什么样的动作，有一个标准答案（ground truth）告诉机器什么样的动作是最好的。在做似然的时候也是一样的，给定句子已经产生的部分，接下来机器要预测写哪一个字才是最好的。所以，其实最大似然在做序列生成（sequence generation）的时候，它对应到模仿学习里面就是行为克隆。只有最大似然是不够的，我们想要用序列生成对抗网络（sequence GAN）。其实序列生成对抗网络对应逆强化学习，逆强化学习就是一种 生成对抗网络 的技术。我们把逆强化学习的技术放在句子生成、聊天机器人里面，其实就是序列生成对抗网络与它的种种变形。
 
 
-![11.15](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch11/11.15.png)
+![11.15](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch11/11.15.png)
 
 图 11.12 仿学习例子
 
@@ -5070,7 +5070,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![12.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.1.png)
+![12.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.1.png)
 
 图 12.1 离散动作和连续动作的区别
 
@@ -5081,7 +5081,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![12.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.2.png)
+![12.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.2.png)
 
 图 12.2 使用神经网络处理连续动作与离散动作
 
@@ -5090,7 +5090,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 
 
 
-![12.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.3.png)
+![12.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.3.png)
 
 图 12.3 使用神经网络输出离散动作与连续动作
 
@@ -5102,7 +5102,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 深度是因为用了神经网络；确定性表示 DDPG 输出的是一个确定性的动作，可以用于有连续动作的环境；策略梯度代表的是它用到的是策略网络。REINFORCE 算法每隔一个回合就更新一次，但 DDPG 是每个步骤都会更新一次策略网络，它是一个单步更新的策略网络。
 
 
-![12.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.4.png)
+![12.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.4.png)
 
 图 12.4 DDPG
 
@@ -5110,7 +5110,7 @@ A3C是异步优势演员-评论员算法，其中，评论员学习价值函数�
 DDPG 是 深度Q网络的一个扩展版本，可以扩展到连续动作空间。在 DDPG 的训练中，它借鉴了 深度Q网络 的技巧：目标网络和经验回放。经验回放与 深度Q网络 是一样的，但目标网络的更新与 深度Q网络 的有点儿不一样。提出 DDPG 是为了让 深度Q网络 可以扩展到连续的动作空间，就是我们刚才提到的小车速度、角度和电压等这样的连续值。如图 12.5 所示，DDPG 在 深度Q网络 基础上加了一个策略网络来直接输出动作值，所以 DDPG 需要一边学习 Q 网络，一边学习策略网络。Q 网络的参数用 $w$ 来表示。策略网络的参数用 $\theta$ 来表示。我们称这样的结构为演员-评论员的结构。
 
 
-![12.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.5.png)
+![12.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.5.png)
 
 图 12.5 从深度Q网络到DDPG
 
@@ -5120,7 +5120,7 @@ DDPG 是 深度Q网络的一个扩展版本，可以扩展到连续动作空间�
 最开始训练的时候，这两个神经网络的参数是随机的。所以评论员最开始是随机打分的，演员也随机输出动作。但是由于有环境反馈的奖励存在，因此评论员的评分会越来越准确，所评判的演员的表现也会越来越好。既然演员是一个神经网络，是我们希望训练好的策略网络，我们就需要计算梯度来更新优化它里面的参数 $\theta$ 。简单来说，我们希望调整演员的网络参数，使得评委打分尽可能高。注意，这里的演员是不关注观众的，它只关注评委，它只迎合评委的打分 $Q_w(s,a)$。
 
 
-![12.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.6.png)
+![12.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.6.png)
 
 图 12.6 演员-评论员结构通俗解释
 
@@ -5130,7 +5130,7 @@ DDPG 是 深度Q网络的一个扩展版本，可以扩展到连续动作空间�
 
 
 
-![12.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.7.png)
+![12.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.7.png)
 
 图 12.7 深度Q网络与DDPG的联系
 
@@ -5142,7 +5142,7 @@ DDPG 是 深度Q网络的一个扩展版本，可以扩展到连续动作空间�
 这里训练需要用到的数据就是 $s$、$a$、$r$、$s'$，我们只需要用到这4个数据。我们用回放缓冲区把这些数据存起来，然后采样进行训练。经验回放的技巧与 深度Q网络 中的是一样的。注意，因为 DDPG 使用了经验回放技巧，所以 DDPG 是一个异策略的算法。
 
 
-![12.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.8.png)
+![12.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.8.png)
 
 图 12.8 目标网络和经验回放
 
@@ -5154,7 +5154,7 @@ DDPG通过异策略的方式来训练一个确定性策略。因为策略是确�
 虽然 DDPG 有时表现很好，但它对于超参数和其他类型的调整方面经常很敏感。如图 12.9 所示，DDPG常见的问题是已经学习好的 Q 函数开始显著地高估 Q 值，然后导致策略被破坏，因为它利用了 Q 函数中的误差。
 
 
-![12.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.9.png)
+![12.9](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.9.png)
 
 图 12.9 DDPG的问题
 
@@ -5184,7 +5184,7 @@ $$
 
 
 
-![12.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch12/12.10.png)
+![12.10](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch12/12.10.png)
 
 图 12.10 TD3与其他算法对比
 
@@ -5259,7 +5259,7 @@ TD3的作者给出了其对应[PyTorch的实现](https://github.com/sfujim/TD3/)
 
 #### Pendulum-v0
 
-![image-20200820174814084](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/img/image-20200820174814084.png)
+![image-20200820174814084](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/img/image-20200820174814084.png)
 
 钟摆以随机位置开始，目标是将其摆动，使其保持向上直立。动作空间是连续的，值的区间为[-2,2]。每个step给的reward最低为-16.27，最高为0。
 
@@ -5308,23 +5308,23 @@ for i_episode in range(1, cfg.max_episodes+1): # cfg.max_episodes为最大训练
 
 训练并绘制reward以及滑动平均后的reward随episode的变化曲线图并记录超参数写成报告，图示如下：
 
-![rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/rewards_train.png)
+![rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/rewards_train.png)
 
-![moving_average_rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/moving_average_rewards_train.png)
+![moving_average_rewards_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/moving_average_rewards_train.png)
 
-![steps_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/steps_train.png)
+![steps_train](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/steps_train.png)
 
 同时也可以绘制测试(eval)模型时的曲线：
 
-![rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/rewards_eval.png)
+![rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/rewards_eval.png)
 
-![moving_average_rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/moving_average_rewards_eval.png)
+![moving_average_rewards_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/moving_average_rewards_eval.png)
 
-![steps_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/steps_eval.png)
+![steps_eval](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/steps_eval.png)
 
 也可以[tensorboard](https://pytorch.org/docs/stable/tensorboard.html)查看结果，如下：
 
-![image-20201015221602396](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/chapter12/assets/image-20201015221602396.png)
+![image-20201015221602396](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/chapter12/assets/image-20201015221602396.png)
 
 ##### 注意
 
@@ -5351,7 +5351,7 @@ AlphaStar是DeepMind与暴雪使用深度强化学习技术实现的计算机与
 AlphaStar将《星际争霸Ⅱ》的环境状态分为4部分，分别为实体（entities）信息、地图（map）信息、玩家数据（player data）信息、游戏统计（game statistics）信息，如图13.1所示。
 
 
-![13.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.1.png)
+![13.1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.1.png)
 
 图 13.1 环境状态的构成
 
@@ -5368,7 +5368,7 @@ AlphaStar将《星际争霸Ⅱ》的环境状态分为4部分，分别为实体�
 AlphaStar的动作信息主要分为6个部分，如图13.2所示，分别为动作类型（action type）、选中的单元（selected units）、目标（target）、执行动作的队列（queued）、是否重复（repeat）以及延时（delay），各个部分间是有关联的。
 
 
-![13.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.2.png)
+![13.2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.2.png)
 
 图 13.2 动作信息的构成
 
@@ -5389,14 +5389,14 @@ AlphaStar的动作信息主要分为6个部分，如图13.2所示，分别为动
 我们在13.2节说明了AlphaStar网络的输入和输出，即状态和动作，那么从状态怎么得到动作呢？这里我们先给出其网络结构的总览，如图13.3所示，后面对此详细讨论。
 
 
-![13.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.3.png)
+![13.3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.3.png)
 
 图 13.3 AlphaStar网络结构总览
 
 ##### 13.3.1 输入部分
 
 
-![13.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.4.png)
+![13.4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.4.png)
 
 图 13.4 AlphaStar网络结构输入部分
 
@@ -5411,7 +5411,7 @@ AlphaStar的动作信息主要分为6个部分，如图13.2所示，分别为动
 中间过程比较简单，即通过一个深度长短期记忆网络模块融合3种当前状态下的嵌入并进行下一时刻的输出，如图13.5所示，并且将该输出分别送入价值网络（value network）、残差多层感知机（residual MLP）以及动作类型的后续的多层感知机中。
 
 
-![13.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.5.png)
+![13.5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.5.png)
 
 图 13.5 AlphaStar网络结构中的深度长短期记忆网络模块
 
@@ -5420,7 +5420,7 @@ AlphaStar的动作信息主要分为6个部分，如图13.2所示，分别为动
 正如前面介绍的，输出的动作是前后相关联的，如图13.6所示，我们按照顺序一一介绍。
 
 
-![13.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.6.png)
+![13.6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.6.png)
 
 图 13.6 AlphaStar网络结构输出部分
 
@@ -5524,7 +5524,7 @@ $$
 ##### 13.5.1 宏观结果
 
 
-![13.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.7.png)
+![13.7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.7.png)
 
 图 13.7 AlphaStar的实验结果
 
@@ -5539,7 +5539,7 @@ $$
 AlphaStar的论文中也使用了消融实验，即控制变量法，来进一步分析每一个约束条件对于对战结果的影响。下面举一个特别的例子。
 
 
-![13.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch13/13.8.png)
+![13.8](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch13/13.8.png)
 
 图 13.8 AlphaStar中人类对局数据使用情况
 
@@ -5907,13 +5907,13 @@ GitHub链接：https://github.com/qiwang067/LS-Imagine
 
 最近 Genie3 很火，但大家对世界模型的概念还有些模糊，有人认为生成模型就是世界模型，但让我们回顾最早的世界模型定义，也就是 Genie1 论文“Genie: Generative Interactive Environments”中提到的定义：”生成式交互环境可以被视为世界模型的一类，它们能够在给定动作输入的条件下，实现下一帧的预测“，由此可知，生成模型≠世界模型。接下来给大家介绍下做强化学习的人眼中的世界模型。
 
-![image 1](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%201.png)
+![image 1](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%201.png)
 
 #### 为什么是世界模型？
 
 **使用世界模型可以替代环境训练，我们可以完全在模拟的“梦境”环境中训练智能体，而不需要与真实环境交互**。这种方法提供了诸多好处。例如，运行计算密集型的游戏引擎需要使用大量的计算资源来将游戏状态渲染成图像帧，或者计算与游戏不直接相关的物理内容。我们可能不想在实际环境中浪费计算资源来训练智能体，而是可以在其模拟环境中多次训练智能体。现实世界中训练智能体的成本更高，因此逐步训练的世界模型用于模拟现实可能有助于将策略转移到现实世界中。
 
-![image 2](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%202.png)
+![image 2](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%202.png)
 
 #### 世界模型是什么？
 
@@ -5921,7 +5921,7 @@ GitHub链接：https://github.com/qiwang067/LS-Imagine
 
 - **V 模型（Variational Autoencoder，VAE）**：这是智能体（agent）的视觉感知部分，用于将高维的图像帧（如来自游戏环境的2D图像）压缩成低维的 latent 表示。这个模型对于智能体从原始输入数据中学习有意义的、抽象的表示至关重要。
 
-![image 3](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%203.png)
+![image 3](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%203.png)
 
 - **M 模型（MDN-RNN）**的作用是预测未来，具体来说，M 模型根据当前时刻 $t$ 的隐向量（latent vector） $z_t$ 、隐状态（hidden state） $h_t$ 以及动作$a_t$来预测下一时刻的隐向量 $z_{t+1}$ 。它使用**混合密度网络（Mixture Density Network，MDN）**与**循环神经网络（Recurrent Neural Network，RNN）**结合的方式，输出下一个隐向量 $z$ 的概率分布。温度参数 $\tau$ 用来控制模型的不确定性。
 
@@ -5929,7 +5929,7 @@ $$
 P\left(z_{t+1} \mid a_t, z_t, h_t\right)
 $$
 
-![image 4](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%204.png)
+![image 4](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%204.png)
 
 - **C 模型（Controller，控制器）**使用来自V模型和M模型的表示来选择合适的动作。控制器的目的是最大化期望的累积奖励。C是一个简单的单层线性模型，它将$z_t$和$h_t$直接映射到每个时间步的行动$a _t$，$ \left[z_t h_t\right] $是把 $z_t$和$h_t$拼接在一起
 
@@ -5939,11 +5939,11 @@ $$
 
 把 V、M、C 模型放一起，**整体运作的流程**是：在每个时间步$t$，原始观测输入到V，输出 $z_t $。输入到C的是隐向量$z_t $与M的隐状态$h_t $的拼接。接着，C会输出一个动作向量$a_t $用于运动控制，并且会影响环境。接着，M将当前的$z_t $和动作$a_t $作为输入，更新自身的隐状态，生成$h_{t+1} $。值得注意的是，论文中是通过随机策略跟环境进行交互收集到的预演（rollouts）来训练世界模型。
 
-![image 5](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%205.png)
+![image 5](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%205.png)
 
 按时间步展开来，世界模型的结构如下图所示。
 
-![image 6](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%206.png)
+![image 6](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%206.png)
 
 
 
@@ -5953,7 +5953,7 @@ $$
 
 也欢迎大家看我主页上世界模型相关的 paper（[https://qiwang067.github.io/](https://qiwang067.github.io/)），最后宣传下我们 NeurIPS 组织的 Workshop “**Embodied World Models for Decision Making**”（[https://embodied-world-models.github.io/](https://embodied-world-models.github.io/)）”，**Genie 3 的核心贡献者** Philip Ball 也会给 Talk，欢迎大家参加、投稿~，希望本文能对大家理解世界模型有所帮助。
 
-![image 7](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/img/ch16/image%207.png)
+![image 7](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/img/ch16/image%207.png)
 
 ## 附录
 
@@ -6049,7 +6049,7 @@ $$
 
 * 147页，图6.7左下角：动作值 → 动作价值，图6.7替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/6-7.png ':size=650')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/6-7.png ':size=650')
 
 * 217页，倒数第一段：
   * 黄金状态（gold state） → 目标状态（goal state）
@@ -6114,7 +6114,7 @@ pip install gym==0.25.2
 * 31页，第三段：开发（exploitation）→ 利用（exploitation）
 * 35页的图2.2 和 41页的图2.5（a）添加从 $s_1$ 到 $s_4$  的箭头，替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/Markov_chain.png ':size=350')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/Markov_chain.png ':size=350')
 
 * 38页，式(2.7)下面一段第1行：$s^{\prime}$ 可以看成未来的所有状态 → $s^{\prime}$ 可以看成未来的某个状态
 * 38页，式(2.7)下面一段第2行：未来某一个状态的价值 → 未来某个状态的价值
@@ -6132,7 +6132,7 @@ pip install gym==0.25.2
 
 * 116页，图4.10替换成下图：
 
-  ![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/4-10.png ':size=550')
+  ![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/4-10.png ':size=550')
 
 * 116页，图4.10的标题替换为：理想情况下动作概率的变化
 
@@ -6140,19 +6140,19 @@ pip install gym==0.25.2
 
 * 116页，图4.11替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/4-11.png ':size=550')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/4-11.png ':size=550')
 
 * 116页，图4.11的标题替换为：实际情况下动作概率的变化
 * 121页，图4.14上面一段的第4行：每个动作计算梯度 $\nabla \ln \pi\left(a_{t} \mid s_{t}, \theta\right)$  → 每个动作计算梯度 $\nabla \log \pi\left(a_{t} \mid s_{t}, \theta\right)$
 * 121页，图4.14上面一段的倒数第1行：$\nabla \ln \pi\left(a_{t} \mid s_{t}, \theta\right)$ → $\nabla \log \pi\left(a_{t} \mid s_{t}, \theta\right)$
 * 121页，图4.14替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/4-14.png ':size=550')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/4-14.png ':size=550')
 
 * 123页，倒数第2段的第2行：$\ln \pi\left(a_{t} \mid s_{t}, \theta\right)$ → $\log \pi\left(a_{t} \mid s_{t}, \theta\right)$
 * 124页，图4.19替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/4-19.png ':size=550')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/4-19.png ':size=550')
 
 * 127页，5.1节的标题：从同策略到异策略 → 重要性采样
 * 131页，式(5.8)：$\nabla \log p_\theta\left(a_t^n \mid s_t^n\right)$ → $\nabla \log p_\theta\left(a_t \mid s_t\right)$
@@ -6166,7 +6166,7 @@ pip install gym==0.25.2
 * 165页，第二段的第1行：向量 $[3,-1,2]^{\mathrm{T}}$ 中的每个元素 → 向量 $[3,-1,-2]^{\mathrm{T}}$ 中的每个元素
 * 189页，图9.4替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/9-4.png ':size=550')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/9-4.png ':size=550')
 
 * 203页，倒数第二段的第一行：clipped dobule Q-learning → clipped double Q-learning
 
@@ -6200,7 +6200,7 @@ pip install gym==0.25.2
 
 * 108页，图4.4替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/4-4.png ':size=550')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/4-4.png ':size=550')
 
 * 151页，第2段的倒数第1行：均方误差（mean square error）→ 均方误差（mean square error，MSE）
 * 201页，第3段的倒数第2行：均方误差（mean squared error，MSE）→ 均方误差
@@ -6215,7 +6215,7 @@ pip install gym==0.25.2
 * 34页，2.1.2节的第2段的第1行：也称为**马尔可夫链（Markov chain）**。 → 也称为**马尔可夫链（Markov chain）**。马尔可夫链是最简单的马尔可夫过程，其状态是有限的。
 * 35页的图2.2 和 41页的图2.5（a）替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/Markov_chain.png ':size=350')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/Markov_chain.png ':size=350')
 
 * 47页，2.3.5节的第3行：称为备份图（backup diagram） → 称为备份图（backup diagram）或回溯图
 * 61页，2.3.12节的第1小节的第2段的第1行：$\pi(s|a)$ → $\pi(a|s)$
@@ -6321,7 +6321,7 @@ $$
 * 191页，图9.6的上面一段的末尾添加文字：虽然A3C看起来属于异策略算法，但它其实是一种同策略算法。因为A3C的演员和评论员只使用当前策略采样的数据来计算梯度。因此，A3C不存储历史数据，其主要通过平行探索（parallel exploration）来保持训练的稳定性。
 * 191页，图9.6替换成下图：
 
-![](https://raw.githubusercontent.com/datawhalechina/easy-rl/6b7df8451f74f16d5efb6abc1b94a8746890a0ad/docs/res/A3C.png ':size=450')
+![](https://raw.githubusercontent.com/datawhalechina/easy-rl/384edfea97870facddc43d7110f2fb398f528cb4/docs/res/A3C.png ':size=450')
 
 * 191页，图9.6加参考文献：Arthur Juliani的文章“Simple Reinforcement Learning with Tensorflow Part 8: Asynchronous Actor-Critic Agents (A3C)”
 
