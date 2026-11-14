@@ -23,7 +23,7 @@ updated_at: "2025-12-30"
 | 上游仓库 | [datawhalechina/easy-rl](https://github.com/datawhalechina/easy-rl) |
 | 锁定提交 | [384edfea9787](https://github.com/datawhalechina/easy-rl/commit/384edfea97870facddc43d7110f2fb398f528cb4) |
 | 提交时间 | 2026-10-23T21:56:13+08:00 |
-| 生成器版本 | `easy_rl@1;engine@10` |
+| 生成器版本 | `easy_rl@1;engine@12` |
 
 ## 目录
 

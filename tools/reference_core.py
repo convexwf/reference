@@ -1,8 +1,10 @@
-"""Deterministic, dependency-free Markdown integration engine.
+"""Deterministic Markdown integration engine.
 
 The source repositories are never modified.  A manifest describes their
 reading order, while this module performs the format conversion required for
-one self-contained, portable Markdown document.
+one self-contained, portable Markdown document. reStructuredText conversion
+uses a pinned Pandoc executable; all other rendering uses the Python standard
+library.
 """
 
 from __future__ import annotations
@@ -11,9 +13,13 @@ import hashlib
 import json
 import os
 import re
+import shutil
+import subprocess
 import tempfile
 from dataclasses import dataclass
 from fnmatch import fnmatchcase
+from functools import lru_cache
+from html import escape as html_escape
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping
@@ -29,7 +35,8 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "10"
+ENGINE_VERSION = "12"
+PANDOC_VERSION = "3.1.8"
 
 
 class ReferenceError(RuntimeError):
@@ -296,7 +303,7 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
     if not isinstance(render, dict):
         raise ReferenceError(f"{origin}: render must be an object")
     source_format = _require_string(render.get("source_format", "markdown"), "render.source_format", origin)
-    if source_format not in {"markdown", "html_article"}:
+    if source_format not in {"markdown", "html_article", "rst"}:
         raise ReferenceError(f"{origin}: unsupported render.source_format: {source_format}")
     article_class = render.get("article_class")
     if source_format == "html_article":
@@ -362,7 +369,10 @@ def generator_version(manifest: Manifest) -> str:
     """Return the version of both the source adapter and generic renderer."""
 
     adapter = get_adapter(manifest.adapter)
-    return f"{adapter.identifier}@{adapter.version};engine@{ENGINE_VERSION}"
+    version = f"{adapter.identifier}@{adapter.version};engine@{ENGINE_VERSION}"
+    if manifest.source_format == "rst":
+        version += f";pandoc@{PANDOC_VERSION}"
+    return version
 
 
 def load_lock() -> dict[str, Any]:
@@ -1121,6 +1131,109 @@ def html_article_to_markdown(document: str, article_class: str, source: Path, sn
     return "\n\n".join(blocks) + "\n"
 
 
+@lru_cache(maxsize=1)
+def _verified_pandoc_executable() -> str:
+    """Return the pinned Pandoc path after checking it once per process."""
+    executable = shutil.which("pandoc")
+    if executable is None:
+        raise ReferenceError(
+            f"reStructuredText rendering requires Pandoc {PANDOC_VERSION} on PATH"
+        )
+    try:
+        version_result = subprocess.run(
+            [executable, "--version"],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        raise ReferenceError(f"could not start Pandoc: {exc}") from exc
+    version_lines = version_result.stdout.splitlines()
+    version_line = version_lines[0] if version_lines else ""
+    match = re.fullmatch(r"pandoc(?:\.exe)?\s+(\S+)", version_line, re.IGNORECASE)
+    actual_version = match.group(1) if match else "unknown version"
+    if version_result.returncode != 0 or actual_version != PANDOC_VERSION:
+        raise ReferenceError(
+            f"expected Pandoc {PANDOC_VERSION}, found {actual_version}"
+        )
+    return executable
+
+
+def restructuredtext_to_markdown(document: str, identifier: str) -> str:
+    """Convert one reStructuredText source with the repository's pinned Pandoc."""
+
+    executable = _verified_pandoc_executable()
+    # ``tip`` is a Sphinx directive rather than a base reStructuredText
+    # directive. Treat it as a note so Pandoc keeps its content and following
+    # headings in the right blocks.
+    document = re.sub(r"(?m)^([ \t]*)\.\. tip::[ \t]*$", r"\1.. note::", document)
+
+    try:
+        converted = subprocess.run(
+            [executable, "--from=rst", "--to=gfm", "--wrap=none"],
+            input=document,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        raise ReferenceError(f"{identifier}: could not run Pandoc: {exc}") from exc
+    if converted.returncode != 0:
+        detail = converted.stderr.strip() or "unknown conversion error"
+        raise ReferenceError(f"{identifier}: Pandoc conversion failed\n{detail}")
+    return _repair_unparsed_rst_code_blocks(converted.stdout)
+
+
+def _repair_unparsed_rst_code_blocks(document: str) -> str:
+    """Keep nested Sphinx code-block directives readable when Pandoc leaves them raw."""
+
+    lines = document.splitlines()
+    output: list[str] = []
+    index = 0
+    fence_state: tuple[str, int] | None = None
+    directive = re.compile(r"^[ \t]*\.\. code-block::[ \t]*([A-Za-z0-9_+#.-]+)?[ \t]*$")
+
+    while index < len(lines):
+        line = lines[index]
+        marker = FENCE_MARKER.match(line)
+        if marker:
+            fence_state = advance_fence_state(line, fence_state)
+            output.append(line)
+            index += 1
+            continue
+        match = directive.match(line) if fence_state is None else None
+        if match:
+            body_start = index + 1
+            while body_start < len(lines) and not lines[body_start].strip():
+                body_start += 1
+            closing = next(
+                (candidate for candidate in range(body_start, len(lines)) if lines[candidate].strip() == "</div>"),
+                None,
+            )
+            if closing is not None:
+                body = lines[body_start:closing]
+                while body and not body[-1].strip():
+                    body.pop()
+                language = re.sub(r"[^A-Za-z0-9_+#.-]", "", match.group(1) or "text")
+                if body:
+                    output.extend(
+                        [
+                            f'<pre><code class="language-{language}">',
+                            html_escape("\n".join(body)),
+                            "</code></pre>",
+                            "",
+                        ]
+                    )
+                    index = closing
+                    continue
+        output.append(line)
+        index += 1
+
+    return "\n".join(output) + ("\n" if document.endswith("\n") else "")
+
+
 def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
     """Lift a source chapter under a level-three generated part heading."""
 
@@ -1132,6 +1245,8 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
     if snapshot.manifest.source_format == "html_article":
         assert snapshot.manifest.article_class is not None
         source_text = html_article_to_markdown(source_text, snapshot.manifest.article_class, source, snapshot)
+    elif snapshot.manifest.source_format == "rst":
+        source_text = restructuredtext_to_markdown(source_text, snapshot.manifest.identifier)
     lines = source_text.splitlines()
     first_nonempty = next((line for line in lines if line.strip()), "")
     source_h1_is_leading = bool(HEADING.match(first_nonempty) and first_nonempty.startswith("# "))

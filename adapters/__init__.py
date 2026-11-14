@@ -39,6 +39,39 @@ _ADAPTERS = {
     ),
     "whale_quant": Adapter("whale_quant", "1", normalize_space_before_tabs=True),
     "hello_agents": Adapter("hello_agents", "1"),
+    "google_styleguide": Adapter(
+        "google_styleguide",
+        "1",
+        source_h1_titles=True,
+        robust_fences=True,
+        reader_note=(
+            "本指南为 zh-google-styleguide 社区维护的非官方中文译本，内容据 Google Style Guides 原版翻译并转换为 Markdown；"
+            "原指南文本采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) 许可；"
+            "原作者、译者及来源信息见各指南前言。"
+        ),
+    ),
+    "google_python_styleguide": Adapter(
+        "google_python_styleguide",
+        "1",
+        source_h1_titles=True,
+        robust_fences=True,
+        reader_note=(
+            "本指南为 zh-google-styleguide 社区维护的非官方中文译本，内容据 Google Style Guides 原版翻译并转换为 Markdown；"
+            "原指南文本采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) 许可。"
+            "Python 指南的代码源文件另采用 Apache License 2.0，见 [许可证副本](../../licenses/google-python-styleguide-APACHE-2.0.txt)；"
+            "原作者、译者及来源信息见指南前言。"
+        ),
+    ),
+    "booknotes": Adapter(
+        "booknotes",
+        "1",
+        source_h1_titles=True,
+        robust_fences=True,
+        reader_note=(
+            "本文件是 Preslav Mihaylov 编写的英文学习笔记，按上游 MIT 许可发布；"
+            "许可副本见 [MIT License](../../licenses/booknotes-MIT-LICENSE.txt)。"
+        ),
+    ),
     "healthart_hubermanlab": Adapter(
         "healthart_hubermanlab",
         "1",

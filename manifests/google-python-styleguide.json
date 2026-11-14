@@ -1,0 +1,60 @@
+{
+  "id": "google-python-styleguide",
+  "title": "Google Python 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_python_styleguide",
+  "output": "markdown/software-engineering/google-python-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "python"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-python-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-python-styleguide/background.rst",
+          "title": "background"
+        },
+        {
+          "path": "google-python-styleguide/python_language_rules.rst",
+          "title": "python language rules"
+        },
+        {
+          "path": "google-python-styleguide/python_style_rules.rst",
+          "title": "python style rules"
+        },
+        {
+          "path": "google-python-styleguide/parting_words.rst",
+          "title": "parting words"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-python-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-python-styleguide/contents.rst"
+    ]
+  }
+}

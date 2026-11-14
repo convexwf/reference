@@ -33,6 +33,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Set up pinned Pandoc
+        uses: pandoc/actions/setup@v1
+        with:
+          version: "3.1.8"
       - name: Update pinned source snapshots and Markdown
         run: python -m tools.update --all
       - name: Verify generated output

@@ -1,0 +1,64 @@
+{
+  "id": "google-objc-styleguide",
+  "title": "Google Objective-C 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-objective-c-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "objective-c"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-objc-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-objc-styleguide/spacing.rst",
+          "title": "spacing"
+        },
+        {
+          "path": "google-objc-styleguide/naming.rst",
+          "title": "naming"
+        },
+        {
+          "path": "google-objc-styleguide/comments.rst",
+          "title": "comments"
+        },
+        {
+          "path": "google-objc-styleguide/features.rst",
+          "title": "features"
+        },
+        {
+          "path": "google-objc-styleguide/patterns.rst",
+          "title": "patterns"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-objc-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-objc-styleguide/contents.rst"
+    ]
+  }
+}

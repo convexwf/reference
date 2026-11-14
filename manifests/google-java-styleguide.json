@@ -1,0 +1,72 @@
+{
+  "id": "google-java-styleguide",
+  "title": "Google Java 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-java-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "java"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-java-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-java-styleguide/introduction.rst",
+          "title": "introduction"
+        },
+        {
+          "path": "google-java-styleguide/source_file_basics.rst",
+          "title": "source file basics"
+        },
+        {
+          "path": "google-java-styleguide/source_file_structure.rst",
+          "title": "source file structure"
+        },
+        {
+          "path": "google-java-styleguide/formatting.rst",
+          "title": "formatting"
+        },
+        {
+          "path": "google-java-styleguide/naming.rst",
+          "title": "naming"
+        },
+        {
+          "path": "google-java-styleguide/programming_practices.rst",
+          "title": "programming practices"
+        },
+        {
+          "path": "google-java-styleguide/javadoc.rst",
+          "title": "javadoc"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-java-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-java-styleguide/contents.rst"
+    ]
+  }
+}

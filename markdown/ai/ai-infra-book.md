@@ -23,7 +23,7 @@ updated_at: "2026-10-01"
 | 上游仓库 | [bojieli/ai-infra-book](https://github.com/bojieli/ai-infra-book) |
 | 锁定提交 | [3bdcb4fcab73](https://github.com/bojieli/ai-infra-book/commit/3bdcb4fcab73010eeaccf31cc10a8242a895d82e) |
 | 提交时间 | 2026-10-01T16:09:15+08:00 |
-| 生成器版本 | `ai_infra_book@1;engine@10` |
+| 生成器版本 | `ai_infra_book@1;engine@12` |
 
 ## 目录
 

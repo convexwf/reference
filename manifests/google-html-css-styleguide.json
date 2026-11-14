@@ -1,0 +1,84 @@
+{
+  "id": "google-html-css-styleguide",
+  "title": "Google HTML/CSS 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-html-css-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "html-css"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-html-css-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-html-css-styleguide/background.rst",
+          "title": "background"
+        },
+        {
+          "path": "google-html-css-styleguide/general_style_rules.rst",
+          "title": "general style rules"
+        },
+        {
+          "path": "google-html-css-styleguide/general_formatting_rules.rst",
+          "title": "general formatting rules"
+        },
+        {
+          "path": "google-html-css-styleguide/general_meta_rules.rst",
+          "title": "general meta rules"
+        },
+        {
+          "path": "google-html-css-styleguide/html_style_rules.rst",
+          "title": "html style rules"
+        },
+        {
+          "path": "google-html-css-styleguide/html_formatting_rules.rst",
+          "title": "html formatting rules"
+        },
+        {
+          "path": "google-html-css-styleguide/css_style_rules.rst",
+          "title": "css style rules"
+        },
+        {
+          "path": "google-html-css-styleguide/css_formatting_rules.rst",
+          "title": "css formatting rules"
+        },
+        {
+          "path": "google-html-css-styleguide/css_meta_rules.rst",
+          "title": "css meta rules"
+        },
+        {
+          "path": "google-html-css-styleguide/parting_words.rst",
+          "title": "parting words"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-html-css-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-html-css-styleguide/contents.rst"
+    ]
+  }
+}

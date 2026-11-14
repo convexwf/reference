@@ -27,10 +27,16 @@
 - `lianglianglee-recommendation-system` 的《推荐系统三十六式》专栏
 - `lianglianglee-http` 的《透视HTTP协议》专栏
 - `NxeedGoto/Refactoring2-zh` 的重构：改善既有代码的设计（第 2 版；上游许可副本见 [LICENSE](licenses/refactoring2-zh-LICENSE)）
+- Google C++、Objective-C、Python、Shell、JavaScript、TypeScript、HTML/CSS 和 Java 风格指南（8 份独立文档）
+- System Design Interview Notes（第 1、2 卷）
+- 跟着高手学复盘的[来源链接索引](markdown/management/retrospective-review.md)
+- Software Engineering at Google 的[书目与来源链接索引](markdown/software-engineering/software-engineering-at-google.md)
 
 生成结果按主题放在 `markdown/<category>/`；每本书、课程或专题合集对应一个英文 kebab-case 文件名，具体路径由清单的 `output` 决定。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 
 本地使用：
+
+若更新或重建 Google 风格指南，还需要在 PATH 中安装 Pandoc 3.1.8，以保持 RST 转换结果可复现。
 
 ```bash
 python -m tools.update --all

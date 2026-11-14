@@ -23,7 +23,7 @@ updated_at: "2026-10-21"
 | 上游仓库 | [datawhalechina/easy-vibe](https://github.com/datawhalechina/easy-vibe) |
 | 锁定提交 | [f2239c67052b](https://github.com/datawhalechina/easy-vibe/commit/f2239c67052b6ad9ae3e72bc6b7a76f3c903cf64) |
 | 提交时间 | 2026-10-22T18:46:53+08:00 |
-| 生成器版本 | `easy_vibe@4;engine@10` |
+| 生成器版本 | `easy_vibe@4;engine@12` |
 
 ## 目录
 

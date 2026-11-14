@@ -1,0 +1,80 @@
+{
+  "id": "google-shell-styleguide",
+  "title": "Google Shell 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-shell-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "shell"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-shell-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-shell-styleguide/background.rst",
+          "title": "background"
+        },
+        {
+          "path": "google-shell-styleguide/shell_files_and_interpreter_invocation.rst",
+          "title": "shell files and interpreter invocation"
+        },
+        {
+          "path": "google-shell-styleguide/environment.rst",
+          "title": "environment"
+        },
+        {
+          "path": "google-shell-styleguide/comments.rst",
+          "title": "comments"
+        },
+        {
+          "path": "google-shell-styleguide/formatting.rst",
+          "title": "formatting"
+        },
+        {
+          "path": "google-shell-styleguide/features_and_bugs.rst",
+          "title": "features and bugs"
+        },
+        {
+          "path": "google-shell-styleguide/naming_conventions.rst",
+          "title": "naming conventions"
+        },
+        {
+          "path": "google-shell-styleguide/calling_commands.rst",
+          "title": "calling commands"
+        },
+        {
+          "path": "google-shell-styleguide/conclusion.rst",
+          "title": "conclusion"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-shell-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-shell-styleguide/contents.rst"
+    ]
+  }
+}

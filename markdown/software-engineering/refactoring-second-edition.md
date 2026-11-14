@@ -23,7 +23,7 @@ updated_at: "2020-07-19"
 | 上游仓库 | [NxeedGoto/Refactoring2-zh](https://github.com/NxeedGoto/Refactoring2-zh) |
 | 锁定提交 | [a87ae8e4cdb2](https://github.com/NxeedGoto/Refactoring2-zh/commit/a87ae8e4cdb2b69073b1deac26424c02bbc0f2e5) |
 | 提交时间 | 2020-07-19T23:37:21+08:00 |
-| 生成器版本 | `generic@1;engine@10` |
+| 生成器版本 | `generic@1;engine@12` |
 
 ## 目录
 

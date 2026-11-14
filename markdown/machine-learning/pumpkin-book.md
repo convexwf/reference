@@ -26,7 +26,7 @@ updated_at: "2026-01-21"
 | 上游仓库 | [datawhalechina/pumpkin-book](https://github.com/datawhalechina/pumpkin-book) |
 | 锁定提交 | [58add39800df](https://github.com/datawhalechina/pumpkin-book/commit/58add39800dfbef65c93b2226d9a514f4cc9da0e) |
 | 提交时间 | 2026-01-21T20:59:15+08:00 |
-| 生成器版本 | `generic@1;engine@10` |
+| 生成器版本 | `generic@1;engine@12` |
 
 ## 目录
 

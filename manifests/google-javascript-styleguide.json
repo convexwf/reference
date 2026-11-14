@@ -1,0 +1,56 @@
+{
+  "id": "google-javascript-styleguide",
+  "title": "Google JavaScript 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-javascript-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "javascript"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-javascript-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-javascript-styleguide/background.rst",
+          "title": "background"
+        },
+        {
+          "path": "google-javascript-styleguide/javascript_language_rules.rst",
+          "title": "javascript language rules"
+        },
+        {
+          "path": "google-javascript-styleguide/javascript_style_rules.rst",
+          "title": "javascript style rules"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-javascript-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-javascript-styleguide/contents.rst"
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "id": "system-design-interview-notes",
+  "title": "System Design Interview Notes (Volumes 1 and 2)",
+  "source": {
+    "repository": "https://github.com/presmihaylov/booknotes.git",
+    "ref": "master"
+  },
+  "language": "en",
+  "adapter": "booknotes",
+  "output": "markdown/software-engineering/system-design-interview-notes.md",
+  "front_matter": {
+    "authors": [
+      "Preslav Mihaylov"
+    ],
+    "tags": [
+      "system-design",
+      "software-architecture",
+      "interview",
+      "notes"
+    ]
+  },
+  "sections": [
+    {
+      "title": "About These Notes",
+      "parts": [
+        {
+          "path": "system-design/system-design-interview/README.md",
+          "title": "About These Notes"
+        }
+      ]
+    },
+    {
+      "title": "Chapters",
+      "selection": {
+        "include_globs": [
+          "system-design/system-design-interview/chapter*/README.md"
+        ],
+        "title_overrides": {
+          "system-design/system-design-interview/chapter02/README.md": "Chapter 2 - Scale From Zero To Millions Of Users",
+          "system-design/system-design-interview/chapter03/README.md": "Chapter 3 - Back-of-the-envelope Estimation",
+          "system-design/system-design-interview/chapter04/README.md": "Chapter 4 - A Framework For System Design Interviews",
+          "system-design/system-design-interview/chapter05/README.md": "Chapter 5 - Design A Rate Limiter",
+          "system-design/system-design-interview/chapter06/README.md": "Chapter 6 - Design Consistent Hashing",
+          "system-design/system-design-interview/chapter07/README.md": "Chapter 7 - Design A Key-Value Store",
+          "system-design/system-design-interview/chapter08/README.md": "Chapter 8 - Design A Unique ID Generator In Distributed Systems",
+          "system-design/system-design-interview/chapter09/README.md": "Chapter 9 - Design A URL Shortener",
+          "system-design/system-design-interview/chapter10/README.md": "Chapter 10 - Design A Web Crawler",
+          "system-design/system-design-interview/chapter11/README.md": "Chapter 11 - Design A Notification System",
+          "system-design/system-design-interview/chapter12/README.md": "Chapter 12 - Design A News Feed System",
+          "system-design/system-design-interview/chapter13/README.md": "Chapter 13 - Design A Chat System",
+          "system-design/system-design-interview/chapter14/README.md": "Chapter 14 - Design A Search Autocomplete System",
+          "system-design/system-design-interview/chapter15/README.md": "Chapter 15 - Design YouTube",
+          "system-design/system-design-interview/chapter16/README.md": "Chapter 16 - Design Google Drive",
+          "system-design/system-design-interview/chapter17/README.md": "Chapter 17 - Proximity Service",
+          "system-design/system-design-interview/chapter18/README.md": "Chapter 18 - Nearby Friends",
+          "system-design/system-design-interview/chapter19/README.md": "Chapter 19 - Google Maps",
+          "system-design/system-design-interview/chapter20/README.md": "Chapter 20 - Distributed Message Queue",
+          "system-design/system-design-interview/chapter21/README.md": "Chapter 21 - Metrics Monitoring And Alerting System",
+          "system-design/system-design-interview/chapter22/README.md": "Chapter 22 - Ad Click Event Aggregation",
+          "system-design/system-design-interview/chapter23/README.md": "Chapter 23 - Hotel Reservation System",
+          "system-design/system-design-interview/chapter24/README.md": "Chapter 24 - Distributed Email Service",
+          "system-design/system-design-interview/chapter25/README.md": "Chapter 25 - S3-like Object Storage",
+          "system-design/system-design-interview/chapter26/README.md": "Chapter 26 - Real-time Gaming Leaderboard",
+          "system-design/system-design-interview/chapter27/README.md": "Chapter 27 - Payment System",
+          "system-design/system-design-interview/chapter28/README.md": "Chapter 28 - Digital Wallet",
+          "system-design/system-design-interview/chapter29/README.md": "Chapter 29 - Stock Exchange"
+        }
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "system-design/system-design-interview/README.md",
+      "system-design/system-design-interview/chapter*/README.md"
+    ]
+  }
+}

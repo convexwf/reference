@@ -1,0 +1,88 @@
+{
+  "id": "google-cpp-styleguide",
+  "title": "Google C++ 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-cpp-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "cpp"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-cpp-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-cpp-styleguide/headers.rst",
+          "title": "headers"
+        },
+        {
+          "path": "google-cpp-styleguide/scoping.rst",
+          "title": "scoping"
+        },
+        {
+          "path": "google-cpp-styleguide/classes.rst",
+          "title": "classes"
+        },
+        {
+          "path": "google-cpp-styleguide/functions.rst",
+          "title": "functions"
+        },
+        {
+          "path": "google-cpp-styleguide/magic.rst",
+          "title": "magic"
+        },
+        {
+          "path": "google-cpp-styleguide/others.rst",
+          "title": "others"
+        },
+        {
+          "path": "google-cpp-styleguide/naming.rst",
+          "title": "naming"
+        },
+        {
+          "path": "google-cpp-styleguide/comments.rst",
+          "title": "comments"
+        },
+        {
+          "path": "google-cpp-styleguide/formatting.rst",
+          "title": "formatting"
+        },
+        {
+          "path": "google-cpp-styleguide/exceptions.rst",
+          "title": "exceptions"
+        },
+        {
+          "path": "google-cpp-styleguide/end.rst",
+          "title": "end"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-cpp-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-cpp-styleguide/contents.rst"
+    ]
+  }
+}

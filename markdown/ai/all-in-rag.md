@@ -24,7 +24,7 @@ updated_at: "2026-09-04"
 | 上游仓库 | [datawhalechina/all-in-rag](https://github.com/datawhalechina/all-in-rag) |
 | 锁定提交 | [cec956e80ae2](https://github.com/datawhalechina/all-in-rag/commit/cec956e80ae28d6c0ca84c9d39dddcf61ad633fd) |
 | 提交时间 | 2026-10-01T05:49:14+08:00 |
-| 生成器版本 | `generic@1;engine@10` |
+| 生成器版本 | `generic@1;engine@12` |
 
 ## 目录
 

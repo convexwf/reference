@@ -23,7 +23,7 @@ updated_at: "2024-12-14"
 | 上游仓库 | [Yvan0329/lianglianglee](https://github.com/Yvan0329/lianglianglee) |
 | 锁定提交 | [4afe4a62c4e1](https://github.com/Yvan0329/lianglianglee/commit/4afe4a62c4e105a59d41319a29e523eee3bd82c4) |
 | 提交时间 | 2024-12-14T17:33:19+08:00 |
-| 生成器版本 | `generic@1;engine@10` |
+| 生成器版本 | `generic@1;engine@12` |
 
 ## 目录
 

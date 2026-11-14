@@ -23,7 +23,7 @@ updated_at: "2026-11-05"
 | 上游仓库 | [healthart/website](https://github.com/healthart/website) |
 | 锁定提交 | [a919902b805e](https://github.com/healthart/website/commit/a919902b805e76470fb1df37183e54efa54b9357) |
 | 提交时间 | 2026-11-05T20:30:18+08:00 |
-| 生成器版本 | `healthart_hubermanlab@1;engine@10` |
+| 生成器版本 | `healthart_hubermanlab@1;engine@12` |
 
 > 内容整理自 Health Art 项目的 Huberman Lab 中文解析页，不是 Huberman Lab 官方原稿或逐字稿。健康信息仅作一般知识素材，不构成个人医疗建议；涉及补剂、药物、筛查或治疗时，请核对原始节目与研究并咨询合格专业人士。
 

@@ -1,0 +1,68 @@
+{
+  "id": "google-typescript-styleguide",
+  "title": "Google TypeScript 风格指南",
+  "source": {
+    "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "google_styleguide",
+  "output": "markdown/software-engineering/google-typescript-style-guide.md",
+  "front_matter": {
+    "authors": [
+      "Google Style Guide contributors",
+      "zh-google-styleguide translators"
+    ],
+    "tags": [
+      "google",
+      "style-guide",
+      "typescript"
+    ]
+  },
+  "render": {
+    "source_format": "rst"
+  },
+  "sections": [
+    {
+      "title": "风格指南",
+      "parts": [
+        {
+          "path": "google-typescript-styleguide/index.rst",
+          "title": "index"
+        },
+        {
+          "path": "google-typescript-styleguide/introduction.rst",
+          "title": "introduction"
+        },
+        {
+          "path": "google-typescript-styleguide/syntax.rst",
+          "title": "syntax"
+        },
+        {
+          "path": "google-typescript-styleguide/language.rst",
+          "title": "language"
+        },
+        {
+          "path": "google-typescript-styleguide/source_organization.rst",
+          "title": "source organization"
+        },
+        {
+          "path": "google-typescript-styleguide/type_system.rst",
+          "title": "type system"
+        },
+        {
+          "path": "google-typescript-styleguide/consistency.rst",
+          "title": "consistency"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "google-typescript-styleguide/*.rst"
+    ],
+    "exclude_paths": [
+      "google-typescript-styleguide/contents.rst"
+    ]
+  }
+}

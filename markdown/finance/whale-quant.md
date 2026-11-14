@@ -24,7 +24,7 @@ updated_at: "2024-05-29"
 | 上游仓库 | [datawhalechina/whale-quant](https://github.com/datawhalechina/whale-quant) |
 | 锁定提交 | [aa791a1b14c2](https://github.com/datawhalechina/whale-quant/commit/aa791a1b14c287d9809c3cdeabc9be3e5425157b) |
 | 提交时间 | 2026-01-15T21:02:09+08:00 |
-| 生成器版本 | `whale_quant@1;engine@10` |
+| 生成器版本 | `whale_quant@1;engine@12` |
 
 ## 目录
 
