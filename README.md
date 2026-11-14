@@ -26,6 +26,7 @@
 - `lianglianglee-left-ear` 的《左耳听风》专栏
 - `lianglianglee-recommendation-system` 的《推荐系统三十六式》专栏
 - `lianglianglee-http` 的《透视HTTP协议》专栏
+- `NxeedGoto/Refactoring2-zh` 的重构：改善既有代码的设计（第 2 版；上游许可副本见 [LICENSE](licenses/refactoring2-zh-LICENSE)）
 
 生成结果按主题放在 `markdown/<category>/`；每本书、课程或专题合集对应一个英文 kebab-case 文件名，具体路径由清单的 `output` 决定。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 

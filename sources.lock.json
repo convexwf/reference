@@ -168,6 +168,14 @@
       "ref": "master",
       "repository": "https://github.com/datawhalechina/pumpkin-book.git"
     },
+    "refactoring2-zh": {
+      "commit": "a87ae8e4cdb2b69073b1deac26424c02bbc0f2e5",
+      "commit_date": "2020-07-19T23:37:21+08:00",
+      "generator_version": "generic@1;engine@10",
+      "manifest_sha256": "8f06124266c398df17204a29135b527b5528a51a30538eb683b01d36a7e126ff",
+      "ref": "master",
+      "repository": "https://github.com/NxeedGoto/Refactoring2-zh.git"
+    },
     "whale-quant": {
       "commit": "aa791a1b14c287d9809c3cdeabc9be3e5425157b",
       "commit_date": "2026-01-15T21:02:09+08:00",
