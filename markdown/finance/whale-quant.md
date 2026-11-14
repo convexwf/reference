@@ -24,13 +24,7 @@ updated_at: "2024-05-29"
 | 上游仓库 | [datawhalechina/whale-quant](https://github.com/datawhalechina/whale-quant) |
 | 锁定提交 | [aa791a1b14c2](https://github.com/datawhalechina/whale-quant/commit/aa791a1b14c287d9809c3cdeabc9be3e5425157b) |
 | 提交时间 | 2026-01-15T21:02:09+08:00 |
-| 生成器版本 | `whale_quant@1;engine@9` |
-
-> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
-
-## 阅读说明
-
-本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。
+| 生成器版本 | `whale_quant@1;engine@10` |
 
 ## 目录
 

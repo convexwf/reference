@@ -22,13 +22,7 @@ updated_at: "2024-12-14"
 | 上游仓库 | [Yvan0329/lianglianglee](https://github.com/Yvan0329/lianglianglee) |
 | 锁定提交 | [4afe4a62c4e1](https://github.com/Yvan0329/lianglianglee/commit/4afe4a62c4e105a59d41319a29e523eee3bd82c4) |
 | 提交时间 | 2024-12-14T17:33:19+08:00 |
-| 生成器版本 | `generic@1;engine@9` |
-
-> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
-
-## 阅读说明
-
-本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。
+| 生成器版本 | `generic@1;engine@10` |
 
 ## 目录
 

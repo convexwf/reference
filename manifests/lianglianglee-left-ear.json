@@ -6,10 +6,17 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/左耳听风.md",
+  "output": "markdown/software-engineering/left-ear-listening.md",
   "front_matter": {
-    "authors": ["陈皓"],
-    "tags": ["software-engineering", "distributed-systems", "career-development", "tutorial"]
+    "authors": [
+      "陈皓"
+    ],
+    "tags": [
+      "software-engineering",
+      "distributed-systems",
+      "career-development",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -19,7 +26,9 @@
     {
       "title": "技术成长与工程实践",
       "selection": {
-        "include_globs": ["book/专栏/左耳听风/0[01][0-9]*.md"]
+        "include_globs": [
+          "book/专栏/左耳听风/0[01][0-9]*.md"
+        ]
       }
     },
     {
@@ -56,17 +65,24 @@
     {
       "title": "面试、学习与沟通",
       "selection": {
-        "include_globs": ["book/专栏/左耳听风/09[1-9]*.md", "book/专栏/左耳听风/10[0-6]*.md"]
+        "include_globs": [
+          "book/专栏/左耳听风/09[1-9]*.md",
+          "book/专栏/左耳听风/10[0-6]*.md"
+        ]
       }
     },
     {
       "title": "结束语",
       "selection": {
-        "include_globs": ["book/专栏/左耳听风/107*.md"]
+        "include_globs": [
+          "book/专栏/左耳听风/107*.md"
+        ]
       }
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/左耳听风/*.md"]
+    "required_globs": [
+      "book/专栏/左耳听风/*.md"
+    ]
   }
 }

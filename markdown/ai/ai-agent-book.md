@@ -1,5 +1,5 @@
 ---
-title: "深入理解 AI Agent：完整教程"
+title: "深入理解 AI Agent：设计原理与工程实践"
 authors:
   - "李博杰"
 language: "zh-CN"
@@ -11,24 +11,18 @@ published_at: "2026-07-15"
 updated_at: "2026-09-23"
 ---
 
-# 深入理解 AI Agent：完整教程
+# 深入理解 AI Agent：设计原理与工程实践
 
 ## 文档信息
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档标题 | 深入理解 AI Agent：完整教程 |
+| 文档标题 | 深入理解 AI Agent：设计原理与工程实践 |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [bojieli/ai-agent-book](https://github.com/bojieli/ai-agent-book) |
 | 锁定提交 | [dbc046eb896a](https://github.com/bojieli/ai-agent-book/commit/dbc046eb896ac4e39aa19c7774c8bf49583b89a6) |
-| 提交时间 | 2026-09-30T03:03:28Z |
-| 生成器版本 | `ai_agent_book@1;engine@9` |
-
-> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
-
-## 阅读说明
-
-本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。
+| 提交时间 | 2026-09-30T03:03:28+00:00 |
+| 生成器版本 | `ai_agent_book@1;engine@10` |
 
 ## 目录
 

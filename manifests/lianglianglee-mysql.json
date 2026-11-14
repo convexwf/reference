@@ -6,10 +6,17 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/MySQL实战45讲.md",
+  "output": "markdown/software-engineering/mysql-practical-lessons-45.md",
   "front_matter": {
-    "authors": ["林晓斌（丁奇）"],
-    "tags": ["mysql", "database", "performance", "tutorial"]
+    "authors": [
+      "林晓斌（丁奇）"
+    ],
+    "tags": [
+      "mysql",
+      "database",
+      "performance",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -19,7 +26,9 @@
     {
       "title": "导读",
       "selection": {
-        "include_globs": ["book/专栏/MySQL实战45讲/00 *.md"]
+        "include_globs": [
+          "book/专栏/MySQL实战45讲/00 *.md"
+        ]
       }
     },
     {
@@ -69,6 +78,8 @@
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/MySQL实战45讲/*.md"]
+    "required_globs": [
+      "book/专栏/MySQL实战45讲/*.md"
+    ]
   }
 }

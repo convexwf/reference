@@ -29,13 +29,7 @@ updated_at: "2026-09-22"
 | 上游仓库 | [datawhalechina/hello-agents](https://github.com/datawhalechina/hello-agents) |
 | 锁定提交 | [36f583c233ea](https://github.com/datawhalechina/hello-agents/commit/36f583c233ea5cee4537ef93455702b55053af18) |
 | 提交时间 | 2026-10-14T09:28:54+11:00 |
-| 生成器版本 | `hello_agents@1;engine@9` |
-
-> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
-
-## 阅读说明
-
-本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。
+| 生成器版本 | `hello_agents@1;engine@10` |
 
 ## 目录
 

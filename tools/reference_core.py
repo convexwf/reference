@@ -29,7 +29,7 @@ LOCK_VERSION = 1
 # Bump this whenever a generic rendering rule changes.  Source pins alone are
 # insufficient because a renderer upgrade can legitimately change output even
 # when upstream content remains at the same commit.
-ENGINE_VERSION = "9"
+ENGINE_VERSION = "10"
 
 
 class ReferenceError(RuntimeError):
@@ -1233,12 +1233,6 @@ def _front_matter(snapshot: SourceSnapshot) -> list[str]:
         f"| 锁定提交 | [{snapshot.commit[:12]}]({commit_url}) |",
         f"| 提交时间 | {snapshot.commit_date} |",
         f"| 生成器版本 | `{generator_version(manifest)}` |",
-        "",
-        "> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。",
-        "",
-        "## 阅读说明",
-        "",
-        "本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。",
         "",
         *([f"> {reader_note}", ""] if reader_note else []),
         "## 目录",

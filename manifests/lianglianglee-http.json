@@ -6,10 +6,17 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/透视HTTP协议.md",
+  "output": "markdown/software-engineering/http-protocol-in-depth.md",
   "front_matter": {
-    "authors": ["罗剑锋"],
-    "tags": ["http", "networking", "web", "tutorial"]
+    "authors": [
+      "罗剑锋"
+    ],
+    "tags": [
+      "http",
+      "networking",
+      "web",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -19,35 +26,50 @@
     {
       "title": "HTTP 基础与实验环境",
       "selection": {
-        "include_globs": ["book/专栏/透视HTTP协议/0[0-8]*.md"]
+        "include_globs": [
+          "book/专栏/透视HTTP协议/0[0-8]*.md"
+        ]
       }
     },
     {
       "title": "报文、语义与缓存",
       "selection": {
-        "include_globs": ["book/专栏/透视HTTP协议/0[9]*.md", "book/专栏/透视HTTP协议/1[0-9]*.md", "book/专栏/透视HTTP协议/2[0-2]*.md"]
+        "include_globs": [
+          "book/专栏/透视HTTP协议/0[9]*.md",
+          "book/专栏/透视HTTP协议/1[0-9]*.md",
+          "book/专栏/透视HTTP协议/2[0-2]*.md"
+        ]
       }
     },
     {
       "title": "HTTPS 与 TLS",
       "selection": {
-        "include_globs": ["book/专栏/透视HTTP协议/2[3-9]*.md"]
+        "include_globs": [
+          "book/专栏/透视HTTP协议/2[3-9]*.md"
+        ]
       }
     },
     {
       "title": "HTTP2、HTTP3 与 Web 服务",
       "selection": {
-        "include_globs": ["book/专栏/透视HTTP协议/3[0-9]*.md", "book/专栏/透视HTTP协议/40*.md"]
+        "include_globs": [
+          "book/专栏/透视HTTP协议/3[0-9]*.md",
+          "book/专栏/透视HTTP协议/40*.md"
+        ]
       }
     },
     {
       "title": "结束语",
       "selection": {
-        "include_globs": ["book/专栏/透视HTTP协议/结束语*.md"]
+        "include_globs": [
+          "book/专栏/透视HTTP协议/结束语*.md"
+        ]
       }
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/透视HTTP协议/*.md"]
+    "required_globs": [
+      "book/专栏/透视HTTP协议/*.md"
+    ]
   }
 }

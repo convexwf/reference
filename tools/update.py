@@ -36,6 +36,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="offline development only: read clean sibling source checkouts from this directory",
     )
+    parser.add_argument(
+        "--locked",
+        action="store_true",
+        help="rebuild using the commit SHAs already recorded in sources.lock.json",
+    )
     parser.add_argument("--dry-run", action="store_true", help="build and validate without changing tracked files")
     parser.add_argument("--force", action="store_true", help="regenerate even when lock and output are current")
     return parser.parse_args()
@@ -55,6 +60,8 @@ def lock_entry(snapshot) -> dict[str, str]:
 def main() -> int:
     args = parse_args()
     try:
+        if args.source_root is not None and args.locked:
+            raise ReferenceError("--locked cannot be combined with --source-root")
         manifests = select_manifests(args.target)
         current_lock = load_lock()
         next_lock = {"version": LOCK_VERSION, "sources": dict(current_lock["sources"])}
@@ -65,7 +72,14 @@ def main() -> int:
             if args.source_root is not None:
                 snapshot = snapshot_from_local(manifest, args.source_root)
             else:
-                commit = resolve_remote_commit(manifest)
+                if args.locked:
+                    if not isinstance(locked, dict) or not locked.get("commit"):
+                        raise ReferenceError(
+                            f"{manifest.identifier}: cannot rebuild from sources.lock.json without a locked commit"
+                        )
+                    commit = locked["commit"]
+                else:
+                    commit = resolve_remote_commit(manifest)
                 snapshot = snapshot_from_cache(manifest, commit)
             entry = lock_entry(snapshot)
             destination = output_path(manifest)

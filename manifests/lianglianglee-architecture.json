@@ -6,10 +6,16 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/从0开始学架构.md",
+  "output": "markdown/software-engineering/software-architecture-from-zero.md",
   "front_matter": {
-    "authors": ["李运华"],
-    "tags": ["architecture", "software-architecture", "tutorial"]
+    "authors": [
+      "李运华"
+    ],
+    "tags": [
+      "architecture",
+      "software-architecture",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -46,7 +52,9 @@
     {
       "title": "可扩展架构",
       "selection": {
-        "include_globs": ["book/专栏/从 0 开始学架构/3[2-7] *.md"]
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/3[2-7] *.md"
+        ]
       }
     },
     {
@@ -86,11 +94,15 @@
     {
       "title": "结束语",
       "selection": {
-        "include_globs": ["book/专栏/从 0 开始学架构/结束语*.md"]
+        "include_globs": [
+          "book/专栏/从 0 开始学架构/结束语*.md"
+        ]
       }
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/从 0 开始学架构/*.md"]
+    "required_globs": [
+      "book/专栏/从 0 开始学架构/*.md"
+    ]
   }
 }

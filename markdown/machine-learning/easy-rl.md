@@ -1,5 +1,5 @@
 ---
-title: "EasyRL：强化学习完整教程"
+title: "蘑菇书EasyRL"
 authors:
   - "王琦"
   - "杨毅远"
@@ -12,24 +12,18 @@ published_at: "2020-07-02"
 updated_at: "2025-12-30"
 ---
 
-# EasyRL：强化学习完整教程
+# 蘑菇书EasyRL
 
 ## 文档信息
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档标题 | EasyRL：强化学习完整教程 |
+| 文档标题 | 蘑菇书EasyRL |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [datawhalechina/easy-rl](https://github.com/datawhalechina/easy-rl) |
 | 锁定提交 | [384edfea9787](https://github.com/datawhalechina/easy-rl/commit/384edfea97870facddc43d7110f2fb398f528cb4) |
 | 提交时间 | 2026-10-23T21:56:13+08:00 |
-| 生成器版本 | `easy_rl@1;engine@9` |
-
-> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
-
-## 阅读说明
-
-本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。
+| 生成器版本 | `easy_rl@1;engine@10` |
 
 ## 目录
 

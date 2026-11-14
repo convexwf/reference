@@ -6,10 +6,17 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/Linux性能优化实战.md",
+  "output": "markdown/software-engineering/linux-performance-optimization.md",
   "front_matter": {
-    "authors": ["倪朋飞"],
-    "tags": ["linux", "performance", "systems", "tutorial"]
+    "authors": [
+      "倪朋飞"
+    ],
+    "tags": [
+      "linux",
+      "performance",
+      "systems",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -19,7 +26,9 @@
     {
       "title": "导读",
       "selection": {
-        "include_globs": ["book/专栏/Linux性能优化实战/0[0-1] *.md"]
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/0[0-1] *.md"
+        ]
       }
     },
     {
@@ -79,11 +88,15 @@
     {
       "title": "结束语",
       "selection": {
-        "include_globs": ["book/专栏/Linux性能优化实战/结束语*.md"]
+        "include_globs": [
+          "book/专栏/Linux性能优化实战/结束语*.md"
+        ]
       }
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/Linux性能优化实战/*.md"]
+    "required_globs": [
+      "book/专栏/Linux性能优化实战/*.md"
+    ]
   }
 }

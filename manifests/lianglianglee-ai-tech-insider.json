@@ -6,10 +6,17 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/AI技术内参.md",
+  "output": "markdown/ai/ai-tech-insider.md",
   "front_matter": {
-    "authors": ["陈天"],
-    "tags": ["artificial-intelligence", "machine-learning", "data-science", "tutorial"]
+    "authors": [
+      "陈天"
+    ],
+    "tags": [
+      "artificial-intelligence",
+      "machine-learning",
+      "data-science",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -19,7 +26,10 @@
     {
       "title": "顶级会议论文精读",
       "selection": {
-        "include_globs": ["book/专栏/AI技术内参/0[0-2][0-9]*.md", "book/专栏/AI技术内参/030*.md"]
+        "include_globs": [
+          "book/专栏/AI技术内参/0[0-2][0-9]*.md",
+          "book/专栏/AI技术内参/030*.md"
+        ]
       }
     },
     {
@@ -65,7 +75,10 @@
     {
       "title": "计算机视觉",
       "selection": {
-        "include_globs": ["book/专栏/AI技术内参/11[5-9]*.md", "book/专栏/AI技术内参/12[0-6]*.md"]
+        "include_globs": [
+          "book/专栏/AI技术内参/11[5-9]*.md",
+          "book/专栏/AI技术内参/12[0-6]*.md"
+        ]
       }
     },
     {
@@ -81,17 +94,23 @@
     {
       "title": "人工智能趋势与学习",
       "selection": {
-        "include_globs": ["book/专栏/AI技术内参/15[1-6]*.md"]
+        "include_globs": [
+          "book/专栏/AI技术内参/15[1-6]*.md"
+        ]
       }
     },
     {
       "title": "结束语",
       "selection": {
-        "include_globs": ["book/专栏/AI技术内参/结束语*.md"]
+        "include_globs": [
+          "book/专栏/AI技术内参/结束语*.md"
+        ]
       }
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/AI技术内参/*.md"]
+    "required_globs": [
+      "book/专栏/AI技术内参/*.md"
+    ]
   }
 }

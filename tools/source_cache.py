@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import io
+import re
 import subprocess
-import tarfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from tools.reference_core import (
     REPOSITORY_ROOT,
@@ -113,33 +112,103 @@ def _materialize_source_files(
     materialized: set[str] = set()
     snapshot_root.mkdir(parents=True, exist_ok=True)
     root_resolved = snapshot_root.resolve()
-    # Keep each command short enough for Windows' process command-line limit.
-    for start in range(0, len(paths), 64):
-        chunk = paths[start : start + 64]
-        archive_bytes = _git_bytes(
-            ["-c", "core.protectNTFS=false", "archive", "--format=tar", commit, "--", *chunk],
+
+    # Ask Git for the selected blob IDs first, then read only those blobs. In a
+    # blob-filtered partial clone, `git archive` may lazily fetch unrelated
+    # blobs while checking attributes across the tree.
+    tree = _git_bytes(["ls-tree", "-r", "-z", commit, "--", *paths], repository)
+    blob_ids: dict[str, str] = {}
+    for record in tree.split(b"\0"):
+        if not record:
+            continue
+        header, separator, raw_path = record.partition(b"\t")
+        fields = header.split()
+        relative = raw_path.decode("utf-8")
+        if not separator or len(fields) != 3 or fields[1] != b"blob":
+            raise ReferenceError(f"unable to parse selected source tree entry: {record!r}")
+        blob_ids[relative] = fields[2].decode("ascii")
+
+    missing = wanted - set(blob_ids)
+    if missing:
+        raise ReferenceError("source tree omitted source files: " + ", ".join(sorted(missing)))
+
+    # `cat-file --batch` can trigger one lazy network fetch per missing blob.
+    # Fetch all selected blob IDs through Git's stdin refspec interface first,
+    # so a large book does not create one round trip and pack per chapter.
+    requested_objects = sorted(set(blob_ids.values()))
+    fetch_input = "".join(f"{object_id}\n" for object_id in requested_objects).encode("ascii")
+    if fetch_input:
+        _git_bytes(
+            [
+                "-c",
+                "fetch.negotiationAlgorithm=noop",
+                "fetch",
+                "origin",
+                "--no-tags",
+                "--no-write-fetch-head",
+                "--recurse-submodules=no",
+                "--filter=blob:none",
+                "--stdin",
+            ],
             repository,
+            input_bytes=fetch_input,
         )
-        with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:") as archive:
-            for member in archive:
-                relative = member.name.rstrip("/")
-                if relative not in wanted or not member.isfile():
-                    continue
-                destination = snapshot_root.joinpath(*Path(relative).parts)
-                try:
-                    destination.resolve().relative_to(root_resolved)
-                except ValueError as exc:
-                    raise ReferenceError(f"source path escapes snapshot directory: {relative}") from exc
-                content = archive.extractfile(member)
-                if content is None:
-                    raise ReferenceError(f"Git archive omitted source content: {relative}")
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes(content.read())
-                materialized.add(relative)
+
+    # Keep each command short enough for Windows' process command-line limit.
+    ordered_paths = [path for path in paths if path in blob_ids]
+    for start in range(0, len(ordered_paths), 64):
+        chunk = ordered_paths[start : start + 64]
+        object_ids = "\n".join(blob_ids[path] for path in chunk).encode("ascii") + b"\n"
+        batch = _git_bytes(["cat-file", "--batch"], repository, input_bytes=object_ids)
+        cursor = 0
+        for relative in chunk:
+            header_end = batch.find(b"\n", cursor)
+            if header_end < 0:
+                raise ReferenceError(f"Git omitted source blob header: {relative}")
+            fields = batch[cursor:header_end].split()
+            if len(fields) != 3 or fields[1] != b"blob":
+                raise ReferenceError(f"Git returned an invalid source blob header: {relative}")
+            try:
+                content_size = int(fields[2])
+            except ValueError as exc:
+                raise ReferenceError(f"Git returned an invalid source blob size: {relative}") from exc
+            content_start = header_end + 1
+            content_end = content_start + content_size
+            if content_end >= len(batch) or batch[content_end : content_end + 1] != b"\n":
+                raise ReferenceError(f"Git returned incomplete source content: {relative}")
+
+            destination = snapshot_root.joinpath(*Path(relative).parts)
+            try:
+                destination.resolve().relative_to(root_resolved)
+            except ValueError as exc:
+                raise ReferenceError(f"source path escapes snapshot directory: {relative}") from exc
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(batch[content_start:content_end])
+            materialized.add(relative)
+            cursor = content_end + 1
 
     missing = wanted - materialized
     if missing:
-        raise ReferenceError("Git archive omitted source files: " + ", ".join(sorted(missing)))
+        raise ReferenceError("Git omitted source files: " + ", ".join(sorted(missing)))
+
+
+def _has_windows_unsafe_paths(repository_entries: dict[str, str]) -> bool:
+    """Detect paths that make any Windows worktree checkout fail."""
+
+    reserved = {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(1, 10)), *(f"LPT{i}" for i in range(1, 10))}
+    for path in repository_entries:
+        for component in PurePosixPath(path).parts:
+            if re.search(r'[<>:"|?*]', component) or component.endswith((" ", ".")):
+                return True
+            if component.split(".", 1)[0].upper() in reserved:
+                return True
+    return False
+
+
+def _sparse_patterns(paths: tuple[str, ...]) -> list[str]:
+    """Select only manifest-listed files for a normal sparse checkout."""
+
+    return sorted({f"/{path}" for path in paths})
 
 
 def _cache_path(manifest: Manifest) -> Path:
@@ -187,13 +256,25 @@ def snapshot_from_cache(manifest: Manifest, commit: str) -> SourceSnapshot:
     _git(["fetch", "--filter=blob:none", "origin", commit], target)
     entries = _repository_entries(target, commit)
     paths = selected_source_paths(manifest, entries)
-    snapshot_root = target.parent / f"{target.name}-snapshots" / commit
-    _materialize_source_files(target, snapshot_root, commit, paths)
+    if _has_windows_unsafe_paths(entries):
+        snapshot_root = target.parent / f"{target.name}-snapshots" / commit
+        _materialize_source_files(target, snapshot_root, commit, paths)
+        actual = commit
+    else:
+        _git(["sparse-checkout", "init", "--no-cone"], target)
+        _git(["sparse-checkout", "set", "--no-cone", *_sparse_patterns(paths)], target)
+        _git(["checkout", "--detach", "--force", commit], target)
+        actual = _git(["rev-parse", "HEAD"], target)
+        if actual != commit:
+            raise ReferenceError(
+                f"{manifest.identifier}: cache checkout mismatch: expected {commit}, got {actual}"
+            )
+        snapshot_root = target
     published_at, updated_at = _document_dates(manifest.identifier, paths, target, commit)
     return SourceSnapshot(
         manifest,
         snapshot_root,
-        commit,
+        actual,
         _commit_date(target, commit),
         published_at,
         updated_at,

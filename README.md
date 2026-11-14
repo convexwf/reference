@@ -4,13 +4,13 @@
 
 目前覆盖：
 
-- `ai-agent-book` 的简体中文完整教程
+- 深入理解 AI Agent：设计原理与工程实践
 - `ai-infra-book` 的简体中文 AI Infra 教程
-- `easy-rl` 的中文完整教程
+- `easy-rl` 的《蘑菇书EasyRL》强化学习教程
 - `hello-agents` 的中文主教程
-- `pumpkin-book` 的《南瓜书》机器学习公式详解
+- `pumpkin-book` 的南瓜书（pumpkin-book）机器学习公式解析
 - `whale-quant` 的量化金融与 Python 开发教程
-- `all-in-rag` 的 RAG 技术全栈指南
+- `all-in-rag` 的 All-in-RAG 大模型应用开发实战一：RAG 技术全栈指南
 - `easy-vibe` 的简体中文 AI 编程教程
 - `healthart/website` 中 Huberman Lab 中文健康科学内容合集
 - `lianglianglee-architecture` 的《从 0 开始学架构》专栏
@@ -27,14 +27,17 @@
 - `lianglianglee-recommendation-system` 的《推荐系统三十六式》专栏
 - `lianglianglee-http` 的《透视HTTP协议》专栏
 
-生成结果位于 `markdown/`，具体路径由各清单的 `output` 决定；GeekTime 专栏位于 `markdown/geektime/`。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
+生成结果按主题放在 `markdown/<category>/`；每本书、课程或专题合集对应一个英文 kebab-case 文件名，具体路径由清单的 `output` 决定。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 
 本地使用：
 
 ```bash
 python -m tools.update --all
+python -m tools.update --all --locked
 python -m tools.check --all
 ```
+
+`--locked` 使用 `sources.lock.json` 里已有的提交重建文档，不追踪上游分支的新提交。
 
 离线开发时，可明确指定清洁的同级源码目录；该模式只读取源码，不会写入源码仓库：
 

@@ -6,10 +6,17 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/geektime/高并发系统设计40问.md",
+  "output": "markdown/software-engineering/high-concurrency-system-design-40-questions.md",
   "front_matter": {
-    "authors": ["李智慧"],
-    "tags": ["high-concurrency", "distributed-systems", "architecture", "tutorial"]
+    "authors": [
+      "李智慧"
+    ],
+    "tags": [
+      "high-concurrency",
+      "distributed-systems",
+      "architecture",
+      "tutorial"
+    ]
   },
   "render": {
     "source_format": "html_article",
@@ -19,7 +26,9 @@
     {
       "title": "设计原则与基础",
       "selection": {
-        "include_globs": ["book/专栏/高并发系统设计40问/0[0-6]*.md"]
+        "include_globs": [
+          "book/专栏/高并发系统设计40问/0[0-6]*.md"
+        ]
       }
     },
     {
@@ -44,7 +53,10 @@
     {
       "title": "高并发系统案例",
       "selection": {
-        "include_globs": ["book/专栏/高并发系统设计40问/3[7-9]*.md", "book/专栏/高并发系统设计40问/40*.md"]
+        "include_globs": [
+          "book/专栏/高并发系统设计40问/3[7-9]*.md",
+          "book/专栏/高并发系统设计40问/40*.md"
+        ]
       }
     },
     {
@@ -60,11 +72,15 @@
     {
       "title": "结束语",
       "selection": {
-        "include_globs": ["book/专栏/高并发系统设计40问/结束语*.md"]
+        "include_globs": [
+          "book/专栏/高并发系统设计40问/结束语*.md"
+        ]
       }
     }
   ],
   "completeness": {
-    "required_globs": ["book/专栏/高并发系统设计40问/*.md"]
+    "required_globs": [
+      "book/专栏/高并发系统设计40问/*.md"
+    ]
   }
 }

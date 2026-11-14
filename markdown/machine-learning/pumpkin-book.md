@@ -1,5 +1,5 @@
 ---
-title: "南瓜书：机器学习公式详解"
+title: "南瓜书（pumpkin-book）"
 authors:
   - "谢文睿"
   - "秦州"
@@ -15,24 +15,18 @@ published_at: "2019-03-03"
 updated_at: "2026-01-21"
 ---
 
-# 南瓜书：机器学习公式详解
+# 南瓜书（pumpkin-book）
 
 ## 文档信息
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档标题 | 南瓜书：机器学习公式详解 |
+| 文档标题 | 南瓜书（pumpkin-book） |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [datawhalechina/pumpkin-book](https://github.com/datawhalechina/pumpkin-book) |
 | 锁定提交 | [58add39800df](https://github.com/datawhalechina/pumpkin-book/commit/58add39800dfbef65c93b2226d9a514f4cc9da0e) |
 | 提交时间 | 2026-01-21T20:59:15+08:00 |
-| 生成器版本 | `generic@1;engine@9` |
-
-> 本文件由 reference 仓库自动生成。请修改上游源文件或本仓库的清单/适配器后重新生成，不要直接编辑此文件。
-
-## 阅读说明
-
-本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。
+| 生成器版本 | `generic@1;engine@10` |
 
 ## 目录
 

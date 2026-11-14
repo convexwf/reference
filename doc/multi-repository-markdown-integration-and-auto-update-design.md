@@ -97,31 +97,26 @@ reference/
 │   ├── lianglianglee-linux-performance.json
 │   ├── lianglianglee-mysql.json
 │   └── lianglianglee-recommendation-system.json
-├── markdown/                    # 对外发布的完整 Markdown，纳入版本控制
-│   ├── ai-agent-book/
-│   │   └── zh-CN-complete.md
-│   ├── ai-infra-book/
-│   │   └── zh-CN-complete.md
-│   ├── easy-rl/
-│   │   └── zh-CN-complete.md
-│   ├── hello-agents/
-│   │   └── zh-CN-complete.md
-│   ├── healthart-hubermanlab/
-│   │   └── zh-CN-complete.md
-│   └── geektime/
-│       ├── AI技术内参.md
-│       ├── Flutter核心技术与实战.md
-│       ├── Kafka核心技术与实战.md
-│       ├── Linux性能优化实战.md
-│       ├── MySQL实战45讲.md
-│       ├── 分布式金融架构课.md
-│       ├── 即时消息技术剖析与实战.md
-│       ├── 从0开始学架构.md
-│       ├── 左耳听风.md
-│       ├── 持续交付36讲.md
-│       ├── 推荐系统三十六式.md
-│       ├── 透视HTTP协议.md
-│       └── 高并发系统设计40问.md
+├── markdown/                    # 按主题分类；每个来源一份英文文件名的合集
+│   ├── ai/
+│   │   ├── ai-agent-book.md
+│   │   ├── ai-infra-book.md
+│   │   ├── all-in-rag.md
+│   │   ├── ai-tech-insider.md
+│   │   └── ...
+│   ├── finance/
+│   │   ├── distributed-finance-architecture.md
+│   │   └── whale-quant.md
+│   ├── health-science/
+│   │   └── huberman-lab-health-guides.md
+│   ├── machine-learning/
+│   │   ├── easy-rl.md
+│   │   ├── pumpkin-book.md
+│   │   └── recommendation-system-36-lessons.md
+│   └── software-engineering/
+│       ├── continuous-delivery-36-lessons.md
+│       ├── high-concurrency-system-design-40-questions.md
+│       └── ...
 ├── reports/                     # 可选的已审阅报告；临时报告不提交
 ├── tests/
 ├── tools/
@@ -152,7 +147,7 @@ reference/
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/example/zh-CN-complete.md",
+  "output": "markdown/category/example-source.md",
   "render": {
     "source_format": "html_article",
     "article_class": "book-post"
@@ -205,7 +200,7 @@ reference/
 
 本地开发可显式使用已有源码 checkout 的共同父目录，例如源仓库位于 `../lianglianglee` 时使用 `--source-root ..`。该模式只验证和读取工作树，拒绝脏工作树，且不执行 fetch、checkout、reset 或任何写入操作。
 
-CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/` 作为 Git 忽略的缓存目录。同一上游仓库的多份整合文档共享一个 Git 对象缓存；更新器读取锁定提交的 Git 树元数据，再从对象库中只物化清单选中的源文件，不检出源仓库工作树，也不依赖开发者工作区的绝对路径。这样既能避免下载无关资源，也能处理包含 Windows 不支持路径名的上游仓库。缓存目录可随时删除并重建。
+CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/` 作为 Git 忽略的缓存目录。同一上游仓库的多份整合文档共享一个 Git 对象缓存；更新器读取锁定提交的 Git 树元数据，只稀疏检出清单选中的源文件。若上游含有 Windows 不支持的路径名，则从 Git 归档中只提取被选中的文件。该流程不写入开发者的上游工作区，也不依赖其绝对路径。缓存目录可随时删除并重建。
 
 缓存只物化清单解析后的 Markdown 源文件；同时读取锁定提交的 Git 树元数据来确认本地图片、目录和证据链接的类型。生成 Raw 或 GitHub 链接不需要下载对应图片、PDF、绘图脚本或 vendored 资源，因此资源与正文混放的上游仓库也不会扩大工作树规模。
 
@@ -221,7 +216,7 @@ CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/`
 4. 在 Markdown frontmatter 写入读者元信息（标题、作者、语言、标签和首末发布日期）；来源、锁定提交和生成器版本写入正文的文档信息表与 `sources.lock.json`。
 5. 写入新的 `sources.lock.json`，然后运行全部检查。
 
-`python3 -m tools.update --target ai-agent-book` 只更新一份书。`--dry-run` 只报告待更新的 commit 和目标文件，不写工作树。
+`python3 -m tools.update --target ai-agent-book` 只更新一份来源。`--locked` 使用 `sources.lock.json` 中的提交重建文档，不移动上游版本；`--dry-run` 只报告待更新的 commit 和目标文件，不写工作树。
 
 ### 图片和链接规则
 

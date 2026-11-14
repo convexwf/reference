@@ -6,7 +6,7 @@
     "ref": "main"
   },
   "language": "zh-CN",
-  "output": "markdown/healthart-hubermanlab/zh-CN-complete.md",
+  "output": "markdown/health-science/huberman-lab-health-guides.md",
   "front_matter": {
     "authors": [
       "Health Art"
