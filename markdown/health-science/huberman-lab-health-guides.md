@@ -1,5 +1,5 @@
 ---
-title: "Huberman Lab 中文内容整合"
+title: "Huberman Lab"
 authors:
   - "Health Art"
 language: "zh-CN"
@@ -12,13 +12,13 @@ published_at: "2025-04-06"
 updated_at: "2026-11-05"
 ---
 
-# Huberman Lab 中文内容整合
+# Huberman Lab
 
 ## 文档信息
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档标题 | Huberman Lab 中文内容整合 |
+| 文档标题 | Huberman Lab |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [healthart/website](https://github.com/healthart/website) |
 | 锁定提交 | [a919902b805e](https://github.com/healthart/website/commit/a919902b805e76470fb1df37183e54efa54b9357) |

@@ -44,7 +44,7 @@
       "commit": "a919902b805e76470fb1df37183e54efa54b9357",
       "commit_date": "2026-11-05T20:30:18+08:00",
       "generator_version": "healthart_hubermanlab@1;engine@10",
-      "manifest_sha256": "088b46df9d9ab37cd8ac84627a0f7b65e456e635907c9333d25a9fb8312d4f4b",
+      "manifest_sha256": "f0f67f444ed94e44eebffad742485670e0dc4d8ae24909e8ecc2ecce9e4ec34f",
       "ref": "main",
       "repository": "https://github.com/healthart/website.git"
     },

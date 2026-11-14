@@ -1,6 +1,6 @@
 {
   "id": "healthart-hubermanlab",
-  "title": "Huberman Lab 中文内容整合",
+  "title": "Huberman Lab",
   "source": {
     "repository": "https://github.com/healthart/website.git",
     "ref": "main"
