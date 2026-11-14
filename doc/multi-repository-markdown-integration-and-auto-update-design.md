@@ -84,6 +84,7 @@ reference/
 │   ├── ai-infra-book.json
 │   ├── easy-rl.json
 │   ├── hello-agents.json
+│   ├── healthart-hubermanlab.json
 │   ├── lianglianglee-architecture.json
 │   ├── lianglianglee-continuous-delivery.json
 │   ├── lianglianglee-distributed-finance.json
@@ -104,6 +105,8 @@ reference/
 │   ├── easy-rl/
 │   │   └── zh-CN-complete.md
 │   ├── hello-agents/
+│   │   └── zh-CN-complete.md
+│   ├── healthart-hubermanlab/
 │   │   └── zh-CN-complete.md
 │   └── geektime/
 │       ├── AI技术内参.md
@@ -170,7 +173,7 @@ reference/
 }
 ```
 
-清单中的仓库地址必须处于代码审查过的允许列表。章节可以使用 `parts` 精确列出文件和人工阅读顺序，也可以使用 `selection.include_globs` 选择同一目录下的文件并按自然文件名排序；后者适合编号专栏。`selection.title_overrides` 可为个别选中文件指定读者可见标题，适合无标题的 `index.md` 等页面。一个清单可以声明多个主题章节，生成时依次成为二级标题，篇目成为三级标题，避免长文档只有一个“正文”章节。`exclude_paths` 是明确的人工排除清单，例如宣传文；它仍受 `required_globs` 覆盖，因此新增内容不会被静默遗漏。`render.source_format: html_article` 要求同时声明 `article_class`，引擎只提取对应容器，不把导航、页脚或 favicon 等站点外壳带入整合文档。
+清单中的仓库地址必须处于代码审查过的允许列表。章节可以使用 `parts` 精确列出文件和人工阅读顺序，也可以使用 `selection.include_globs` 选择同一目录下的文件并按自然文件名排序；后者适合编号专栏。`selection.title_overrides` 可为个别选中文件指定读者可见标题，适合无标题的 `index.md` 等页面。一个清单可以声明多个主题章节，生成时依次成为二级标题，篇目成为三级标题，避免长文档只有一个“正文”章节。章节级 `selection.exclude_paths` 和 `completeness.exclude_paths` 用于显式排除宣传文、导航索引等非正文文件；排除项仍由完整性校验逐项登记，其他 `required_globs` 新增内容不会被静默遗漏。`render.source_format: html_article` 要求同时声明 `article_class`，引擎只提取对应容器，不把导航、页脚或 favicon 等站点外壳带入整合文档。适用范围提示等来源特有说明由版本化适配器提供。
 
 ### 锁文件
 
@@ -202,9 +205,9 @@ reference/
 
 本地开发可显式使用已有源码 checkout 的共同父目录，例如源仓库位于 `../lianglianglee` 时使用 `--source-root ..`。该模式只验证和读取工作树，拒绝脏工作树，且不执行 fetch、checkout、reset 或任何写入操作。
 
-CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/` 作为 Git 忽略的缓存目录。同一上游仓库的多份整合文档共享一个 Git 对象缓存，并依次以 detached HEAD 稀疏检出各自所需文件；不使用开发者工作区的绝对路径。缓存目录可随时删除并重建。
+CI 与标准更新命令使用 `reference/.cache/sources/<owner>--<repository>/` 作为 Git 忽略的缓存目录。同一上游仓库的多份整合文档共享一个 Git 对象缓存；更新器读取锁定提交的 Git 树元数据，再从对象库中只物化清单选中的源文件，不检出源仓库工作树，也不依赖开发者工作区的绝对路径。这样既能避免下载无关资源，也能处理包含 Windows 不支持路径名的上游仓库。缓存目录可随时删除并重建。
 
-缓存只稀疏检出清单解析后的 Markdown 源文件；同时读取锁定提交的 Git 树元数据来确认本地图片、目录和证据链接的类型。生成 Raw 或 GitHub 链接不需要下载对应图片、PDF、绘图脚本或 vendored 资源，因此资源与正文混放的上游仓库也不会扩大缓存规模。
+缓存只物化清单解析后的 Markdown 源文件；同时读取锁定提交的 Git 树元数据来确认本地图片、目录和证据链接的类型。生成 Raw 或 GitHub 链接不需要下载对应图片、PDF、绘图脚本或 vendored 资源，因此资源与正文混放的上游仓库也不会扩大工作树规模。
 
 ## 生成与检查契约
 

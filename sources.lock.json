@@ -40,6 +40,14 @@
       "ref": "main",
       "repository": "https://github.com/datawhalechina/easy-vibe.git"
     },
+    "healthart-hubermanlab": {
+      "commit": "a919902b805e76470fb1df37183e54efa54b9357",
+      "commit_date": "2026-11-05T20:30:18+08:00",
+      "generator_version": "healthart_hubermanlab@1;engine@9",
+      "manifest_sha256": "3f4db4208a3a8964d96214818a92daa097036a7b8b96f60ff2de946a1acd7226",
+      "ref": "main",
+      "repository": "https://github.com/healthart/website.git"
+    },
     "hello-agents": {
       "commit": "36f583c233ea5cee4537ef93455702b55053af18",
       "commit_date": "2026-10-14T09:28:54+11:00",

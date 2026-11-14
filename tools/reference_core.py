@@ -69,6 +69,7 @@ class Manifest:
     tags: tuple[str, ...]
     sections: tuple[SectionSpec, ...]
     required_globs: tuple[str, ...]
+    completeness_exclude_paths: tuple[str, ...]
     source_format: str
     article_class: str | None
     raw: dict[str, Any]
@@ -80,7 +81,7 @@ class Manifest:
 
 @dataclass(frozen=True)
 class SourceSnapshot:
-    """An immutable source checkout selected by an exact commit SHA."""
+    """An immutable source snapshot selected by an exact commit SHA."""
 
     manifest: Manifest
     root: Path
@@ -88,10 +89,10 @@ class SourceSnapshot:
     commit_date: str
     published_at: str
     updated_at: str
-    # A Git-tree index for the pinned commit.  Cache checkouts deliberately
-    # materialize source Markdown only, so linked images and evidence files
-    # usually do not exist in the sparse working tree.  Their immutable tree
-    # entries are sufficient to validate and rewrite portable source URLs.
+    # A Git-tree index for the pinned commit.  Cache snapshots materialize
+    # source Markdown only, so linked images and evidence files usually do not
+    # exist beside the selected files.  Their immutable tree entries are
+    # sufficient to validate and rewrite portable source URLs.
     repository_entries: Mapping[str, str] | None = None
 
 
@@ -284,6 +285,12 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
     if not isinstance(globs_data, list) or not all(isinstance(item, str) for item in globs_data):
         raise ReferenceError(f"{origin}: completeness.required_globs must be a string array")
     required_globs = tuple(_safe_relative(item, "required_globs entry", origin) for item in globs_data)
+    excluded_data = completeness.get("exclude_paths", [])
+    if not isinstance(excluded_data, list) or not all(isinstance(item, str) for item in excluded_data):
+        raise ReferenceError(f"{origin}: completeness.exclude_paths must be a string array")
+    completeness_exclude_paths = tuple(
+        _safe_relative(item, "completeness.exclude_paths entry", origin) for item in excluded_data
+    )
 
     render = data.get("render", {})
     if not isinstance(render, dict):
@@ -309,6 +316,7 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
         tags=tags,
         sections=tuple(sections),
         required_globs=required_globs,
+        completeness_exclude_paths=completeness_exclude_paths,
         source_format=source_format,
         article_class=article_class,
         raw=data,
@@ -389,7 +397,7 @@ def _source_path(snapshot: SourceSnapshot, relative: str) -> Path:
     try:
         path.relative_to(snapshot.root.resolve())
     except ValueError as exc:
-        raise ReferenceError(f"source path escapes checkout: {relative}") from exc
+        raise ReferenceError(f"source path escapes snapshot: {relative}") from exc
     return path
 
 
@@ -470,7 +478,7 @@ def resolved_sections(snapshot: SourceSnapshot) -> tuple[tuple[SectionSpec, tupl
 
 
 def selected_source_paths(manifest: Manifest, repository_entries: Mapping[str, str]) -> tuple[str, ...]:
-    """Resolve all source paths before sparse checkout materializes their blobs."""
+    """Resolve all source paths before the cache materializes their blobs."""
 
     paths: list[str] = []
     for section in manifest.sections:
@@ -513,6 +521,7 @@ def validate_manifest_sources(snapshot: SourceSnapshot) -> None:
         for section in snapshot.manifest.sections
         for path in section.exclude_paths
     }
+    excluded.update(snapshot.manifest.completeness_exclude_paths)
     omitted = discovered - listed - excluded
     if omitted:
         names = ", ".join(sorted(omitted))
@@ -1197,6 +1206,7 @@ def _yaml_string(value: str) -> str:
 
 def _front_matter(snapshot: SourceSnapshot) -> list[str]:
     manifest = snapshot.manifest
+    reader_note = get_adapter(manifest.adapter).reader_note
     owner, repository = github_slug(manifest.repository)
     commit_url = f"https://github.com/{owner}/{repository}/commit/{snapshot.commit}"
     return [
@@ -1230,6 +1240,7 @@ def _front_matter(snapshot: SourceSnapshot) -> list[str]:
         "",
         "本文档按清单中的阅读顺序合并上游 Markdown。图片被改写为锁定提交的 GitHub Raw 链接，章节内有效的本地文档链接被改写为同一提交的 GitHub 源文件链接。",
         "",
+        *([f"> {reader_note}", ""] if reader_note else []),
         "## 目录",
         "",
     ]

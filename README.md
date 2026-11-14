@@ -12,6 +12,7 @@
 - `whale-quant` 的量化金融与 Python 开发教程
 - `all-in-rag` 的 RAG 技术全栈指南
 - `easy-vibe` 的简体中文 AI 编程教程
+- `healthart/website` 中 Huberman Lab 中文健康科学内容合集
 - `lianglianglee-architecture` 的《从 0 开始学架构》专栏
 - `lianglianglee-continuous-delivery` 的《持续交付36讲》专栏
 - `lianglianglee-distributed-finance` 的《分布式金融架构课》专栏

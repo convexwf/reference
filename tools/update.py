@@ -1,8 +1,8 @@
 """Update one or more integrated Markdown documents from their upstream refs.
 
 Run ``python -m tools.update --all`` from the reference repository.  The
-command reads source repositories through detached cache checkouts and writes
-only this repository's ``markdown/`` files and ``sources.lock.json``.
+command reads selected source blobs from pinned Git snapshots and writes only
+this repository's ``markdown/`` files and ``sources.lock.json``.
 """
 
 from __future__ import annotations

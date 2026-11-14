@@ -21,6 +21,7 @@ class Adapter:
     strip_vitepress_scaffolding: bool = False
     robust_fences: bool = False
     normalize_space_before_tabs: bool = False
+    reader_note: str | None = None
 
 
 _ADAPTERS = {
@@ -38,6 +39,15 @@ _ADAPTERS = {
     ),
     "whale_quant": Adapter("whale_quant", "1", normalize_space_before_tabs=True),
     "hello_agents": Adapter("hello_agents", "1"),
+    "healthart_hubermanlab": Adapter(
+        "healthart_hubermanlab",
+        "1",
+        reader_note=(
+            "内容整理自 Health Art 项目的 Huberman Lab 中文解析页，不是 Huberman Lab 官方原稿或逐字稿。"
+            "健康信息仅作一般知识素材，不构成个人医疗建议；涉及补剂、药物、筛查或治疗时，"
+            "请核对原始节目与研究并咨询合格专业人士。"
+        ),
+    ),
 }
 
 
