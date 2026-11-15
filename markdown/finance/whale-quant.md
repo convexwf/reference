@@ -10,7 +10,7 @@ tags:
   - "machine-learning"
   - "tutorial"
 published_at: "2023-04-09"
-updated_at: "2024-05-29"
+updated_at: "2026-11-12"
 ---
 
 # WhaleQuant：量化金融与 Python 开发教程
@@ -22,8 +22,8 @@ updated_at: "2024-05-29"
 | 文档标题 | WhaleQuant：量化金融与 Python 开发教程 |
 | 文档类型 | zh-CN 整合 Markdown |
 | 上游仓库 | [datawhalechina/whale-quant](https://github.com/datawhalechina/whale-quant) |
-| 锁定提交 | [aa791a1b14c2](https://github.com/datawhalechina/whale-quant/commit/aa791a1b14c287d9809c3cdeabc9be3e5425157b) |
-| 提交时间 | 2026-01-15T21:02:09+08:00 |
+| 锁定提交 | [828009d910db](https://github.com/datawhalechina/whale-quant/commit/828009d910db5eb2c06fa14f4439421b235bef44) |
+| 提交时间 | 2026-11-12T10:42:38+08:00 |
 | 生成器版本 | `whale_quant@1;engine@12` |
 
 ## 目录
@@ -60,7 +60,7 @@ updated_at: "2024-05-29"
 &emsp;&emsp;本项目为量化开源课程，可以帮助人们快速掌握量化金融知识以及使用Python进行量化开发的能力。更进一步地让人们更好地学习和研究量化交易策略。此项目提供了一套完整的流程和工具链，从策略的理念、研究需要的数据、回测再到实盘，希望给大家带来帮助。
 
 
-![WhaleQuant-logo](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/WhaleQuant-logo.png)
+![WhaleQuant-logo](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/WhaleQuant-logo.png)
 
 <br/>
 
@@ -129,7 +129,7 @@ requirements.txt-----------------------------------运行环境依赖包
 
 
 扫描下方二维码关注公众号：Datawhale
-![qrcode](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/qrcode.jpeg)
+![qrcode](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/qrcode.jpeg)
 
 
 #### LICENSE
@@ -202,7 +202,7 @@ requirements.txt-----------------------------------运行环境依赖包
 
 股票交易流程大差不差，大多数朋友应该都是做A股，此处抛砖引玉
 
-![01_股票投资基本流程](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_1.2_01.png)
+![01_股票投资基本流程](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_1.2_01.png)
 
 以深交所为例，详细文档参见：
 - https://investor.szse.cn/institute/bookshelf/manualseriesbook/P020190322685818724112.pdf
@@ -301,7 +301,7 @@ requirements.txt-----------------------------------运行环境依赖包
 - 90年代是量化投资发展的黄金期，量化投资应用于市场中的各种投资工具，各大理论全面发展。著名的资产资本定价模式、市场有效性理论、期权定价理论、套利理论也在这一时间产生，这些理论为量化投资策略成为系统有效的策略奠定了科学理论基础。
 - 虽然量化投资在2008年美国金融危机时受到影响，但之后仍然成为市场的主流，并且因为其收益稳定风险较低而普遍受到市场的推崇。
 
-![02_量化发展](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_1.5_01.png)
+![02_量化发展](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_1.5_01.png)
 
 详细查看：https://www.baogaoting.com/info/90450
 
@@ -319,7 +319,7 @@ requirements.txt-----------------------------------运行环境依赖包
 
 需要注意的是，量化投资的策略设计和实施过程需要严谨、科学、系统化的方法，同时也需要一定的技术和数学功底。成功的量化投资不仅仅依赖于策略的设计，也需要严格的风险控制和资金管理。
 
-![03_量化投资流程](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_1.6_01.png)
+![03_量化投资流程](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch01_%E6%8A%95%E8%B5%84%E4%B8%8E%E9%87%8F%E5%8C%96%E6%8A%95%E8%B5%84/ch01_1.6_01.png)
 
 #### 1.7 常见的量化投资平台
 
@@ -469,7 +469,7 @@ $$Y=α+βY+e-dr+G$$  →  $$Y=\frac{\alpha +e-dr+G}{1-\beta}$$
 
 （3）IS曲线概念
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_01.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_01.png)
 
 可以看到IS曲线是一条向右下方倾斜的直线，线上任意一点都表示对应利率和收入的组合，在这样的组合下，投资I和存储S是相等的，即I=S，从而产品市场均衡，也因此称为IS曲线。
 
@@ -499,7 +499,7 @@ $$L=M$$  →  $$M=kY-hr$$  →  $$Y=\frac{M}{k}+\frac{hr}{k}$$
 
 （3）LM曲线概念
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_02.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_02.png)
 
 可以看到LM曲线是一条向右上方倾斜的直线，线上任意一点都表示对应利率和收入的组合，在这样的组合下，货币需求L和货币供给M是相等的，即L=M，从而货币市场均衡，也因此称为LM曲线。
 
@@ -517,7 +517,7 @@ $$L=M$$  →  $$M=kY-hr$$  →  $$Y=\frac{M}{k}+\frac{hr}{k}$$
 
 分析一个经济体时，我们从宏观层面可以将该经济体划分成五个部门：居民部门（消费）、政府部门、企业部门（生产）、金融部门和国外部门。这五部门可以看作是一个经济体的骨骼框架，可以通过设置不同的指标来观察其工作，从而了解彼此间的联动关系。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_03.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_03.png)
 
 居民部门即消费者，可以看作个人。企业部门即生产者，可以看作公司。个人在公司劳动换取薪酬，然后再向其他企业部门进行消费，如去超市购物、买零食，这就完成了居民部门和企业部门的交互。同时，当个人有了大量收入后，可能会选择存银行或买基金股票，金钱就流入了金融机构，此后金钱就有了更多的流通方式，金融机构也就承担起调节各个部门收支的责任。
 
@@ -615,19 +615,19 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 
 - 扩张加速：PMI 从 50% 上升到 100%，表明经济运行中的扩张成分多于收缩成分，扩张成分在增加，收缩成分在减少，经济处于扩张区间。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_04.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_04.png)
 
 - 扩张减速：PMI 从 100% 下降到 50%，表明经济运行中的扩张成分多于收缩成分，但扩张成分在减少，收缩成分在增加，经济仍处于扩张区间。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_05.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_05.png)
 
 - 收缩加速：PMI 从 50% 下降到 0，表明经济运行中的收缩成分多于扩张成分，扩张成分在减少，收缩成分在增加，经济处于收缩区间。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_06.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_06.png)
 
 - 收缩减速：PMI 从 0 上升到 50%，表明经济运行中的收缩成分多于扩张成分，但扩张成分在增加，收缩成分在减少，经济仍处于收缩区间。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_07.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.1_07.png)
 
 ### 2.2 货币金融学基础概念
 
@@ -702,7 +702,7 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
    1. 含义：以特定价格购买债券，并持有至到期日能获得的报酬率。
    2. 本质上是一个利率，要求用该利率折现时，得到的未来收入的现值与当前债券的购入价格相等。
 4. **到期收益率计算（ i 代表到期收益率 ）**
-   1. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_01.png)
+   1. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_01.png)
 
    2. 注意：对到期收益率的计算，需要解出上述方程中的 i 以得到。
    3. 解释：
@@ -782,7 +782,7 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 
 #### 7. 中国货币政策工具
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_02.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_02.png)
 
 **部分主要工具：**
 
@@ -805,7 +805,7 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
    3. 中介指标：货币总量（M1/M2），利率（短期和长期利率）
    4. 目标：物价稳定、高就业、经济增长、金融市场稳定、利率稳定、外汇市场稳定
 2. **泰勒规则**：指中央银行的短期利率工具依经济状态而进行调整的方法（以美联储为例）
-   1.  联邦基金利率指标=通货膨胀率+均衡实际联邦基金利率+$$\frac1$$通货膨胀缺口+$$\frac1$$产出缺口
+   1.  联邦基金利率指标=通货膨胀率+均衡实际联邦基金利率+$$\frac{1}{2}$$通货膨胀缺口+$$\frac{1}{2}$$产出缺口
       - 通货膨胀缺口：当前通货膨胀率-目标通货膨胀率
       - 产出缺口：实际GDP增长-潜在（自然）水平下GDP增长
    2. 含义：名义利率应该顺应通货膨胀率的变化，并依据产出和通胀的缺口进行调整，以保持实际利率的稳定。
@@ -815,7 +815,7 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 1. **货币数量论**
    1. 认为其他因素不变，商品价格涨落与货币数量成正比，货币价值的高低与货币数量的多少成反比。
 2. **货币流通速度**
-   1. 货币流通速度$$V=\frac{(P*Y)}{M$$
+   1. 货币流通速度$$V=\frac{(P*Y)}{M}$$
    2. P代表价格水平，Y代表总收入（总产出），P*Y代表经济体名义收入，M代表货币总量（货币供给）
 3. **通货膨胀**
    1. 在货币数量论下，通货膨胀率等于货币供给增长率与总产出增长率之差。
@@ -831,7 +831,7 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 
 1. **总需求（AD）：**$$Y^{ad}=C+I+G+NX$$
    1. 总需求曲线是总需求量与通货膨胀率之间关系的曲线，向下倾斜。也可以表示为总需求量与价格之间关系，它们等效。
-   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_03.png)
+   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_03.png)
 
    3. 消费支出C：对商品和服务的总支出
    4. 投资支出I：对实物资产与新住宅的支出
@@ -851,17 +851,17 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
    1. 总供给曲线是表示总供给量和通货膨胀率之间关系的曲线。
    2. 短期总供给曲线（SRAS 或 AS）向上倾斜，因为受预期通货膨胀率、产出缺口、通货膨胀冲击影响。
    3. 长期总供给曲线（LRAS）是一条过自然产出率水平（$$Y^$$）的垂直线。长期中，经济体的产出量受资本量、劳动力和技术决定。此时的失业率称为自然失业率。
-   4. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_04.png)
+   4. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_04.png)
 4. **总供给的影响因素**
    1. 短期：预期通货膨胀率上升，短期总供给曲线左移；产出缺口存在时，短期总供给曲线向潜在产出回归；通货膨胀；通货膨胀冲击也会移动短期总供给曲线。
    2. 长期：由经济中资本总量、劳动供给量增加，自然失业率水平降低，科学技术进步等缺口下，长期供给曲线右移。
 5. **总供给，总需求分析的均衡**
    1. AD与SRAS的交点形成短期均衡，此状态下有均衡的总产出水平和均衡的通货膨胀率。
-   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_05.png)
+   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_05.png)
 
    3. 如果均衡的产出水平不等于潜在水平，说明该经济没有达到长期均衡。短期均衡点此时会不断移动，直到达到潜在产出水平。
       - 解释：以短期均衡的产出高于自然产出为例。此时劳动力市场存在供不应求情况，这会推高工资水平，提高通货膨胀预期，使短期总供给曲线上移，直到短期和长期均衡重合。
-      - ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_06.png)
+      - ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_06.png)
 6. **均衡的变动**
    1. 总需求冲击：引起总需求曲线右移的冲击（反之左移）
       1. 自主性宽松货币政策
@@ -885,24 +885,24 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 
 1. 面对总需求负向冲击：
    1. 如果政府不作为，经济会先经历一段实际总产出低于潜在水平，失业问题严重的时期；长期内产出恢复，但通胀永久降低。
-   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_07.png)
+   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_07.png)
 
    3. 为了短期内消除产出缺口和通胀缺口，中央银行实施自主性宽松货币政策，降低实际利率水平，从而刺激投资，使AD曲线右移。此时，政府的作为既稳定了通货膨胀，又稳定了经济活动。
-   4. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_08.png)
+   4. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_08.png)
 2. 面对永久性负面供给冲击：
    1. 政府可以采取自主性紧缩货币政策，推动总需求曲线左移，直到产出缺口为零。
    2. 稳定通胀和稳定经济此时不冲突。
    3. 分析与上文同理。
 3. 面对暂时性负面供给冲击：
    1. 如果不进行政策反应，短期总供给曲线左移，失业率上升且通胀严重，总产出低于潜在产出。长期内恢复。
-   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_09.png)
+   2. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_09.png)
 
    3. 此时存在稳定通胀和稳定经济活动的取舍。
    4. 稳定通胀：采取紧缩性的货币政策，可以使通胀回到目标值，但是相比无政策反应，此情况下总产出偏离潜在产出更加严重，不能稳定经济活动。
-   5. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_10.png)
+   5. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_10.png)
 
    6. 稳定产出：采取宽松的货币政策，使产出回到潜在产出，但相比无政策反应，此情况下通货膨胀更加严重，不能稳定通货膨胀。
-   7. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_11.png)
+   7. ![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.2_11.png)
 
 #### 12. 货币政策传导机制
 
@@ -1015,7 +1015,7 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 债券的到期收益率计算方式：
 到期收益率是债券价格的逆运算，是债券的支付现值与其价格相等的折现率。到期收益率通常被视为在购买日至到期日之间持有债券所获得平均收益率的测量。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.3_01.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.3_01.png)
 
 三个条件：持有到期；再投资收益率等于到期收益率；发行人按期支付利息。
 
@@ -1059,9 +1059,9 @@ PMI 取值范围在 0 至 100% 之间，50% 为扩张与收缩的临界点，50%
 
 数理统计思维导图
 
-![思维导图](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.4_04.png)
+![思维导图](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.4_04.png)
 
-[更多详细内容见notebook](https://github.com/datawhalechina/whale-quant/blob/aa791a1b14c287d9809c3cdeabc9be3e5425157b/notebook/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.4_%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.ipynb)
+[更多详细内容见notebook](https://github.com/datawhalechina/whale-quant/blob/828009d910db5eb2c06fa14f4439421b235bef44/notebook/ch02_%E9%87%91%E8%9E%8D%E5%B8%82%E5%9C%BA%E7%9A%84%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/ch02_2.4_%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.ipynb)
 
 ##### 1.基本概念
 
@@ -1137,13 +1137,13 @@ $\overline{X} = \frac{1}{n}\sum_{i = 1}^{n}X_{i}$
 
 技术面数据是通过股票的历史价格和交易量等市场数据进行计算和分析得出的指标。它的核心观点是市场行为会在价格上留下痕迹，通过这些痕迹可以预测未来的价格走势。技术面数据主要关注股票价格的变动和市场趋势，常用的技术指标包括移动平均线、相对强弱指标、MACD指标等。技术面分析认为市场上已有的信息都会反映在股票价格中，因此通过分析股票价格图表和技术指标，可以尽可能准确地判断价格的走势和市场趋势。
 
-![31_技术面数据示例](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch03_%E8%82%A1%E7%A5%A8%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96/ch03_3.1_01.png)
+![31_技术面数据示例](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch03_%E8%82%A1%E7%A5%A8%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96/ch03_3.1_01.png)
 
 ##### 3.1.2 基本面数据
 
 基本面数据是通过分析公司的财务状况、业绩表现、竞争力等基本信息得出的评估。基本面分析认为股票的价格是与公司的基本面因素相关的，包括公司的营业收入、盈利能力、资产负债情况、市场份额、竞争优势等。基本面分析的目标是评估公司的内在价值，并基于这些评估来判断股票的投资潜力。常用的基本面指标包括市盈率、市净率、股息率等。基本面数据通常需要通过公司公开的财务报告和公告来获取。
 
-![32_基本面数据示例](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch03_%E8%82%A1%E7%A5%A8%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96/ch03_3.1_02.png)
+![32_基本面数据示例](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch03_%E8%82%A1%E7%A5%A8%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96/ch03_3.1_02.png)
 
 技术面数据和基本面数据都是股票分析中重要的工具，它们提供了不同的视角和方法来评估股票的投资价值。投资者可以综合运用这两类数据，从技术面和基本面两个层面进行全面的分析和决策。
 
@@ -1364,7 +1364,7 @@ MACD指标是一种相对较慢的指标，较长时间的移动平均线会导�
 
 ##### 3.3.1 BaoStock 技术面数据简介
 
-证券宝（www.baostock.com） 是一个免费、开源的证券数据平台，无需注册即可获取大量准确、完整的证券历史行情数据和上市公司财务数据。通过`Python` `API`获取数据信息，满足量化交易投资者、数量金融爱好者、计量经济从业者的数据需求。该工具包返回的数据格式为`pandas` `DataFrame`类型，方便使用`pandas`/`NumPy`/`Matplotlib`进行数据分析和可视化。此外，还支持将数据保存到本地进行分析，提供了更多的灵活性和便利性。
+[BaoStock](https://www.baostock.com) 是一个免费、开源的证券数据平台，无需注册即可获取大量准确、完整的证券历史行情数据和上市公司财务数据。通过`Python` `API`获取数据信息，满足量化交易投资者、数量金融爱好者、计量经济从业者的数据需求。该工具包返回的数据格式为`pandas` `DataFrame`类型，方便使用`pandas`/`NumPy`/`Matplotlib`进行数据分析和可视化。此外，还支持将数据保存到本地进行分析，提供了更多的灵活性和便利性。
 
 在本章节中，我们主要介绍了如何利用`BaoStock`获取历史A股K线数据、指数数据以及上证50成分股。
 
@@ -6525,7 +6525,7 @@ $$
 
 这个问题的最佳解用 Lagrange 乘子的方法可以找出。对于每一个值 $μ$，我们求得一个风险资产配置$P$，满足 $E[r_P]=μ$，并且$σ_P$ 是最小的。将这些最优解画成图，在标准差-预期的坐标上得到一条抛物线。根据计算所用到的资产的信息不同，这根曲线会不尽相同，但基本上遵循这个形状。
 
-![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.2_01.png)
+![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.2_01.png)
 
 这条曲线被叫做***有效前沿(efficient frontier)***。由于它的形状像一枚子弹尖，所以有时也叫做*马科维兹子弹(Markowitz bullet)*。有效前沿存在一个波动率最小的位置A，并且在这个点以上的位置才是真正“有效”的；我们是固定预期收益算得的最低风险而得到的这条曲线，如果再固定风险并选择最大的预期收益，则会筛选掉有效前沿的下半部分。所以，很多时候人们所说的“有效前沿”会特指上半部分。
 
@@ -6544,7 +6544,7 @@ $$
 
 以上配置组合在期望收益率-标准差曲线上表现为一条经过有效边界上一点的射线，这条线被称为***资本配置线（CAL, Capital Allocation Line）***，线上的每一点表示一个风险资产与无风险资产组成的投资组合。
 
-![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.2_02.png)
+![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.2_02.png)
 
 CAL 的斜率为$Sharpe(P)=\frac{E(r_P)-r_f}{σ_P}$​，在金融学中，我们把这一比率称为***报酬－波动性比率（reward-to-variability ratio）***，又称***夏普比率（Sharpe Ratio）***。容易发现，**夏普比率刻画了投资组合每承受一单位总风险，会产生多少超额报酬**。也就是说，可以认为，夏普比率越高的投资组合越佳；同时也能发现，在给定的标准差上，夏普比率更高的 CAL 拥有更高的期望收益。
 
@@ -6602,13 +6602,13 @@ $$
 
 **常用日频基础数据列表**
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_01.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_01.png)
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_02.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_02.png)
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_03.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_03.png)
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_04.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_04.png)
 
 上表列举了较为常用的几种不同周期的日频基础数据。一般情况下，日频因子的初始量化指标计算过程便是通过设置不同参数提取上述指标的过程。
 
@@ -6618,7 +6618,7 @@ $$
 
 作为处理量化指标的原子运算单元，量化指标的面板数据结构决定了算子主要由时间序列算子与截面数据算子两种形式构成。常用的算子如下表所示。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_05.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_05.png)
 
 算子的输入和输出都必须为面板数据。上述算子包含了处理面板数据时，用到的绝大多数计算方法。通过上述算子的递归迭代，基本可以满足目前主要因子计算所需的因子计算过程
 
@@ -6628,7 +6628,7 @@ $$
 
 选择计算机语言作为量化计算过程的逻辑描述工具有两种方案可供选择，一是完全借鉴现有的 R、Matlab 等传统量化研究中比较常用的语言，构建其语法的解释器，并实现上述算子与初始量化指标计算过程。二是完全构建一套新的计算机语言，专门用于量化计算过程的逻辑范式描述，最大程度地保证对该语言的控制力。 出于快速实现的考虑，本文采用第二种方式，即构建了一套自己的语言，通过构建量化计算过程的方式，在服务器中计算并维护 BARRA 风格因子。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_06.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_06.png)
 
 BARRA 风格因子计算方式如上表所示。其中，除市值、市盈率等可以直接从初始量化指标计算过程中获得，其他指标均需要经过数次量化指标计算算子的递归迭代得到。其定义方式的迭代逻辑相对复杂，但逻辑过程固定，且需要计算的中间指标与最终指标的数量均有限。对于这种固定且数量较少，但相对需要多层次复杂迭代的递归逻辑，直接将逻辑转换为程序语言是一种较高效的方式。
 
@@ -6640,13 +6640,13 @@ BARRA 风格因子计算方式如上表所示。其中，除市值、市盈率�
 
 下表列示了交易所的 LEVEL2 行情产品，基于此可以构建不同种类的高频初始量化指标计算过程。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_07.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_07.png)
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_08.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_08.png)
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_09.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_09.png)
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_10.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch04_%E9%87%8F%E5%8C%96%E9%80%89%E8%82%A1%E7%AD%96%E7%95%A5/ch04_4.3_10.png)
 
 高频与日频数据间的最大差异在于不同的时间周期与数据结构。与传统的日频数据相比，除单日数据量大增外，时间单位的不整齐也是高频数据的另一重要特征。除分钟数据严格的在每个交易日的 240 分钟均有数据外，Tick 数据、逐笔数据均会因标的成交热度不同而有较大差异，其时间序列有明显的时间间隔不均匀特性。
 
@@ -6995,7 +6995,7 @@ Hurst指数是分形理论在趋势判断中的应用，分形市场理论认为
 - 卖4：（左侧）股价和均线都在上涨，股价上涨的速度远快于均线上涨的速度。当股价严重偏离均线时，出现第四个卖点。
 
 
-![05_量化择时_双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.3_01.png)
+![05_量化择时_双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.3_01.png)
 
 
 ##### 5.3.2 常见均线
@@ -7020,9 +7020,9 @@ Hurst指数是分形理论在趋势判断中的应用，分形市场理论认为
 
 
 
-![05_量化择时_双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.3_02.png)
+![05_量化择时_双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.3_02.png)
 
-![05_量化择时_双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.3_03.png)
+![05_量化择时_双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.3_03.png)
 
 
 **代码示例**
@@ -7157,7 +7157,7 @@ MACD称为异同移动平均线（Moving Average Convergence and Divergence）�
 
 中证500ETF在2022年12月到2023年6月的走势如下图，MACD指标在下方的窗格。
 
-![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.4_01.png)
+![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.4_01.png)
 
 
 
@@ -7212,7 +7212,7 @@ plt.legend(["benchmark", "strategy cumulative return"], loc="upper left")
 plt.show()
 ```
 
-![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.4_02.png)
+![image](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch05_%E9%87%8F%E5%8C%96%E6%8B%A9%E6%97%B6%E7%AD%96%E7%95%A5/ch05_5.4_02.png)
 
 ### 第6章 量化调仓策略
 
@@ -7385,7 +7385,7 @@ $$
 \operatorname{Max} \quad \omega^{\mathrm{T}} \mu-\frac{\lambda}{2} \omega^{\prime} \Sigma \omega
 $$
 理论上来讲，组合成分间存在无数个混搭方式，每种方式得到一个收益风险对，将所有结果集合在一起，就形成了可行域，如图所示。可行域中并不是所有点都是“好结果”，只有处于可行域上侧边缘的点才是最优值，即MVO的解，如图中A到D之间连线，这条线称为有效前沿。任何异于有效前沿的点，均能找到相同风险（收益）下收益（风险）更高（低）的组合。
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.3_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.3_01.png)
 图片来源：CQR
 其中，图上的A点即前文讨论过的最小方差组合，位于有效前沿的最左端；而如果我们自无风险收益率起做一条射线，与有效前沿相切于B点，改点即为所有可行域中夏普比率最大的点，因此也被称为最大夏普组合。故也有另外一种常见的，最大化组合夏普比率，其目标函数为。
 $$
@@ -7561,7 +7561,7 @@ $$
 
 当投资者是风险喜好(risk-seeking)时， $\lambda<0$ ，图形开口向下， $\lambda$ 负的越多，投资者越风险喜 好，向下开口越宱，说明追求收益可以承受更大风险(曲线7)； $\lambda$ 负的越少，投资者风险喜好越 小，向下开口越宽，愿意承受的风险更弱，但是仍属于风险喜好类型（曲线risk lover）。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_01.png)
 
 ##### 6.5.2 无差异曲线（Indifference Curves）
 
@@ -7571,7 +7571,7 @@ $$
 
 对于风险厌恶者而言，如下图所示，曲线越往上方、左侧走，utility越大。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_02.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_02.png)
 
 ##### 6.5.3 有效前沿（Efficient Frontier）
 
@@ -7603,11 +7603,11 @@ $$
 
 当 $\rho$ 等于-1时，调整两个资产权重，可以使得(6)式等于0，即两个资产负相关从而来抵消组合的波 动，从而构建一个类似无风险的组合，从图形上看就构成了最左边的端点。当权重变化为其它情 况，就是上下两条边界。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_03.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_03.png)
 
 以上是最简单两个风险资产的情况，形状类似一个三角形，如果风险资产的数量继续增加到一定数量时，将会变为下图的情况，
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_04.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_04.png)
 
 图中曲线区域内及边界上的组合都是可以构建的投资组合，我们把整个边界(实线和虚线)称之为最小方差边界。边界内的组合我们称之为无效组合(inefficient portfolios)，很显然作为理性投资者，在相同的风险下，肯定选择更高预期收益的组合，所以主要考虑的是上半部分的实线边界，我们把这个边界称之为马科维兹有效前沿(Markowitz efficient frontier)。在图形的最左侧，我们能找到一个最小方差的组合，我们称之为全局最小方差组合(global minimum-variance portfolio)。在有效前沿之上的区域，是无法实现的区域。
 
@@ -7638,27 +7638,27 @@ $$
 E\left(R_p\right)=R_{\text {risk-free }}+\frac{E\left(R_i\right)-R_{\text {risk-free }}}{\sigma_i} \sigma_p \tag{9}
 $$
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_05.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_05.png)
 
 有了资产配置线，那么怎么配置资产就需要进一步根据投资者的无差异曲线来确定，毕竟资产配置是要满足投资者需求的，于是我们可以将无差异曲线和CAL线放到一张图中，两条线相切的点就是我们需要寻找的点。
 
 如下图所示，无差异曲线2、3与CAL线相交，其中无差异曲线3与CAL分别交于a，b点，但是却不是最优的组合，因为无差异曲线2与CAL相切于c点，无差异曲线2位于曲线3上方，说明无差异曲线2的效用更高，所以c才是最优的组合点。寻找最优的组合必须要找到无差异曲线与CAL线的切点，如果是相交于两个或者多个点，如刚才所讲，就会出现一个更高的无差异曲线，与之相切，这才是最优的情况，所以需要找的是切点。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_06.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_06.png)
 
 在同一CAL上的无差异曲线, 越往左侧, 越是风险厌恶, 厌恶系数 $\lambda$ 的值也就越大。下图中, 左侧 的无差异曲线有更大的厌恶系数, 说明改投资者更加风险厌恶, 所以会选择 $\mathrm{j}$ 点的组合。选择 $\mathrm{k}$ 点的 投资者, 虽然也是风险厌恶, 但是相对于前者, 风险厌恶程度变低。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_07.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_07.png)
 
 需要注意的是，CAL线不止一条，如果需要找到满足投资者需求的最优组合，就需要找到与无差异曲线相切的CAL。下图中，CAL(C)才是需要的那条。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_08.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_08.png)
 
 所以，**CAL与无差异曲线的切点可以得到投资者所需的组合**，之前已经提到通过无差异曲线与有效前沿可以找到可以提供的最优组合，所以现在供需都已找到，最后就是找到两者的桥梁，来得到最优组合(optimal portfolio)。
 
 通过下图就可以更为清晰的讲解，
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_09.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.5_09.png)
 
 从图中看到，左侧无差异曲线与一条CAL线相切于点C，同时这条CAL又与有效前沿相切于点P，此时这条CAL线即满足了投资者的需求，同样市场也能提供找到，于是这条CAL就是我们需要找的，简记为CAL(M)以示区分。因为CAL线可以不止一条，但是同时满足供需两个限定条件的就这一条。
 
@@ -7727,7 +7727,7 @@ $$
 
 其中的$\mu$就是预期的收益率。我们可以看出，给定一个预期的收益率$\mu$，我们可以解到一个可以最小化风险的资产组合，并且可以得到该资产组合的风险。相应地，我们可以画出在MPT框架下的收益-风险曲线。这条曲线就是下图中的蓝线，也称作**有效前沿**（efficient frontier）或者马科维兹子弹（Markowitz bullet）——更详细介绍见6.5节。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.6_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch06_%E9%87%8F%E5%8C%96%E8%B0%83%E4%BB%93%E7%AD%96%E7%95%A5/ch06_6.6_01.png)
 
 图中的红点为代表无风险利率，我们可以看到它的风险为0，收益为一个特定的值$r_f$，可以简单地把它理解为银行存款利率。蓝线上绿色的点是这条线上**夏普比率**最高的点，这一点对应的资产组合称作**市场组合**（market portfolio）。夏普比率定义为相比于无风险投资的超额收益相对于所承受风险的比值
 
@@ -7844,7 +7844,7 @@ plt.title('股价净值走势', fontsize=10)
 plt.xticks(pd.date_range('20180101','20221231',freq='Y'),fontsize=10)
 plt.show()
 ```
-![07_量化回测_净值曲线](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_01.png)
+![07_量化回测_净值曲线](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_01.png)
 
 ##### 年化收益率
 
@@ -7876,7 +7876,7 @@ annual_return = pd.DataFrame((1 + total_return.values) ** (252 / 1826) - 1,colum
 annual_return
 ```
 
-![07_量化回测_年化收益率](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_02.png)
+![07_量化回测_年化收益率](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_02.png)
 
 
 ##### 波动率
@@ -7900,7 +7900,7 @@ volatility = pd.DataFrame(np.sqrt(df_return.sum() * 252 / (1826-1)),columns=['�
 volatility
 ```
 
-![07_量化回测_波动率](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_03.png)
+![07_量化回测_波动率](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_03.png)
 
 ##### 最大回撤
 选定周期内任一历史时点往后推，于最低点时的收益率回撤幅度的最大值。最大回撤用来描述可能出现的最糟糕的情况。最大回撤是一个重要的风险指标，对于量化策略交易，该指标比波动率还重要。
@@ -7932,7 +7932,7 @@ max_drawdown
 
 ```
 
-![07_量化回测_最大回撤](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_04.png)
+![07_量化回测_最大回撤](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_04.png)
 
 ##### Alpha系数和Beta系数
 关于Alpha系数和Beta系数有很多详尽的解释，这里就用最简单的一句话来帮助大家简单理解。Beta系数代表投资中的系统风险，而在投资中除了系统风险外还面临着市场波动无关的非系统性风险。 Alpha系数就代表投资中的非系统性风险，是投资者获得与市场波动无关的回报。
@@ -7981,7 +7981,7 @@ capm.index=rets.columns[:3]
 capm
 ```
 
-![07_量化回测_alpha_beta](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_05.png)
+![07_量化回测_alpha_beta](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_05.png)
 
 ##### 夏普比率
 夏普比率（sharpe ratio）表示每承受一单位总风险，会产生多少的超额报酬，该比率越高。夏普比率是在资本资产定价模型进一步发展得来的。
@@ -8005,7 +8005,7 @@ sharpe_ratio=np.sqrt(len(ex_return))*ex_return.mean()/ex_return.std()
 sharpe_ratio=pd.DataFrame(sharpe_ratio,columns=['夏普比率'])
 sharpe_ratio
 ```
-![07_量化回测_净值曲线](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_06.png)
+![07_量化回测_净值曲线](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_06.png)
 
 
 ##### 信息比率
@@ -8035,7 +8035,7 @@ information_ratio = pd.DataFrame(information_ratio,columns=['信息比率'])
 information_ratio
 
 ```
-![07_量化回测_净值曲线](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_07.png)
+![07_量化回测_净值曲线](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.1_07.png)
 
 
 
@@ -8146,7 +8146,7 @@ def after_market_close(context):
 2. 该策略会有很强的回撤。例如回测的后半段，该策略已经开始较大幅度回撤，因此需要结合其他策略来进行止盈止损。
 3. 该策略回测周期不够长。本策略仅回测了两年，并且处于较强周期内，因此不具备较强的回测意义。
 
-![07_量化回测_聚宽双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.2_01.png)
+![07_量化回测_聚宽双均线策略](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.2_01.png)
 
 
 #### 7.3 Backtrader平台量化回测实践
@@ -8292,7 +8292,7 @@ if __name__ == '__main__':
     cerebro.plot()
 ```
 
-![07_量化回测_backtrader_result](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.3_01.png)
+![07_量化回测_backtrader_result](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.3_01.png)
 
 #### 7.4 BigQuant量化框架实战
 
@@ -8448,7 +8448,7 @@ m3 = M.trade.v4(
 
 ```
 
-![07_量化回测_BigQuant_result](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.4_01.png)
+![07_量化回测_BigQuant_result](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/ch07_7.4_01.png)
 
 
 
@@ -8505,7 +8505,7 @@ m3 = M.trade.v4(
 
     <https://www.lfd.uci.edu/~gohlke/pythonlibs/>
 
-    ![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/notebook/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/image_qBP7CUTyP3.png)
+    ![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/notebook/ch07_%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B/image_qBP7CUTyP3.png)
     ```python
     pip install TA_Lib-0.4.17-cp37-cp37m-win_amd64.whl
     ```
@@ -8769,7 +8769,7 @@ plotResult(BestResultTSDf)
 
 算法的实质是对原始信号的滤波分析过程。通过将信号映射到由小波函数构成的一类正交子空间，使得信号可以在不同尺度空间进行展开。从频谱分析的角度看，小波变换是将信号分解为低频和高频分量两部分，高频字段又被称为细节子带（detailed subband），低频分量又被称为近似子带（approximate subband）。具体而言，小波变换首先将原始信号作为输入信号，通过一组正交的小波基分解成高频和低频部分，然后将得到的低频部分作为输入信号（对高频部分也即信号的细节部分不再继续分解），再次进行小波分解，得到下一级的高频部分和低频部分，以此类推。随着小波分解的层级增加，其在频域上的分辨率就越高。
 
-![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_01.png)
+![img](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_01.png)
 
 **Note**: 图源自[Link](https://blog.csdn.net/cqfdcw/article/details/84995904)
 
@@ -9170,7 +9170,7 @@ plt.plot(data_set_scaled,"r-")
 
 Result:
 
-![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_02.png)
+![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_02.png)
 
 
 ##### 2.2 使用小波分解降噪
@@ -9210,7 +9210,7 @@ Result:
 (2078,)
 ```
 
-![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_03.png)
+![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_03.png)
 
 
 
@@ -9347,7 +9347,7 @@ plt.show()
 
  Result:
 
-![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_04.png)
+![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_04.png)
 
 - 计算 MSE 和 MAE
 
@@ -9506,7 +9506,7 @@ Results:
  ['Test_set' '0.0003' '0.012']]
 ```
 
-![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_05.png)
+![png](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.1_05.png)
 
 
 ​
@@ -9531,7 +9531,7 @@ Results:
 
 机器学习是通过算法理解和分析数据的应用和科学，也是计算机科学中最令人兴奋的领域。它通过自学习算法从已知数据集中获得特征模式（Feature Pattern）来对未知数据预测。机器学习并不需要事先对大量数据进行人工分析，进而提取规则并简历模型。相反，它提供了一种更为有效的方法来提取数据中的知识，逐步提高模型的预测性能，以完成数据驱动的决策。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.2_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.2_01.png)
 
 <center> 图1 机器学习的类别 </center>
 
@@ -9543,7 +9543,7 @@ Results:
 
 本章所涉及的机器学习分类与量化选择则属于其中的监督学习，接下来，本章将对监督学习进行讨论。监督学习的主要目标是从有标签的训练数据中学习模型，以便对未知或已知的数据进行预测。在这里，“监督”（Supervised）的意思是已经知道训练样本（Training data）中期待的输出信号（Labels）。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.2_02.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.2_02.png)
 
 <center> 图2 典型的监督学习流程 </center>
 
@@ -10567,7 +10567,7 @@ result.plot()
 plt.show()
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_01.png)
 
 通过分析时序数据的趋势，季节性信息和残差信息，我们能够看到数据更宏观/更规律性的变化。就像标普500的变化，可以看到指数整体趋势是在2016年到2021年中下段整体上升，在2022年开始遭遇了宏观的下跌。整体指数变化的季节性趋势在每一年都比较稳定，根据财报，公告等披露时间而存在着季节性波动。
 
@@ -10613,25 +10613,25 @@ GARCH模型的一个重要特点是它假设波动性是时间可变的。这是
 
 循环神经网络 (RNN) 专门用于处理序列数据，例如与机器翻译相关的问题中 的单词序列、语音识别中的音频数据或预测问题中的时间序列。所有这些问题 都呈现出一个共同特征，即数据之间存在时间依赖性。传统的前馈神经网络无法考虑这些依赖性，RNN通过引入过去的时间信息来解决了这个问题。RNN的特点在于其隐藏层之间的节点是有连接的，隐藏层的输入不仅包括输入层的输出，还包括上一时刻隐藏层的输出。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_02.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_02.png)
 
 ###### 基础RNN
 
 基础RNN是最初的RNN模型，它的主要问题是无法有效地捕捉到时间序列中的长期依赖性（Long-term Dependencies）。这是因为当序列过长时，模型的性能会快速下降，这个问题被称为梯度消失和梯度爆炸。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_03.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_03.png)
 
 ###### LSTM（Long Short-Term Memory）
 
 为了解决基础RNN的这个问题，1997年，Hochreiter和Schmidhuber提出了LSTM模型。LSTM通过引入一个称为"门"（Gate）的机制来控制信息的流动，这使得LSTM能够在较长的序列中捕捉到依赖关系。LSTM的主要组成部分是一个遗忘门（Forget Gate），一个输入门（Input Gate）和一个输出门（Output Gate），这些门一起帮助模型决定何时忘记旧的信息，何时更新新的信息。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_04.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_04.png)
 
 ###### GRU（Gated Recurrent Unit）
 
 GRU是Cho等人在2014年提出的，是LSTM的一种变体，它将LSTM的遗忘门和输入门合并为一个"更新门"（Update Gate）。由于GRU比LSTM有更少的参数，因此计算上会更加高效，同时在一些任务上，GRU的表现与LSTM相当。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_05.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.3_05.png)
 
 从基础RNN到LSTM再到GRU，循环神经网络的发展历程是一个不断寻找更有效处理序列数据的方法的过程。在许多序列预测任务中，RNN及其变体已经取得了显著的成功。时序数据也是一样，在金融时序预测的领域上，LSTM和GRU的应用至今非常流行。
 
@@ -10670,7 +10670,7 @@ GRU是Cho等人在2014年提出的，是LSTM的一种变体，它将LSTM的遗�
 
 每种类型的非结构化数据都有自己的特点，需要特定的工具和技术来处理。例如，文本数据需要进行自然语言处理（NLP），图像数据需要进行图像识别和处理，音频和视频数据则需要音频/视频处理技术。
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.4_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.4_01.png)
 
 除了上面提到的大量的新闻/流媒体讯息数据之外，知识图谱类型数据也慢慢在另类数据市场中占据一席之地。股票公司产业链，供应链数据，持股数据等以图状结构进行储存的数据，都进入了量化投资的视野。
 
@@ -11007,7 +11007,7 @@ m4 = M.trade.v4(
 )
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.5_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.5_01.png)
 
 ### 8.6 深度学习量化策略基础实战
 
@@ -11491,4 +11491,4 @@ m19 = M.trade.v4(
 )
 ```
 
-![](https://raw.githubusercontent.com/datawhalechina/whale-quant/aa791a1b14c287d9809c3cdeabc9be3e5425157b/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.6_01.png)
+![](https://raw.githubusercontent.com/datawhalechina/whale-quant/828009d910db5eb2c06fa14f4439421b235bef44/docs/ch08_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E9%87%8F%E5%8C%96%E7%AD%96%E7%95%A5/ch08_8.6_01.png)

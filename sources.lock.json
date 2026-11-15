@@ -2,7 +2,7 @@
   "sources": {
     "ai-agent-book": {
       "commit": "dbc046eb896ac4e39aa19c7774c8bf49583b89a6",
-      "commit_date": "2026-09-30T03:03:28+00:00",
+      "commit_date": "2026-09-30T03:03:28Z",
       "generator_version": "ai_agent_book@1;engine@12",
       "manifest_sha256": "4f87499fdb349c7a4946540b791bb220b662e73d6ea30fa2d9000f967916234a",
       "ref": "main",
@@ -113,8 +113,8 @@
       "repository": "https://github.com/healthart/website.git"
     },
     "hello-agents": {
-      "commit": "36f583c233ea5cee4537ef93455702b55053af18",
-      "commit_date": "2026-10-14T09:28:54+11:00",
+      "commit": "2eb1c7547018b519b85cb57acf5533f12d65bf8e",
+      "commit_date": "2026-11-13T20:20:01+08:00",
       "generator_version": "hello_agents@1;engine@12",
       "manifest_sha256": "37bbc08463b2225ab2bc43b2113ec0e57739187cfe88a4ffde1a950707d67c33",
       "ref": "main",
@@ -249,8 +249,8 @@
       "repository": "https://github.com/presmihaylov/booknotes.git"
     },
     "whale-quant": {
-      "commit": "aa791a1b14c287d9809c3cdeabc9be3e5425157b",
-      "commit_date": "2026-01-15T21:02:09+08:00",
+      "commit": "828009d910db5eb2c06fa14f4439421b235bef44",
+      "commit_date": "2026-11-12T10:42:38+08:00",
       "generator_version": "whale_quant@1;engine@12",
       "manifest_sha256": "d4c22c574a0103a08f00a936ad3b3c1a5bc2a7b0faec149dde93d8d5c7528f1e",
       "ref": "master",
