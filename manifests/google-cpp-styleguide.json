@@ -7,7 +7,7 @@
   },
   "language": "zh-CN",
   "adapter": "google_styleguide",
-  "output": "markdown/software-engineering/google-cpp-style-guide.md",
+  "output": "markdown/language-style-guides/google-cpp-style-guide.md",
   "front_matter": {
     "authors": [
       "Google Style Guide contributors",

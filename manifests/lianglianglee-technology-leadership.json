@@ -1,0 +1,86 @@
+{
+  "id": "lianglianglee-technology-leadership",
+  "title": "技术领导力实战笔记",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/management/technology-leadership-practice-notes.md",
+  "front_matter": {
+    "authors": ["成敏（主编）", "专栏作者"],
+    "tags": ["technical-leadership", "management", "team-management", "organizational-development", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "开篇与领导力基础",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/0[01][0-9] *.md"]
+      }
+    },
+    {
+      "title": "组织建设与创业团队",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/0[2-5][0-9] *.md"]
+      }
+    },
+    {
+      "title": "团队管理与执行",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/0[6-9][0-9] *.md"]
+      }
+    },
+    {
+      "title": "研发管理、绩效与人才培养",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/1[0-3][0-9] *.md"]
+      }
+    },
+    {
+      "title": "研发效能、文化与组织发展",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/1[4-7][0-9] *.md"]
+      }
+    },
+    {
+      "title": "行业趋势与职业发展",
+      "selection": {
+        "include_globs": [
+          "book/专栏/技术领导力实战笔记/1[8-9][0-9] *.md",
+          "book/专栏/技术领导力实战笔记/20[0-8] *.md"
+        ]
+      }
+    },
+    {
+      "title": "大咖对话与问答",
+      "selection": {
+        "include_globs": [
+          "book/专栏/技术领导力实战笔记/大咖对话 *.md",
+          "book/专栏/技术领导力实战笔记/大咖问答 *.md"
+        ]
+      }
+    },
+    {
+      "title": "新春特辑",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/新春特辑*.md"]
+      }
+    },
+    {
+      "title": "结束篇",
+      "selection": {
+        "include_globs": ["book/专栏/技术领导力实战笔记/结束篇*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/技术领导力实战笔记/*.md"],
+    "exclude_paths": [
+      "book/专栏/技术领导力实战笔记/温故而知新 一键直达，六大文章主题索引.md"
+    ]
+  }
+}

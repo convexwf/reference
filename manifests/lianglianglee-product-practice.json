@@ -1,0 +1,77 @@
+{
+  "id": "lianglianglee-product-practice",
+  "title": "硅谷产品实战36讲",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/management/silicon-valley-product-36-lessons.md",
+  "front_matter": {
+    "authors": ["曲晓音"],
+    "tags": ["product-management", "product-development", "user-research", "growth", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "开篇与产品经理基础",
+      "selection": {
+        "include_globs": [
+          "book/专栏/硅谷产品实战36讲/00 *.md",
+          "book/专栏/硅谷产品实战36讲/0[1-6] *.md"
+        ]
+      }
+    },
+    {
+      "title": "用户需求与产品定义",
+      "selection": {
+        "include_globs": [
+          "book/专栏/硅谷产品实战36讲/0[7-9] *.md",
+          "book/专栏/硅谷产品实战36讲/1[0-3] *.md"
+        ]
+      }
+    },
+    {
+      "title": "产品数据、协作与开发流程",
+      "selection": {
+        "include_globs": [
+          "book/专栏/硅谷产品实战36讲/1[4-9] *.md",
+          "book/专栏/硅谷产品实战36讲/20 *.md"
+        ]
+      }
+    },
+    {
+      "title": "增长策略与执行",
+      "selection": {
+        "include_globs": [
+          "book/专栏/硅谷产品实战36讲/22 *.md",
+          "book/专栏/硅谷产品实战36讲/2[3-6] *.md"
+        ]
+      }
+    },
+    {
+      "title": "产品经理的成长与进阶",
+      "selection": {
+        "include_globs": [
+          "book/专栏/硅谷产品实战36讲/2[7-9] *.md",
+          "book/专栏/硅谷产品实战36讲/3[0-6] *.md"
+        ]
+      }
+    },
+    {
+      "title": "尾声",
+      "selection": {
+        "include_globs": ["book/专栏/硅谷产品实战36讲/尾声*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/硅谷产品实战36讲/*.md"],
+    "exclude_paths": [
+      "book/专栏/硅谷产品实战36讲/新书首发 《硅谷产品：36讲直通世界级产品经理》.md"
+    ]
+  }
+}

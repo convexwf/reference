@@ -1,0 +1,71 @@
+{
+  "id": "lianglianglee-blockchain-intro",
+  "title": "深入浅出区块链",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/blockchain/in-depth-blockchain.md",
+  "front_matter": {
+    "authors": ["陈浩"],
+    "tags": ["blockchain", "distributed-systems", "cryptography", "digital-assets", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "开篇与区块链基础",
+      "selection": {
+        "include_globs": [
+          "book/专栏/深入浅出区块链/00 *.md",
+          "book/专栏/深入浅出区块链/第0[1-8]讲 *.md"
+        ]
+      }
+    },
+    {
+      "title": "区块链核心技术",
+      "selection": {
+        "include_globs": [
+          "book/专栏/深入浅出区块链/第09讲 *.md",
+          "book/专栏/深入浅出区块链/第1[0-9]讲 *.md"
+        ]
+      }
+    },
+    {
+      "title": "区块链项目与联盟链",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出区块链/第2[0-3]讲 *.md"]
+      }
+    },
+    {
+      "title": "数字货币与数字资产",
+      "selection": {
+        "include_globs": [
+          "book/专栏/深入浅出区块链/第2[4-9]讲 *.md",
+          "book/专栏/深入浅出区块链/第3[0-1]讲 *.md"
+        ]
+      }
+    },
+    {
+      "title": "区块链应用与实践",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出区块链/第3[2-6]讲 *.md"]
+      }
+    },
+    {
+      "title": "尾声",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出区块链/尾声篇*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/深入浅出区块链/*.md"],
+    "exclude_paths": [
+      "book/专栏/深入浅出区块链/新书首发《区块链第一课：深入浅出技术与应用》.md"
+    ]
+  }
+}

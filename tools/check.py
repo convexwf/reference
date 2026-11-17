@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from adapters import get_adapter
+from tools.adapters import get_adapter
 from tools.reference_core import (
     ReferenceError,
     assert_document_contract,

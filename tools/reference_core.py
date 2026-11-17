@@ -25,7 +25,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping
 from urllib.parse import quote, unquote, urlsplit
 
-from adapters import get_adapter
+from tools.adapters import get_adapter
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
@@ -59,6 +59,7 @@ class SectionSpec:
     include_globs: tuple[str, ...] = ()
     exclude_paths: tuple[str, ...] = ()
     title_overrides: tuple[tuple[str, str], ...] = ()
+    order_paths: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -104,7 +105,11 @@ class SourceSnapshot:
 
 
 MARKDOWN_IMAGE_TARGET = re.compile(
-    r"(?P<prefix>!\[[^\]]*\]\()(?P<target><[^>]+>|[^)\s]+)(?P<rest>[^)]*\))"
+    r"(?P<prefix>!\[[^\]]*\]\()(?P<target><[^>]+>|[^()\s]+(?:\([^()\s]*\)[^()\s]*)*)(?P<rest>[^)]*\))"
+)
+MARKDOWN_IMAGE_WITH_SPACES = re.compile(
+    r"(?P<prefix>!\[[^\]]*\]\()(?P<target>(?!<)[^)\n]*?\.(?:png|jpe?g|gif|svg|webp|bmp|tiff?)(?:[?#][^)\s]*)?)(?P<rest>[^)]*\))",
+    re.IGNORECASE,
 )
 MARKDOWN_IMAGE_LINE = re.compile(
     r"^(?P<prefix>\s*!\[)(?P<alt>(?:\\.|[^\]])*)(?P<suffix>\]\(.+\))\s*$"
@@ -124,6 +129,7 @@ GENERIC_IMAGE_ALT_TEXTS = frozenset(
         "image placeholder",
     }
 )
+OPENAI_API_KEY_VALUE = re.compile(r"(?<![A-Za-z0-9])sk-(?:proj-)?[A-Za-z0-9_-]{20,}")
 MARKDOWN_LINK_TARGET = re.compile(
     r"(?<!\!)\[(?P<label>[^\]]*)\]\((?P<target><[^>]+>|[^)\s]+)(?P<rest>[^)]*\))"
 )
@@ -235,6 +241,7 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
         include_globs: tuple[str, ...] = ()
         exclude_paths: tuple[str, ...] = ()
         title_overrides: tuple[tuple[str, str], ...] = ()
+        order_paths: tuple[str, ...] = ()
         if parts_data is not None:
             if not isinstance(parts_data, list) or not parts_data:
                 raise ReferenceError(f"{section_origin}: parts must be a non-empty array")
@@ -266,6 +273,11 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
             title_data = selection_data.get("title_overrides", {})
             if not isinstance(title_data, dict):
                 raise ReferenceError(f"{section_origin}: selection.title_overrides must be an object")
+            order_data = selection_data.get("order_paths", [])
+            if not isinstance(order_data, list) or not all(isinstance(item, str) for item in order_data):
+                raise ReferenceError(f"{section_origin}: selection.order_paths must be a string array")
+            if len(order_data) != len(set(order_data)):
+                raise ReferenceError(f"{section_origin}: selection.order_paths must not contain duplicates")
             include_globs = tuple(
                 _safe_relative(item, "selection.include_globs entry", section_origin)
                 for item in include_data
@@ -283,7 +295,13 @@ def manifest_from_data(data: object, origin: str = "manifest") -> Manifest:
                     for path, title in title_data.items()
                 )
             )
-        sections.append(SectionSpec(section_title, tuple(parts), include_globs, exclude_paths, title_overrides))
+            order_paths = tuple(
+                _safe_relative(item, "selection.order_paths entry", section_origin)
+                for item in order_data
+            )
+        sections.append(
+            SectionSpec(section_title, tuple(parts), include_globs, exclude_paths, title_overrides, order_paths)
+        )
 
     completeness = data.get("completeness", {})
     if not isinstance(completeness, dict):
@@ -451,7 +469,11 @@ def _title_from_path(path: str) -> str:
     return re.sub(r"^\d+\s+", "", title).strip() or title
 
 
-def resolve_section_parts(section: SectionSpec, repository_entries: Mapping[str, str] | None) -> tuple[PartSpec, ...]:
+def resolve_section_parts(
+    section: SectionSpec,
+    repository_entries: Mapping[str, str] | None,
+    adapter=None,
+) -> tuple[PartSpec, ...]:
     """Resolve explicit or declarative section sources from a pinned Git tree."""
 
     if section.parts:
@@ -472,17 +494,40 @@ def resolve_section_parts(section: SectionSpec, repository_entries: Mapping[str,
     if unmatched_overrides:
         names = ", ".join(sorted(unmatched_overrides))
         raise ReferenceError(f"{section.title}: title overrides do not match selected source files: {names}")
+    root_titles = dict(adapter.readme_parent_roots) if adapter is not None else {}
+
+    def selected_title(path: str) -> str:
+        if path in title_overrides:
+            return title_overrides[path]
+        candidate = Path(path)
+        if candidate.stem.casefold().startswith("readme") and candidate.parts:
+            root_label = root_titles.get(candidate.parts[0])
+            if root_label is not None:
+                components = ([root_label] if root_label else []) + list(candidate.parts[1:-1])
+                if components:
+                    return " / ".join(components)
+                return root_label or section.title
+        return _title_from_path(path)
+
+    order_rank = {path: index for index, path in enumerate(section.order_paths)}
+
+    def source_order(path: str):
+        if path in order_rank:
+            return (0, order_rank[path])
+        return (1, _natural_path_key(path))
+
     return tuple(
-        PartSpec(path=path, title=title_overrides.get(path, _title_from_path(path)))
-        for path in sorted(candidates, key=_natural_path_key)
+        PartSpec(path=path, title=selected_title(path))
+        for path in sorted(candidates, key=source_order)
     )
 
 
 def resolved_sections(snapshot: SourceSnapshot) -> tuple[tuple[SectionSpec, tuple[PartSpec, ...]], ...]:
     """Return every section with source paths fixed by the snapshot's Git tree."""
 
+    adapter = get_adapter(snapshot.manifest.adapter)
     return tuple(
-        (section, resolve_section_parts(section, snapshot.repository_entries))
+        (section, resolve_section_parts(section, snapshot.repository_entries, adapter))
         for section in snapshot.manifest.sections
     )
 
@@ -491,8 +536,9 @@ def selected_source_paths(manifest: Manifest, repository_entries: Mapping[str, s
     """Resolve all source paths before the cache materializes their blobs."""
 
     paths: list[str] = []
+    adapter = get_adapter(manifest.adapter)
     for section in manifest.sections:
-        paths.extend(part.path for part in resolve_section_parts(section, repository_entries))
+        paths.extend(part.path for part in resolve_section_parts(section, repository_entries, adapter))
     if len(paths) != len(set(paths)):
         raise ReferenceError(f"{manifest.identifier}: source selected more than once")
     return tuple(paths)
@@ -600,7 +646,7 @@ def _repository_relative_target(target: str, source: Path, snapshot: SourceSnaps
         return None
 
     def resolve_relative(value: str) -> Path | None:
-        resolved = (source.parent / Path(unquote(value))).resolve()
+        resolved = (source.parent / Path(unquote(value).replace("\\", "/"))).resolve()
         try:
             return resolved.relative_to(snapshot.root.resolve())
         except ValueError:
@@ -685,6 +731,32 @@ def _rewrite_pinned_raw_target(target: str, snapshot: SourceSnapshot) -> str | N
     )
 
 
+def _manifest_asset_override_target(target: str, source: Path, snapshot: SourceSnapshot) -> str | None:
+    """Resolve a manifest-declared exception for an ambiguous local image path."""
+
+    path_text, suffix = split_target(target)
+    try:
+        source_path = source.resolve().relative_to(snapshot.root.resolve()).as_posix()
+    except ValueError:
+        return None
+    for override_source, override_target, replacement in get_adapter(snapshot.manifest.adapter).asset_overrides:
+        if override_source != source_path or override_target != path_text:
+            continue
+        relative = Path(replacement)
+        if _repository_entry_kind(snapshot, relative) != "blob":
+            raise ReferenceError(
+                f"{snapshot.manifest.identifier}: asset override for {source_path}: "
+                f"{path_text} does not reference a source file: {replacement}"
+            )
+        owner, repository = github_slug(snapshot.manifest.repository)
+        return _github_url(
+            f"https://raw.githubusercontent.com/{owner}/{repository}/{snapshot.commit}",
+            relative,
+            suffix,
+        )
+    return None
+
+
 def _rewrite_pinned_source_link(target: str, snapshot: SourceSnapshot) -> str | None:
     """Pin absolute GitHub blob/tree links that already point at this source."""
 
@@ -713,6 +785,9 @@ def rewrite_image_target(target: str, source: Path, snapshot: SourceSnapshot) ->
     pinned = _rewrite_pinned_raw_target(target, snapshot)
     if pinned is not None:
         return pinned
+    overridden = _manifest_asset_override_target(target, source, snapshot)
+    if overridden is not None:
+        return overridden
     resolved = _repository_relative_target(target, source, snapshot)
     if resolved is None:
         resolved = _unique_repository_asset_target(target, snapshot)
@@ -863,6 +938,104 @@ def strip_vitepress_scaffolding(source_text: str) -> str:
     return "\n".join(result)
 
 
+def normalize_vitepress_containers(
+    source_text: str,
+    *,
+    drop_announcements: bool = False,
+) -> str:
+    """Convert VitePress containers to portable Markdown labels and content."""
+
+    lines = source_text.splitlines()
+    result: list[str] = []
+    fence_state: tuple[str, int] | None = None
+    containers: list[tuple[str, bool]] = []
+    directive = re.compile(r"^[ \t]{0,3}(?P<marker>:{3,})(?P<rest>.*)$")
+    fence_label = re.compile(
+        r"^(?P<prefix>[ \t]*(?:`{3,}|~{3,})[^\s`~]*)\s+\[(?P<label>[^\]]+)\]\s*$"
+    )
+    labels = {
+        "tip": "提示",
+        "info": "说明",
+        "warning": "注意",
+        "danger": "警告",
+        "details": "展开说明",
+        "output": "运行结果",
+    }
+
+    def normalize_html(line: str) -> str:
+        def link_replacer(match: re.Match[str]) -> str:
+            href = html_attribute(match.group("tag"), "href")
+            label = match.group("label").strip()
+            if not href or not label:
+                return match.group(0)
+            return f"[{label}](<{href}>)"
+
+        line = re.sub(
+            r"(?P<tag><a\b[^>]*>)(?P<label>.*?)</a>",
+            link_replacer,
+            line,
+            flags=re.IGNORECASE,
+        )
+        line = re.sub(
+            r"<summary\b[^>]*>(.*?)</summary>",
+            lambda match: f"**{match.group(1).strip()}**",
+            line,
+            flags=re.IGNORECASE,
+        )
+        line = re.sub(r"</?(?:details|div)\b[^>]*>", "", line, flags=re.IGNORECASE)
+        return line
+
+    for line in lines:
+        fence_marker = FENCE_MARKER.match(line)
+        if fence_marker:
+            inside_fence = fence_state is not None
+            dropping = any(drop for _, drop in containers)
+            if not inside_fence:
+                label = fence_label.match(line) if any(kind == "code-group" for kind, _ in containers) else None
+                if label and not dropping:
+                    result.append(f"**{label.group('label').strip()}**")
+                    line = f"{label.group('prefix').rstrip()}"
+            if not dropping:
+                result.append(line)
+            fence_state = advance_fence_state(line, fence_state)
+            continue
+        if fence_state is not None:
+            if not any(drop for _, drop in containers):
+                result.append(line)
+            continue
+
+        match = directive.match(line)
+        if match:
+            rest = match.group("rest").strip()
+            if not rest:
+                if containers:
+                    containers.pop()
+                continue
+            opening = re.match(r"(?P<kind>[A-Za-z][A-Za-z0-9_-]*)(?:\s+(?P<title>.*))?$", rest)
+            if opening is None:
+                if not any(drop for _, drop in containers):
+                    result.append(line)
+                continue
+            kind = opening.group("kind").lower()
+            title = (opening.group("title") or "").strip()
+            parent_drops = any(drop for _, drop in containers)
+            drop = parent_drops or (
+                drop_announcements and kind == "warning" and "公告" in title
+            )
+            containers.append((kind, drop))
+            if drop or kind == "code-group":
+                continue
+            label = labels.get(kind, kind)
+            heading = f"**{label}：{title}**" if title else f"**{label}**"
+            result.extend([heading, ""])
+            continue
+
+        if not any(drop for _, drop in containers):
+            result.append(normalize_html(line))
+
+    return "\n".join(result)
+
+
 def _html_image_to_markdown(tag: str, source: Path, snapshot: SourceSnapshot) -> str:
     raw_target = html_attribute(tag, "src")
     if raw_target is None:
@@ -903,12 +1076,43 @@ def rewrite_assets(line: str, source: Path, snapshot: SourceSnapshot, align_div_
     converted_html_image = bool(HTML_IMAGE_TAG.search(line))
     converted_paragraph = bool(HTML_PARAGRAPH_TAG.search(line))
 
+    def bracket_spaced_image_target(match: re.Match[str]) -> str:
+        target = match.group("target")
+        if not any(character.isspace() for character in target):
+            return match.group(0)
+        return f"{match.group('prefix')}<{target}>{match.group('rest')}"
+
+    # CommonMark requires angle brackets around destinations containing spaces.
+    # Some source READMEs omit them, so normalize before rewriting the target.
+    line = MARKDOWN_IMAGE_WITH_SPACES.sub(bracket_spaced_image_target, line)
+
     def image_replacer(match: re.Match[str]) -> str:
         target = match.group("target")
         if target.startswith("<") and target.endswith(">"):
-            target = f"<{rewrite_image_target(target[1:-1], source, snapshot)}>"
+            raw_target = target[1:-1]
+            rewritten = rewrite_image_target(raw_target, source, snapshot)
+            if (
+                get_adapter(snapshot.manifest.adapter).replace_missing_images_with_notes
+                and rewritten == raw_target
+                and not is_external_target(split_target(raw_target)[0])
+            ):
+                alt_match = re.match(r"!\[(?P<alt>[^\]]*)\]\($", match.group("prefix"))
+                label = alt_match.group("alt").strip() if alt_match else ""
+                label = label or Path(unquote(split_target(raw_target)[0])).name or "图片"
+                return f"[图片资源缺失或路径失效：{label}]"
+            target = f"<{rewritten}>"
         else:
-            target = rewrite_image_target(target, source, snapshot)
+            raw_target = target
+            target = rewrite_image_target(raw_target, source, snapshot)
+            if (
+                get_adapter(snapshot.manifest.adapter).replace_missing_images_with_notes
+                and target == raw_target
+                and not is_external_target(split_target(raw_target)[0])
+            ):
+                alt_match = re.match(r"!\[(?P<alt>[^\]]*)\]\($", match.group("prefix"))
+                label = alt_match.group("alt").strip() if alt_match else ""
+                label = label or Path(unquote(split_target(raw_target)[0])).name or "图片"
+                return f"[图片资源缺失或路径失效：{label}]"
         return f"{match.group('prefix')}{target}{match.group('rest')}"
 
     def link_replacer(match: re.Match[str]) -> str:
@@ -1240,8 +1444,21 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
     source = _source_path(snapshot, part.path)
     source_text = source.read_text(encoding="utf-8")
     adapter = get_adapter(snapshot.manifest.adapter)
+    if adapter.redact_openai_api_keys:
+        source_text = OPENAI_API_KEY_VALUE.sub("[REDACTED_OPENAI_API_KEY]", source_text)
+    if adapter.normalize_inline_fence_at_line_start:
+        source_text = re.sub(
+            r"(?m)^([ \t]*)(`{3,})(.+?)\2(?=\S)",
+            lambda match: f"{match.group(1)}`{match.group(3)}`",
+            source_text,
+        )
     if adapter.strip_vitepress_scaffolding:
         source_text = strip_vitepress_scaffolding(source_text)
+    if adapter.normalize_vitepress_containers:
+        source_text = normalize_vitepress_containers(
+            source_text,
+            drop_announcements=adapter.drop_announcement_containers,
+        )
     if snapshot.manifest.source_format == "html_article":
         assert snapshot.manifest.article_class is not None
         source_text = html_article_to_markdown(source_text, snapshot.manifest.article_class, source, snapshot)
@@ -1263,19 +1480,28 @@ def transform_part(part: PartSpec, snapshot: SourceSnapshot) -> str:
                 fence_state = advance_fence_state(line, fence_state)
             else:
                 in_fence = not in_fence
+            if adapter.normalize_space_before_tabs_in_fences:
+                line = normalize_space_before_tabs(line)
             result.append(line.rstrip())
             continue
         if fence_state is not None if adapter.robust_fences else in_fence:
             # Line-ending whitespace has no meaning in a fenced block, while
             # leaving it intact makes generated output fail Git whitespace
             # checks and creates needless future diffs.
+            if adapter.normalize_space_before_tabs_in_fences:
+                line = normalize_space_before_tabs(line)
             result.append(line.rstrip())
             continue
+
+        if adapter.normalize_trailing_whitespace:
+            line = line.rstrip()
 
         heading = HEADING.match(line)
         if heading:
             level = len(heading.group(1))
             heading_text = PANDOC_HEADING_ATTRIBUTES.sub("", heading.group(3)).strip()
+            if adapter.drop_empty_headings and not heading_text:
+                continue
             if not title_written and level == 1:
                 title = heading_text if adapter.source_h1_titles and source_h1_is_leading else part.title
                 result.append(f"### {title}")

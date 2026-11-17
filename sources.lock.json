@@ -24,6 +24,14 @@
       "ref": "main",
       "repository": "https://github.com/datawhalechina/all-in-rag.git"
     },
+    "blockchain-guide": {
+      "commit": "a8c0c9191b7b4d5e9c55de941fbb1d4f82242867",
+      "commit_date": "2026-10-06T19:27:30-07:00",
+      "generator_version": "generic@1;engine@9",
+      "manifest_sha256": "974feb23567fce7a211066e8c357f98551383c1f37ecb2c77a72dc7f3974c364",
+      "ref": "master",
+      "repository": "https://github.com/yeasy/blockchain_guide.git"
+    },
     "easy-rl": {
       "commit": "384edfea97870facddc43d7110f2fb398f528cb4",
       "commit_date": "2026-10-23T21:56:13+08:00",
@@ -44,7 +52,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "93ea0ab3fa5a3b8f7dcaf30e2cef3cfd6117ff26af8a0d7d0a9ca0a8c73dffbd",
+      "manifest_sha256": "8bb091f61d5412935fcd0c910175525b1e598f8696bc6a883001b647d8f4150e",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -52,7 +60,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "df09cf72a04864ae2942c0816955f84779a0310806a7c6c5730eedb503088cee",
+      "manifest_sha256": "a6fa0706537784122876dbdd1175472a6b6232bb78dd94325579ce35fae6b63d",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -60,7 +68,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "57e326c8732349073bec6c98d9b2f328d247ddbc731d8f74b602b11bde339ff7",
+      "manifest_sha256": "6260bdbb1765b1a535812af10c048d5f38103c0ddc6fa414d5ab095c3627ca72",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -68,7 +76,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "fde09e5a32d5bde53521603a5cdbeb583e383599cce3cca428ef41cf224b6d13",
+      "manifest_sha256": "337550bdf70be08fb2c981b0ed1390fa85e3d44cf39f8b1b5608b76b7e3e621f",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -76,7 +84,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "31cd952555be39498c4db291a31a02ad1823fa8d1d0021afd6eb9e4c225abbe5",
+      "manifest_sha256": "68250c6debbf50fcf63fac56c3cff00dabb30b76896d893a22c21d8e290a314d",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -84,7 +92,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_python_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "a4ab7349cd36ca096129a6e6c7bdc0e9b445f57afb2f880ef7ec6eca5db45244",
+      "manifest_sha256": "8be8eb4e3406393cb402191e4150b44513b1caacd70b88523288cc85436bcd35",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -92,7 +100,7 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "3bd55e4d6a5ea2a4e7a78c5e1fd01810af9c85941e71303a60ebd47143eec1dd",
+      "manifest_sha256": "4c09eb41f88665c3445532abb9808c3ba7b0e56f3e7c7127ec79f4aaffd67f05",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
     },
@@ -100,9 +108,25 @@
       "commit": "c1f8ac9138bce1b829fdffcfa03e8df44584ef22",
       "commit_date": "2025-03-15T12:29:23+08:00",
       "generator_version": "google_styleguide@1;engine@12;pandoc@3.1.8",
-      "manifest_sha256": "23ad8dc594c8c8d02bc2103b725d8889602e6a260cc701390af2cf87c93ce97e",
+      "manifest_sha256": "1c302c319e2384b4fd712d55832ca5db99a0af0617bf747c5528fd42d4db0df6",
       "ref": "master",
       "repository": "https://github.com/zh-google-styleguide/zh-google-styleguide.git"
+    },
+    "hands-on-modern-rl": {
+      "commit": "c67362e33ded002a1b98d989f8ec6c2604185338",
+      "commit_date": "2026-10-23T09:54:20+08:00",
+      "generator_version": "hands_on_modern_rl@4;engine@12",
+      "manifest_sha256": "5a46c9266ff2c39d74a00bc9b9baf59b8ad16af8e7ba3fc697d4f64a4ec1a73c",
+      "ref": "main",
+      "repository": "https://github.com/walkinglabs/hands-on-modern-rl.git"
+    },
+    "happy-llm": {
+      "commit": "1e0b3a1e6f8936b8ba4bbd0673e8e2227d196c96",
+      "commit_date": "2026-08-09T01:17:26+08:00",
+      "generator_version": "generic@1;engine@9",
+      "manifest_sha256": "9ac922fe18f2053c707c67026f0d969433991b73b18c932b086ad7fdc8f4ed02",
+      "ref": "main",
+      "repository": "https://github.com/datawhalechina/happy-llm.git"
     },
     "healthart-hubermanlab": {
       "commit": "a919902b805e76470fb1df37183e54efa54b9357",
@@ -133,6 +157,14 @@
       "commit_date": "2024-12-14T17:33:19+08:00",
       "generator_version": "generic@1;engine@12",
       "manifest_sha256": "fb703acc851d9eeeebf61f096ab86e82615f6420a0da3bf2137e49426f6f6a8a",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-blockchain-intro": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@12",
+      "manifest_sha256": "ab2876d3ce4d091fcf530e064e83126b3099eed059a3c0cc13f3e6994ee1ff69",
       "ref": "main",
       "repository": "https://github.com/Yvan0329/lianglianglee.git"
     },
@@ -216,6 +248,22 @@
       "ref": "main",
       "repository": "https://github.com/Yvan0329/lianglianglee.git"
     },
+    "lianglianglee-observability": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@12",
+      "manifest_sha256": "ddd92ed57713b9afc5373e29ec70f361ba0735f6ace64ddfb38b3ba481b34c4d",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-product-practice": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@12",
+      "manifest_sha256": "012d74cc35dacd0dec08a85a332fbef3301dd24c2f5c3b5cfee73aaa90ec414b",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
     "lianglianglee-recommendation-system": {
       "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
       "commit_date": "2024-12-14T17:33:19+08:00",
@@ -223,6 +271,30 @@
       "manifest_sha256": "82ff6830e903c13def7759ee9e915cff6225f92488b7680e8d9df85c68121647",
       "ref": "main",
       "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-retrospective-review": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@12",
+      "manifest_sha256": "57ddbdac842d1edb51aad0c1780dcf0d52eedfa29447962750bb59fb8ac75db9",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "lianglianglee-technology-leadership": {
+      "commit": "4afe4a62c4e105a59d41319a29e523eee3bd82c4",
+      "commit_date": "2024-12-14T17:33:19+08:00",
+      "generator_version": "generic@1;engine@12",
+      "manifest_sha256": "d9a5a3aa970fbc38d554b0199b86364075d28dcf0731586f03169c729cfb75a3",
+      "ref": "main",
+      "repository": "https://github.com/Yvan0329/lianglianglee.git"
+    },
+    "llm-cookbook": {
+      "commit": "92440ede735a6c450228cb924a5ee488a6ae6415",
+      "commit_date": "2025-06-12T22:47:44+08:00",
+      "generator_version": "llm_cookbook@2;engine@12",
+      "manifest_sha256": "35ec601b4ecb1d23976574d30394121cac51cdc74babcffd848f98e478b33d7e",
+      "ref": "main",
+      "repository": "https://github.com/datawhalechina/llm-cookbook.git"
     },
     "pumpkin-book": {
       "commit": "58add39800dfbef65c93b2226d9a514f4cc9da0e",
@@ -239,6 +311,22 @@
       "manifest_sha256": "8f06124266c398df17204a29135b527b5528a51a30538eb683b01d36a7e126ff",
       "ref": "master",
       "repository": "https://github.com/NxeedGoto/Refactoring2-zh.git"
+    },
+    "self-llm": {
+      "commit": "e0fe14a35123f5cab6d32cb9e716b571bf0994cf",
+      "commit_date": "2026-09-12T10:51:10+08:00",
+      "generator_version": "self_llm@1;engine@9",
+      "manifest_sha256": "b8b98cd19a7b4799e557501618e3b2184abe06be301f3fb6f907663ba702b454",
+      "ref": "master",
+      "repository": "https://github.com/datawhalechina/self-llm.git"
+    },
+    "software-engineering-at-google": {
+      "commit": "679725c08143c724598a2b89b94b8c8e4fa47688",
+      "commit_date": "2024-10-27T17:15:10+08:00",
+      "generator_version": "software_engineering_at_google@2;engine@12",
+      "manifest_sha256": "6933de65efc4c919177b24bd5ddaaaadacabd8d673e7c803896cd81438acdd53",
+      "ref": "main",
+      "repository": "https://github.com/qiangmzsx/Software-Engineering-at-Google.git"
     },
     "system-design-interview-notes": {
       "commit": "4b8c25f0125dc32190cd4106d9f5767659214acd",

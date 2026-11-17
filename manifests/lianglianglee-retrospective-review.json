@@ -1,0 +1,78 @@
+{
+  "id": "lianglianglee-retrospective-review",
+  "title": "跟着高手学复盘",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/management/retrospective-review-practice.md",
+  "front_matter": {
+    "authors": [
+      "张鹏"
+    ],
+    "tags": [
+      "retrospective",
+      "management",
+      "leadership",
+      "organizational-development",
+      "tutorial"
+    ]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "开篇与复盘模型",
+      "selection": {
+        "include_globs": [
+          "book/专栏/跟着高手学复盘/0[0-2] *.md"
+        ]
+      }
+    },
+    {
+      "title": "复盘组织与会议实施",
+      "selection": {
+        "include_globs": [
+          "book/专栏/跟着高手学复盘/0[3-7] *.md"
+        ]
+      }
+    },
+    {
+      "title": "分析、洞察与行动",
+      "selection": {
+        "include_globs": [
+          "book/专栏/跟着高手学复盘/0[8-9] *.md",
+          "book/专栏/跟着高手学复盘/1[0-2] *.md"
+        ]
+      }
+    },
+    {
+      "title": "企业复盘案例",
+      "selection": {
+        "include_globs": [
+          "book/专栏/跟着高手学复盘/1[3-9] *.md"
+        ]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": [
+          "book/专栏/跟着高手学复盘/结束语*.md"
+        ]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "book/专栏/跟着高手学复盘/*.md"
+    ],
+    "exclude_paths": [
+      "book/专栏/跟着高手学复盘/春节荐书（一）《原则》：在不确定中找到确定.md",
+      "book/专栏/跟着高手学复盘/春节荐书（二）《人类简史》：故事的力量.md"
+    ]
+  }
+}

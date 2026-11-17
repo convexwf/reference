@@ -1,0 +1,297 @@
+{
+  "id": "hands-on-modern-rl",
+  "title": "Hands-On Modern RL：从经典强化学习到智能体系统",
+  "source": {
+    "repository": "https://github.com/walkinglabs/hands-on-modern-rl.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "adapter": "hands_on_modern_rl",
+  "output": "markdown/machine-learning/hands-on-modern-rl.md",
+  "front_matter": {
+    "authors": [
+      "WalkingLabs 及贡献者"
+    ],
+    "tags": [
+      "reinforcement-learning",
+      "machine-learning",
+      "llm",
+      "agentic-ai",
+      "tutorial"
+    ]
+  },
+  "sections": [
+    {
+      "title": "序言与强化学习概览",
+      "selection": {
+        "include_globs": [
+          "docs/preface/**/*.md"
+        ],
+        "order_paths": [
+          "docs/preface/introduction.md",
+          "docs/preface/brief-history/index.md",
+          "docs/preface/env-setup.md"
+        ]
+      }
+    },
+    {
+      "title": "决策建模与经典强化学习",
+      "selection": {
+        "include_globs": [
+          "docs/chapter01_*/**/*.md",
+          "docs/chapter03_*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/chapter01_cartpole/principles.md",
+          "docs/chapter01_cartpole/metrics.md",
+          "docs/chapter01_cartpole/training.md",
+          "docs/chapter03_mdp/bandit.md",
+          "docs/chapter03_mdp/mdp.md",
+          "docs/chapter03_mdp/policy-value.md",
+          "docs/chapter03_mdp/value-bellman.md",
+          "docs/chapter03_mdp/value-q.md",
+          "docs/chapter03_mdp/value-experiment.md",
+          "docs/chapter03_mdp/dp-mc-td.md",
+          "docs/chapter03_mdp/algorithm-taxonomy.md",
+          "docs/chapter03_mdp/reward-design.md"
+        ]
+      }
+    },
+    {
+      "title": "深度强化学习与策略优化",
+      "selection": {
+        "include_globs": [
+          "docs/chapter07_*/**/*.md",
+          "docs/chapter08_*/**/*.md",
+          "docs/chapter09_*/**/*.md",
+          "docs/chapter10_*/**/*.md",
+          "docs/chapter11_*/**/*.md",
+          "docs/chapter12_*/**/*.md",
+          "docs/chapter13_*/**/*.md",
+          "docs/chapter14_*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/chapter07_dqn/from-q-to-dqn.md",
+          "docs/chapter07_dqn/dqn-components.md",
+          "docs/chapter07_dqn/lunar-lander.md",
+          "docs/chapter07_dqn/dqn-family.md",
+          "docs/chapter07_dqn/visual-game-projects.md",
+          "docs/chapter08_policy_gradient/reinforce.md",
+          "docs/chapter08_policy_gradient/pg-improvements.md",
+          "docs/chapter08_policy_gradient/dice-game.md",
+          "docs/chapter08_policy_gradient/cartpole.md",
+          "docs/chapter08_policy_gradient/baseline-experiment.md",
+          "docs/chapter08_policy_gradient/cartpole-baseline.md",
+          "docs/chapter09_actor_critic/advantage-function.md",
+          "docs/chapter09_actor_critic/actor-critic.md",
+          "docs/chapter09_actor_critic/critic-training.md",
+          "docs/chapter09_actor_critic/pendulum.md",
+          "docs/chapter09_actor_critic/alphago.md",
+          "docs/chapter09_actor_critic/bipedalwalker.md",
+          "docs/chapter09_actor_critic/ac-frontier.md",
+          "docs/chapter10_ppo/ppo-bipedal-walker.md",
+          "docs/chapter10_ppo/trust-region-clipping.md",
+          "docs/chapter10_ppo/gae-reward-model.md",
+          "docs/chapter10_ppo/ppo-math.md",
+          "docs/chapter10_ppo/ppo-game-benchmark.md",
+          "docs/chapter10_ppo/rl-long-horizon-planning.md",
+          "docs/chapter11_continuous_control/ddpg.md",
+          "docs/chapter11_continuous_control/td3-sac.md",
+          "docs/chapter11_continuous_control/model-based.md",
+          "docs/chapter11_continuous_control/search-world-models.md",
+          "docs/chapter12_offline_rl/offline-data-distribution-shift.md",
+          "docs/chapter12_offline_rl/sequence-modeling.md",
+          "docs/chapter12_offline_rl/experiments.md",
+          "docs/chapter13_imitation_meta_rl/bc-dagger.md",
+          "docs/chapter13_imitation_meta_rl/irl-gail.md",
+          "docs/chapter13_imitation_meta_rl/meta-rl.md",
+          "docs/chapter14_exploration_marl_hierarchical/intrinsic-motivation-exploration.md",
+          "docs/chapter14_exploration_marl_hierarchical/marl.md",
+          "docs/chapter14_exploration_marl_hierarchical/hierarchical.md"
+        ]
+      }
+    },
+    {
+      "title": "大模型对齐与后训练",
+      "selection": {
+        "include_globs": [
+          "docs/chapter15_*/**/*.md",
+          "docs/chapter16_*/**/*.md",
+          "docs/chapter17_*/**/*.md",
+          "docs/chapter18_*/**/*.md",
+          "docs/chapter19_*/**/*.md",
+          "docs/chapter20_*/**/*.md",
+          "docs/chapter21_*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/chapter15_rlhf/base-model-to-assistant.md",
+          "docs/chapter15_rlhf/imitation-learning-pipeline.md",
+          "docs/chapter21_cai_rlvr/hhh-practice.md",
+          "docs/chapter15_rlhf/standard-rlhf-pipeline.md",
+          "docs/chapter15_rlhf/scaling-to-large-models.md",
+          "docs/chapter15_rlhf/evaluation.md",
+          "docs/chapter15_rlhf/extended-practice.md",
+          "docs/chapter15_rlhf/verl-ppo-gsm8k.md",
+          "docs/chapter15_rlhf/ppo-rlhf-loop.md",
+          "docs/chapter17_dpo/dpo-objective-derivation.md",
+          "docs/chapter17_dpo/metrics.md",
+          "docs/chapter17_dpo/dpo-theory-and-family.md",
+          "docs/chapter17_dpo/dpo-hands-on.md",
+          "docs/chapter18_grpo/grpo-practice-and-mechanism.md",
+          "docs/chapter18_grpo/deepseek-dapo.md",
+          "docs/chapter18_grpo/rlvr.md",
+          "docs/chapter18_grpo/grpo-family.md",
+          "docs/chapter18_grpo/rl-environments.md",
+          "docs/chapter18_grpo/financial-tool-calling-grpo.md",
+          "docs/chapter18_grpo/on-policy-distillation.md",
+          "docs/chapter18_grpo/verl-code-sandbox.md",
+          "docs/chapter19_reasoning/emergence-and-o1.md",
+          "docs/chapter19_reasoning/r1-zero-pure-rl-reasoning.md",
+          "docs/chapter19_reasoning/test-time-scaling.md",
+          "docs/chapter19_reasoning/hybrid-thinking.md",
+          "docs/chapter19_reasoning/adaptive-thinking.md",
+          "docs/chapter19_reasoning/cot-visibility-alignment.md",
+          "docs/chapter20_prm_search/outcome-vs-process.md",
+          "docs/chapter20_prm_search/discriminative-prm.md",
+          "docs/chapter20_prm_search/generative-prm.md",
+          "docs/chapter20_prm_search/formal-prm.md",
+          "docs/chapter20_prm_search/inference-time-search.md",
+          "docs/chapter20_prm_search/parallel-reasoning-and-summary.md",
+          "docs/chapter16_llm_rl_industrial/single-machine-to-industrial.md",
+          "docs/chapter16_llm_rl_industrial/industrial-post-training.md",
+          "docs/chapter16_llm_rl_industrial/modern-industrial-practice.md",
+          "docs/chapter16_llm_rl_industrial/distributed-sync.md",
+          "docs/chapter16_llm_rl_industrial/data-engineering.md"
+        ]
+      }
+    },
+    {
+      "title": "Agentic RL 与工具调用",
+      "selection": {
+        "include_globs": [
+          "docs/chapter22_*/**/*.md",
+          "docs/chapter23_*/**/*.md",
+          "docs/chapter24_*/**/*.md",
+          "docs/chapter25_*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/chapter22_agentic/overview.md",
+          "docs/chapter22_agentic/formulation.md",
+          "docs/chapter22_agentic/credit-assignment.md",
+          "docs/chapter22_agentic/tool-use-and-trajectory.md",
+          "docs/chapter22_agentic/tool-use-agents.md",
+          "docs/chapter22_agentic/industrial-practice.md",
+          "docs/chapter22_agentic/multi-agent-swarm.md",
+          "docs/chapter22_agentic/rllm-deepcoder-lab.md",
+          "docs/chapter22_agentic/rllm-finqa-lab.md",
+          "docs/chapter22_agentic/build-agentic-training-system.md",
+          "docs/chapter23_rl_based_swe/swe-bench-and-rlvr.md",
+          "docs/chapter23_rl_based_swe/world-model-and-deep-swe.md",
+          "docs/chapter23_rl_based_swe/self-play-ssr-and-summary.md",
+          "docs/chapter24_deep_research/browser-rl-harness.md",
+          "docs/chapter24_deep_research/deep-research-eval.md",
+          "docs/chapter25_computer_use/training.md",
+          "docs/chapter25_computer_use/safety-swarm.md"
+        ]
+      }
+    },
+    {
+      "title": "多模态与具身强化学习",
+      "selection": {
+        "include_globs": [
+          "docs/chapter26_*/**/*.md",
+          "docs/chapter27_*/**/*.md",
+          "docs/chapter28_*/**/*.md",
+          "docs/chapter29_*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/chapter26_vlm/vlm-challenges.md",
+          "docs/chapter26_vlm/qwen3-vl-reflection.md",
+          "docs/chapter26_vlm/vlm-grpo-hands-on.md",
+          "docs/chapter26_vlm/easyr1-geoqa.md",
+          "docs/chapter27_audio_rl/reward-design.md",
+          "docs/chapter27_audio_rl/future.md",
+          "docs/chapter28_vla/embodied-intelligence/index.md",
+          "docs/chapter29_visual_generation/visual-generation-dancegrpo.md",
+          "docs/chapter29_visual_generation/video-generation-modern.md"
+        ]
+      }
+    },
+    {
+      "title": "安全、评估与研究前沿",
+      "selection": {
+        "include_globs": [
+          "docs/chapter30_*/**/*.md",
+          "docs/chapter32_*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/chapter30_alignment_failures/classical-failures.md",
+          "docs/chapter30_alignment_failures/modern-incidents.md",
+          "docs/chapter30_alignment_failures/sleeper-and-faking.md",
+          "docs/chapter30_alignment_failures/scaling-and-defenses.md",
+          "docs/chapter30_alignment_failures/rl-evaluation.md",
+          "docs/chapter32_selfplay/self-play-outlook/index.md",
+          "docs/chapter32_selfplay/rl-scaling-outlook.md",
+          "docs/chapter32_selfplay/llm-multi-agent-rl/index.md",
+          "docs/chapter32_selfplay/alphaevolve/index.md"
+        ]
+      }
+    },
+    {
+      "title": "附录与工程参考",
+      "selection": {
+        "include_globs": [
+          "docs/appendix*/**/*.md"
+        ],
+        "order_paths": [
+          "docs/appendix_industrial_training/training-debugging.md",
+          "docs/appendix_industrial_training/rl-infrastructure.md",
+          "docs/appendix_industrial_training/agentic-rl-infra.md",
+          "docs/appendix_industrial_training/evaluation-badcase.md",
+          "docs/appendix_code_cheatsheet/sft-kl.md",
+          "docs/appendix_code_cheatsheet/ppo-gae.md",
+          "docs/appendix_code_cheatsheet/dpo-family.md",
+          "docs/appendix_code_cheatsheet/grpo-rlvr.md",
+          "docs/appendix_code_cheatsheet/dapo.md",
+          "docs/appendix_code_cheatsheet/softmax-ce.md",
+          "docs/appendix_code_cheatsheet/top-k-top-p.md",
+          "docs/appendix_code_cheatsheet/attention-mha.md",
+          "docs/appendix_paper_reading/learning-resources.md",
+          "docs/appendix_gpu_hours/gpu-hours-estimation.md",
+          "docs/appendix_industrial_training/metrics-glossary.md",
+          "docs/appendix_industrial_training/industrial-exercises.md",
+          "docs/appendix_math/linear-algebra-basics.md",
+          "docs/appendix_math/linear-algebra-bellman.md",
+          "docs/appendix_math/linear-algebra-function-approx.md",
+          "docs/appendix_math/linear-algebra-advanced.md",
+          "docs/appendix_math/linear-algebra-formulas-exercises.md",
+          "docs/appendix_math/probability-basics.md",
+          "docs/appendix_math/probability-value.md",
+          "docs/appendix_math/probability-sampling.md",
+          "docs/appendix_math/probability-trajectory-td.md",
+          "docs/appendix_math/probability-bellman-advanced.md",
+          "docs/appendix_math/probability-formulas-exercises.md",
+          "docs/appendix_math/calculus-basics.md",
+          "docs/appendix_math/calculus-policy-gradient.md",
+          "docs/appendix_math/calculus-ppo.md",
+          "docs/appendix_math/calculus-derivations.md",
+          "docs/appendix_math/calculus-advanced-formulas.md",
+          "docs/appendix_math/calculus-formulas-exercises.md",
+          "docs/appendix_math/information-basics.md",
+          "docs/appendix_math/information-cross-entropy-kl.md",
+          "docs/appendix_math/information-rlhf-dpo.md",
+          "docs/appendix_math/information-mutual-info.md",
+          "docs/appendix_math/information-advanced-formulas.md",
+          "docs/appendix_math/information-formulas-exercises.md"
+        ]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "docs/preface/**/*.md",
+      "docs/chapter*/**/*.md",
+      "docs/appendix*/**/*.md"
+    ]
+  }
+}

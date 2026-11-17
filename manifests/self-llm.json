@@ -1,0 +1,111 @@
+{
+  "id": "self-llm",
+  "title": "开源大模型食用指南",
+  "source": {
+    "repository": "https://github.com/datawhalechina/self-llm.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "self_llm",
+  "output": "markdown/ai/self-llm.md",
+  "front_matter": {
+    "authors": [
+      "Datawhale Self-LLM 项目组"
+    ],
+    "tags": [
+      "llm",
+      "deployment",
+      "fine-tuning",
+      "lora",
+      "inference",
+      "tutorial"
+    ]
+  },
+  "sections": [
+    {
+      "title": "项目概览",
+      "parts": [
+        {
+          "path": "README.md",
+          "title": "开源大模型食用指南"
+        }
+      ]
+    },
+    {
+      "title": "模型与环境导航",
+      "parts": [
+        {
+          "path": "support_model.md",
+          "title": "主流模型教程导航"
+        },
+        {
+          "path": "support_model_amd.md",
+          "title": "AMD GPU 平台模型导航"
+        },
+        {
+          "path": "support_model_Ascend.md",
+          "title": "昇腾 Ascend NPU 平台模型导航"
+        }
+      ]
+    },
+    {
+      "title": "示例项目",
+      "selection": {
+        "include_globs": [
+          "examples/**/*.md"
+        ]
+      }
+    },
+    {
+      "title": "主流模型教程",
+      "selection": {
+        "include_globs": [
+          "models/**/*.md"
+        ]
+      }
+    },
+    {
+      "title": "AMD GPU 平台教程",
+      "selection": {
+        "include_globs": [
+          "models_amd/**/*.md"
+        ],
+        "title_overrides": {
+          "models_amd/README_00_AMD_AUP免费云平台使用指南.md": "AMD ROCm 云平台使用指南"
+        }
+      }
+    },
+    {
+      "title": "昇腾 Ascend NPU 平台教程",
+      "selection": {
+        "include_globs": [
+          "models_ascend/**/*.md"
+        ]
+      }
+    },
+    {
+      "title": "Apple M 平台教程",
+      "selection": {
+        "include_globs": [
+          "models_mlx/**/*.md"
+        ],
+        "title_overrides": {
+          "models_mlx/README_en.md": "Apple M 平台模型教程（英文）"
+        }
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "README.md",
+      "support_model.md",
+      "support_model_amd.md",
+      "support_model_Ascend.md",
+      "examples/**/*.md",
+      "models/**/*.md",
+      "models_amd/**/*.md",
+      "models_ascend/**/*.md",
+      "models_mlx/**/*.md"
+    ]
+  }
+}

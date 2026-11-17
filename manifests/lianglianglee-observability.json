@@ -1,0 +1,59 @@
+{
+  "id": "lianglianglee-observability",
+  "title": "深入浅出可观测性",
+  "source": {
+    "repository": "https://github.com/Yvan0329/lianglianglee.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "output": "markdown/software-engineering/observability-in-depth.md",
+  "front_matter": {
+    "authors": ["翁一磊"],
+    "tags": ["observability", "monitoring", "sre", "opentelemetry", "tutorial"]
+  },
+  "render": {
+    "source_format": "html_article",
+    "article_class": "book-post"
+  },
+  "sections": [
+    {
+      "title": "开篇与可观测性基础",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出可观测性/0[0-3] *.md"]
+      }
+    },
+    {
+      "title": "数据采集、平台与团队协作",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出可观测性/0[4-7] *.md"]
+      }
+    },
+    {
+      "title": "SLO 与系统可靠性",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出可观测性/0[8-9] *.md"]
+      }
+    },
+    {
+      "title": "可观测性实战",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出可观测性/1[0-3] *.md"]
+      }
+    },
+    {
+      "title": "文化建设与未来趋势",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出可观测性/1[4-5] *.md"]
+      }
+    },
+    {
+      "title": "结束语",
+      "selection": {
+        "include_globs": ["book/专栏/深入浅出可观测性/结束语*.md"]
+      }
+    }
+  ],
+  "completeness": {
+    "required_globs": ["book/专栏/深入浅出可观测性/*.md"]
+  }
+}

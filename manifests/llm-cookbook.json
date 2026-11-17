@@ -1,0 +1,234 @@
+{
+  "id": "llm-cookbook",
+  "title": "LLM Cookbook：面向开发者的大模型入门教程",
+  "source": {
+    "repository": "https://github.com/datawhalechina/llm-cookbook.git",
+    "ref": "main"
+  },
+  "language": "zh-CN",
+  "adapter": "llm_cookbook",
+  "output": "markdown/ai/llm-cookbook.md",
+  "front_matter": {
+    "authors": [
+      "Datawhale",
+      "吴恩达课程团队"
+    ],
+    "tags": [
+      "llm",
+      "prompt-engineering",
+      "langchain",
+      "rag",
+      "tutorial"
+    ]
+  },
+  "sections": [
+    {
+      "title": "导读",
+      "parts": [
+        {
+          "path": "docs/README.md",
+          "title": "项目概览"
+        },
+        {
+          "path": "docs/前言.md",
+          "title": "前言"
+        },
+        {
+          "path": "docs/环境配置.md",
+          "title": "环境配置"
+        }
+      ]
+    },
+    {
+      "title": "第一部分 面向开发者的提示工程",
+      "parts": [
+        {
+          "path": "docs/C1/readme.md",
+          "title": "0. 概述"
+        },
+        {
+          "path": "docs/C1/1. 简介 Introduction.md",
+          "title": "1. 简介 Introduction"
+        },
+        {
+          "path": "docs/C1/2. 提示原则 Guidelines.md",
+          "title": "2. 提示原则 Guidelines"
+        },
+        {
+          "path": "docs/C1/3. 迭代优化 Iterative.md",
+          "title": "3. 迭代优化 Iterative"
+        },
+        {
+          "path": "docs/C1/4. 文本概括 Summarizing.md",
+          "title": "4. 文本概括 Summarizing"
+        },
+        {
+          "path": "docs/C1/5. 推断 Inferring.md",
+          "title": "5. 推断 Inferring"
+        },
+        {
+          "path": "docs/C1/6. 文本转换 Transforming.md",
+          "title": "6. 文本转换 Transforming"
+        },
+        {
+          "path": "docs/C1/7. 文本扩展 Expanding.md",
+          "title": "7. 文本扩展 Expanding"
+        },
+        {
+          "path": "docs/C1/8. 聊天机器人 Chatbot.md",
+          "title": "8. 聊天机器人 Chatbot"
+        },
+        {
+          "path": "docs/C1/9. 总结 Summary.md",
+          "title": "9. 总结 Summary"
+        }
+      ]
+    },
+    {
+      "title": "第二部分 搭建基于 ChatGPT 的问答系统",
+      "parts": [
+        {
+          "path": "docs/C2/readme.md",
+          "title": "0. 概述"
+        },
+        {
+          "path": "docs/C2/1. 简介 Introduction.md",
+          "title": "1. 简介 Introduction"
+        },
+        {
+          "path": "docs/C2/2. 语言模型，提问范式与 Token Language Models, the Chat Format and Tokens.md",
+          "title": "2. 语言模型，提问范式与 Token Language Models, the Chat Format and Tokens"
+        },
+        {
+          "path": "docs/C2/3. 评估输入-分类 Classification.md",
+          "title": "3. 评估输入-分类 Classification"
+        },
+        {
+          "path": "docs/C2/4. 检查输入-监督 Moderation.md",
+          "title": "4. 检查输入-监督 Moderation"
+        },
+        {
+          "path": "docs/C2/5. 处理输入-思维链推理 Chain of Thought Reasoning.md",
+          "title": "5. 思维链推理 Chain of Thought Reasoning"
+        },
+        {
+          "path": "docs/C2/6. 处理输入-链式 Prompt Chaining Prompts.md",
+          "title": "6. Prompt 链 Chaining Prompts"
+        },
+        {
+          "path": "docs/C2/7. 检查结果 Check Outputs.md",
+          "title": "7. 检查结果 Check Outputs"
+        },
+        {
+          "path": "docs/C2/8. 搭建一个带评估的端到端问答系统 Evaluation.md",
+          "title": "8. 搭建一个带评估的端到端系统 Evaluation"
+        },
+        {
+          "path": "docs/C2/9. 评估（上） Evaluation-part1.md",
+          "title": "9. 评估（上）Evaluation-part1"
+        },
+        {
+          "path": "docs/C2/10. 评估（下）Evaluation-part2.md",
+          "title": "10. 评估（下）Evaluation-part2"
+        },
+        {
+          "path": "docs/C2/11.总结 conclusion.md",
+          "title": "11. 总结 Conclusion"
+        }
+      ]
+    },
+    {
+      "title": "第三部分 使用 LangChain 开发应用程序",
+      "parts": [
+        {
+          "path": "docs/C3/readme.md",
+          "title": "0. 概述"
+        },
+        {
+          "path": "docs/C3/1. 简介 Introduction.md",
+          "title": "1. 简介 Introduction"
+        },
+        {
+          "path": "docs/C3/2. 模型、提示和解析器 Models, Prompts and Output Parsers.md",
+          "title": "2. 模型、提示和解析器 Models, Prompts and Parsers"
+        },
+        {
+          "path": "docs/C3/3. 储存 Memory.md",
+          "title": "3. 储存 Memory"
+        },
+        {
+          "path": "docs/C3/4. 模型链 Chains.md",
+          "title": "4. 模型链 Chains"
+        },
+        {
+          "path": "docs/C3/5. 基于文档的问答 Question and Answer.md",
+          "title": "5. 基于文档的问答 Question and Answer"
+        },
+        {
+          "path": "docs/C3/6. 评估 Evaluation.md",
+          "title": "6. 评估 Evaluation"
+        },
+        {
+          "path": "docs/C3/7. 代理 Agent.md",
+          "title": "7. 代理 Agent"
+        },
+        {
+          "path": "docs/C3/8. 总结 Conclusion.md",
+          "title": "8. 总结 Conclusion"
+        }
+      ]
+    },
+    {
+      "title": "第四部分 使用 LangChain 访问个人数据",
+      "parts": [
+        {
+          "path": "docs/C4/readme.md",
+          "title": "0. 概述"
+        },
+        {
+          "path": "docs/C4/1. 简介 Introduction.md",
+          "title": "1. 简介 Introduction"
+        },
+        {
+          "path": "docs/C4/2. 文档加载 Document Loading.md",
+          "title": "2. 文档加载 Document Loading"
+        },
+        {
+          "path": "docs/C4/3. 文档分割 Splitting.md",
+          "title": "3. 文档分割 Splitting"
+        },
+        {
+          "path": "docs/C4/4. 向量数据库与词向量 Vectorstores and Embeddings.md",
+          "title": "4. 向量数据库与词向量 Vectorstores and Embeddings"
+        },
+        {
+          "path": "docs/C4/5. 检索 Retrieval.md",
+          "title": "5. 检索 Retrieval"
+        },
+        {
+          "path": "docs/C4/6. 问答 Question Answering.md",
+          "title": "6. 问答 Question ANswering"
+        },
+        {
+          "path": "docs/C4/7. 聊天 Chat.md",
+          "title": "7. 聊天 Chat"
+        },
+        {
+          "path": "docs/C4/8. 总结 Summary.md",
+          "title": "8. 总结 Summary"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "docs/README.md",
+      "docs/前言.md",
+      "docs/环境配置.md",
+      "docs/C1/*.md",
+      "docs/C2/*.md",
+      "docs/C3/*.md",
+      "docs/C4/*.md"
+    ]
+  }
+}

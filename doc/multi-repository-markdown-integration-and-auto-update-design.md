@@ -77,8 +77,6 @@ flowchart LR
 
 ```text
 reference/
-├── adapters/
-│   └── __init__.py              # 每本书的版本化兼容声明
 ├── manifests/                   # 人工维护的来源和内容清单
 │   ├── ai-agent-book.json
 │   ├── ai-infra-book.json
@@ -104,15 +102,21 @@ reference/
 │   │   ├── all-in-rag.md
 │   │   ├── ai-tech-insider.md
 │   │   └── ...
+│   ├── blockchain/
+│   │   └── blockchain-guide.md
 │   ├── finance/
 │   │   ├── distributed-finance-architecture.md
 │   │   └── whale-quant.md
 │   ├── health-science/
 │   │   └── huberman-lab-health-guides.md
+│   ├── language-style-guides/
+│   │   └── google-python-style-guide.md
 │   ├── machine-learning/
 │   │   ├── easy-rl.md
 │   │   ├── pumpkin-book.md
 │   │   └── recommendation-system-36-lessons.md
+│   ├── management/
+│   │   └── retrospective-review-practice.md
 │   └── software-engineering/
 │       ├── continuous-delivery-36-lessons.md
 │       ├── high-concurrency-system-design-40-questions.md
@@ -123,7 +127,8 @@ reference/
 │   ├── update.py                # 发现新源 commit、生成并更新 lock
 │   ├── check.py                 # 无写入检查入口
 │   ├── reference_core.py        # 清单、锁和通用重写逻辑
-│   └── source_cache.py          # 只读检出与缓存管理
+│   ├── source_cache.py          # 只读检出与缓存管理
+│   └── adapters.py              # 每本书的版本化兼容声明
 ├── .github/workflows/
 │   ├── validate.yml             # PR 校验
 │   └── update.yml               # 定时/手动更新和自动合并
@@ -284,7 +289,7 @@ sequenceDiagram
   end
 ```
 
-PR 校验由 `validate.yml` 执行，触发条件为修改 `manifests/**`、`tools/**`、`adapters/**`、`markdown/**`、`sources.lock.json`、`tests/**` 或工作流文件。它运行 `tools/check.py --all` 与单元测试，但不访问未经清单授权的来源。
+PR 校验由 `validate.yml` 执行，触发条件为修改 `manifests/**`、`tools/**`、`markdown/**`、`sources.lock.json`、`tests/**` 或工作流文件。它运行 `tools/check.py --all` 与单元测试，但不访问未经清单授权的来源。
 
 ### 自动合并门槛
 
@@ -292,7 +297,7 @@ PR 校验由 `validate.yml` 执行，触发条件为修改 `manifests/**`、`too
 
 - PR 分支名符合 `automation/source-sync-*`。
 - PR 作者是配置的 GitHub App，而不是普通用户或 `GITHUB_TOKEN`。
-- 文件变更仅限 `sources.lock.json` 和 `markdown/**`；`manifests/`、`tools/`、`adapters/`、测试和 workflow 的变化必须人工审查。
+- 文件变更仅限 `sources.lock.json` 和 `markdown/**`；`manifests/`、`tools/`、测试和 workflow 的变化必须人工审查。
 - `update.yml` 已在同一提交上完成生成与检查，`validate.yml` 的全部必需检查也成功。
 - 默认分支启用线性历史或 squash merge，且仓库启用 GitHub 的 auto-merge。
 - 同一时间只允许一个来源同步 PR；并发任务使用 `concurrency: source-sync` 取消旧任务。

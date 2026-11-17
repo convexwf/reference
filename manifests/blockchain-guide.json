@@ -1,0 +1,754 @@
+{
+  "id": "blockchain-guide",
+  "title": "区块链技术指南",
+  "source": {
+    "repository": "https://github.com/yeasy/blockchain_guide.git",
+    "ref": "master"
+  },
+  "language": "zh-CN",
+  "adapter": "generic",
+  "output": "markdown/blockchain/blockchain-guide.md",
+  "front_matter": {
+    "authors": [
+      "yeasy",
+      "区块链技术指南贡献者"
+    ],
+    "tags": [
+      "blockchain",
+      "distributed-ledger",
+      "bitcoin",
+      "ethereum",
+      "hyperledger",
+      "fintech"
+    ]
+  },
+  "sections": [
+    {
+      "title": "导读",
+      "parts": [
+        {
+          "path": "README.md",
+          "title": "本书简介"
+        }
+      ]
+    },
+    {
+      "title": "区块链的诞生",
+      "parts": [
+        {
+          "path": "01_history/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "01_history/ledger_history.md",
+          "title": "记账科技的千年演化"
+        },
+        {
+          "path": "01_history/dlt_problem.md",
+          "title": "分布式记账与区块链"
+        },
+        {
+          "path": "01_history/bitcoin.md",
+          "title": "集大成者的比特币"
+        },
+        {
+          "path": "01_history/business.md",
+          "title": "区块链的商业价值"
+        },
+        {
+          "path": "01_history/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "核心技术概览",
+      "parts": [
+        {
+          "path": "02_overview/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "02_overview/definition.md",
+          "title": "定义与原理"
+        },
+        {
+          "path": "02_overview/classify.md",
+          "title": "技术的演化与分类"
+        },
+        {
+          "path": "02_overview/challenge.md",
+          "title": "关键问题和挑战"
+        },
+        {
+          "path": "02_overview/vision.md",
+          "title": "趋势与展望"
+        },
+        {
+          "path": "02_overview/misunderstand.md",
+          "title": "认识上的误区"
+        },
+        {
+          "path": "02_overview/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "典型应用场景",
+      "parts": [
+        {
+          "path": "03_scenario/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "03_scenario/glance.md",
+          "title": "应用场景概览"
+        },
+        {
+          "path": "03_scenario/finance.md",
+          "title": "金融服务"
+        },
+        {
+          "path": "03_scenario/trust.md",
+          "title": "征信管理"
+        },
+        {
+          "path": "03_scenario/ownership.md",
+          "title": "权属管理与溯源"
+        },
+        {
+          "path": "03_scenario/sharing.md",
+          "title": "资源共享"
+        },
+        {
+          "path": "03_scenario/logistics.md",
+          "title": "物流与供应链"
+        },
+        {
+          "path": "03_scenario/iot.md",
+          "title": "物联网"
+        },
+        {
+          "path": "03_scenario/nft.md",
+          "title": "数字艺术品和 NFT"
+        },
+        {
+          "path": "03_scenario/gov.md",
+          "title": "数字政府"
+        },
+        {
+          "path": "03_scenario/healthcare.md",
+          "title": "医疗健康"
+        },
+        {
+          "path": "03_scenario/cbdc.md",
+          "title": "央行数字货币 （CBDC）"
+        },
+        {
+          "path": "03_scenario/failure.md",
+          "title": "失败案例分析"
+        },
+        {
+          "path": "03_scenario/others.md",
+          "title": "其他场景"
+        },
+        {
+          "path": "03_scenario/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "分布式系统核心技术",
+      "parts": [
+        {
+          "path": "04_distributed_system/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "04_distributed_system/problem.md",
+          "title": "一致性问题"
+        },
+        {
+          "path": "04_distributed_system/algorithms.md",
+          "title": "共识算法"
+        },
+        {
+          "path": "04_distributed_system/flp.md",
+          "title": "FLP 不可能原理"
+        },
+        {
+          "path": "04_distributed_system/cap.md",
+          "title": "CAP 原理"
+        },
+        {
+          "path": "04_distributed_system/acid.md",
+          "title": "ACID 原则与多阶段提交"
+        },
+        {
+          "path": "04_distributed_system/paxos.md",
+          "title": "Paxos 算法与 Raft 算法"
+        },
+        {
+          "path": "04_distributed_system/bft.md",
+          "title": "拜占庭问题与算法"
+        },
+        {
+          "path": "04_distributed_system/availability.md",
+          "title": "可用性指标"
+        },
+        {
+          "path": "04_distributed_system/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "密码学与区块链安全",
+      "parts": [
+        {
+          "path": "05_crypto/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "05_crypto/history.md",
+          "title": "密码学简史"
+        },
+        {
+          "path": "05_crypto/hash.md",
+          "title": "Hash 算法与数字摘要"
+        },
+        {
+          "path": "05_crypto/algorithm.md",
+          "title": "加解密算法"
+        },
+        {
+          "path": "05_crypto/signature.md",
+          "title": "消息认证码与数字签名"
+        },
+        {
+          "path": "05_crypto/cert.md",
+          "title": "数字证书"
+        },
+        {
+          "path": "05_crypto/pki.md",
+          "title": "PKI 体系"
+        },
+        {
+          "path": "05_crypto/merkle_trie.md",
+          "title": "Merkle 树结构"
+        },
+        {
+          "path": "05_crypto/bloom_filter.md",
+          "title": "布隆过滤器"
+        },
+        {
+          "path": "05_crypto/homoencryption.md",
+          "title": "同态加密"
+        },
+        {
+          "path": "05_crypto/zkp.md",
+          "title": "零知识证明"
+        },
+        {
+          "path": "05_crypto/security_intro.md",
+          "title": "区块链安全概览"
+        },
+        {
+          "path": "05_crypto/smart_contract_vulns.md",
+          "title": "智能合约漏洞"
+        },
+        {
+          "path": "05_crypto/smart_contract_best_practices.md",
+          "title": "智能合约安全开发最佳实践"
+        },
+        {
+          "path": "05_crypto/attack_vectors.md",
+          "title": "常见攻击向量"
+        },
+        {
+          "path": "05_crypto/audit.md",
+          "title": "安全审计"
+        },
+        {
+          "path": "05_crypto/security_tools.md",
+          "title": "智能合约安全审计工具"
+        },
+        {
+          "path": "05_crypto/others.md",
+          "title": "其他技术"
+        },
+        {
+          "path": "05_crypto/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "比特币 —— 初露锋芒的区块链",
+      "parts": [
+        {
+          "path": "06_bitcoin/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "06_bitcoin/intro.md",
+          "title": "比特币项目简介"
+        },
+        {
+          "path": "06_bitcoin/currency.md",
+          "title": "实体货币到加密数字货币"
+        },
+        {
+          "path": "06_bitcoin/design.md",
+          "title": "基本原理和设计"
+        },
+        {
+          "path": "06_bitcoin/mining.md",
+          "title": "挖矿过程"
+        },
+        {
+          "path": "06_bitcoin/consensus.md",
+          "title": "共识机制"
+        },
+        {
+          "path": "06_bitcoin/lightning_network.md",
+          "title": "闪电网络"
+        },
+        {
+          "path": "06_bitcoin/sidechain.md",
+          "title": "侧链"
+        },
+        {
+          "path": "06_bitcoin/hot_topics.md",
+          "title": "热点问题"
+        },
+        {
+          "path": "06_bitcoin/tools.md",
+          "title": "相关工具"
+        },
+        {
+          "path": "06_bitcoin/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "以太坊 —— 挣脱加密货币的枷锁",
+      "parts": [
+        {
+          "path": "07_ethereum/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "07_ethereum/intro.md",
+          "title": "以太坊项目简介"
+        },
+        {
+          "path": "07_ethereum/concept.md",
+          "title": "核心概念"
+        },
+        {
+          "path": "07_ethereum/design.md",
+          "title": "主要设计"
+        },
+        {
+          "path": "07_ethereum/layer2.md",
+          "title": "Layer 2 与扩容方案"
+        },
+        {
+          "path": "07_ethereum/tools.md",
+          "title": "相关工具"
+        },
+        {
+          "path": "07_ethereum/install.md",
+          "title": "安装客户端"
+        },
+        {
+          "path": "07_ethereum/smart_contract.md",
+          "title": "使用智能合约"
+        },
+        {
+          "path": "07_ethereum/smart_contract_labs.md",
+          "title": "智能合约开发实验指南"
+        },
+        {
+          "path": "07_ethereum/contract_example.md",
+          "title": "智能合约案例：投票"
+        },
+        {
+          "path": "07_ethereum/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "超级账本 —— 面向企业的分布式账本",
+      "parts": [
+        {
+          "path": "08_hyperledger/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "08_hyperledger/intro.md",
+          "title": "超级账本项目简介"
+        },
+        {
+          "path": "08_hyperledger/community.md",
+          "title": "社区组织结构"
+        },
+        {
+          "path": "08_hyperledger/project.md",
+          "title": "顶级项目介绍"
+        },
+        {
+          "path": "08_hyperledger/tools.md",
+          "title": "开发必备工具"
+        },
+        {
+          "path": "08_hyperledger/contribute.md",
+          "title": "贡献代码"
+        },
+        {
+          "path": "08_hyperledger/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "Fabric 安装与部署",
+      "parts": [
+        {
+          "path": "09_fabric_deploy/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "09_fabric_deploy/intro.md",
+          "title": "简介"
+        },
+        {
+          "path": "09_fabric_deploy/install_local.md",
+          "title": "安装 Fabric"
+        },
+        {
+          "path": "09_fabric_deploy/install_docker.md",
+          "title": "配置容器环境"
+        },
+        {
+          "path": "09_fabric_deploy/start_local.md",
+          "title": "本地启动 Fabric 网络"
+        },
+        {
+          "path": "09_fabric_deploy/start_docker.md",
+          "title": "容器方式启动 Fabric 网络"
+        },
+        {
+          "path": "09_fabric_deploy/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "管理 Fabric 网络",
+      "parts": [
+        {
+          "path": "10_fabric_op/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "10_fabric_op/intro.md",
+          "title": "简介"
+        },
+        {
+          "path": "10_fabric_op/channel.md",
+          "title": "使用多通道"
+        },
+        {
+          "path": "10_fabric_op/node.md",
+          "title": "管理节点"
+        },
+        {
+          "path": "10_fabric_op/chaincode.md",
+          "title": "管理链上代码"
+        },
+        {
+          "path": "10_fabric_op/chaincode_v2.md",
+          "title": "管理链上代码（Lifecycle）"
+        },
+        {
+          "path": "10_fabric_op/events.md",
+          "title": "监听网络事件"
+        },
+        {
+          "path": "10_fabric_op/discover.md",
+          "title": "自动探测网络信息"
+        },
+        {
+          "path": "10_fabric_op/operation.md",
+          "title": "使用运维服务"
+        },
+        {
+          "path": "10_fabric_op/upgrade.md",
+          "title": "如何升级版本"
+        },
+        {
+          "path": "10_fabric_op/sdk.md",
+          "title": "SDK 支持"
+        },
+        {
+          "path": "10_fabric_op/best_practice.md",
+          "title": "注意事项与最佳实践"
+        },
+        {
+          "path": "10_fabric_op/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "智能合约开发",
+      "parts": [
+        {
+          "path": "11_app_dev/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "11_app_dev/intro.md",
+          "title": "简介"
+        },
+        {
+          "path": "11_app_dev/chaincode.md",
+          "title": "链码概念与结构"
+        },
+        {
+          "path": "11_app_dev/chaincode_example01.md",
+          "title": "链码示例一：信息公证"
+        },
+        {
+          "path": "11_app_dev/chaincode_example02.md",
+          "title": "链码示例二：交易资产"
+        },
+        {
+          "path": "11_app_dev/chaincode_example03.md",
+          "title": "数字货币发行与管理"
+        },
+        {
+          "path": "11_app_dev/chaincode_example04.md",
+          "title": "学历认证"
+        },
+        {
+          "path": "11_app_dev/chaincode_example05.md",
+          "title": "社区能源共享"
+        },
+        {
+          "path": "11_app_dev/chaincode_example06.md",
+          "title": "物流供应链简单案例"
+        },
+        {
+          "path": "11_app_dev/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "Web3 与去中心化金融",
+      "parts": [
+        {
+          "path": "12_web3/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "12_web3/intro.md",
+          "title": "Web3 概念与架构"
+        },
+        {
+          "path": "12_web3/defi.md",
+          "title": "DeFi 协议与应用"
+        },
+        {
+          "path": "12_web3/nft_and_collectibles.md",
+          "title": "NFT 与数字收藏品"
+        },
+        {
+          "path": "12_web3/dao.md",
+          "title": "DAO 组织形式"
+        },
+        {
+          "path": "12_web3/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "Fabric 架构与设计",
+      "parts": [
+        {
+          "path": "13_fabric_design/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "13_fabric_design/intro.md",
+          "title": "简介"
+        },
+        {
+          "path": "13_fabric_design/design.md",
+          "title": "架构设计"
+        },
+        {
+          "path": "13_fabric_design/protocol.md",
+          "title": "网络协议与交互机制"
+        },
+        {
+          "path": "13_fabric_design/performance.md",
+          "title": "性能表现与评估"
+        },
+        {
+          "path": "13_fabric_design/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "区块链服务平台设计",
+      "parts": [
+        {
+          "path": "14_baas/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "14_baas/intro.md",
+          "title": "简介"
+        },
+        {
+          "path": "14_baas/bluemix.md",
+          "title": "IBM Blockchain Platform"
+        },
+        {
+          "path": "14_baas/azure.md",
+          "title": "微软 Azure 区块链方案"
+        },
+        {
+          "path": "14_baas/cello.md",
+          "title": "使用超级账本 Cello 搭建区块链服务"
+        },
+        {
+          "path": "14_baas/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "前沿趋势",
+      "parts": [
+        {
+          "path": "15_frontiers/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "15_frontiers/ai_web3.md",
+          "title": "AI 与 Web3 的融合"
+        },
+        {
+          "path": "15_frontiers/ai_web3_deep_cases.md",
+          "title": "AI+Web3 深度融合案例与实战分析"
+        },
+        {
+          "path": "15_frontiers/ai_agents_blockchain.md",
+          "title": "代理型 AI 与区块链的深度融合：基础设施、自主经济与系统性影响"
+        },
+        {
+          "path": "15_frontiers/depin.md",
+          "title": "DePIN：去中心化物理基础设施"
+        },
+        {
+          "path": "15_frontiers/rwa.md",
+          "title": "RWA：现实世界资产代币化"
+        },
+        {
+          "path": "15_frontiers/interoperability.md",
+          "title": "跨链协议与互操作性"
+        },
+        {
+          "path": "15_frontiers/genius_act.md",
+          "title": "GENIUS Act：美国联邦稳定币框架"
+        },
+        {
+          "path": "15_frontiers/summary.md",
+          "title": "本章小结"
+        }
+      ]
+    },
+    {
+      "title": "附录",
+      "parts": [
+        {
+          "path": "appendix/README.md",
+          "title": "本章导读"
+        },
+        {
+          "path": "appendix/terms.md",
+          "title": "术语"
+        },
+        {
+          "path": "appendix/faq.md",
+          "title": "常见问题"
+        },
+        {
+          "path": "appendix/companies.md",
+          "title": "相关企业和组织"
+        },
+        {
+          "path": "appendix/golang/README.md",
+          "title": "Go 语言开发相关"
+        },
+        {
+          "path": "appendix/golang/install.md",
+          "title": "安装与配置 Golang 环境"
+        },
+        {
+          "path": "appendix/golang/ide.md",
+          "title": "编辑器与 IDE"
+        },
+        {
+          "path": "appendix/golang/tools.md",
+          "title": "高效开发工具"
+        },
+        {
+          "path": "appendix/golang/package.md",
+          "title": "依赖管理：Go Modules"
+        },
+        {
+          "path": "appendix/grpc.md",
+          "title": "ProtoBuf 与 gRPC"
+        },
+        {
+          "path": "appendix/resources.md",
+          "title": "参考资源链接"
+        }
+      ]
+    }
+  ],
+  "completeness": {
+    "required_globs": [
+      "README.md",
+      "01_history/*.md",
+      "02_overview/*.md",
+      "03_scenario/*.md",
+      "04_distributed_system/*.md",
+      "05_crypto/*.md",
+      "06_bitcoin/*.md",
+      "07_ethereum/*.md",
+      "08_hyperledger/*.md",
+      "09_fabric_deploy/*.md",
+      "10_fabric_op/*.md",
+      "11_app_dev/*.md",
+      "12_web3/*.md",
+      "13_fabric_design/*.md",
+      "14_baas/*.md",
+      "15_frontiers/*.md",
+      "appendix/*.md",
+      "appendix/golang/*.md"
+    ]
+  }
+}

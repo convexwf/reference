@@ -12,9 +12,19 @@
 - `whale-quant` 的量化金融与 Python 开发教程
 - `all-in-rag` 的 All-in-RAG 大模型应用开发实战一：RAG 技术全栈指南
 - `easy-vibe` 的简体中文 AI 编程教程
+- `blockchain-guide` 的《区块链技术指南》
+- `llm-cookbook` 的面向开发者大模型入门教程
+- `happy-llm` 的《从零开始构建大模型》教程
+- `self-llm` 的《开源大模型食用指南》
+- `hands-on-modern-rl` 的现代强化学习与智能体系统教程
+- 《Software Engineering at Google》（谷歌软件工程）的中英文对照译本
 - `healthart/website` 中的 Huberman Lab 健康指南
 - `lianglianglee-architecture` 的《从 0 开始学架构》专栏
 - `lianglianglee-continuous-delivery` 的《持续交付36讲》专栏
+- `lianglianglee-product-practice` 的《硅谷产品实战36讲》专栏
+- `lianglianglee-blockchain-intro` 的《深入浅出区块链》专栏
+- `lianglianglee-technology-leadership` 的《技术领导力实战笔记》专栏
+- `lianglianglee-observability` 的《深入浅出可观测性》专栏
 - `lianglianglee-distributed-finance` 的《分布式金融架构课》专栏
 - `lianglianglee-linux-performance` 的《Linux性能优化实战》专栏
 - `lianglianglee-mysql` 的《MySQL实战45讲》专栏
@@ -29,8 +39,7 @@
 - `NxeedGoto/Refactoring2-zh` 的重构：改善既有代码的设计（第 2 版；上游许可副本见 [LICENSE](licenses/refactoring2-zh-LICENSE)）
 - Google C++、Objective-C、Python、Shell、JavaScript、TypeScript、HTML/CSS 和 Java 风格指南（8 份独立文档）
 - System Design Interview Notes（第 1、2 卷）
-- 跟着高手学复盘的[来源链接索引](markdown/management/retrospective-review.md)
-- Software Engineering at Google 的[书目与来源链接索引](markdown/software-engineering/software-engineering-at-google.md)
+
 
 生成结果按主题放在 `markdown/<category>/`；每本书、课程或专题合集对应一个英文 kebab-case 文件名，具体路径由清单的 `output` 决定。`sources.lock.json` 锁定每份结果对应的上游提交、清单摘要和适配器版本，因此可以在任何时间重建同一版本。
 
