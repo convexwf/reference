@@ -1577,7 +1577,8 @@
       "hubermanlab/*.md"
     ],
     "exclude_paths": [
-      "hubermanlab/new.md"
+      "hubermanlab/new.md",
+      "hubermanlab/index.md"
     ]
   },
   "adapter": "healthart_hubermanlab"
